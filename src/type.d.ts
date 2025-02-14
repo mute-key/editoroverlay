@@ -1,20 +1,26 @@
+/**
+ * [type declarations]
+ * 
+ */
 import * as vscode from 'vscode';
 
-import { DecorationTypeMask } from './cursor';
+import { SELECTION_TYPE, DECORATION_TYPE_MASK } from './constant';
+
+type DECORATION_TYPE_MASK_FIELD = number
 
 type DecorationType = Record<string, vscode.TextEditorDecorationType[] | undefined>;
 
 type DecorationInfoPropType = {
     key: string,
-    mask: DecorationTypeMask
+    mask: DECORATION_TYPE_MASK
 }
 
 type DecorationInfoType = {
-    reset: DecorationInfoPropType
-    cursorOnly: DecorationInfoPropType
-    singleLine: DecorationInfoPropType
-    multiLine: DecorationInfoPropType
-    multiCursor: DecorationInfoPropType
+    [SELECTION_TYPE.RESET]: DecorationInfoPropType
+    [SELECTION_TYPE.CURSOR_ONLY]: DecorationInfoPropType
+    [SELECTION_TYPE.SINGLE_LINE]: DecorationInfoPropType
+    [SELECTION_TYPE.MULTI_LINE]: DecorationInfoPropType
+    [SELECTION_TYPE.MULTI_CURSOR]: DecorationInfoPropType
 }
 
 type loadFunc = (context: {

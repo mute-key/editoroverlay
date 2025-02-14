@@ -1,3 +1,7 @@
+/**
+ * [extension activate function]
+ * 
+ */
 import * as vscode from 'vscode';
 import { cursorActivate } from './cursor';
 
