@@ -1,1 +1,1 @@
-https://github.com/microsoft/vscode-extension-samples/blob/main/decorator-sample/USAGE.md
+<!-- https://github.com/microsoft/vscode-extension-samples/blob/main/decorator-sample/USAGE.md -->

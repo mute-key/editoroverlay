@@ -107,21 +107,22 @@ const unsetDecoration: Type.UnsetDecorationFunctionType = (
     decorationList: Type.DecorationType,
     editor: vscode.TextEditor | undefined
 ) => (
-    decorationInfo: Type.DecorationInfoPropType): boolean => {
-        if (decorationList[decorationInfo.key] && editor) {
-            decorationList[decorationInfo.key]?.forEach(entry => {
-                if (Array.isArray(entry)) {
-                    entry.forEach(deco => {
-                        editor.setDecorations(deco, []);
-                    });
-                } else {
-                    editor.setDecorations(entry, []);
-                }
-            });
-            return true;
-        }
-        return false;
-    };
+    decorationInfo: Type.DecorationInfoPropType
+): boolean => {
+    if (decorationList[decorationInfo.key] && editor) {
+        decorationList[decorationInfo.key]?.forEach(entry => {
+            if (Array.isArray(entry)) {
+                entry.forEach(deco => {
+                    editor.setDecorations(deco, []);
+                });
+            } else {
+                editor.setDecorations(entry, []);
+            }
+        });
+        return true;
+    }
+    return false;
+};
 
 const resetDecoration: Type.UnsetDecorationFunctionType = (decorationList: Type.DecorationType) => (decorationInfo: Type.DecorationInfoPropType): boolean => {
     if (decorationList[decorationInfo.key] !== undefined) {
@@ -184,7 +185,7 @@ const setDecorationOnEditor: Type.setDecorationOnEditorFunc = ({ editor, decorat
     }
 };
 
-const decorationCoordinator: Type.decorationCoordinatorFunc = ({editor,decorationList,decorationInfo}): Type.DecorationWithRangeType[] | undefined => {
+const decorationCoordinator: Type.decorationCoordinatorFunc = ({ editor, decorationList, decorationInfo }): Type.DecorationWithRangeType[] | undefined => {
     const textEditorDecoration: vscode.TextEditorDecorationType[] | undefined = decorationList[decorationInfo.key];
     if (textEditorDecoration) {
         if (decorationInfo.mask & DecorationTypeMask.CURSOR_ONLY) {
