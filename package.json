@@ -1,48 +1,64 @@
 {
     "name": "cursorlinehighlight",
+    "publisher": "mutekey",
     "displayName": "CursorLineHighlight",
     "description": "",
     "version": "0.0.1",
     "engines": {
         "vscode": "^1.96.0"
     },
+    "activationEvents": [
+        "onStartupFinished"
+    ],
+    "icon": "./misc/icon2.png",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/mute-key/cursorlinehighlight"
+    },
+    "content": {
+        "baseContentUrl": "https://github.com/mute-key/cursorlinehighlight/blob/master/",
+        "baseImagesUrl": "https://github.com/mute-key/cursorlinehighlight/raw/master/"
+    },
+    "keywords": [
+        "cursor",
+        "line",
+        "highlight",
+        "selection",
+        "range"
+    ],
     "categories": [
+        "Themes",
+        "Visualization",
         "Other"
     ],
-    "activationEvents": [
-        "onStartupFinished",
-        ""
+    "extensionKind": [
+        "ui",
+        "workspace"
     ],
     "main": "./dist/extension.js",
     "contributes": {
-        "commands": [
-            {
-                "command": "cursorlinehighlight.helloWorld",
-                "title": "Hello World"
-            }
-        ],
         "configuration": {
             "title": "CursorLine Highlight Settings",
             "properties": {
-                "cursorlinehighlight.isWholeLine": {
+                "cursorlinehighlight.cursorOnly_isWholeLine": {
                     "type": "boolean",
                     "default": true,
                     "description": "isWholeLine"
                 },
-                "cursorlinehighlight.borderColor": {
+                "cursorlinehighlight.cursorOnly_borderColor": {
                     "type": [
                         "string"
                     ],
                     "default": "#65EAB9",
                     "description": "Change the border color. (Ex: 'red', '#FFF' #FFFFFFF, 'RGB(255,255,255)','RGB(255, 255, 255. 0.5) )"
                 },
-                "cursorlinehighlight.borderWidth": {
+                "cursorlinehighlight.cursorOnly_borderWidth": {
                     "type": [
                         "string"
                     ],
                     "default": "2px"
                 },
-                "cursorlinehighlight.borderStyle": {
+                "cursorlinehighlight.cursorOnly_borderStyle": {
                     "type": [
                         "string"
                     ],
@@ -57,75 +73,104 @@
                     ],
                     "default": "solid"
                 },
-                "cursorlinehighlight.extensionActive": {
+                "cursorlinehighlight.singleLine_isWholeLine": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "isWholeLine"
+                },
+                "cursorlinehighlight.singleLine_borderColor": {
+                    "type": [
+                        "string"
+                    ],
+                    "default": "#ff0000",
+                    "description": "Change the border color. (Ex: 'red', '#FFF' #FFFFFFF, 'RGB(255,255,255)','RGB(255, 255, 255. 0.5) )"
+                },
+                "cursorlinehighlight.singleLine_borderWidth": {
+                    "type": [
+                        "string"
+                    ],
+                    "default": "2px"
+                },
+                "cursorlinehighlight.singleLine_borderStyle": {
+                    "type": [
+                        "string"
+                    ],
+                    "enum": [
+                        "solid",
+                        "dashed",
+                        "inset",
+                        "double",
+                        "groove",
+                        "outset",
+                        "ridge"
+                    ],
+                    "default": "solid"
+                },
+                "cursorlinehighlight.multiLine_isWholeLine": {
                     "type": "boolean",
                     "default": true,
-                    "description": "extension enabled"
+                    "description": "isWholeLine"
                 },
-                "cursorlinehighlight.cursor_isWholeLine": {
+                "cursorlinehighlight.multiLine_borderColor": {
+                    "type": [
+                        "string"
+                    ],
+                    "default": "#00ff00",
+                    "description": "Change the border color. (Ex: 'red', '#FFF' #FFFFFFF, 'RGB(255,255,255)','RGB(255, 255, 255. 0.5) )"
+                },
+                "cursorlinehighlight.multiLine_borderWidth": {
+                    "type": [
+                        "string"
+                    ],
+                    "default": "2px"
+                },
+                "cursorlinehighlight.multiLine_borderStyle": {
+                    "type": [
+                        "string"
+                    ],
+                    "enum": [
+                        "solid",
+                        "dashed",
+                        "inset",
+                        "double",
+                        "groove",
+                        "outset",
+                        "ridge"
+                    ],
+                    "default": "solid"
+                },
+                "cursorlinehighlight.multiCursor_isWholeLine": {
                     "type": "boolean",
-                    "default": true,
-                    "description": "extension enabled"
+                    "default": false,
+                    "description": "isWholeLine"
                 },
-                "cursorlinehighlight.cursor_backgroundColor": {
-                    "type": "string",
-                    "default": true,
-                    "description": "extension enabled"
+                "cursorlinehighlight.multiCursor_borderColor": {
+                    "type": [
+                        "string"
+                    ],
+                    "default": "#0000ff",
+                    "description": "Change the border color. (Ex: 'red', '#FFF' #FFFFFFF, 'RGB(255,255,255)','RGB(255, 255, 255. 0.5) )"
                 },
-                "cursorlinehighlight.cursor_borderColor": {
-                    "type": "string",
-                    "default": true,
-                    "description": "extension enabled"
+                "cursorlinehighlight.multiCursor_borderWidth": {
+                    "type": [
+                        "string"
+                    ],
+                    "default": "2px"
                 },
-                "cursorlinehighlight.cursor_borderWidth": {
-                    "type": "string",
-                    "default": true,
-                    "description": "extension enabled"
-                },
-                "cursorlinehighlight.cursor_borderStyle": {
-                    "type": "string",
-                    "default": true,
-                    "description": "extension enabled"
-                },
-                "cursorlinehighlight.singleLineSelection_backgroundColor": {
-                    "type": "string",
-                    "default": true,
-                    "description": "extension enabled"
-                },
-                "cursorlinehighlight.singleLineSelection_borderColor": {
-                    "type": "string",
-                    "default": true,
-                    "description": "extension enabled"
-                },
-                "cursorlinehighlight.singleLineSelection_borderWidth": {
-                    "type": "string",
-                    "default": true,
-                    "description": "extension enabled"
-                },
-                "cursorlinehighlight.singleLineSelection_borderStyle": {
-                    "type": "string",
-                    "default": true,
-                    "description": "extension enabled"
-                },
-                "cursorlinehighlight.multiLineSelection_backgroundColor": {
-                    "type": "string",
-                    "default": true,
-                    "description": "extension enabled"
-                },
-                "cursorlinehighlight.multiLineSelection_borderColor": {
-                    "type": "string",
-                    "default": true,
-                    "description": "extension enabled"
-                },
-                "cursorlinehighlight.multiLineSelection_borderWidth": {
-                    "type": "string",
-                    "default": true,
-                    "description": "extension enabled"
-                },
-                "cursorlinehighlight.multiLineSelection_borderStyle": {
-                    "type": "string",
-                    "default": true,
-                    "description": "extension enabled"
+                "cursorlinehighlight.multiCursor_borderStyle": {
+                    "type": [
+                        "string"
+                    ],
+                    "enum": [
+                        "solid",
+                        "dashed",
+                        "inset",
+                        "double",
+                        "groove",
+                        "outset",
+                        "ridge"
+                    ],
+                    "default": "solid"
                 }
             }
         }

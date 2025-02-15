@@ -10,29 +10,14 @@ import {
     DECORATION_INFO
 } from './constant';
 
-const decorationList: Type.DecorationType = {
-    cursorOnly: config.createDecorationTypeBuilder(DECORATION_TYPE_MASK.CURSOR_ONLY),
-    singleLine: config.createDecorationTypeBuilder(DECORATION_TYPE_MASK.SINGLE_LINE),
-    multiLine: config.createDecorationTypeBuilder(DECORATION_TYPE_MASK.MULTI_LINE),
-    multiCursor: config.createDecorationTypeBuilder(DECORATION_TYPE_MASK.MULTI_CURSOR),
-};
-
-const loadDecoration: Type.loadFunc = ({ decorationList, decorationInfo }): boolean => {
-    if (decorationList[decorationInfo.key] === undefined) {
-        decorationList[decorationInfo.key] = config.createDecorationTypeBuilder(decorationInfo.mask);
-        return true;
-    }
-    return false;
-};
-
 const unsetDecoration: Type.UnsetDecorationFunctionType = (
     decorationList: Type.DecorationType,
     editor: vscode.TextEditor | undefined
 ) => (
     decorationInfo: Type.DecorationInfoPropType
 ): boolean => {
-        if (decorationList[decorationInfo.key] && editor) {
-            decorationList[decorationInfo.key]?.forEach(entry => {
+        if (decorationList[decorationInfo.KEY] && editor) {
+            decorationList[decorationInfo.KEY]?.forEach(entry => {
                 if (Array.isArray(entry)) {
                     entry.forEach(deco => {
                         editor.setDecorations(deco, []);
@@ -47,11 +32,11 @@ const unsetDecoration: Type.UnsetDecorationFunctionType = (
     };
 
 const resetDecoration: Type.UnsetDecorationFunctionType = (decorationList: Type.DecorationType) => (decorationInfo: Type.DecorationInfoPropType): boolean => {
-    if (decorationList[decorationInfo.key] !== undefined) {
-        decorationList[decorationInfo.key]?.forEach(entry => {
+    if (decorationList[decorationInfo.KEY] !== undefined) {
+        decorationList[decorationInfo.KEY]?.forEach(entry => {
             entry.dispose();
         });
-        decorationList[decorationInfo.key] = undefined;
+        decorationList[decorationInfo.KEY] = undefined;
         return true;
     }
     return false;
@@ -62,7 +47,7 @@ const disposeOrResetOtherDecoration = (
     resetOrUnset: Type.UnsetFunctionType
 ): boolean =>
     Object.values(DECORATION_INFO)
-        .filter(info => currentDecoration.mask & info.mask)
+        .filter(info => currentDecoration.MASK & info.MASK)
         .map(info => resetOrUnset(info))
         .every(Boolean);
 
@@ -74,7 +59,7 @@ const isDecorationChanged = (
     appliedDecoration: Type.AppliedDecorationType,
     decorationInfo: Type.DecorationInfoPropType): boolean => {
     if (appliedDecoration.applied) {
-        if (appliedDecoration.applied.mask !== decorationInfo.mask) {
+        if (appliedDecoration.applied.MASK !== decorationInfo.MASK) {
             appliedDecoration.applied = decorationInfo;
             return true;
         }
@@ -89,9 +74,9 @@ const isDecorationChanged = (
  * @param decorationInfo
  * 
  */
-const setDecorationOnEditor: Type.setDecorationOnEditorFunc = ({ editor, decorationList, decorationInfo }): void => {
+const setDecorationOnEditor: Type.SetDecorationOnEditorFunc = ({ editor, decorationList, decorationInfo }): void => {
 
-    const textEditorDecoration: vscode.TextEditorDecorationType[] | undefined = decorationList[decorationInfo.key];
+    const textEditorDecoration: vscode.TextEditorDecorationType[] | undefined = decorationList[decorationInfo.KEY];
 
     if (textEditorDecoration) {
         const decorationWithRange = decorationCoordinator({ editor, decorationList, decorationInfo });
@@ -107,10 +92,10 @@ const setDecorationOnEditor: Type.setDecorationOnEditorFunc = ({ editor, decorat
     }
 };
 
-const decorationCoordinator: Type.decorationCoordinatorFunc = ({ editor, decorationList, decorationInfo }): Type.DecorationWithRangeType[] | undefined => {
-    const textEditorDecoration: vscode.TextEditorDecorationType[] | undefined = decorationList[decorationInfo.key];
+const decorationCoordinator: Type.DecorationCoordinatorFunc = ({ editor, decorationList, decorationInfo }): Type.DecorationWithRangeType[] | undefined => {
+    const textEditorDecoration: vscode.TextEditorDecorationType[] | undefined = decorationList[decorationInfo.KEY];
     if (textEditorDecoration) {
-        if (decorationInfo.mask & DECORATION_TYPE_MASK.CURSOR_ONLY) {
+        if (decorationInfo.MASK & DECORATION_TYPE_MASK.CURSOR_ONLY) {
             const currentPosition = editor.selection.active;
             return [{
                 decoration: textEditorDecoration[0],
@@ -118,14 +103,14 @@ const decorationCoordinator: Type.decorationCoordinatorFunc = ({ editor, decorat
             }];
         }
 
-        if (decorationInfo.mask & DECORATION_TYPE_MASK.SINGLE_LINE) {
+        if (decorationInfo.MASK & DECORATION_TYPE_MASK.SINGLE_LINE) {
             return [{
                 decoration: textEditorDecoration[0],
                 range: [new vscode.Range(editor.selection.start, editor.selection.end)]
             }];
         }
 
-        if (decorationInfo.mask & DECORATION_TYPE_MASK.MULTI_LINE) {
+        if (decorationInfo.MASK & DECORATION_TYPE_MASK.MULTI_LINE) {
             return [{
                 decoration: textEditorDecoration[0],
                 range: [new vscode.Range(editor.selection.start, editor.selection.start)]
@@ -136,7 +121,7 @@ const decorationCoordinator: Type.decorationCoordinatorFunc = ({ editor, decorat
             }];
         }
 
-        if (decorationInfo.mask & DECORATION_TYPE_MASK.MULTI_CURSOR) {
+        if (decorationInfo.MASK & DECORATION_TYPE_MASK.MULTI_CURSOR) {
             if (editor.selections.length > 1) {
                 return [{
                     decoration: textEditorDecoration[0],
@@ -160,25 +145,27 @@ const cursorActivate = async (context: vscode.ExtensionContext): Promise<vscode.
             return; // no active editor
         }
 
-        loadDecoration({
-            decorationList: decorationList,
-            decorationInfo: DECORATION_INFO.CURSOR_ONLY
-        });
+        const loadConfig = config.initialiseConfig(context);
+        if (!loadConfig) {
+            console.error('Failed to initialize config.');
+            return;
+        }
 
-        if (!decorationList[DECORATION_INFO.CURSOR_ONLY.key]) {
-            return; // decoration has not been loaded
+        if (!loadConfig.decorationList) {
+            console.error('Failed to initialize decorationList.');
+            return;
         }
 
         setDecorationOnEditor({
             editor: activeEditor,
-            decorationList: decorationList,
+            decorationList: loadConfig.decorationList,
             decorationInfo: DECORATION_INFO.CURSOR_ONLY
         });
 
         return [
             activeEditorChanged(),
-            selectionChanged(),
-            configChanged(),
+            selectionChanged(loadConfig),
+            configChanged(context),
         ]; // event disposable functions
     } catch (err) {
         console.error('Error during extension activation: ', err);
@@ -208,7 +195,7 @@ const activeEditorChanged = (): vscode.Disposable => {
     });
 };
 
-const selectionChanged = (): vscode.Disposable => {
+const selectionChanged = (loadConfig): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) => {
         if (event.selections) {
             const decorationType: Type.DecorationInfoPropType | undefined = selectionType(event.textEditor);
@@ -217,38 +204,45 @@ const selectionChanged = (): vscode.Disposable => {
             }
 
             const unsetFunction = (decorationInfo: Type.DecorationInfoPropType): boolean => {
-                return unsetDecoration(decorationList, event.textEditor)(decorationInfo);
+                return unsetDecoration(loadConfig.decorationList, event.textEditor)(decorationInfo);
             };
 
             if (isDecorationChanged(appliedDecoration, decorationType)) {
                 disposeOrResetOtherDecoration(DECORATION_INFO.RESET, unsetFunction);
             }
 
-            loadDecoration({
-                decorationList: decorationList,
-                decorationInfo: decorationType
-            });
+            // loadDecoration({
+            // decorationList: loadConfig.decorationList,
+            // decorationInfo: decorationType
+            // });
 
-            if (!decorationList[decorationType.key]) {
+            if (!loadConfig.decorationList[decorationType.KEY]) {
                 return;
             }
+
             setDecorationOnEditor({
                 editor: event.textEditor,
-                decorationList: decorationList,
+                decorationList: loadConfig.decorationList,
                 decorationInfo: decorationType
             });
         }
     });
 };
 
-const configChanged = (): vscode.Disposable => {
+const configChanged = (context: vscode.ExtensionContext): vscode.Disposable => {
     return vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
-        if (config.hasConfigChagned()) {
-            const disposeFunction = (decorationInfo: Type.DecorationInfoPropType): boolean => {
-                return resetDecoration(decorationList)(decorationInfo);
-            };
-    
-            disposeOrResetOtherDecoration(DECORATION_INFO.RESET, disposeFunction);
+        console.log('onDidChangeConfiguration')
+        if (config.hasConfigChagned(context, event)) {
+            // const loadConfig = config.initialiseConfig(context);
+            // if (!loadConfig) {
+            // console.error('Failed to initialize config.');
+            // return;
+            // }
+            // const disposeFunction = (decorationInfo: Type.DecorationInfoPropType): boolean => {
+            //     // return resetDecoration(decorationList)(decorationInfo);
+            // };
+
+            // disposeOrResetOtherDecoration(DECORATION_INFO.RESET, disposeFunction);
         }
     });
 };

@@ -3,70 +3,130 @@
  * 
  */
 import * as vscode from 'vscode';
+import * as Type from './type.d';
+import {
+    DEOCORATION_DEFAULT_OVERRIDE,
+    DECORATION_STYLE_PREFIX,
+    DECORATION_STYLE_KEY
+} from './constant';
 
-import { DECORATION_TYPE_MASK } from './constant';
-
-const hasConfigChagned = (): boolean => {
-    return false;
+const configInfo: Type.ConfigInfoType = {
+    name: undefined,
+    config: undefined,
+    decorationList: {
+        CURSOR_ONLY: undefined,
+        SINGLE_LINE: undefined,
+        MULTI_LINE: undefined,
+        MULTI_CURSOR: undefined,
+    },
 };
 
-const createDecorationType = (
-    isWholeLine: boolean,
-    borderWidth: string,
-    borderStyle: string,
-    borderColor: string,
-    borderRadius: string
-): vscode.TextEditorDecorationType => {
-    return vscode.window.createTextEditorDecorationType({
-        isWholeLine: isWholeLine,
-        borderWidth: borderWidth,
-        borderStyle: `${borderStyle}`,
-        borderColor: `${borderColor}`,
-        borderRadius: borderRadius
-    });
-};
+const initialiseConfig = (context: vscode.ExtensionContext): Type.ConfigInfoType | undefined => {
+    const name = context.extension.packageJSON.name;
 
-const createDecorationTypeBuilder = (decorationKindIs: DECORATION_TYPE_MASK): vscode.TextEditorDecorationType[] | undefined => {
-    const config = vscode.workspace.getConfiguration("cursorlinehighlight");
-    const borderWidth = config.get<string>("borderWidth", '2px');
-    const borderColor = config.get<string>("borderColor", '#65EAB9');
-    const borderStyle = config.get<string>("borderStyle", 'solid');
-    let isWholeLine = false;
-    let borderRadius = '';
-    switch (decorationKindIs) {
-        case DECORATION_TYPE_MASK.CURSOR_ONLY:
-            isWholeLine = true;
-            borderRadius = '0px';
-            return [
-                createDecorationType(isWholeLine, `0 0 ${borderWidth} 0`, borderStyle, borderColor, borderRadius)
-            ];
-        case DECORATION_TYPE_MASK.SINGLE_LINE:
-            isWholeLine = false;
-            borderRadius = '0px';
-            return [
-                createDecorationType(isWholeLine, `0 0 ${borderWidth} 0`, borderStyle, borderColor, borderRadius)
-            ];
-        case DECORATION_TYPE_MASK.MULTI_LINE:
-            isWholeLine = true;
-            borderRadius = '0px';
-            return [
-                createDecorationType(isWholeLine, `${borderWidth} 0 0 0`, borderStyle, borderColor, borderRadius),
-                createDecorationType(isWholeLine, `0 0 ${borderWidth} 0`, borderStyle, borderColor, borderRadius)
-            ];
-        case DECORATION_TYPE_MASK.MULTI_CURSOR:
-            isWholeLine = false;
-            borderRadius = '0px';
-            return [
-                createDecorationType(isWholeLine, `${borderWidth} ${borderWidth} ${borderWidth} ${borderWidth}`, borderStyle, borderColor, borderRadius)
-            ];
-        default:
-            break;
+    if (!name) {
+        return;
+    }
+
+    configInfo.name = name;
+    configInfo.config = vscode.workspace.getConfiguration(configInfo.name);
+
+    if (createDecorationTypeBuilder(configInfo.config)) {
+        return configInfo;
     }
 
     return;
 };
 
+const hasConfigChagned = (context: vscode.ExtensionContext, event: vscode.ConfigurationChangeEvent): boolean => {
+    try {
+        const extentionPackage = context.extension.packageJSON;
+        configInfo.name = extentionPackage.name;
+    } catch (err) {
+        console.log(err);
+    } finally {
+        return false;
+    }
+};
+
+const getConfigValue: Type.DecorationConfigGetFunctionType = <T extends string | number | boolean>(
+    config: vscode.WorkspaceConfiguration,
+    prefix: string,
+    configName: Type.DecorationStyleConfigNameOnlyType,
+    defaultValue: T,
+    decorationKey: Type.DecorationStyleKeyOnlyType
+) => {
+    const key = prefix + configName;
+    if (config) {
+        return config.get<T>(key, defaultValue);
+    }
+    return DEOCORATION_DEFAULT_OVERRIDE[decorationKey][configName];
+};
+
+/**
+ * @param config
+ * @param decorationKey
+ * @returns
+ * 
+ */
+const getConfigSet = (config: vscode.WorkspaceConfiguration, decorationKey: Type.DecorationStyleKeyOnlyType): Type.DecorationStyleConfigType => {
+    const CONFIG_PREFIX = DECORATION_STYLE_PREFIX[decorationKey] + '_';
+    return Object.entries(DEOCORATION_DEFAULT_OVERRIDE[decorationKey]).reduce((acc, [key, value]) => {
+        acc[key] = getConfigValue(config, CONFIG_PREFIX, <Type.DecorationStyleConfigNameOnlyType>key, value, decorationKey);
+        return acc;
+    }, {} as Type.DecorationStyleConfigType);
+};
+
+/**
+ * @param config
+ * @param decorationKey
+ * @returns
+ * 
+ */
+const createDecorationType: Type.CreateDecorationFunctionType = (
+    config: Type.DecorationStyleConfigType,
+    decorationKey: Type.DecorationStyleKeyOnlyType
+) => (
+    decorationTypeSplit: Type.SelectionConfigFunctionType
+) => decorationTypeSplit(config)[decorationKey].reduce((acc, str) => {
+    config.borderWidth = str;
+    acc.push(config);
+    return acc;
+}, [] as Type.DecorationStyleConfigType[]).reduce((acc, config) => {
+    acc.push(vscode.window.createTextEditorDecorationType(config));
+    return acc;
+}, [] as vscode.TextEditorDecorationType[]);
+
+const decorationTypeSplit = (config: Type.DecorationStyleConfigType): Type.DecorationTypeSplit => {
+    return {
+        [DECORATION_STYLE_KEY.CURSOR_ONLY]: [`0 0 ${config.borderWidth} 0`],
+        [DECORATION_STYLE_KEY.SINGLE_LINE]: [`0 0 ${config.borderWidth} 0`],
+        [DECORATION_STYLE_KEY.MULTI_LINE]: [`${config.borderWidth} 0 0 0`, `0 0 ${config.borderWidth} 0`],
+        [DECORATION_STYLE_KEY.MULTI_CURSOR]: [`${config.borderWidth} ${config.borderWidth} ${config.borderWidth} ${config.borderWidth}`],
+    };
+};
+
+/**
+ * wanted to avoid O(n^2) as much as possible but this is more extendable later
+ * 
+ * @returns
+ * 
+ */
+const createDecorationTypeBuilder = (config: vscode.WorkspaceConfiguration): boolean => {
+    if (!config) {
+        return false;
+    }
+
+    Object.keys(configInfo.decorationList).map((key) => {
+        const decorationStyleName = <Type.DecorationStyleKeyOnlyType>key;
+        const configSet: Type.DecorationStyleConfigType = getConfigSet(config, decorationStyleName);
+        configInfo.decorationList[decorationStyleName] = createDecorationType(configSet, decorationStyleName)(decorationTypeSplit);
+    });
+    
+    return true;
+};
+
 export {
+    initialiseConfig,
     hasConfigChagned,
-    createDecorationTypeBuilder
 };
