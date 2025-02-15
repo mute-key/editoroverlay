@@ -49,7 +49,7 @@ const hasConfigChagned = (context: vscode.ExtensionContext, event: vscode.Config
     }
 };
 
-const getConfigValue: Type.DecorationConfigGetFunctionType = <T extends string | number | boolean>(
+const getConfigValue: Type.DecorationConfigGetFunctionType = <T extends Type.DecorationStyleConfigValueType>(
     config: vscode.WorkspaceConfiguration,
     prefix: string,
     configName: Type.DecorationStyleConfigNameOnlyType,
@@ -72,7 +72,12 @@ const getConfigValue: Type.DecorationConfigGetFunctionType = <T extends string |
 const getConfigSet = (config: vscode.WorkspaceConfiguration, decorationKey: Type.DecorationStyleKeyOnlyType): Type.DecorationStyleConfigType => {
     const CONFIG_PREFIX = DECORATION_STYLE_PREFIX[decorationKey] + '_';
     return Object.entries(DEOCORATION_DEFAULT_OVERRIDE[decorationKey]).reduce((acc, [key, value]) => {
-        acc[key] = getConfigValue(config, CONFIG_PREFIX, <Type.DecorationStyleConfigNameOnlyType>key, value, decorationKey);
+        acc[key] = getConfigValue(
+            config,
+            CONFIG_PREFIX,
+            <Type.DecorationStyleConfigNameOnlyType>key,
+            <Type.DecorationStyleConfigValueType>value,
+            decorationKey);
         return acc;
     }, {} as Type.DecorationStyleConfigType);
 };
@@ -122,7 +127,7 @@ const createDecorationTypeBuilder = (config: vscode.WorkspaceConfiguration): boo
         const configSet: Type.DecorationStyleConfigType = getConfigSet(config, decorationStyleName);
         configInfo.decorationList[decorationStyleName] = createDecorationType(configSet, decorationStyleName)(decorationTypeSplit);
     });
-    
+
     return true;
 };
 

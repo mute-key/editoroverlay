@@ -14,7 +14,9 @@ type DecorationStyleConfigNameOnlyType = `${DECORATION_STYLE_PREFIX}`;
 
 type DecorationStyleKeyOnlyType = keyof typeof DECORATION_STYLE_PREFIX
 
-type DecorationConfigGetFunctionType = <T extends string | number | boolean>(
+type DecorationStyleConfigValueType = string | number | boolean
+
+type DecorationConfigGetFunctionType = <T extends DecorationStyleConfigValueType>(
     config: vscode.WorkspaceConfiguration,
     prefix: string,
     configName: DecorationStyleConfigNameOnlyType,
@@ -28,14 +30,6 @@ type DeocorationDefaultOverridPropType = {
     [DECORATION_STYLE_CONFIG_KEY.BORDER_STYLE]: string
     [DECORATION_STYLE_CONFIG_KEY.BORDER_COLOR]: string
     [DECORATION_STYLE_CONFIG_KEY.BORDER_RADIUS]?: string
-}
-
-type DecorationListType = {
-    [k in DECORATION_STYLE_PREFIX]: DeocorationDefaultOverridPropType
-}
-
-type DeocorationDefaultOverridType = {
-    [K in keyof typeof DECORATION_STYLE_PREFIX]: DeocorationDefaultOverridPropType
 }
 
 type DecorationTypeSplit = {
@@ -101,8 +95,6 @@ type DecorationStyleConfigType = {
     // [DECORATION_STYLE_KEY.OVERVIEW_RULER_LANE]: vscode.OverviewRulerLane.Left
     // [DECORATION_STYLE_KEY.FONT_WEIGHT]: string
 }
-
-type DecorationKeyType = Record<DecorationStyleKeyOnlyType, vscode.TextEditorDecorationType[] | undefined>;
 
 type DecorationType = Record<DecorationStyleKeyOnlyType, vscode.TextEditorDecorationType[] | undefined>;
 
