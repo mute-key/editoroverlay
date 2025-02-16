@@ -75,9 +75,7 @@ const isDecorationChanged = (
  * 
  */
 const setDecorationOnEditor: Type.SetDecorationOnEditorFunc = ({ editor, decorationList, decorationInfo }): void => {
-
     const textEditorDecoration: vscode.TextEditorDecorationType[] | undefined = decorationList[decorationInfo.KEY];
-
     if (textEditorDecoration) {
         const decorationWithRange = decorationCoordinator({ editor, decorationList, decorationInfo });
         if (!decorationWithRange) {
@@ -93,7 +91,9 @@ const setDecorationOnEditor: Type.SetDecorationOnEditorFunc = ({ editor, decorat
 };
 
 const decorationCoordinator: Type.DecorationCoordinatorFunc = ({ editor, decorationList, decorationInfo }): Type.DecorationWithRangeType[] | undefined => {
+    
     const textEditorDecoration: vscode.TextEditorDecorationType[] | undefined = decorationList[decorationInfo.KEY];
+    
     if (textEditorDecoration) {
         if (decorationInfo.MASK & DECORATION_TYPE_MASK.CURSOR_ONLY) {
             const currentPosition = editor.selection.active;
@@ -166,10 +166,10 @@ const cursorActivate = async (context: vscode.ExtensionContext): Promise<vscode.
             activeEditorChanged(),
             selectionChanged(loadConfig),
             configChanged(context),
-        ]; // event disposable functions
+        ]; // disposable event functions
     } catch (err) {
         console.error('Error during extension activation: ', err);
-        vscode.window.showErrorMessage('Extension activation failed!');
+        vscode.window.showErrorMessage('Extension activation failed!', err);
     }
 };
 
@@ -195,7 +195,7 @@ const activeEditorChanged = (): vscode.Disposable => {
     });
 };
 
-const selectionChanged = (loadConfig): vscode.Disposable => {
+const selectionChanged = (loadConfig: Type.ConfigInfoReadyType): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) => {
         if (event.selections) {
             const decorationType: Type.DecorationInfoPropType | undefined = selectionType(event.textEditor);
@@ -210,11 +210,6 @@ const selectionChanged = (loadConfig): vscode.Disposable => {
             if (isDecorationChanged(appliedDecoration, decorationType)) {
                 disposeOrResetOtherDecoration(DECORATION_INFO.RESET, unsetFunction);
             }
-
-            // loadDecoration({
-            // decorationList: loadConfig.decorationList,
-            // decorationInfo: decorationType
-            // });
 
             if (!loadConfig.decorationList[decorationType.KEY]) {
                 return;
@@ -231,18 +226,8 @@ const selectionChanged = (loadConfig): vscode.Disposable => {
 
 const configChanged = (context: vscode.ExtensionContext): vscode.Disposable => {
     return vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
-        console.log('onDidChangeConfiguration')
-        if (config.hasConfigChagned(context, event)) {
-            // const loadConfig = config.initialiseConfig(context);
-            // if (!loadConfig) {
-            // console.error('Failed to initialize config.');
-            // return;
-            // }
-            // const disposeFunction = (decorationInfo: Type.DecorationInfoPropType): boolean => {
-            //     // return resetDecoration(decorationList)(decorationInfo);
-            // };
-
-            // disposeOrResetOtherDecoration(DECORATION_INFO.RESET, disposeFunction);
+        if (event) {
+            config.initialiseConfig(context);
         }
     });
 };

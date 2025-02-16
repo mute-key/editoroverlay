@@ -6,41 +6,80 @@ import * as vscode from 'vscode';
 import {
     DECORATION_STYLE_CONFIG_KEY,
     DECORATION_STYLE_PREFIX,
+    DECORATION_GENERAL_STYLE_CONFIG_KEY,
     DECORATION_TYPE_MASK,
     SELECTION_TYPE,
+    BORDER_POSITION_VARIATION
 } from './constant';
 
-type DecorationStyleConfigNameOnlyType = `${DECORATION_STYLE_PREFIX}`;
+type NoConfigurationDecorationType = {
+    [K in keyof typeof DECORATION_STYLE_PREFIX]: NoConfigurationDeocorationPropType
+}
+
+type NoConfigurationDeocorationPropType = {
+    [DECORATION_STYLE_CONFIG_KEY.IS_WHOLE_LINE]: boolean
+    [DECORATION_STYLE_CONFIG_KEY.BORDER_POSITION]: string
+    [DECORATION_STYLE_CONFIG_KEY.BORDER_STYLE]: string
+    [DECORATION_STYLE_CONFIG_KEY.BORDER_WIDTH]: string
+    [DECORATION_STYLE_CONFIG_KEY.BORDER_COLOR]: string
+    [DECORATION_STYLE_CONFIG_KEY.BORDER_RADIUS]?: string
+}
+
+type NoConfigurationGeneraType = {
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.OPACITY]: number
+}
+type DecorationStyleConfigPrefixType = typeof DECORATION_STYLE_PREFIX[keyof typeof DECORATION_STYLE_PREFIX] | "";
+
+type DecorationStyleConfigNameType = `${DECORATION_STYLE_CONFIG_KEY}`
+
+type GeneralConfigNameOnlyType = `${DECORATION_GENERAL_STYLE_CONFIG_KEY}`
 
 type DecorationStyleKeyOnlyType = keyof typeof DECORATION_STYLE_PREFIX
 
 type DecorationStyleConfigValueType = string | number | boolean
 
 type DecorationConfigGetFunctionType = <T extends DecorationStyleConfigValueType>(
-    config: vscode.WorkspaceConfiguration,
-    prefix: string,
-    configName: DecorationStyleConfigNameOnlyType,
-    defaultValue: T,
-    decorationKey: DecorationStyleKeyOnlyType
+    config: ConfigInfoReadyType,
+    prefix: DecorationStyleConfigPrefixType,
+    configName: DecorationStyleConfigNameType | GeneralConfigNameOnlyType,
+    defaultValue: T
 ) => T
-
-type DeocorationDefaultOverridPropType = {
-    [DECORATION_STYLE_CONFIG_KEY.IS_WHOLE_LINE]: boolean
-    [DECORATION_STYLE_CONFIG_KEY.BORDER_WIDTH]: string
-    [DECORATION_STYLE_CONFIG_KEY.BORDER_STYLE]: string
-    [DECORATION_STYLE_CONFIG_KEY.BORDER_COLOR]: string
-    [DECORATION_STYLE_CONFIG_KEY.BORDER_RADIUS]?: string
-}
 
 type DecorationTypeSplit = {
     [K in keyof typeof DECORATION_STYLE_PREFIX]: string[]
 }
 
+type BorderPositionKeyOnly = `${BORDER_POSITION_VARIATION}`;
+
+type BorderPositionType = {
+    [k in BorderPositionKeyOnly]: string[]
+}
+
+type borderPositionParser = {
+    isWholeLine: boolean,
+    borderPosition: string
+}
+
+type BorderPositionInfoType = Record<DecorationStyleKeyOnlyType, string | undefined>;
+
+type GeneralConfigType = {
+    borderOpacity: number | undefined
+}
+
 type ConfigInfoType = {
     name: string | undefined
     config: vscode.WorkspaceConfiguration | undefined,
+    configHashKey: string | undefined
     decorationList: DecorationType
+    generalConfig: GeneralConfigType
+    borderPositionInfo: BorderPositionInfoType
 }
+
+type ConfigInfoReadyType = {
+    name: string
+    config: vscode.WorkspaceConfiguration,
+    configHashKey: string
+} & ConfigInfoType
 
 // type SelectionConfigFunctionType<T> = (config: T) => DecorationStyleConfigType[];
 
@@ -90,9 +129,10 @@ type DecorationStyleConfigType = {
     [DECORATION_STYLE_CONFIG_KEY.BORDER_COLOR]: string
     [DECORATION_STYLE_CONFIG_KEY.BORDER_STYLE]: string
     [DECORATION_STYLE_CONFIG_KEY.BORDER_RADIUS]?: string
+    [DECORATION_STYLE_CONFIG_KEY.BORDER_POSITION]: string
     [DECORATION_STYLE_CONFIG_KEY.BACKGROUND_COLOR]?: string
-    // [DECORATION_STYLE_KEY.OVERVIEW_RULER_COLOR]: vscode.ThemeColor()
-    // [DECORATION_STYLE_KEY.OVERVIEW_RULER_LANE]: vscode.OverviewRulerLane.Left
+    [DECORATION_STYLE_CONFIG_KEY.OVERVIEW_RULER_COLOR]?: string | vscode.ThemeColor,
+    [DECORATION_STYLE_CONFIG_KEY.OVERVIEW_RULER_LANE]?: vscode.OverviewRulerLane
     // [DECORATION_STYLE_KEY.FONT_WEIGHT]: string
 }
 
