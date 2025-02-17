@@ -7,16 +7,23 @@ import * as Type from './type.d';
 import {
     fnv1aHash,
     capitalize,
+    readBits,
     hexToRgbaStringLiteral,
+    sendAutoDismissMessage
 } from './util';
 import {
     NO_CONFIGURATION_GENERAL_DEFAULT,
     NO_CONFIGURATION_DEOCORATION_DEFAULT,
     DECORATION_STYLE_PREFIX,
-    DECORATION_STYLE_KEY,
-    BORDER_POSITION_VARIATION
+    BORDER_WIDTH_DEFINITION,
+    SYSTEM_MESSAGE
 } from './constant';
 
+/**
+ * workspace configuration could have been 'default' but
+ * i think undefined is more difinitive for unset default value.
+ * 
+ */
 const configInfo: Type.ConfigInfoType = {
     name: undefined,
     config: undefined,
@@ -29,6 +36,10 @@ const configInfo: Type.ConfigInfoType = {
     },
     generalConfig: {
         borderOpacity: undefined,
+        backgroundOpacity: undefined,
+        borderWidth: undefined,
+        borderColor: undefined,
+        backgroundColor: undefined,
     },
     borderPositionInfo: {
         CURSOR_ONLY: undefined,
@@ -57,12 +68,29 @@ const ifConfigChanged = (configReady: Type.ConfigInfoReadyType): boolean => {
     } else {
         configReady.config = vscode.workspace.getConfiguration(configReady.name);
         configReady.configHashKey = configHash;
+
+        sendAutoDismissMessage(SYSTEM_MESSAGE.RELOADING_CONFIG, 1500);
+
         return true;
     }
 };
 
 const setConfigHashKey = (configInfo: Type.ConfigInfoReadyType): void => {
     configInfo.configHashKey = fnv1aHash(getConfigString(configInfo));
+};
+
+/**
+ * editor config overwrite.
+ * 
+ */
+const updateEditorConfiguration = () => {
+    const editorConfig = vscode.workspace.getConfiguration("editor");
+    editorConfig.update("renderLineHighlight", 'gutter', vscode.ConfigurationTarget.Global);
+    editorConfig.update("roundedSelection", false, vscode.ConfigurationTarget.Global);
+    editorConfig.update("cursorBlinking", 'phase', vscode.ConfigurationTarget.Global);
+
+    // this is very cool but not necessary.
+    // editorConfig.update("cursorSmoothCaretAnimation", 'on', vscode.ConfigurationTarget.Global);
 };
 
 const initialiseConfig = (context: vscode.ExtensionContext): Type.ConfigInfoReadyType | undefined => {
@@ -84,6 +112,7 @@ const initialiseConfig = (context: vscode.ExtensionContext): Type.ConfigInfoRead
 
     if (!configReady.configHashKey) {
         setConfigHashKey(configReady);
+        updateEditorConfiguration();
     } else {
         if (!ifConfigChanged(configReady)) {
             return;
@@ -132,6 +161,11 @@ const getConfigSet = (configInfo: Type.ConfigInfoReadyType, decorationKey: Type.
                 if (rgba) {
                     acc[key] = rgba;
                 }
+            } else if (key === 'backgroundColor') {
+                const rgba = hexToRgbaStringLiteral(configValue as string, configInfo.generalConfig.backgroundOpacity as unknown as number);
+                if (rgba) {
+                    acc[key] = rgba;
+                }
             } else {
                 acc[key] = configValue;
             }
@@ -151,9 +185,14 @@ const createDecorationType: Type.CreateDecorationFunctionType = (
     decorationKey: Type.DecorationStyleKeyOnlyType
 ) => (
     decorationTypeSplit: Type.SelectionConfigFunctionType
-): vscode.TextEditorDecorationType[] =>
-        decorationTypeSplit(config)[decorationKey]
-            .reduce((acc, str) => {
+) => {
+        try {
+            const split = decorationTypeSplit(config, decorationKey);
+            if (!split || split.length === 0) {
+                return;
+            }
+
+            const decorationTypeStack = split.reduce((acc, str) => {
                 const conf = { ...config };
                 conf.borderWidth = str;
                 acc.push(conf);
@@ -163,71 +202,68 @@ const createDecorationType: Type.CreateDecorationFunctionType = (
                 return acc;
             }, [] as vscode.TextEditorDecorationType[]);
 
-const decorationTypeSplit = (config: Type.DecorationStyleConfigType): Type.DecorationTypeSplit => {
-    return {
-        [DECORATION_STYLE_KEY.CURSOR_ONLY]: borderPosition(config)[config.borderPosition],
-        [DECORATION_STYLE_KEY.SINGLE_LINE]: borderPosition(config)[config.borderPosition],
-        [DECORATION_STYLE_KEY.MULTI_LINE]: borderPositionMultLine(config)[config.borderPosition],
-        [DECORATION_STYLE_KEY.MULTI_CURSOR]: borderPosition(config)[config.borderPosition],
+            if (decorationTypeStack.length === 0) {
+                return;
+            }
+
+            return decorationTypeStack;
+        } catch (err) {
+            console.log('creating decoration type thrown error:', decorationKey, err);
+            return;
+        }
     };
+
+const decorationTypeSplit = (config: Type.DecorationStyleConfigType, decorationKey: Type.DecorationStyleKeyOnlyType): string[] | undefined => {
+    if (Object.hasOwn(BORDER_WIDTH_DEFINITION, decorationKey)) {
+        if (Object.hasOwn(BORDER_WIDTH_DEFINITION[decorationKey], config.borderPosition)) {
+            return borderPosition(config, BORDER_WIDTH_DEFINITION[decorationKey][config.borderPosition]);
+        }
+    }
+    return;
 };
 
-const borderPosition = (config: Type.DecorationStyleConfigType): Type.BorderPositionType => {
-    return {
-        [BORDER_POSITION_VARIATION.BOTTOM]
-            : [`0 0 ${config.borderWidth} 0`],
-        [BORDER_POSITION_VARIATION.TOP_BOTTOM]
-            : [`${config.borderWidth} 0 ${config.borderWidth} 0`],
-        [BORDER_POSITION_VARIATION.TOP_RIGHT_BOTTOM_LEFT]
-            : [`${config.borderWidth} ${config.borderWidth} ${config.borderWidth} ${config.borderWidth}`],
-        [BORDER_POSITION_VARIATION.LEFT]
-            : [`0 0 0 ${config.borderWidth}`]
-    };
+const borderPosition = (config: Type.DecorationStyleConfigType, borderWidthMask: number[]): string[] | undefined => {
+    const borderWidth: string[] = [];
+    for (const bitMask of borderWidthMask) {
+        const border = readBits(bitMask, config.borderWidth, '0');
+        borderWidth.push(border.join(' '));
+    }
+    return borderWidth;
 };
 
-const borderPositionMultLine = (config: Type.DecorationStyleConfigType): Type.BorderPositionType => {
-    return {
-        [BORDER_POSITION_VARIATION.BOTTOM]
-            : [
-                `0 0 0 0`,
-                `0 0 ${config.borderWidth} 0`
-            ],
-        [BORDER_POSITION_VARIATION.TOP_BOTTOM]
-            : [
-                `${config.borderWidth} 0 0 0`,
-                `0 0 ${config.borderWidth} 0`
-            ],
-        [BORDER_POSITION_VARIATION.TOP_RIGHT_BOTTOM_LEFT]
-            : [
-                `${config.borderWidth} ${config.borderWidth} ${config.borderWidth} ${config.borderWidth}`,
-                `${config.borderWidth} ${config.borderWidth} ${config.borderWidth} ${config.borderWidth}`
-            ],
-        [BORDER_POSITION_VARIATION.LEFT]
-            : [
-                `${config.borderWidth} 0 0 0`,
-                `${config.borderWidth} 0 0 0`
-            ]
-    };
-};
-
-const borderPositionParser = (borderPosition: string): Type.borderPositionParser => {
+const borderPositionParser = (selectionType: Type.DecorationStyleKeyOnlyType, borderPosition: string): Type.BorderPositionParserType => {
     const position = borderPosition.replaceAll(' ', '').split('|');
     let isWholeLine = false;
+    let beforeCursor = false;
+    let afterCursor = false;
+    let atLineStart = false;
+    let selectionOnly = false;
 
     if (position.length > 1) {
         isWholeLine = /isWholeLine/s.test(position[1]);
-    } else {
-        isWholeLine = false;
+        beforeCursor = /beforeCursor/s.test(position[1]);
+        afterCursor = /afterCursor/s.test(position[1]);
+        atLineStart = /atLineStart/s.test(position[1]);
+        selectionOnly = /selectionOnly/s.test(position[1]);
+
+        // if multi-line
+        if (selectionType === 'MULTI_LINE' && position[0] === 'left') {
+            isWholeLine = true;
+        }
     }
 
     return {
         isWholeLine: isWholeLine,
-        borderPosition: position[0]
+        borderPosition: position[0],
+        beforeCursor: beforeCursor,
+        afterCursor: afterCursor,
+        atLineStart: atLineStart,
+        selectionOnly: selectionOnly
     };
 };
 
 /**
- * wanted to avoid O(n^2) as much as possible but this is more extendable later
+ * wanted to avoid O(n^2) as much as possible but this is ok.
  * 
  * @param configInfo
  * @returns
@@ -241,19 +277,26 @@ const createDecorationTypeBuilder = (configInfo: Type.ConfigInfoReadyType): bool
     }
 
     for (const key in configInfo.decorationList) {
-        const decorationStyleName = key as Type.DecorationStyleKeyOnlyType;
+        const selectionType = key as Type.DecorationStyleKeyOnlyType;
 
-        const configSet: Type.DecorationStyleConfigType = getConfigSet(configInfo, decorationStyleName);
-        configInfo.borderPositionInfo[decorationStyleName] = configSet.borderPosition;
+        const configSet: Type.DecorationStyleConfigType = getConfigSet(configInfo, selectionType);
+        // configInfo.borderPositionInfo[selectionType] = configSet.borderPosition;
 
-        const parsed = borderPositionParser(configSet.borderPosition);
+        const parsed = borderPositionParser(selectionType, configSet.borderPosition);
+        configInfo.borderPositionInfo[selectionType] = parsed;
         configSet.borderPosition = parsed.borderPosition;
         configSet.isWholeLine = parsed.isWholeLine;
 
         // configSet.overviewRulerColor = configSet.borderColor;
         // configSet.overviewRulerLane = vscode.OverviewRulerLane.Full;
 
-        configInfo.decorationList[key] = createDecorationType(configSet, decorationStyleName)(decorationTypeSplit);
+        const decorationTypeList = createDecorationType(configSet, selectionType)(decorationTypeSplit);
+
+        if (!decorationTypeList) {
+            return false;
+        }
+
+        configInfo.decorationList[key] = decorationTypeList;
     }
 
     return true;

@@ -1,8 +1,8 @@
 {
     "name": "cursorlinehighlight",
     "publisher": "mutekey",
-    "displayName": "CursorLineHighlight",
-    "description": "",
+    "displayName": "Cursor/Selection Line Highlight",
+    "description": "Apply configurable decorations on cursor line and selection lines.",
     "version": "0.0.1",
     "engines": {
         "vscode": "^1.96.0"
@@ -44,37 +44,74 @@
                     "type": "number",
                     "enum": [
                         0.1,
+                        0.2,
                         0.3,
+                        0.4,
                         0.5,
+                        0.6,
                         0.7,
+                        0.8,
+                        0.9,
                         1
                     ],
                     "default": 0.7,
-                    "description": "opacity of decoration in %. 1 is no opacity."
+                    "description": "opacity of decoration border in %. 1 is no opacity."
                 },
-
+                "cursorlinehighlight.backgroundOpacity": {
+                    "type": "number",
+                    "enum": [
+                        0.1,
+                        0.2,
+                        0.3,
+                        0.4,
+                        0.5,
+                        0.6,
+                        0.7,
+                        0.8,
+                        0.9,
+                        1
+                    ],
+                    "default": 0.4,
+                    "description": "opacity of background color of selection in %. 1 is no opacity."
+                },
+                "cursorlinehighlight.borderWidth": {
+                    "type": "string",
+                    "default": null,
+                    "description": "overwrite border width of all selection type. (Not working Yet)"
+                },
+                "cursorlinehighlight.borderColor": {
+                    "type": "string",
+                    "default": null,
+                    "description": "overwrite border color of all selection type. (Not working Yet)"
+                },
+                "cursorlinehighlight.backgroundColor": {
+                    "type": "string",
+                    "default": null,
+                    "description": "overwrite background color of all selection area. (Not working Yet)"
+                },
                 "cursorlinehighlight.cursorOnlyBorderColor": {
                     "type": "string",
-                    "default": "#65EAB9",
-                    "description": "Change the border color. (Ex: 'red', '#FFF' #FFFFFFF, 'RGB(255,255,255)','RGB(255, 255, 255. 0.5) )"
+                    "default": "#93A5C1",
+                    "description": "Change the border color. Color must be in hex color or rgb() or rgba()"
+                },
+                "cursorlinehighlight.cursorOnlyBackgroundColor": {
+                    "type": "string",
+                    "default": "#383F49",
+                    "description": "Change the background color. Color must be in hex color or rgb() or rgba()"
                 },
                 "cursorlinehighlight.cursorOnlyBorderPosition": {
                     "type": "string",
                     "enum": [
                         "bottom | is Whole Line",
-                        "bottom | Selection Only",
-                        "top-bottom | Selection Only",
-                        "top-bottom | is Whole Line",
-                        "top-right-bottom-left",
-                        "left | at Cursor",
-                        "left | at first Character",
-                        "left | at Line Start"
+                        "bottom | before Cursor",
+                        "bottom | after Cursor"
                     ],
                     "default": "bottom | is Whole Line"
                 },
                 "cursorlinehighlight.cursorOnlyBorderWidth": {
                     "type": "string",
-                    "default": "1px"
+                    "default": "2px",
+                    "description": "Border width, all css width foramt works."
                 },
                 "cursorlinehighlight.cursorOnlyBorderStyle": {
                     "type": [
@@ -83,57 +120,66 @@
                     "enum": [
                         "solid",
                         "dotted",
-                        "dashed",
-                        "inset",
-                        "double",
-                        "groove",
-                        "outset",
-                        "ridge"
+                        "dashed"
                     ],
-                    "default": "solid"
+                    "default": "dotted",
+                    "description": "Main Border style on current line."
+                },
+                "cursorlinehighlight.cursorOnlyBorderStyleWithafterCursor": {
+                    "type": [
+                        "string"
+                    ],
+                    "enum": [
+                        "solid",
+                        "dotted",
+                        "dashed"
+                    ],
+                    "default": "dotted",
+                    "description": "(not working yet) Use this border style only when [bottom | after Cursor]. this is border style for previous range."
                 },
                 "cursorlinehighlight.singleLineBorderColor": {
                     "type": "string",
-                    "default": "#65EAB9",
-                    "description": "Change the border color. (Ex: 'red', '#FFF' #FFFFFFF, 'RGB(255,255,255)','RGB(255, 255, 255. 0.5) )"
+                    "default": "#93A5C1",
+                    "description": "Change the border color. Color must be in hex color or rgb() or rgba()"
+                },
+                "cursorlinehighlight.singleLineBackgroundColor": {
+                    "type": "string",
+                    "default": "#383F49",
+                    "description": "Change the background color. Color must be in hex color or rgb() or rgba()"
                 },
                 "cursorlinehighlight.singleLine": {
                     "type": "string",
                     "enum": [
-                        "bottom | Selection Only",
-                        "bottom | is Whole Line",
-                        "top-bottom | Selection Only",
-                        "top-bottom | is Whole Line",
-                        "top-right-bottom-left",
-                        "left | at Cursor",
-                        "left | at first Character",
-                        "left | at Line Start"
+                        "bottom | selection Only",
+                        "top-bottom | selection Only",
+                        "top-right-bottom-left"
                     ],
                     "default": "bottom | Selection Only"
                 },
                 "cursorlinehighlight.singleLineBorderWidth": {
                     "type": "string",
-                    "default": "2px"
+                    "default": "2px",
+                    "description": "Border width, all css width foramt works."
                 },
                 "cursorlinehighlight.singleLineBorderStyle": {
                     "type": "string",
                     "enum": [
                         "solid",
                         "dotted",
-                        "dashed",
-                        "inset",
-                        "double",
-                        "groove",
-                        "outset",
-                        "ridge"
+                        "dashed"
                     ],
-                    "default": "solid"
+                    "default": "solid",
+                    "description": "Border style on current selection."
                 },
-
                 "cursorlinehighlight.multiLineBorderColor": {
                     "type": "string",
-                    "default": "#65EAB9",
-                    "description": "Change the border color. (Ex: 'red', '#FFF' #FFFFFFF, 'RGB(255,255,255)','RGB(255, 255, 255. 0.5) )"
+                    "default": "#93A5C1",
+                    "description": "Change the border color. Color must be in hex color or rgb() or rgba()"
+                },
+                "cursorlinehighlight.multiLineBackgroundColor": {
+                    "type": "string",
+                    "default": "#383F49",
+                    "description": "Change the background color. Color must be in hex color or rgb() or rgba()"
                 },
                 "cursorlinehighlight.multiLineBorderPosition": {
                     "type": "string",
@@ -145,58 +191,50 @@
                 },
                 "cursorlinehighlight.multiLineBorderWidth": {
                     "type": "string",
-                    "default": "2px"
+                    "default": "2px",
+                    "description": "Border width, all css width foramt works."
                 },
                 "cursorlinehighlight.multiLineBorderStyle": {
                     "type": "string",
                     "enum": [
                         "solid",
                         "dotted",
-                        "dashed",
-                        "inset",
-                        "double",
-                        "groove",
-                        "outset",
-                        "ridge"
+                        "dashed"
                     ],
-                    "default": "dashed"
+                    "default": "dashed",
+                    "description": "Border style on current selection."
                 },
-
                 "cursorlinehighlight.multiCursorBorderColor": {
                     "type": "string",
-                    "default": "#65EAB9",
-                    "description": "Change the border color. (Ex: 'red', '#FFF' #FFFFFFF, 'RGB(255,255,255)','RGB(255, 255, 255. 0.5) )"
+                    "default": "#93A5C1",
+                    "description": "Change the border color. Color must be in hex color or rgb() or rgba()"
+                },
+                "cursorlinehighlight.multiCursorBackgroundColor": {
+                    "type": "string",
+                    "default": "#383F49",
+                    "description": "Change the background color. Color must be in hex color or rgb() or rgba()"
                 },
                 "cursorlinehighlight.multiCursorBorderPosition": {
                     "type": "string",
                     "enum": [
-                        "bottom | Selection Only",
-                        "bottom | is Whole Line",
-                        "top-bottom | is Whole Line",
-                        "top-right-bottom-left",
-                        "left | at Cursor",
-                        "left | at first Character",
-                        "left | at Line Start"
+                        "top-right-bottom-left"
                     ],
                     "default": "top-right-bottom-left"
                 },
                 "cursorlinehighlight.multiCursorBorderWidth": {
                     "type": "string",
-                    "default": "2px"
+                    "default": "2px",
+                    "description": "Border width, all css width foramt works."
                 },
                 "cursorlinehighlight.multiCursorBorderStyle": {
                     "type": "string",
                     "enum": [
                         "solid",
                         "dotted",
-                        "dashed",
-                        "inset",
-                        "double",
-                        "groove",
-                        "outset",
-                        "ridge"
+                        "dashed"
                     ],
-                    "default": "dotted"
+                    "default": "dotted",
+                    "description": "Border style on current selection."
                 }
             }
         }

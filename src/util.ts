@@ -1,3 +1,34 @@
+import * as vscode from 'vscode';
+
+
+const sendAutoDismissMessage = (text: string, dissMissTimer: number) => {
+    const message = vscode.window.showInformationMessage(text);
+    setTimeout(() => {
+        message?.then(() => {});
+    }, dissMissTimer);
+};
+
+/**
+ * 
+ * @param value 
+ * @param trueValue 
+ * @param falseValue 
+ * @param bitLength zero-based bit lengting. default is set to 4 as 4 bit.
+ * @returns 
+ */
+const readBits = (value: number, trueValue: string, falseValue: string, bitLength?: number): string[] => {
+    let idx = bitLength ? bitLength : 4;
+    const array: string[] = [];
+    while (idx--) {
+        if ((value >> idx) & 1) {
+            array.push(trueValue);
+        } else {
+            array.push(falseValue);
+        }
+    }
+    return array;
+};
+
 /**
  * FNV-1a hash.
  * 
@@ -54,6 +85,8 @@ const hexToRgbaStringLiteral = (hex: string, opacity: number): string | null => 
 
 export {
     fnv1aHash,
+    readBits,
     capitalize,
     hexToRgbaStringLiteral,
+    sendAutoDismissMessage
 };

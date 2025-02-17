@@ -23,11 +23,17 @@ type NoConfigurationDeocorationPropType = {
     [DECORATION_STYLE_CONFIG_KEY.BORDER_WIDTH]: string
     [DECORATION_STYLE_CONFIG_KEY.BORDER_COLOR]: string
     [DECORATION_STYLE_CONFIG_KEY.BORDER_RADIUS]?: string
+    [DECORATION_STYLE_CONFIG_KEY.BACKGROUND_COLOR]?: string
 }
 
 type NoConfigurationGeneraType = {
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.OPACITY]: number
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.BACKGROUND_OPACITY]: number
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.BORDER_WIDTH]?: string
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.BORDER_COLOR]?: string
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.BACKGROUND_COLOR]?: string
 }
+
 type DecorationStyleConfigPrefixType = typeof DECORATION_STYLE_PREFIX[keyof typeof DECORATION_STYLE_PREFIX] | "";
 
 type DecorationStyleConfigNameType = `${DECORATION_STYLE_CONFIG_KEY}`
@@ -51,19 +57,27 @@ type DecorationTypeSplit = {
 
 type BorderPositionKeyOnly = `${BORDER_POSITION_VARIATION}`;
 
-type BorderPositionType = {
-    [k in BorderPositionKeyOnly]: string[]
-}
+// type BorderPositionType = {
+//     readonly [k in BorderPositionKeyOnly]: readonly string[]
+// }
 
-type borderPositionParser = {
+type BorderPositionParserType = {
     isWholeLine: boolean,
-    borderPosition: string
+    borderPosition: string,
+    beforeCursor: boolean,
+    afterCursor: boolean,
+    atLineStart: boolean,
+    selectionOnly: boolean,
 }
 
-type BorderPositionInfoType = Record<DecorationStyleKeyOnlyType, string | undefined>;
+type BorderPositionInfoType = Record<DecorationStyleKeyOnlyType, BorderPositionParserType | undefined>;
 
 type GeneralConfigType = {
     borderOpacity: number | undefined
+    backgroundOpacity: string | undefined
+    borderWidth: string | undefined
+    borderColor: string | undefined
+    backgroundColor: string | undefined
 }
 
 type ConfigInfoType = {
@@ -85,9 +99,9 @@ type ConfigInfoReadyType = {
 
 // type CreateDecorationFunctionType = <T>(config: T) => (selectionConfigFunc: SelectionConfigFunctionType<T>) => vscode.TextEditorDecorationType[]
 
-type SelectionConfigFunctionType = (config: DecorationStyleConfigType) => DecorationTypeSplit
+type SelectionConfigFunctionType = (config: DecorationStyleConfigType, decorationKey: DecorationStyleKeyOnlyType) => string[] | undefined
 
-type CreateDecorationFunctionType = (config: DecorationStyleConfigType, decorationKey: DecorationStyleKeyOnlyType) => (decorationTypeSplit: SelectionConfigFunctionType) => vscode.TextEditorDecorationType[]
+type CreateDecorationFunctionType = (config: DecorationStyleConfigType, decorationKey: DecorationStyleKeyOnlyType) => (decorationTypeSplit: SelectionConfigFunctionType) => vscode.TextEditorDecorationType[] | undefined
 
 /**
  * [Type.DecorationStyleKey]
@@ -151,10 +165,7 @@ type DecorationInfoType = {
     [SELECTION_TYPE.MULTI_CURSOR]: DecorationInfoPropType
 }
 
-type LoadFuncType = (context: {
-    decorationList: DecorationType,
-    decorationInfo: DecorationInfoPropType
-}) => boolean;
+// type LoadFuncType = (context: {decorationList: DecorationType,decorationInfo: DecorationInfoPropType }) => boolean;
 
 type UnsetDecorationFunctionType = (decorationList: DecorationType, editor?: vscode.TextEditor) => (decorationInfo: DecorationInfoPropType) => boolean;
 
@@ -169,11 +180,25 @@ type DecorationContext = {
     editor: vscode.TextEditor;
     decorationList: DecorationType;
     decorationInfo: DecorationInfoPropType;
+    loadConfig: ConfigInfoReadyType
 };
 
 type SetDecorationOnEditorFunc = (context: DecorationContext) => void;
 
 type DecorationCoordinatorFunc = (context: DecorationContext) => DecorationWithRangeType[] | undefined;
+
+type createRange = {
+    startPosition: number[] | vscode.Position
+    endPosition: number[] | vscode.Position
+}
+
+type SelectionTypeToDecorationContext = {
+    editor: vscode.TextEditor,
+    borderConfig: BorderPositionParserType
+    textEditorDecoration: vscode.TextEditorDecorationType[]
+}
+
+type SelectionTypeToDecorationFunc = (context: SelectionTypeToDecorationContext) => DecorationWithRangeType[]
 
 type AppliedDecorationType = {
     applied: DecorationInfoPropType | undefined
