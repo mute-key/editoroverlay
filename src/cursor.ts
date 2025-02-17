@@ -3,7 +3,7 @@
  * 
  */
 import * as vscode from 'vscode';
-import * as Type from './type.d';
+import * as Type from './type/type.d';
 import * as config from './config';
 import {
     DECORATION_TYPE_MASK,
@@ -11,7 +11,12 @@ import {
 } from './constant';
 
 const appliedDecoration: Type.AppliedDecorationType = {
-    applied: undefined
+    applied: undefined,
+    editorDecoration: undefined
+};
+
+const applyDecoration = (editor: vscode.TextEditor, decoraiton: vscode.TextEditorDecorationType, range: vscode.Range[]): void => {
+    editor.setDecorations(decoraiton, range);
 };
 
 const resetDecoration: Type.UnsetDecorationFunctionType = (
@@ -24,10 +29,10 @@ const resetDecoration: Type.UnsetDecorationFunctionType = (
         decorationList[decorationInfo.KEY]?.forEach(decorationType => {
             if (Array.isArray(decorationType)) {
                 decorationType.forEach(decorationType => {
-                    editor.setDecorations(decorationType, []);
+                    applyDecoration(editor, decorationType, []);
                 });
             } else {
-                editor.setDecorations(decorationType, []);
+                applyDecoration(editor, decorationType, []);
             }
         });
         return true;
@@ -89,6 +94,8 @@ const setDecorationOnEditor: Type.SetDecorationOnEditorFunc = ({ editor, decorat
     const textEditorDecoration: vscode.TextEditorDecorationType[] | undefined = decorationList[decorationInfo.KEY];
     if (textEditorDecoration) {
 
+        appliedDecoration.editorDecoration = textEditorDecoration;
+
         const decorationWithRange = decorationCoordinator({ editor, decorationList, decorationInfo, loadConfig });
         if (!decorationWithRange) {
             return;
@@ -97,7 +104,7 @@ const setDecorationOnEditor: Type.SetDecorationOnEditorFunc = ({ editor, decorat
         isDecorationChanged(appliedDecoration, decorationInfo);
 
         decorationWithRange.forEach(({ decoration, range }) => {
-            editor.setDecorations(decoration, range);
+            applyDecoration(editor, decoration, range);
         });
     }
 };
@@ -172,7 +179,7 @@ const multiLineDecorationWithRange: Type.SelectionTypeToDecorationFunc = ({ edit
             range: [createRangeNNNN(editor.selection.start.line, editor.selection.start.character, editor.selection.end.line, editor.selection.end.character)]
         },];
     } else {
-        
+
         // index 0 - top border
         // index 1 - bottom border
         // index 2 - background color only for the range inbetween 0 and 1.
@@ -195,7 +202,7 @@ const multiLineDecorationWithRange: Type.SelectionTypeToDecorationFunc = ({ edit
                 range: [createRangeNNNN(editor.selection.start.line + 1, editor.selection.start.character, editor.selection.end.line - 1, editor.selection.end.character)]
             });
         } else {
-            
+
             // found this another exception where this background decoration not being reset when range shrink.
             // this background decoraiton being applied on selection range expand as it should, but does not reset
             // when abs(cursor - ancher) is than 1.
@@ -205,7 +212,7 @@ const multiLineDecorationWithRange: Type.SelectionTypeToDecorationFunc = ({ edit
             // and this decoration is automatically reset at that point.
             // so this is a way to reset this decoration without changing the decoration type as well as with minimum steps.
 
-            editor.setDecorations(textEditorDecoration[2], []);
+            applyDecoration(editor, textEditorDecoration[2], []);
         }
         return decorationWithRange;
     }
@@ -321,6 +328,16 @@ const getSelectionType = (editor: vscode.TextEditor): Type.DecorationInfoPropTyp
 const activeEditorChanged = (config: Type.ConfigInfoReadyType): vscode.Disposable => {
     return vscode.window.onDidChangeActiveTextEditor((editor: vscode.TextEditor | undefined) => {
         if (editor) {
+
+            // quick release of decorations
+            vscode.window.visibleTextEditors.forEach(editor => {
+                if (appliedDecoration.editorDecoration !== undefined) {
+                    appliedDecoration.editorDecoration.forEach(decoration => {
+                        applyDecoration(editor, decoration, []);
+                    });
+                }
+            });
+
             setDecorationOnEditor({
                 editor: editor,
                 decorationList: config.decorationList,

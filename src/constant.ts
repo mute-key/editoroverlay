@@ -2,7 +2,7 @@
  * [READONLY constants]
  * 
  */
-import * as Type from './type.d';
+import * as Type from './type/type.d';
 
 // ==============================================================================
 // [ NON-RUNTIME, COMPILE-TIME CONSTANT/ENUM ]

@@ -10,7 +10,7 @@ import {
     DECORATION_TYPE_MASK,
     SELECTION_TYPE,
     BORDER_POSITION_VARIATION
-} from './constant';
+} from '../constant';
 
 type NoConfigurationDecorationType = {
     [K in keyof typeof DECORATION_STYLE_PREFIX]: NoConfigurationDeocorationPropType
@@ -201,5 +201,6 @@ type SelectionTypeToDecorationContext = {
 type SelectionTypeToDecorationFunc = (context: SelectionTypeToDecorationContext) => DecorationWithRangeType[]
 
 type AppliedDecorationType = {
-    applied: DecorationInfoPropType | undefined
+    applied: DecorationInfoPropType | undefined,
+    editorDecoration: vscode.TextEditorDecorationType[] | undefined
 }

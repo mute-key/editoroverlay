@@ -3,7 +3,7 @@
  * 
  */
 import * as vscode from 'vscode';
-import * as Type from './type.d';
+import * as Type from './type/type.d';
 import {
     fnv1aHash,
     capitalize,
