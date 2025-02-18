@@ -23,6 +23,7 @@
     * entry function will load all config whether if active editor is present or not and bind all events with config.
     * changing editor will trigger its event, starting to apply decoraiton on active editor, workign as intanded.
 - [o] editor ui config overwrite for line highlight to gutter and cursor style and false to rounded selection.
+- [o] config info object literal moved to constant.ts.
 
 - [>] maybe more optimisation. i want faster response on cursor/selection change.
 

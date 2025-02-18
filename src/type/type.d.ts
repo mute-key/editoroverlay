@@ -12,8 +12,13 @@ import {
     BORDER_POSITION_VARIATION
 } from '../constant';
 
-type NoConfigurationDecorationType = {
-    [K in keyof typeof DECORATION_STYLE_PREFIX]: NoConfigurationDeocorationPropType
+
+type NoConfigurationGeneraType = {
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.OPACITY]: number
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.BACKGROUND_OPACITY]: number
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.BORDER_WIDTH]?: string
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.BORDER_COLOR]?: string
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.BACKGROUND_COLOR]?: string
 }
 
 type NoConfigurationDeocorationPropType = {
@@ -26,12 +31,8 @@ type NoConfigurationDeocorationPropType = {
     [DECORATION_STYLE_CONFIG_KEY.BACKGROUND_COLOR]?: string
 }
 
-type NoConfigurationGeneraType = {
-    [DECORATION_GENERAL_STYLE_CONFIG_KEY.OPACITY]: number
-    [DECORATION_GENERAL_STYLE_CONFIG_KEY.BACKGROUND_OPACITY]: number
-    [DECORATION_GENERAL_STYLE_CONFIG_KEY.BORDER_WIDTH]?: string
-    [DECORATION_GENERAL_STYLE_CONFIG_KEY.BORDER_COLOR]?: string
-    [DECORATION_GENERAL_STYLE_CONFIG_KEY.BACKGROUND_COLOR]?: string
+type NoConfigurationDecorationType = {
+    [K in keyof typeof DECORATION_STYLE_PREFIX]: NoConfigurationDeocorationPropType
 }
 
 type DecorationStyleConfigPrefixType = typeof DECORATION_STYLE_PREFIX[keyof typeof DECORATION_STYLE_PREFIX] | "";
@@ -44,11 +45,14 @@ type DecorationStyleKeyOnlyType = keyof typeof DECORATION_STYLE_PREFIX
 
 type DecorationStyleConfigValueType = string | number | boolean
 
+type StringTransformFunc = ((s: string) => string)[]
+
 type DecorationConfigGetFunctionType = <T extends DecorationStyleConfigValueType>(
     config: ConfigInfoReadyType,
     prefix: DecorationStyleConfigPrefixType,
     configName: DecorationStyleConfigNameType | GeneralConfigNameOnlyType,
-    defaultValue: T
+    defaultValue: T,
+    configNameChange?: StringTransformFunc
 ) => T
 
 type DecorationTypeSplit = {
@@ -56,10 +60,6 @@ type DecorationTypeSplit = {
 }
 
 type BorderPositionKeyOnly = `${BORDER_POSITION_VARIATION}`;
-
-// type BorderPositionType = {
-//     readonly [k in BorderPositionKeyOnly]: readonly string[]
-// }
 
 type BorderPositionParserType = {
     isWholeLine: boolean,
@@ -72,12 +72,12 @@ type BorderPositionParserType = {
 
 type BorderPositionInfoType = Record<DecorationStyleKeyOnlyType, BorderPositionParserType | undefined>;
 
-type GeneralConfigType = {
-    borderOpacity: number | undefined
-    backgroundOpacity: string | undefined
-    borderWidth: string | undefined
-    borderColor: string | undefined
-    backgroundColor: string | undefined
+type GeneralConfigInfoType = {
+    borderOpacity?: number
+    backgroundOpacity?: number
+    borderWidth?: string
+    borderColor?: string
+    backgroundColor?: string
 }
 
 type ConfigInfoType = {
@@ -85,14 +85,14 @@ type ConfigInfoType = {
     config: vscode.WorkspaceConfiguration | undefined,
     configHashKey: string | undefined
     decorationList: DecorationType
-    generalConfig: GeneralConfigType
+    generalConfigInfo: GeneralConfigInfoType
     borderPositionInfo: BorderPositionInfoType
 }
 
 type ConfigInfoReadyType = {
     name: string
     config: vscode.WorkspaceConfiguration,
-    configHashKey: string
+    configHashKey: string,
 } & ConfigInfoType
 
 // type SelectionConfigFunctionType<T> = (config: T) => DecorationStyleConfigType[];
@@ -102,6 +102,11 @@ type ConfigInfoReadyType = {
 type SelectionConfigFunctionType = (config: DecorationStyleConfigType, decorationKey: DecorationStyleKeyOnlyType) => string[] | undefined
 
 type CreateDecorationFunctionType = (config: DecorationStyleConfigType, decorationKey: DecorationStyleKeyOnlyType) => (decorationTypeSplit: SelectionConfigFunctionType) => vscode.TextEditorDecorationType[] | undefined
+
+type ColourConfigTransformType = {
+    of: string, 
+    fn: (v: string, n: number, d: string) => string
+}
 
 /**
  * [Type.DecorationStyleKey]
@@ -165,7 +170,6 @@ type DecorationInfoType = {
     [SELECTION_TYPE.MULTI_CURSOR]: DecorationInfoPropType
 }
 
-// type LoadFuncType = (context: {decorationList: DecorationType,decorationInfo: DecorationInfoPropType }) => boolean;
 
 type UnsetDecorationFunctionType = (decorationList: DecorationType, editor?: vscode.TextEditor) => (decorationInfo: DecorationInfoPropType) => boolean;
 

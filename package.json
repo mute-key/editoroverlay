@@ -3,14 +3,13 @@
     "publisher": "mutekey",
     "displayName": "Cursor/Selection Line Highlight",
     "description": "Apply configurable decorations on cursor line and selection lines.",
-    "version": "0.0.1",
+    "version": "0.0.11",
     "engines": {
         "vscode": "^1.96.0"
     },
     "activationEvents": [
         "onStartupFinished"
     ],
-    "icon": "./misc/icon2.png",
     "repository": {
         "type": "git",
         "url": "https://github.com/mute-key/cursorlinehighlight"
@@ -92,12 +91,12 @@
                 "cursorlinehighlight.cursorOnlyBorderColor": {
                     "type": "string",
                     "default": "#93A5C1",
-                    "description": "Change the border color. Color must be in hex color or rgb() or rgba()"
+                    "description": "Change the border color. Color must be in hex color of (#RRGGBB) or (#RRGGBBAA)"
                 },
                 "cursorlinehighlight.cursorOnlyBackgroundColor": {
                     "type": "string",
                     "default": "#383F49",
-                    "description": "Change the background color. Color must be in hex color or rgb() or rgba()"
+                    "description": "Change the background color. Color must be in hex color of (#RRGGBB) or (#RRGGBBAA)"
                 },
                 "cursorlinehighlight.cursorOnlyBorderPosition": {
                     "type": "string",
@@ -140,12 +139,12 @@
                 "cursorlinehighlight.singleLineBorderColor": {
                     "type": "string",
                     "default": "#93A5C1",
-                    "description": "Change the border color. Color must be in hex color or rgb() or rgba()"
+                    "description": "Change the border color. Color must be in hex color of (#RRGGBB) or (#RRGGBBAA)"
                 },
                 "cursorlinehighlight.singleLineBackgroundColor": {
                     "type": "string",
                     "default": "#383F49",
-                    "description": "Change the background color. Color must be in hex color or rgb() or rgba()"
+                    "description": "Change the background color. Color must be in hex color of (#RRGGBB) or (#RRGGBBAA)"
                 },
                 "cursorlinehighlight.singleLine": {
                     "type": "string",
@@ -174,12 +173,12 @@
                 "cursorlinehighlight.multiLineBorderColor": {
                     "type": "string",
                     "default": "#93A5C1",
-                    "description": "Change the border color. Color must be in hex color or rgb() or rgba()"
+                    "description": "Change the border color. Color must be in hex color of (#RRGGBB) or (#RRGGBBAA)"
                 },
                 "cursorlinehighlight.multiLineBackgroundColor": {
                     "type": "string",
                     "default": "#383F49",
-                    "description": "Change the background color. Color must be in hex color or rgb() or rgba()"
+                    "description": "Change the background color. Color must be in hex color of (#RRGGBB) or (#RRGGBBAA)"
                 },
                 "cursorlinehighlight.multiLineBorderPosition": {
                     "type": "string",
@@ -207,12 +206,12 @@
                 "cursorlinehighlight.multiCursorBorderColor": {
                     "type": "string",
                     "default": "#93A5C1",
-                    "description": "Change the border color. Color must be in hex color or rgb() or rgba()"
+                    "description": "Change the border color. Color must be in hex color of (#RRGGBB) or (#RRGGBBAA)"
                 },
                 "cursorlinehighlight.multiCursorBackgroundColor": {
                     "type": "string",
                     "default": "#383F49",
-                    "description": "Change the background color. Color must be in hex color or rgb() or rgba()"
+                    "description": "Change the background color. Color must be in hex color of (#RRGGBB) or (#RRGGBBAA)"
                 },
                 "cursorlinehighlight.multiCursorBorderPosition": {
                     "type": "string",

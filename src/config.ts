@@ -9,45 +9,22 @@ import {
     capitalize,
     readBits,
     hexToRgbaStringLiteral,
-    sendAutoDismissMessage
-} from './util';
+    sendAutoDismissMessage } from './util';
 import {
     NO_CONFIGURATION_GENERAL_DEFAULT,
     NO_CONFIGURATION_DEOCORATION_DEFAULT,
     DECORATION_STYLE_PREFIX,
     BORDER_WIDTH_DEFINITION,
-    SYSTEM_MESSAGE
-} from './constant';
+    SYSTEM_MESSAGE,
+    CONFIG_INFO } from './constant';
 
 /**
  * workspace configuration could have been 'default' but
  * i think undefined is more difinitive for unset default value.
  * 
  */
-const configInfo: Type.ConfigInfoType = {
-    name: undefined,
-    config: undefined,
-    configHashKey: undefined,
-    decorationList: {
-        CURSOR_ONLY: undefined,
-        SINGLE_LINE: undefined,
-        MULTI_LINE: undefined,
-        MULTI_CURSOR: undefined,
-    },
-    generalConfig: {
-        borderOpacity: undefined,
-        backgroundOpacity: undefined,
-        borderWidth: undefined,
-        borderColor: undefined,
-        backgroundColor: undefined,
-    },
-    borderPositionInfo: {
-        CURSOR_ONLY: undefined,
-        SINGLE_LINE: undefined,
-        MULTI_LINE: undefined,
-        MULTI_CURSOR: undefined,
-    },
-};
+const configInfo: Type.ConfigInfoType = { ...CONFIG_INFO };
+
 
 const getConfigString = (configReady: Type.ConfigInfoReadyType): string => Object.entries(configReady.config).reduce((acc, [key, infoProp]) => {
     if (typeof infoProp === 'string' || typeof infoProp === 'number') {
@@ -59,6 +36,10 @@ const getConfigString = (configReady: Type.ConfigInfoReadyType): string => Objec
 const getConfigHash = (configReady: Type.ConfigInfoReadyType): string => {
     const configString = getConfigString(configReady);
     return fnv1aHash(configString);
+};
+
+const setConfigHashKey = (configInfo: Type.ConfigInfoReadyType): void => {
+    configInfo.configHashKey = fnv1aHash(getConfigString(configInfo));
 };
 
 const ifConfigChanged = (configReady: Type.ConfigInfoReadyType): boolean => {
@@ -75,15 +56,11 @@ const ifConfigChanged = (configReady: Type.ConfigInfoReadyType): boolean => {
     }
 };
 
-const setConfigHashKey = (configInfo: Type.ConfigInfoReadyType): void => {
-    configInfo.configHashKey = fnv1aHash(getConfigString(configInfo));
-};
-
 /**
  * editor config overwrite.
  * 
  */
-const updateEditorConfiguration = () => {
+const updateEditorConfiguration = (): void => {
     const editorConfig = vscode.workspace.getConfiguration("editor");
     editorConfig.update("renderLineHighlight", 'gutter', vscode.ConfigurationTarget.Global);
     editorConfig.update("roundedSelection", false, vscode.ConfigurationTarget.Global);
@@ -126,51 +103,75 @@ const initialiseConfig = (context: vscode.ExtensionContext): Type.ConfigInfoRead
     return;
 };
 
-const getConfigValue = <T extends Type.DecorationStyleConfigValueType>(
+const checkConfigKeyAndCast = <T extends Type.DecorationStyleConfigNameType | Type.GeneralConfigNameOnlyType>(key: string, config: Type.NoConfigurationDeocorationPropType): T => {
+    return key as T;
+};
+
+const configNameTransformer = (configNameString: string, configNameTransform: Type.StringTransformFunc): string => {
+    return configNameTransform.reduce((str, transform) => transform(str), configNameString);
+};
+
+const getConfigValue: Type.DecorationConfigGetFunctionType = <T extends Type.DecorationStyleConfigValueType>(
     configInfo: Type.ConfigInfoReadyType,
-    prefix: Type.DecorationStyleConfigPrefixType,
+    configPrefix: Type.DecorationStyleConfigPrefixType,
     configName: Type.DecorationStyleConfigNameType | Type.GeneralConfigNameOnlyType,
-    defaultValue: T
+    defaultValue: T,
+    configNameTransform?: Type.StringTransformFunc
 ): T => {
     try {
-        const value = configInfo.config.get<T>(prefix + configName, defaultValue);
+        let configNameString = configName as string;
+        if (configNameTransform && configNameTransform.length) {
+            configNameString = configNameTransformer(configName, configNameTransform);
+        }
+        
+        const value = configInfo.config.get<T>(configPrefix + configNameString, defaultValue);
         if (value === undefined) {
             console.warn(`Config value for ${configName} is undefined or caused an error. Using default value.`);
-        }
+        } 
+
         return value ?? defaultValue;
     } catch (err) {
-        console.error(`Failed to get config value for ${configName}:`, err);
+        console.error(`Failed to get config value for ${configPrefix + configName}:`, err);
         return defaultValue;
     }
 };
 
+const colorConfigTransform: Record<string, Type.ColourConfigTransformType> = {
+    borderColor: {
+        of: 'borderOpacity',
+        fn: (v: string, n: number, d: string) => hexToRgbaStringLiteral(v, n, d),
+    },
+    backgroundColor: {
+        of: 'backgroundOpacity',
+        fn: (v: string, n: number, d: string) => hexToRgbaStringLiteral(v, n, d),
+    }
+};
+
 /**
- * @param config
+ * @param config-
  * @param decorationKey
  * @returns
  * 
  */
 const getConfigSet = (configInfo: Type.ConfigInfoReadyType, decorationKey: Type.DecorationStyleKeyOnlyType): Type.DecorationStyleConfigType => {
-    const CONFIG_PREFIX = DECORATION_STYLE_PREFIX[decorationKey];
-    return Object.entries(NO_CONFIGURATION_DEOCORATION_DEFAULT[decorationKey]).reduce((acc, [key, defaultValue]) => {
-        const keyName = capitalize(key) as Type.DecorationStyleConfigNameType;
-        const configValue = getConfigValue(configInfo, CONFIG_PREFIX, keyName, defaultValue);
-        if (configValue !== undefined) {
-            if (key === 'borderColor') {
-                const rgba = hexToRgbaStringLiteral(configValue as string, configInfo.generalConfig.borderOpacity as number);
-                if (rgba) {
-                    acc[key] = rgba;
-                }
-            } else if (key === 'backgroundColor') {
-                const rgba = hexToRgbaStringLiteral(configValue as string, configInfo.generalConfig.backgroundOpacity as unknown as number);
-                if (rgba) {
-                    acc[key] = rgba;
-                }
+
+    const configPrefix = DECORATION_STYLE_PREFIX[decorationKey];
+    const defaultConfigDefinition = NO_CONFIGURATION_DEOCORATION_DEFAULT[decorationKey];
+
+    return Object.entries(defaultConfigDefinition).reduce((config, [configName, defaultValue]) => {
+
+        const configValue: string | boolean = getConfigValue(configInfo, configPrefix, checkConfigKeyAndCast(configName, defaultConfigDefinition), defaultValue, [capitalize]);
+
+        // configValue can be boolean. 
+        if (configValue !== undefined) { 
+            if (Object.hasOwn(colorConfigTransform, configName)) {
+                const colorTransform = colorConfigTransform[configName];
+                config[configName] = colorTransform.fn(configValue as string, configInfo.generalConfigInfo[colorTransform.of] as number, defaultValue as string);
             } else {
-                acc[key] = configValue;
+                config[configName] = configValue;
             }
         }
-        return acc;
+        return config;
     }, {} as Type.DecorationStyleConfigType);
 };
 
@@ -192,14 +193,14 @@ const createDecorationType: Type.CreateDecorationFunctionType = (
                 return;
             }
 
-            const decorationTypeStack = split.reduce((acc, str) => {
+            const decorationTypeStack = split.reduce((styledConfig, str) => {
                 const conf = { ...config };
                 conf.borderWidth = str;
-                acc.push(conf);
-                return acc;
-            }, [] as Type.DecorationStyleConfigType[]).reduce((acc, conf) => {
-                acc.push(vscode.window.createTextEditorDecorationType(conf));
-                return acc;
+                styledConfig.push(conf);
+                return styledConfig;
+            }, [] as Type.DecorationStyleConfigType[]).reduce((textEditorDecoration, styleAppliedConfig) => {
+                textEditorDecoration.push(vscode.window.createTextEditorDecorationType(styleAppliedConfig));
+                return textEditorDecoration;
             }, [] as vscode.TextEditorDecorationType[]);
 
             if (decorationTypeStack.length === 0) {
@@ -218,6 +219,7 @@ const decorationTypeSplit = (config: Type.DecorationStyleConfigType, decorationK
         if (Object.hasOwn(BORDER_WIDTH_DEFINITION[decorationKey], config.borderPosition)) {
             return borderPosition(config, BORDER_WIDTH_DEFINITION[decorationKey][config.borderPosition]);
         }
+        return;
     }
     return;
 };
@@ -270,19 +272,16 @@ const borderPositionParser = (selectionType: Type.DecorationStyleKeyOnlyType, bo
  * 
  */
 const createDecorationTypeBuilder = (configInfo: Type.ConfigInfoReadyType): boolean => {
-    for (const key in configInfo.generalConfig) {
-        if (configInfo.generalConfig.hasOwnProperty(key)) {
-            configInfo.generalConfig[key] = getConfigValue(configInfo, "", key as Type.GeneralConfigNameOnlyType, NO_CONFIGURATION_GENERAL_DEFAULT[key]);
-        }
+    for (const key in configInfo.generalConfigInfo) {
+        configInfo.generalConfigInfo[key] = getConfigValue(configInfo, "", key as Type.GeneralConfigNameOnlyType, NO_CONFIGURATION_GENERAL_DEFAULT[key]);
     }
 
     for (const key in configInfo.decorationList) {
+
         const selectionType = key as Type.DecorationStyleKeyOnlyType;
-
         const configSet: Type.DecorationStyleConfigType = getConfigSet(configInfo, selectionType);
-        // configInfo.borderPositionInfo[selectionType] = configSet.borderPosition;
-
         const parsed = borderPositionParser(selectionType, configSet.borderPosition);
+
         configInfo.borderPositionInfo[selectionType] = parsed;
         configSet.borderPosition = parsed.borderPosition;
         configSet.isWholeLine = parsed.isWholeLine;

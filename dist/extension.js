@@ -34,6 +34,7 @@ __export(extension_exports, {
   deactivate: () => deactivate
 });
 module.exports = __toCommonJS(extension_exports);
+var vscode4 = __toESM(require("vscode"));
 
 // src/cursor.ts
 var vscode3 = __toESM(require("vscode"));
@@ -43,12 +44,12 @@ var vscode2 = __toESM(require("vscode"));
 
 // src/util.ts
 var vscode = __toESM(require("vscode"));
-var sendAutoDismissMessage = (text, dissMissTimer) => {
+var sendAutoDismissMessage = (text, dismiss) => {
   const message = vscode.window.showInformationMessage(text);
   setTimeout(() => {
     message?.then(() => {
     });
-  }, dissMissTimer);
+  }, dismiss);
 };
 var readBits = (value, trueValue, falseValue, bitLength) => {
   let idx = bitLength ? bitLength : 4;
@@ -72,14 +73,14 @@ var fnv1aHash = (str) => {
   return hash.toString(16);
 };
 var capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
-var hexToRgbaStringLiteral = (hex, opacity) => {
+var hexToRgbaStringLiteral = (hex, opacity, defaultValue) => {
   hex = hex.replace(/^#/, "");
   if (hex.length === 3) {
     hex = hex.split("").map((x) => x + x).join("");
   }
   const regex = /^[0-9A-Fa-f]{6}$/;
   if (!regex.test(hex)) {
-    return null;
+    hex = defaultValue.replace(/^#/, "");
   }
   const r = parseInt(hex.substring(0, 2), 16);
   const g = parseInt(hex.substring(2, 4), 16);
@@ -88,6 +89,34 @@ var hexToRgbaStringLiteral = (hex, opacity) => {
 };
 
 // src/constant.ts
+var CONFIG_INFO = {
+  name: void 0,
+  config: void 0,
+  configHashKey: void 0,
+  decorationList: {
+    CURSOR_ONLY: void 0,
+    SINGLE_LINE: void 0,
+    MULTI_LINE: void 0,
+    MULTI_CURSOR: void 0
+  },
+  borderPositionInfo: {
+    CURSOR_ONLY: void 0,
+    SINGLE_LINE: void 0,
+    MULTI_LINE: void 0,
+    MULTI_CURSOR: void 0
+  },
+  generalConfigInfo: {
+    borderOpacity: void 0,
+    backgroundOpacity: void 0,
+    borderWidth: void 0,
+    borderColor: void 0,
+    backgroundColor: void 0
+  }
+};
+var APPLIED_DECORATION = {
+  applied: void 0,
+  editorDecoration: void 0
+};
 var SINGLE_BORDER_SELECTION = {
   ["none" /* NONE */]: [
     0 /* NONE */
@@ -198,30 +227,7 @@ var NO_CONFIGURATION_DEOCORATION_DEFAULT = {
 };
 
 // src/config.ts
-var configInfo = {
-  name: void 0,
-  config: void 0,
-  configHashKey: void 0,
-  decorationList: {
-    CURSOR_ONLY: void 0,
-    SINGLE_LINE: void 0,
-    MULTI_LINE: void 0,
-    MULTI_CURSOR: void 0
-  },
-  generalConfig: {
-    borderOpacity: void 0,
-    backgroundOpacity: void 0,
-    borderWidth: void 0,
-    borderColor: void 0,
-    backgroundColor: void 0
-  },
-  borderPositionInfo: {
-    CURSOR_ONLY: void 0,
-    SINGLE_LINE: void 0,
-    MULTI_LINE: void 0,
-    MULTI_CURSOR: void 0
-  }
-};
+var configInfo = { ...CONFIG_INFO };
 var getConfigString = (configReady) => Object.entries(configReady.config).reduce((acc, [key, infoProp]) => {
   if (typeof infoProp === "string" || typeof infoProp === "number") {
     acc.push(infoProp);
@@ -231,6 +237,9 @@ var getConfigString = (configReady) => Object.entries(configReady.config).reduce
 var getConfigHash = (configReady) => {
   const configString = getConfigString(configReady);
   return fnv1aHash(configString);
+};
+var setConfigHashKey = (configInfo2) => {
+  configInfo2.configHashKey = fnv1aHash(getConfigString(configInfo2));
 };
 var ifConfigChanged = (configReady) => {
   const configHash = getConfigHash(configReady);
@@ -242,9 +251,6 @@ var ifConfigChanged = (configReady) => {
     sendAutoDismissMessage("Config has been changed. Reloading configuration. (Messaage Dismiss in 2 second.)" /* RELOADING_CONFIG */, 1500);
     return true;
   }
-};
-var setConfigHashKey = (configInfo2) => {
-  configInfo2.configHashKey = fnv1aHash(getConfigString(configInfo2));
 };
 var updateEditorConfiguration = () => {
   const editorConfig = vscode2.workspace.getConfiguration("editor");
@@ -277,39 +283,52 @@ var initialiseConfig = (context) => {
   }
   return;
 };
-var getConfigValue = (configInfo2, prefix, configName, defaultValue) => {
+var checkConfigKeyAndCast = (key, config) => {
+  return key;
+};
+var configNameTransformer = (configNameString, configNameTransform) => {
+  return configNameTransform.reduce((str, transform) => transform(str), configNameString);
+};
+var getConfigValue = (configInfo2, configPrefix, configName, defaultValue, configNameTransform) => {
   try {
-    const value = configInfo2.config.get(prefix + configName, defaultValue);
+    let configNameString = configName;
+    if (configNameTransform && configNameTransform.length) {
+      configNameString = configNameTransformer(configName, configNameTransform);
+    }
+    const value = configInfo2.config.get(configPrefix + configNameString, defaultValue);
     if (value === void 0) {
       console.warn(`Config value for ${configName} is undefined or caused an error. Using default value.`);
     }
     return value ?? defaultValue;
   } catch (err) {
-    console.error(`Failed to get config value for ${configName}:`, err);
+    console.error(`Failed to get config value for ${configPrefix + configName}:`, err);
     return defaultValue;
   }
 };
+var colorConfigTransform = {
+  borderColor: {
+    of: "borderOpacity",
+    fn: (v, n, d) => hexToRgbaStringLiteral(v, n, d)
+  },
+  backgroundColor: {
+    of: "backgroundOpacity",
+    fn: (v, n, d) => hexToRgbaStringLiteral(v, n, d)
+  }
+};
 var getConfigSet = (configInfo2, decorationKey) => {
-  const CONFIG_PREFIX = DECORATION_STYLE_PREFIX[decorationKey];
-  return Object.entries(NO_CONFIGURATION_DEOCORATION_DEFAULT[decorationKey]).reduce((acc, [key, defaultValue]) => {
-    const keyName = capitalize(key);
-    const configValue = getConfigValue(configInfo2, CONFIG_PREFIX, keyName, defaultValue);
+  const configPrefix = DECORATION_STYLE_PREFIX[decorationKey];
+  const defaultConfigDefinition = NO_CONFIGURATION_DEOCORATION_DEFAULT[decorationKey];
+  return Object.entries(defaultConfigDefinition).reduce((config, [configName, defaultValue]) => {
+    const configValue = getConfigValue(configInfo2, configPrefix, checkConfigKeyAndCast(configName, defaultConfigDefinition), defaultValue, [capitalize]);
     if (configValue !== void 0) {
-      if (key === "borderColor") {
-        const rgba = hexToRgbaStringLiteral(configValue, configInfo2.generalConfig.borderOpacity);
-        if (rgba) {
-          acc[key] = rgba;
-        }
-      } else if (key === "backgroundColor") {
-        const rgba = hexToRgbaStringLiteral(configValue, configInfo2.generalConfig.backgroundOpacity);
-        if (rgba) {
-          acc[key] = rgba;
-        }
+      if (Object.hasOwn(colorConfigTransform, configName)) {
+        const colorTransform = colorConfigTransform[configName];
+        config[configName] = colorTransform.fn(configValue, configInfo2.generalConfigInfo[colorTransform.of], defaultValue);
       } else {
-        acc[key] = configValue;
+        config[configName] = configValue;
       }
     }
-    return acc;
+    return config;
   }, {});
 };
 var createDecorationType = (config, decorationKey) => (decorationTypeSplit2) => {
@@ -318,14 +337,14 @@ var createDecorationType = (config, decorationKey) => (decorationTypeSplit2) => 
     if (!split || split.length === 0) {
       return;
     }
-    const decorationTypeStack = split.reduce((acc, str) => {
+    const decorationTypeStack = split.reduce((styledConfig, str) => {
       const conf = { ...config };
       conf.borderWidth = str;
-      acc.push(conf);
-      return acc;
-    }, []).reduce((acc, conf) => {
-      acc.push(vscode2.window.createTextEditorDecorationType(conf));
-      return acc;
+      styledConfig.push(conf);
+      return styledConfig;
+    }, []).reduce((textEditorDecoration, styleAppliedConfig) => {
+      textEditorDecoration.push(vscode2.window.createTextEditorDecorationType(styleAppliedConfig));
+      return textEditorDecoration;
     }, []);
     if (decorationTypeStack.length === 0) {
       return;
@@ -341,6 +360,7 @@ var decorationTypeSplit = (config, decorationKey) => {
     if (Object.hasOwn(BORDER_WIDTH_DEFINITION[decorationKey], config.borderPosition)) {
       return borderPosition(config, BORDER_WIDTH_DEFINITION[decorationKey][config.borderPosition]);
     }
+    return;
   }
   return;
 };
@@ -379,10 +399,8 @@ var borderPositionParser = (selectionType, borderPosition2) => {
   };
 };
 var createDecorationTypeBuilder = (configInfo2) => {
-  for (const key in configInfo2.generalConfig) {
-    if (configInfo2.generalConfig.hasOwnProperty(key)) {
-      configInfo2.generalConfig[key] = getConfigValue(configInfo2, "", key, NO_CONFIGURATION_GENERAL_DEFAULT[key]);
-    }
+  for (const key in configInfo2.generalConfigInfo) {
+    configInfo2.generalConfigInfo[key] = getConfigValue(configInfo2, "", key, NO_CONFIGURATION_GENERAL_DEFAULT[key]);
   }
   for (const key in configInfo2.decorationList) {
     const selectionType = key;
@@ -401,32 +419,19 @@ var createDecorationTypeBuilder = (configInfo2) => {
 };
 
 // src/cursor.ts
-var appliedDecoration = {
-  applied: void 0,
-  editorDecoration: void 0
-};
+var appliedDecoration = { ...APPLIED_DECORATION };
 var applyDecoration = (editor, decoraiton, range) => {
   editor.setDecorations(decoraiton, range);
 };
-var resetDecoration = (decorationList, editor) => (decorationInfo) => {
-  if (decorationList[decorationInfo.KEY] && editor) {
-    decorationList[decorationInfo.KEY]?.forEach((decorationType) => {
-      if (Array.isArray(decorationType)) {
-        decorationType.forEach((decorationType2) => {
-          applyDecoration(editor, decorationType2, []);
-        });
-      } else {
-        applyDecoration(editor, decorationType, []);
-      }
-    });
-    return true;
-  }
-  return false;
+var resetLastAppliedDecoration = (editor, decorationType) => {
+  decorationType.forEach((decoration) => {
+    applyDecoration(editor, decoration, []);
+  });
 };
-var resetOtherDecoration = (currentDecoration, reset) => Object.values(DECORATION_INFO).filter((info) => currentDecoration.MASK & info.MASK).map((info) => reset(info)).every(Boolean);
-var isDecorationChanged = (appliedDecoration2, decorationInfo) => {
+var isDecorationChanged = (config, editor, appliedDecoration2, decorationInfo) => {
   if (appliedDecoration2.applied) {
     if (appliedDecoration2.applied.MASK !== decorationInfo.MASK) {
+      resetLastAppliedDecoration(editor, config.decorationList[appliedDecoration2.applied.KEY]);
       appliedDecoration2.applied = decorationInfo;
       return true;
     }
@@ -435,25 +440,8 @@ var isDecorationChanged = (appliedDecoration2, decorationInfo) => {
   appliedDecoration2.applied = decorationInfo;
   return true;
 };
-var setDecorationOnEditor = ({ editor, decorationList, decorationInfo, loadConfig }) => {
-  const textEditorDecoration = decorationList[decorationInfo.KEY];
-  if (textEditorDecoration) {
-    appliedDecoration.editorDecoration = textEditorDecoration;
-    const decorationWithRange = decorationCoordinator({ editor, decorationList, decorationInfo, loadConfig });
-    if (!decorationWithRange) {
-      return;
-    }
-    isDecorationChanged(appliedDecoration, decorationInfo);
-    decorationWithRange.forEach(({ decoration, range }) => {
-      applyDecoration(editor, decoration, range);
-    });
-  }
-};
 var createRangeNNNN = (sLine, sChar, eLine, eChar) => {
-  return new vscode3.Range(
-    new vscode3.Position(sLine, sChar),
-    new vscode3.Position(eLine, eChar)
-  );
+  return new vscode3.Range(new vscode3.Position(sLine, sChar), new vscode3.Position(eLine, eChar));
 };
 var createRangeSPEP = (start, end) => {
   return new vscode3.Range(start, end);
@@ -532,17 +520,14 @@ var multiCursorDecorationWithRange = ({ editor, borderConfig, textEditorDecorati
     {
       decoration: textEditorDecoration[0],
       range: editor.selections.reduce((acc, selection) => {
-        acc.push(new vscode3.Range(selection.start, selection.active));
+        acc.push(createRangeSPEP(selection.start, selection.active));
         return acc;
       }, [])
     },
     {
       decoration: textEditorDecoration[1],
       range: editor.selections.reduce((acc, selection) => {
-        acc.push(new vscode3.Range(
-          new vscode3.Position(selection.active.line, 0),
-          new vscode3.Position(selection.active.line, selection.active.character)
-        ));
+        acc.push(createRangeNNNN(selection.active.line, 0, selection.active.line, selection.active.character));
         return acc;
       }, [])
     }
@@ -568,6 +553,20 @@ var decorationCoordinator = ({ editor, decorationList, decorationInfo, loadConfi
     }
   }
   return;
+};
+var setDecorationOnEditor = ({ editor, decorationList, decorationInfo, loadConfig }) => {
+  const textEditorDecoration = decorationList[decorationInfo.KEY];
+  if (textEditorDecoration) {
+    appliedDecoration.editorDecoration = textEditorDecoration;
+    const decorationWithRange = decorationCoordinator({ editor, decorationList, decorationInfo, loadConfig });
+    if (!decorationWithRange) {
+      return;
+    }
+    isDecorationChanged(loadConfig, editor, appliedDecoration, decorationInfo);
+    decorationWithRange.forEach(({ decoration, range }) => {
+      applyDecoration(editor, decoration, range);
+    });
+  }
 };
 var cursorActivate = async (context) => {
   try {
@@ -641,12 +640,7 @@ var selectionChanged = (config) => {
       if (!decorationType) {
         return;
       }
-      const resetFunction = (decorationInfo) => {
-        return resetDecoration(config.decorationList, event.textEditor)(decorationInfo);
-      };
-      if (isDecorationChanged(appliedDecoration, decorationType)) {
-        resetOtherDecoration(DECORATION_INFO.RESET, resetFunction);
-      }
+      isDecorationChanged(config, event.textEditor, appliedDecoration, decorationType);
       if (!config.decorationList[decorationType.KEY]) {
         return;
       }
@@ -674,6 +668,16 @@ function activate(context) {
       context.subscriptions.push(...event);
     }
   });
+  const provider = {
+    provideInlayHints(document, range, token) {
+      return [
+        new vscode4.InlayHint(new vscode4.Position(0, 10), "\u{1F525} \uC5EC\uAE30 \uD78C\uD2B8!", vscode4.InlayHintKind.Type)
+      ];
+    }
+  };
+  context.subscriptions.push(
+    vscode4.languages.registerInlayHintsProvider("*", provider)
+  );
 }
 function deactivate() {
 }

@@ -7,6 +7,7 @@ import * as Type from './type/type.d';
 // ==============================================================================
 // [ NON-RUNTIME, COMPILE-TIME CONSTANT/ENUM ]
 // ==============================================================================
+
 export const enum SYSTEM_MESSAGE {
     RELOADING_CONFIG = 'Config has been changed. Reloading configuration. (Messaage Dismiss in 2 second.)'
 }
@@ -96,11 +97,46 @@ export const enum BORDER_POSITION_MASK {
 }
 
 // ==============================================================================
-// [ RUNTIME CONSTANT/ENUM ]
+// [ RUNTIME READONLY CONSTANT/ENUM ]
 // ==============================================================================
 
 /**
- * type split requried.
+ * readonly config object lteral structure. 
+ * import, shallow copy, as Type.ConfigInfoType. 
+ * 
+ */
+export const CONFIG_INFO = {
+    name: undefined,
+    config: undefined,
+    configHashKey: undefined,
+    decorationList: {
+        CURSOR_ONLY: undefined,
+        SINGLE_LINE: undefined,
+        MULTI_LINE: undefined,
+        MULTI_CURSOR: undefined,
+    } as const,
+    borderPositionInfo: {
+        CURSOR_ONLY: undefined,
+        SINGLE_LINE: undefined,
+        MULTI_LINE: undefined,
+        MULTI_CURSOR: undefined,
+    } as const,
+    generalConfigInfo: {
+        borderOpacity: undefined,
+        backgroundOpacity: undefined,
+        borderWidth: undefined,
+        borderColor: undefined,
+        backgroundColor: undefined,
+    } as const
+} as const;
+
+export const APPLIED_DECORATION = {
+    applied: undefined,
+    editorDecoration: undefined
+} as const;
+
+/**
+ * type split done 
  * 
  */
 export const SINGLE_BORDER_SELECTION = {

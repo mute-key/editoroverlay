@@ -1,11 +1,10 @@
 import * as vscode from 'vscode';
 
-
-const sendAutoDismissMessage = (text: string, dissMissTimer: number) => {
+const sendAutoDismissMessage = (text: string, dismiss: number) => {
     const message = vscode.window.showInformationMessage(text);
     setTimeout(() => {
         message?.then(() => {});
-    }, dissMissTimer);
+    }, dismiss);
 };
 
 /**
@@ -64,7 +63,7 @@ const capitalize = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1)
  * @returns
  * 
  */
-const hexToRgbaStringLiteral = (hex: string, opacity: number): string | null => {
+const hexToRgbaStringLiteral = (hex: string, opacity: number, defaultValue: string): string => {
     hex = hex.replace(/^#/, "");
 
     if (hex.length === 3) {
@@ -73,7 +72,8 @@ const hexToRgbaStringLiteral = (hex: string, opacity: number): string | null => 
 
     const regex = /^[0-9A-Fa-f]{6}$/;
     if (!regex.test(hex)) {
-        return null;
+        // using default value.
+        hex = defaultValue.replace(/^#/, "");
     }
 
     const r = parseInt(hex.substring(0, 2), 16);
