@@ -34,7 +34,6 @@ __export(extension_exports, {
   deactivate: () => deactivate
 });
 module.exports = __toCommonJS(extension_exports);
-var vscode4 = __toESM(require("vscode"));
 
 // src/cursor.ts
 var vscode3 = __toESM(require("vscode"));
@@ -668,16 +667,6 @@ function activate(context) {
       context.subscriptions.push(...event);
     }
   });
-  const provider = {
-    provideInlayHints(document, range, token) {
-      return [
-        new vscode4.InlayHint(new vscode4.Position(0, 10), "\u{1F525} \uC5EC\uAE30 \uD78C\uD2B8!", vscode4.InlayHintKind.Type)
-      ];
-    }
-  };
-  context.subscriptions.push(
-    vscode4.languages.registerInlayHintsProvider("*", provider)
-  );
 }
 function deactivate() {
 }
