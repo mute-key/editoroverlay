@@ -152,6 +152,8 @@ type DecorationStyleConfigType = {
     [DECORATION_STYLE_CONFIG_KEY.BACKGROUND_COLOR]?: string
     [DECORATION_STYLE_CONFIG_KEY.OVERVIEW_RULER_COLOR]?: string | vscode.ThemeColor,
     [DECORATION_STYLE_CONFIG_KEY.OVERVIEW_RULER_LANE]?: vscode.OverviewRulerLane
+    before?: any
+    after?: any
     // [DECORATION_STYLE_KEY.FONT_WEIGHT]: string
 }
 
