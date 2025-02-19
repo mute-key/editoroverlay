@@ -135,14 +135,14 @@ const statusDecorationType = (statusInfo: Type.StatusInfoType, generalConfig: Ty
     const defaultColor = NO_CONFIGURATION_GENERAL_DEFAULT.statusTextColor;
     const defaultOpacity = NO_CONFIGURATION_GENERAL_DEFAULT.statusTextOpacity;
 
-    const background = undefined;
+    const backgroundColor = generalConfig.statusTextBackgroundColor;
 
     return {
         isWholeLine: statusInfo.isWholeLine,
         after: {
             contentText: statusInfo.contentText,
             color: hexToRgbaStringLiteral(textColor, textOpacity, defaultColor, defaultOpacity),
-            background: background,
+            background: backgroundColor,
             fontWeight: 'light',
             fontStyle: 'italic',
             textDecoration: 'none',

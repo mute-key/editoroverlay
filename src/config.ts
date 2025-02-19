@@ -301,15 +301,6 @@ const createDecorationTypeBuilder = (configInfo: Type.ConfigInfoReadyType): bool
         configSet.borderPosition = parsed.borderPosition;
         configSet.isWholeLine = parsed.isWholeLine;
 
-        // configSet.after = {
-        //     contentText: ' ← 여기에 인라인 텍스트 추가!',
-        //     color: 'red',
-        //     margin: '0 0 0 10px', // 텍스트와 간격 추가
-        //     width: '100wh'
-        // };
-
-        
-
         // configSet.overviewRulerColor = configSet.borderColor;
         // configSet.overviewRulerLane = vscode.OverviewRulerLane.Full;
 
