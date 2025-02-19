@@ -36,10 +36,10 @@ __export(extension_exports, {
 module.exports = __toCommonJS(extension_exports);
 
 // src/cursor.ts
-var vscode3 = __toESM(require("vscode"));
+var vscode5 = __toESM(require("vscode"));
 
 // src/config.ts
-var vscode2 = __toESM(require("vscode"));
+var vscode3 = __toESM(require("vscode"));
 
 // src/util.ts
 var vscode = __toESM(require("vscode"));
@@ -72,7 +72,7 @@ var fnv1aHash = (str) => {
   return hash.toString(16);
 };
 var capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
-var hexToRgbaStringLiteral = (hex, opacity, defaultValue) => {
+var hexToRgbaStringLiteral = (hex, opacity = 0.6, defaultValue, opacityDefault) => {
   hex = hex.replace(/^#/, "");
   if (hex.length === 3) {
     hex = hex.split("").map((x) => x + x).join("");
@@ -80,6 +80,7 @@ var hexToRgbaStringLiteral = (hex, opacity, defaultValue) => {
   const regex = /^[0-9A-Fa-f]{6}$/;
   if (!regex.test(hex)) {
     hex = defaultValue.replace(/^#/, "");
+    opacity = opacityDefault;
   }
   const r = parseInt(hex.substring(0, 2), 16);
   const g = parseInt(hex.substring(2, 4), 16);
@@ -92,6 +93,14 @@ var CONFIG_INFO = {
   name: void 0,
   config: void 0,
   configHashKey: void 0,
+  status: {
+    position: void 0,
+    decorationType: void 0,
+    indent: {
+      size: void 0,
+      type: void 0
+    }
+  },
   decorationList: {
     CURSOR_ONLY: void 0,
     SINGLE_LINE: void 0,
@@ -107,9 +116,13 @@ var CONFIG_INFO = {
   generalConfigInfo: {
     borderOpacity: void 0,
     backgroundOpacity: void 0,
+    statusTextEnabled: void 0,
+    statusTextOpacity: void 0,
     borderWidth: void 0,
     borderColor: void 0,
-    backgroundColor: void 0
+    backgroundColor: void 0,
+    statusTextColor: void 0,
+    statusTextBackgroundColor: void 0
   }
 };
 var APPLIED_DECORATION = {
@@ -188,7 +201,9 @@ var DECORATION_STYLE_PREFIX = {
 };
 var NO_CONFIGURATION_GENERAL_DEFAULT = {
   ["borderOpacity" /* OPACITY */]: 1,
-  ["backgroundOpacity" /* BACKGROUND_OPACITY */]: 0.5
+  ["backgroundOpacity" /* BACKGROUND_OPACITY */]: 0.5,
+  ["statusTextColor" /* STATUS_TEXT_COLOR */]: "#FF0000",
+  ["statusTextOpacity" /* STATUS_TEXT_OPACITY */]: 1
 };
 var NO_CONFIGURATION_DEOCORATION_DEFAULT = {
   ["CURSOR_ONLY" /* CURSOR_ONLY */]: {
@@ -225,10 +240,19 @@ var NO_CONFIGURATION_DEOCORATION_DEFAULT = {
   }
 };
 
+// src/decoration.ts
+var vscode2 = __toESM(require("vscode"));
+var applyDecoration = (editor, decoraiton, range) => {
+  editor.setDecorations(decoraiton, range);
+};
+var createEditorDecorationType = (styleAppliedConfig) => {
+  return vscode2.window.createTextEditorDecorationType(styleAppliedConfig);
+};
+
 // src/config.ts
 var configInfo = { ...CONFIG_INFO };
 var getConfigString = (configReady) => Object.entries(configReady.config).reduce((acc, [key, infoProp]) => {
-  if (typeof infoProp === "string" || typeof infoProp === "number") {
+  if (typeof infoProp === "string" || typeof infoProp === "number" || typeof infoProp === "boolean") {
     acc.push(infoProp);
   }
   return acc;
@@ -245,17 +269,23 @@ var ifConfigChanged = (configReady) => {
   if (configReady.configHashKey === configHash) {
     return false;
   } else {
-    configReady.config = vscode2.workspace.getConfiguration(configReady.name);
+    configReady.config = vscode3.workspace.getConfiguration(configReady.name);
     configReady.configHashKey = configHash;
     sendAutoDismissMessage("Config has been changed. Reloading configuration. (Messaage Dismiss in 2 second.)" /* RELOADING_CONFIG */, 1500);
     return true;
   }
 };
-var updateEditorConfiguration = () => {
-  const editorConfig = vscode2.workspace.getConfiguration("editor");
-  editorConfig.update("renderLineHighlight", "gutter", vscode2.ConfigurationTarget.Global);
-  editorConfig.update("roundedSelection", false, vscode2.ConfigurationTarget.Global);
-  editorConfig.update("cursorBlinking", "phase", vscode2.ConfigurationTarget.Global);
+var updateEditorConfiguration = (configReady) => {
+  const editorConfig = vscode3.workspace.getConfiguration("editor");
+  editorConfig.update("renderLineHighlight", "gutter", vscode3.ConfigurationTarget.Global);
+  editorConfig.update("roundedSelection", false, vscode3.ConfigurationTarget.Global);
+  editorConfig.update("cursorBlinking", "phase", vscode3.ConfigurationTarget.Global);
+  const tabSize = editorConfig.get("tabSize");
+  const insertSpaces = editorConfig.get("insertSpaces");
+  configReady.status.indent.size = Number(tabSize ? tabSize : 4);
+  configReady.status.indent.type = insertSpaces ? "\n" : "	";
+  configReady.status.indent.regex = insertSpaces ? new RegExp(`^( {${configReady.status.indent.size}}|[\r
+]+)*$`, "gm") : /(\t|[\r\n]+)*$/gm;
 };
 var initialiseConfig = (context) => {
   const name = context.extension.packageJSON.name;
@@ -263,14 +293,14 @@ var initialiseConfig = (context) => {
     return;
   }
   configInfo.name = name;
-  configInfo.config = vscode2.workspace.getConfiguration(configInfo.name);
+  configInfo.config = vscode3.workspace.getConfiguration(configInfo.name);
   if (!configInfo.name && !configInfo.config) {
     return;
   }
   const configReady = configInfo;
   if (!configReady.configHashKey) {
     setConfigHashKey(configReady);
-    updateEditorConfiguration();
+    updateEditorConfiguration(configReady);
   } else {
     if (!ifConfigChanged(configReady)) {
       return;
@@ -342,7 +372,7 @@ var createDecorationType = (config, decorationKey) => (decorationTypeSplit2) => 
       styledConfig.push(conf);
       return styledConfig;
     }, []).reduce((textEditorDecoration, styleAppliedConfig) => {
-      textEditorDecoration.push(vscode2.window.createTextEditorDecorationType(styleAppliedConfig));
+      textEditorDecoration.push(createEditorDecorationType(styleAppliedConfig));
       return textEditorDecoration;
     }, []);
     if (decorationTypeStack.length === 0) {
@@ -417,38 +447,150 @@ var createDecorationTypeBuilder = (configInfo2) => {
   return true;
 };
 
-// src/cursor.ts
-var appliedDecoration = { ...APPLIED_DECORATION };
-var applyDecoration = (editor, decoraiton, range) => {
-  editor.setDecorations(decoraiton, range);
-};
-var resetLastAppliedDecoration = (editor, decorationType) => {
-  decorationType.forEach((decoration) => {
-    applyDecoration(editor, decoration, []);
-  });
-};
-var isDecorationChanged = (config, editor, appliedDecoration2, decorationInfo) => {
-  if (appliedDecoration2.applied) {
-    if (appliedDecoration2.applied.MASK !== decorationInfo.MASK) {
-      resetLastAppliedDecoration(editor, config.decorationList[appliedDecoration2.applied.KEY]);
-      appliedDecoration2.applied = decorationInfo;
-      return true;
-    }
-    return false;
-  }
-  appliedDecoration2.applied = decorationInfo;
-  return true;
-};
+// src/selection.ts
+var vscode4 = __toESM(require("vscode"));
 var createRangeNNNN = (sLine, sChar, eLine, eChar) => {
-  return new vscode3.Range(new vscode3.Position(sLine, sChar), new vscode3.Position(eLine, eChar));
+  return new vscode4.Range(new vscode4.Position(sLine, sChar), new vscode4.Position(eLine, eChar));
 };
 var createRangeSPEP = (start, end) => {
-  return new vscode3.Range(start, end);
+  return new vscode4.Range(start, end);
 };
-var createRangeLineNNEP = (line, char, end) => {
-  return new vscode3.Range(new vscode3.Position(line, char), end);
+var createRangeNNEP = (line, char, end) => {
+  return new vscode4.Range(new vscode4.Position(line, char), end);
 };
-var cursorOnlyDecorationWithRange = ({ editor, borderConfig, textEditorDecoration }) => {
+var statusOf = {
+  ["CURSOR_ONLY" /* CURSOR_ONLY */]: {
+    contentText: (col) => `< Editing ... At (Col ${col})`
+  },
+  ["SINGLE_LINE" /* SINGLE_LINE */]: {
+    contentText: (characters) => `< Selection ... Of (${characters} Characters)`
+  },
+  ["MULTI_LINE" /* MULTI_LINE */]: {
+    contentText: (lines, characters, position) => `< Selection ${position} ... Of (${lines} Lines, ${characters} Characters, Indent/EOL Ignored)`
+  },
+  ["MULTI_CURSOR" /* MULTI_CURSOR */]: {
+    contentText: (nth, selectionCount, lines, characters) => `< Multi Selection ... Of (${nth} of ${selectionCount}, with Total ${lines} Lines ${characters} Characters )`
+  }
+};
+var cursorOnlyStatus = (editor, type) => {
+  return [{
+    contentText: statusOf[type.KEY].contentText(editor.selection.active.character),
+    range: createRangeSPEP(editor.selection.active, editor.selection.active),
+    isWholeLine: true
+  }];
+};
+var singleLineStatus = (editor, type) => {
+  return [{
+    contentText: statusOf[type.KEY].contentText(Math.abs(editor.selection.end.character - editor.selection.start.character)),
+    range: createRangeSPEP(editor.selection.active, editor.selection.active),
+    isWholeLine: true
+  }];
+};
+var multilineStatus = (editor, status2, type) => {
+  const text = editor.document.getText(editor.selection);
+  const count = text.replace(status2.indent.regex, "").length;
+  const args = Math.abs(editor.selection.end.line - editor.selection.start.line) + 1;
+  return [{
+    contentText: statusOf[type.KEY].contentText(args, count, "Anchor"),
+    range: createRangeSPEP(editor.selection.anchor, editor.selection.anchor),
+    isWholeLine: true
+  }, {
+    contentText: statusOf[type.KEY].contentText(args, count, "Cursor"),
+    range: createRangeSPEP(editor.selection.active, editor.selection.active),
+    isWholeLine: true
+  }];
+};
+var multiCursorStatus = (editor, status2, type) => {
+  let length = editor.selections.length;
+  let idx = 0;
+  let charCount = 0;
+  let lineCount = 0;
+  let isSingleLine = editor.selections[0].start.line === editor.selections[0].end.line;
+  let lineDiff = 0;
+  const statusInfo = [];
+  if (isSingleLine) {
+    lineDiff = 1;
+  } else {
+    lineDiff = Math.abs(editor.selections[0].end.line - editor.selections[0].start.line) + 1;
+  }
+  while (idx < length) {
+    if (isSingleLine) {
+      charCount = charCount + (editor.selections[idx].end.character - editor.selections[idx].start.character);
+      lineCount = lineCount + lineDiff;
+    } else {
+      const text = editor.document.getText(editor.selections[idx]);
+      charCount = charCount + text.replace(status2.indent.regex, "").length;
+      lineCount = lineCount + lineDiff;
+    }
+    idx++;
+  }
+  idx = 0;
+  while (idx < length) {
+    statusInfo.push({
+      contentText: statusOf[type.KEY].contentText(idx + 1, length, lineCount, charCount),
+      range: createRangeSPEP(editor.selections[idx].start, editor.selections[idx].end),
+      isWholeLine: true
+    });
+    idx++;
+  }
+  return statusInfo;
+};
+var statusInfoSplit = (editor, status2, type) => {
+  return {
+    ["CURSOR_ONLY" /* CURSOR_ONLY */]: () => cursorOnlyStatus(editor, type),
+    ["SINGLE_LINE" /* SINGLE_LINE */]: () => singleLineStatus(editor, type),
+    ["MULTI_LINE" /* MULTI_LINE */]: () => multilineStatus(editor, status2, type),
+    ["MULTI_CURSOR" /* MULTI_CURSOR */]: () => multiCursorStatus(editor, status2, type)
+  };
+};
+var statusDecorationType = (statusInfo, generalConfig) => {
+  const textColor = generalConfig.statusTextColor;
+  const textOpacity = generalConfig.statusTextOpacity;
+  const defaultColor = NO_CONFIGURATION_GENERAL_DEFAULT.statusTextColor;
+  const defaultOpacity = NO_CONFIGURATION_GENERAL_DEFAULT.statusTextOpacity;
+  const background = void 0;
+  return {
+    isWholeLine: statusInfo.isWholeLine,
+    after: {
+      contentText: statusInfo.contentText,
+      color: hexToRgbaStringLiteral(textColor, textOpacity, defaultColor, defaultOpacity),
+      background,
+      fontWeight: "light",
+      fontStyle: "italic",
+      textDecoration: "none",
+      margin: "0 0 0 20px",
+      width: "100wh"
+    }
+  };
+};
+var setStatusInfoDecoration = (editor, statusInfo, generalConfig) => {
+  const statusInfoList = [];
+  let length = statusInfo.length;
+  while (length--) {
+    const editorDecoration = createEditorDecorationType(statusDecorationType(statusInfo[length], generalConfig));
+    applyDecoration(editor, editorDecoration, [statusInfo[length].range]);
+    statusInfoList.push(editorDecoration);
+  }
+  return statusInfoList;
+};
+var disposeStatusInfo = (status2) => {
+  let length = status2.decorationType.length;
+  while (length--) {
+    status2.decorationType[length].dispose();
+  }
+};
+var status = (editor, status2, generalConfig, type) => {
+  const statusInfo = statusInfoSplit(editor, status2, type)[type.KEY]();
+  if (status2.decorationType) {
+    disposeStatusInfo(status2);
+    status2.decorationType = void 0;
+    status2.decorationType = setStatusInfoDecoration(editor, statusInfo, generalConfig);
+  } else {
+    status2.decorationType = setStatusInfoDecoration(editor, statusInfo, generalConfig);
+  }
+};
+var cursorOnlyDecorationWithRange = (context) => {
+  const { editor, borderConfig, textEditorDecoration } = context;
   if (borderConfig.isWholeLine) {
     return [{
       decoration: textEditorDecoration[0],
@@ -465,7 +607,7 @@ var cursorOnlyDecorationWithRange = ({ editor, borderConfig, textEditorDecoratio
     return [
       {
         decoration: textEditorDecoration[0],
-        range: [createRangeLineNNEP(
+        range: [createRangeNNEP(
           editor.selection.active.line,
           editor.selection.active.character,
           editor.document.lineAt(editor.selection.active.line).range.end
@@ -532,27 +674,8 @@ var multiCursorDecorationWithRange = ({ editor, borderConfig, textEditorDecorati
     }
   ];
 };
-var decorationCoordinator = ({ editor, decorationList, decorationInfo, loadConfig }) => {
-  const textEditorDecoration = decorationList[decorationInfo.KEY];
-  if (textEditorDecoration) {
-    const borderConfig = loadConfig.borderPositionInfo[decorationInfo.KEY];
-    const context = {
-      editor,
-      borderConfig,
-      textEditorDecoration
-    };
-    if (decorationInfo.MASK & 1 /* CURSOR_ONLY */) {
-      return cursorOnlyDecorationWithRange(context);
-    } else if (decorationInfo.MASK & 2 /* SINGLE_LINE */) {
-      return singelLineDecorationWithRange(context);
-    } else if (decorationInfo.MASK & 4 /* MULTI_LINE */) {
-      return multiLineDecorationWithRange(context);
-    } else if (decorationInfo.MASK & 8 /* MULTI_CURSOR */) {
-      return multiCursorDecorationWithRange(context);
-    }
-  }
-  return;
-};
+
+// src/cursor.ts
 var setDecorationOnEditor = ({ editor, decorationList, decorationInfo, loadConfig }) => {
   const textEditorDecoration = decorationList[decorationInfo.KEY];
   if (textEditorDecoration) {
@@ -567,6 +690,46 @@ var setDecorationOnEditor = ({ editor, decorationList, decorationInfo, loadConfi
     });
   }
 };
+var decorationCoordinator = ({ editor, decorationList, decorationInfo, loadConfig }) => {
+  const textEditorDecoration = decorationList[decorationInfo.KEY];
+  if (textEditorDecoration) {
+    const borderConfig = loadConfig.borderPositionInfo[decorationInfo.KEY];
+    if (loadConfig.generalConfigInfo.statusTextEnabled) {
+      status(editor, loadConfig.status, loadConfig.generalConfigInfo, decorationInfo);
+    }
+    const context = {
+      editor,
+      borderConfig,
+      textEditorDecoration
+    };
+    const fnSplit = {
+      ["CURSOR_ONLY" /* CURSOR_ONLY */]: () => cursorOnlyDecorationWithRange(context),
+      ["SINGLE_LINE" /* SINGLE_LINE */]: () => singelLineDecorationWithRange(context),
+      ["MULTI_LINE" /* MULTI_LINE */]: () => multiLineDecorationWithRange(context),
+      ["MULTI_CURSOR" /* MULTI_CURSOR */]: () => multiCursorDecorationWithRange(context)
+    };
+    return fnSplit[decorationInfo.KEY]();
+  }
+  return;
+};
+var appliedDecoration = { ...APPLIED_DECORATION };
+var resetLastAppliedDecoration = (editor, decorationType) => {
+  decorationType.forEach((decoration) => {
+    applyDecoration(editor, decoration, []);
+  });
+};
+var isDecorationChanged = (config, editor, appliedDecoration2, decorationInfo) => {
+  if (appliedDecoration2.applied) {
+    if (appliedDecoration2.applied.MASK !== decorationInfo.MASK) {
+      resetLastAppliedDecoration(editor, config.decorationList[appliedDecoration2.applied.KEY]);
+      appliedDecoration2.applied = decorationInfo;
+      return true;
+    }
+    return false;
+  }
+  appliedDecoration2.applied = decorationInfo;
+  return true;
+};
 var cursorActivate = async (context) => {
   try {
     await context.extension.activate();
@@ -579,7 +742,8 @@ var cursorActivate = async (context) => {
       console.error("Failed to initialize decorationList.");
       return;
     }
-    const activeEditor = vscode3.window.activeTextEditor;
+    console.log(loadConfig.generalConfigInfo);
+    const activeEditor = vscode5.window.activeTextEditor;
     if (activeEditor) {
       setDecorationOnEditor({
         editor: activeEditor,
@@ -591,11 +755,12 @@ var cursorActivate = async (context) => {
     return [
       activeEditorChanged(loadConfig),
       selectionChanged(loadConfig),
+      editorOptionChange(loadConfig),
       configChanged(context)
     ];
   } catch (err) {
     console.error("Error during extension activation: ", err);
-    vscode3.window.showErrorMessage("Extension activation failed!", err);
+    vscode5.window.showErrorMessage("Extension activation failed!", err);
   }
 };
 var getSelectionType = (editor) => {
@@ -613,10 +778,21 @@ var getSelectionType = (editor) => {
     return DECORATION_INFO.MULTI_CURSOR;
   }
 };
+var editorIndentOption = (config, editor) => {
+  config.status.indent.size = Number(editor.options.tabSize ?? editor.options.indentSize ?? 4);
+  config.status.indent.type = editor.options.insertSpaces ? "\n" : "	";
+  config.status.indent.regex = editor.options.insertSpaces ? new RegExp(`^ {${config.status.indent.size}}`, "gm") : /\t/gm;
+};
+var editorOptionChange = (config) => {
+  return vscode5.window.onDidChangeTextEditorOptions((event) => {
+    editorIndentOption(config, event.textEditor);
+  });
+};
 var activeEditorChanged = (config) => {
-  return vscode3.window.onDidChangeActiveTextEditor((editor) => {
+  return vscode5.window.onDidChangeActiveTextEditor((editor) => {
     if (editor) {
-      vscode3.window.visibleTextEditors.forEach((editor2) => {
+      editorIndentOption(config, editor);
+      vscode5.window.visibleTextEditors.forEach((editor2) => {
         if (appliedDecoration.editorDecoration !== void 0) {
           appliedDecoration.editorDecoration.forEach((decoration) => {
             applyDecoration(editor2, decoration, []);
@@ -633,7 +809,7 @@ var activeEditorChanged = (config) => {
   });
 };
 var selectionChanged = (config) => {
-  return vscode3.window.onDidChangeTextEditorSelection((event) => {
+  return vscode5.window.onDidChangeTextEditorSelection((event) => {
     if (event.selections) {
       const decorationType = getSelectionType(event.textEditor);
       if (!decorationType) {
@@ -653,7 +829,7 @@ var selectionChanged = (config) => {
   });
 };
 var configChanged = (context) => {
-  return vscode3.workspace.onDidChangeConfiguration((event) => {
+  return vscode5.workspace.onDidChangeConfiguration((event) => {
     if (event) {
       initialiseConfig(context);
     }
