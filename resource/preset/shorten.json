@@ -1,5 +1,5 @@
 {
-    ".cursorOnly.backgroundColor": "null",
+    "cursorOnly.backgroundColor": "null",
     "selectionText.cursorOnlyText": "< Editing ... At (z.Col ${zCol})",
     "selectionText.singleLineText": "< Selection ... Of (${char} Char)",
     "selectionText.multiLineCursorText": "< Selection Cursor ... Of (${lc} Lc, ${char} Char)",
@@ -13,8 +13,8 @@
     "diagnosticText.warningWorkspaceContentText": "${pre}⚠${src}/${wrn}${post} ",
     "diagnosticText.errorWorkspaceContentText": "${pre}✗${src}/${err}${post} ",
     "diagnosticText.errorEditorContentText": " ${pre}✗${err}${post} ",
-    "cursorlinehighlight.diagnosticText.glyphList": {
-        "openningBracket": "(",
+    "diagnosticText.glyphList": {
+        "openningBracket": " (",
         "closingBracket": ")",
         "lineEqual": "⚙",
         "lineUp": "⬆︎",
@@ -26,7 +26,7 @@
         "backgroundOpacity": 0.5
     },
     "diagnosticText.okNotationTextStyle": {
-        "editorPrefix": " E:",
+        "editorPrefix": "E:",
         "allPrefix":"E / WS: ",
         "colorOpacity": 0.3,
         "backgroundOpacity": 1

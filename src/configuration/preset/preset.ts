@@ -32,8 +32,7 @@ const readPreset = async (context: CommandContext, presetFilename): Promise<obje
     try {
         const jsonPath = context.package.asAbsolutePath(path.join(SYSTEM_PATH.PRESET_ROOT, presetFilename));
         const content = await readFile(jsonPath, { encoding: 'utf-8' });
-        const data = JSON.parse(content);
-        return data;
+        return JSON.parse(content);
     } catch (error) {
         console.error('Failed to load preset JSON:', error);
     }
@@ -57,7 +56,6 @@ const checkDuplciateOverride = (packageName: string, json: any): boolean => {
 };
 
 const writeSelectedPreset = async (configInfo: any, packageName: string, json: object): Promise<void> => {
-
     configInfo.updateCaller = __0x.configruationCallerPreset; // block all configuration change event trigger
     vscode.commands.executeCommand("workbench.view.explorer");
     const config = getWorkspaceConfiguration(packageName);
@@ -69,7 +67,7 @@ const writeSelectedPreset = async (configInfo: any, packageName: string, json: o
             const proxy: any = config.inspect<object>(section[ridx]);
             await config.update(section[ridx], { ...proxy?.globalValue, ...json[section[ridx]] }, true);
         } else {
-            config.update(section, json[section], true);
+            await config.update(section[ridx], json[section[ridx]], true);
         }
     }
 
@@ -96,7 +94,7 @@ const quickPickWrapper = async (context: CommandContext, presetList: string[], f
         if (checkDuplciateOverride(context.package.extension.packageJSON.name, json)) {
             await overrideConfirm(SYSTEM_MESSAGE.OVERRIDE_CONFIRM).then(write);
         } else {
-            write(CONFIRM.YES);
+            await write(CONFIRM.YES);
         }
     }
 };

@@ -1,9 +1,9 @@
 {
-    "cursorlinehighlight.selectionText.cursorOnlyText": "✒️ ... At (z.col ${zCol})",
-    "cursorlinehighlight.selectionText.singleLineText": "📏 ... Of (${char} Char)",
-    "cursorlinehighlight.selectionText.multiLineCursorText": "✂️ Cursor ... Of (${lc} Lc, ${char} Char)",
-    "cursorlinehighlight.selectionText.multiLineAnchorText": "✂️ Anchor ... Of (${lc} Lc, ${char} Char)",
-    "cursorlinehighlight.selectionText.multiCursorText": "🔗 ... Of (${nth} of ${count}, with Total ${lc} Ln ${char} Char)",
+    "selectionText.cursorOnlyText": "✒️ ... At (z.col ${zCol})",
+    "selectionText.singleLineText": "📏 ... Of (${char} Char)",
+    "selectionText.multiLineCursorText": "✂️ Cursor ... Of (${lc} Lc, ${char} Char)",
+    "selectionText.multiLineAnchorText": "✂️ Anchor ... Of (${lc} Lc, ${char} Char)",
+    "selectionText.multiCursorText": "🔗 ... Of (${nth} of ${count}, with Total ${lc} Lc ${char} Char)",
     "diagnosticText.allOkPlaceholderContentText": "- 🛠️ [${allok}]",
     "diagnosticText.problemPlaceholderContentText": "- 🛠️ [${editor} / ${workspace}]",
     "diagnosticText.allOkContentText": " ${pre}✅OK${post} ",
@@ -12,13 +12,13 @@
     "diagnosticText.warningWorkspaceContentText": "${pre}⚠️${src}/${wrn}${post} ",
     "diagnosticText.errorWorkspaceContentText": "${pre}⛔${src}/${err}${post} ",
     "diagnosticText.errorEditorContentText": " ${pre}⛔${err}${post} ",
-    "cursorlinehighlight.diagnosticText.glyphList": {
-        "openningBracket": "null",
-        "closingBracket": "null",
+    "diagnosticText.glyphList": {
+        "openningBracket": " (",
+        "closingBracket": ")",
         "lineEqual": "🟰",
-        "lineUp": "⬆️",
-        "lineDown": "⬇️"
-    },
+        "lineUp": "➖",
+        "lineDown": "➕"
+    },  
     "diagnosticText.diagnosticPlaceholderTextStyle": {
         "colorOpacity": 0.7,
         "backgroundColor": "#182129",

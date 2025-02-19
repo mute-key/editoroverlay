@@ -219,5 +219,14 @@ export const diagnosticChanged = EVENT_SIGNATURE.DIAGNOSTIC_CHANGED; // 4098
 export const selectionChanged = EVENT_SIGNATURE.SELECTION_CHANGED; // 4099
 export const documentChanged = EVENT_SIGNATURE.DOCUMENT_CHANGED; // 4100
 
+export const enum CONFIGURATION_CHANGE_CALLER {
+    PRESET = 0x1101,
+    PRESET_COMPLETE = 0x1102,
+    SETTING_TAB = 0x1103,
+    SETTING_JSON = 0x1104,
+}
 
-
+export const configruationCallerPreset = CONFIGURATION_CHANGE_CALLER.PRESET;
+export const configruationCallerPresetComplete = CONFIGURATION_CHANGE_CALLER.PRESET_COMPLETE;
+export const configruationCallerSettingTab = CONFIGURATION_CHANGE_CALLER.SETTING_TAB;
+export const configruationCallerSettingJSon = CONFIGURATION_CHANGE_CALLER.SETTING_JSON;

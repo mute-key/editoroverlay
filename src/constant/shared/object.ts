@@ -108,6 +108,7 @@ export const DIAGNOSTIC_GLYPH = {
 
 export const DIAGNOSTIC_ENTRY_LIST = [
     __0x.allOkOverride,
+    __0x.allOkNoOverride,
     ...DIAGNOSTIC_PROBLEM_LIST
 ];
 

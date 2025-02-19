@@ -16,6 +16,7 @@ export const CONFIG_SECTION = {
 export const CONFIG_INFO = {
     name: undefined,
     renderLimiter: undefined,
+    updateCaller: undefined,
     generalConfigInfo: {
         borderOpacity: undefined,
         backgroundOpacity: undefined,

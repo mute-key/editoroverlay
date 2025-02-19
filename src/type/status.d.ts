@@ -139,6 +139,7 @@ type StatusTextInfo = {
 
 type ConfigInfoType = {
     name?: string
+    updateCaller?: number,
 }
 
 type IndentInfoType = {
