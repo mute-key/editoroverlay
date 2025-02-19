@@ -13,12 +13,12 @@ import {
     DECORATION_STYLE_KEY
 } from '../constant';
 
-
 type NoConfigurationGeneraType = {
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.OPACITY]: number
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.BACKGROUND_OPACITY]: number
-    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_OPACITY]?: number
-    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_COLOR]?: string
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_ENABLED]: boolean
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_OPACITY]: number
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_COLOR]: string
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_BACKGROUND_COLOR]?: string
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.BORDER_WIDTH]?: string
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.BORDER_COLOR]?: string
@@ -82,8 +82,9 @@ type GeneralConfigInfoType = {
     borderWidth?: string
     borderColor?: string
     backgroundColor?: string
-    statusTextOpacity?: number,
-    statusTextColor?: string,
+    statusTextEnabled: boolean,
+    statusTextOpacity: number,
+    statusTextColor: string,
     statusTextBackgroundColor?: string,
 }
 

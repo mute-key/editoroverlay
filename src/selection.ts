@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as Type from './type/type.d';
-import { 
-    hexToRgbaStringLiteral 
+import {
+    hexToRgbaStringLiteral
 } from './util';
 import {
     applyDecoration,
@@ -12,15 +12,15 @@ import {
     DECORATION_STYLE_KEY
 } from './constant';
 
-const createRangeNNNN = (sLine: number, sChar: number, eLine: number, eChar: number) => {
+const createRangeNNNN = (sLine: number, sChar: number, eLine: number, eChar: number): vscode.Range => {
     return new vscode.Range(new vscode.Position(sLine, sChar), new vscode.Position(eLine, eChar));
 };
 
-const createRangeSPEP = (start: vscode.Position, end: vscode.Position) => {
+const createRangeSPEP = (start: vscode.Position, end: vscode.Position): vscode.Range => {
     return new vscode.Range(start, end);
 };
 
-const createRangeNNEP = (line: number, char: number, end: vscode.Position) => {
+const createRangeNNEP = (line: number, char: number, end: vscode.Position): vscode.Range => {
     return new vscode.Range(new vscode.Position(line, char), end);
 };
 
@@ -41,87 +41,108 @@ const statusOf: Type.StatusOfType = {
     },
 };
 
+const cursorOnlyStatus = (editor: vscode.TextEditor, type: Type.DecorationInfoPropType): Type.StatusInfoType[] => {
+    return [{
+        contentText: statusOf[type.KEY].contentText(editor.selection.active.character),
+        range: createRangeSPEP(editor.selection.active, editor.selection.active),
+        isWholeLine: true
+    }];
+};
+
+const singleLineStatus = (editor: vscode.TextEditor, type: Type.DecorationInfoPropType): Type.StatusInfoType[] => {
+    return [{
+        contentText: statusOf[type.KEY].contentText(Math.abs(editor.selection.end.character - editor.selection.start.character)),
+        range: createRangeSPEP(editor.selection.active, editor.selection.active),
+        isWholeLine: true
+    }];
+};
+
+const multilineStatus = (editor: vscode.TextEditor, status: Type.StatusType, type: Type.DecorationInfoPropType): Type.StatusInfoType[] => {
+    const text = editor.document.getText(editor.selection);
+    const count = text.replace(status.indent.regex, "").length;
+    // const count = text.length;
+    const args = Math.abs(editor.selection.end.line - editor.selection.start.line) + 1;
+
+    return [{
+        contentText: statusOf[type.KEY].contentText(args, count, 'Anchor'),
+        range: createRangeSPEP(editor.selection.anchor, editor.selection.anchor),
+        isWholeLine: true
+    }, {
+        contentText: statusOf[type.KEY].contentText(args, count, 'Cursor'),
+        range: createRangeSPEP(editor.selection.active, editor.selection.active),
+        isWholeLine: true
+    }];
+};
+
+const multiCursorStatus = (editor: vscode.TextEditor, status: Type.StatusType, type: Type.DecorationInfoPropType): Type.StatusInfoType[] => {
+    let length = editor.selections.length;
+    let idx = 0;
+    let charCount = 0;
+    let lineCount = 0;
+    let isSingleLine = editor.selections[0].start.line === editor.selections[0].end.line;
+    let lineDiff = 0;
+    const statusInfo: Type.StatusInfoType[] = [];
+    if (isSingleLine) {
+        lineDiff = 1;
+    } else {
+        lineDiff = Math.abs(editor.selections[0].end.line - editor.selections[0].start.line) + 1;
+    }
+
+    while (idx < length) {
+        if (isSingleLine) {
+            charCount = charCount + (editor.selections[idx].end.character - editor.selections[idx].start.character);
+            lineCount = lineCount + lineDiff;
+        } else {
+            const text = editor.document.getText(editor.selections[idx]);
+            charCount = charCount + text.replace(status.indent.regex, "").length;
+            lineCount = lineCount + lineDiff;
+        }
+        idx++;
+    }
+
+    idx = 0;
+
+    while (idx < length) {
+        // createRangeNNNN(
+        // editor.selections[idx].start.line + 1, editor.selections[idx].start.character, 
+        // editor.selections[idx].end.line + 1, editor.selections[idx].end.character)
+
+        statusInfo.push({
+            contentText: statusOf[type.KEY].contentText(idx + 1, length, lineCount, charCount),
+            range: createRangeSPEP(editor.selections[idx].start, editor.selections[idx].end),
+            isWholeLine: true
+        });
+        idx++;
+    }
+    return statusInfo;
+};
+
 const statusInfoSplit = (editor: vscode.TextEditor, status: Type.StatusType, type: Type.DecorationInfoPropType): Type.statusInfoSplitType => {
 
     return {
-        [DECORATION_STYLE_KEY.CURSOR_ONLY]: () => [{
-            contentText: statusOf[type.KEY].contentText(editor.selection.active.character),
-            range: createRangeSPEP(editor.selection.active, editor.selection.active),
-            isWholeLine: true
-        }],
-        [DECORATION_STYLE_KEY.SINGLE_LINE]: () => [{
-            contentText: statusOf[type.KEY].contentText(Math.abs(editor.selection.end.character - editor.selection.start.character)),
-            range: createRangeSPEP(editor.selection.active, editor.selection.active),
-            isWholeLine: true
-        }],
-        [DECORATION_STYLE_KEY.MULTI_LINE]: () => {
-            const text = editor.document.getText(editor.selection);
-            const count = text.replace(status.indent.regex, "").length;
-            // const count = text.length;
-            const args = Math.abs(editor.selection.end.line - editor.selection.start.line) + 1;
-
-            return [{
-                contentText: statusOf[type.KEY].contentText(args, count, 'Anchor'),
-                range: createRangeSPEP(editor.selection.anchor, editor.selection.anchor),
-                isWholeLine: true
-            }, {
-                contentText: statusOf[type.KEY].contentText(args, count, 'Cursor'),
-                range: createRangeSPEP(editor.selection.active, editor.selection.active),
-                isWholeLine: true
-            }];
-        },
-        [DECORATION_STYLE_KEY.MULTI_CURSOR]: () => {
-            let length = editor.selections.length;
-            let idx = 0;
-            let charCount = 0;
-            let lineCount = 0;
-            let isSingleLine = editor.selections[0].start.line === editor.selections[0].end.line;
-            let lineDiff = 0;
-            const statusInfo: Type.StatusInfoType[] = [];
-            if (isSingleLine) {
-                lineDiff = 1;
-            } else {
-                lineDiff = Math.abs(editor.selections[0].end.line - editor.selections[0].start.line) + 1;
-            }
-
-            while (idx < length) {
-                if (isSingleLine) {
-                    charCount = charCount + (editor.selections[idx].end.character - editor.selections[idx].start.character);
-                    lineCount = lineCount + lineDiff;
-                } else {
-
-                }
-                idx++;
-            }
-
-            idx = 0;
-
-            while (idx < length) {
-                // createRangeNNNN(
-                // editor.selections[idx].start.line + 1, editor.selections[idx].start.character, 
-                // editor.selections[idx].end.line + 1, editor.selections[idx].end.character)
-
-                statusInfo.push({
-                    contentText: statusOf[type.KEY].contentText(idx + 1, length, lineCount, charCount),
-                    range: createRangeSPEP(editor.selections[idx].start, editor.selections[idx].end),
-                    isWholeLine: true
-                });
-                idx++;
-            }
-            return statusInfo;
-        },
+        [DECORATION_STYLE_KEY.CURSOR_ONLY]: () => cursorOnlyStatus(editor, type),
+        [DECORATION_STYLE_KEY.SINGLE_LINE]: () => singleLineStatus(editor, type),
+        [DECORATION_STYLE_KEY.MULTI_LINE]: () => multilineStatus(editor, status, type),
+        [DECORATION_STYLE_KEY.MULTI_CURSOR]: () => multiCursorStatus(editor, status, type),
     };
 };
 
 const statusDecorationType = (statusInfo: Type.StatusInfoType, generalConfig: Type.GeneralConfigInfoType) => {
 
     // config need to be polished... 
+    const textColor = generalConfig.statusTextColor;
+    const textOpacity = generalConfig.statusTextOpacity;
+    const defaultColor = NO_CONFIGURATION_GENERAL_DEFAULT.statusTextColor;
+    const defaultOpacity = NO_CONFIGURATION_GENERAL_DEFAULT.statusTextOpacity;
+
+    const background = undefined;
 
     return {
         isWholeLine: statusInfo.isWholeLine,
         after: {
             contentText: statusInfo.contentText,
-            color: hexToRgbaStringLiteral(generalConfig.statusTextColor as string, generalConfig.statusTextOpacity as number, NO_CONFIGURATION_GENERAL_DEFAULT.statusTextColor as string, NO_CONFIGURATION_GENERAL_DEFAULT.statusTextOpacity),
+            color: hexToRgbaStringLiteral(textColor, textOpacity, defaultColor, defaultOpacity),
+            background: background,
             fontWeight: 'light',
             fontStyle: 'italic',
             textDecoration: 'none',

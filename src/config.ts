@@ -30,7 +30,7 @@ const configInfo: Type.ConfigInfoType = { ...CONFIG_INFO };
 
 
 const getConfigString = (configReady: Type.ConfigInfoReadyType): string => Object.entries(configReady.config).reduce((acc, [key, infoProp]) => {
-    if (typeof infoProp === 'string' || typeof infoProp === 'number') {
+    if (typeof infoProp === 'string' || typeof infoProp === 'number' || typeof infoProp === 'boolean') {
         acc.push(infoProp as string);
     }
     return acc;
@@ -71,7 +71,7 @@ const updateEditorConfiguration = (configReady: Type.ConfigInfoReadyType): void 
 
     const tabSize = editorConfig.get<string | number | undefined>("tabSize");
     const insertSpaces = editorConfig.get<string | number | undefined>("insertSpaces");
-    const indentSize = editorConfig.get<string | number | undefined>("indentSize");
+    // const indentSize = editorConfig.get<string | number | undefined>("indentSize");
 
     configReady.status.indent.size = Number(tabSize ? tabSize : 4);
     configReady.status.indent.type = insertSpaces ? '\n' : '\t';

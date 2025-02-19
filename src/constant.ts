@@ -74,6 +74,7 @@ export const enum DECORATION_STYLE_KEY {
 export const enum DECORATION_GENERAL_STYLE_CONFIG_KEY {
     OPACITY = 'borderOpacity',
     BACKGROUND_OPACITY = 'backgroundOpacity',
+    STATUS_TEXT_ENABLED = 'statusTextEnabled',
     STATUS_TEXT_OPACITY = 'statusTextOpacity',
     STATUS_TEXT_COLOR = 'statusTextColor',
     STATUS_TEXT_BACKGROUND_COLOR = 'statusTextBackgroundColor',
@@ -135,6 +136,7 @@ export const CONFIG_INFO = {
     generalConfigInfo: {
         borderOpacity: undefined,
         backgroundOpacity: undefined,
+        statusTextEnabled: undefined,
         statusTextOpacity: undefined,
         borderWidth: undefined,
         borderColor: undefined,
@@ -245,7 +247,7 @@ export const NO_CONFIGURATION_GENERAL_DEFAULT: Type.NoConfigurationGeneraType = 
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.OPACITY]: 1,
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.BACKGROUND_OPACITY]: 0.5,
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_COLOR]: '#FF0000',
-    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_OPACITY]: 1
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_OPACITY]: 1,
 } as const;
 
 export const NO_CONFIGURATION_DEOCORATION_DEFAULT: Type.NoConfigurationDecorationType = {

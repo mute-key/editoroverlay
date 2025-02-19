@@ -116,6 +116,7 @@ var CONFIG_INFO = {
   generalConfigInfo: {
     borderOpacity: void 0,
     backgroundOpacity: void 0,
+    statusTextEnabled: void 0,
     statusTextOpacity: void 0,
     borderWidth: void 0,
     borderColor: void 0,
@@ -251,7 +252,7 @@ var createEditorDecorationType = (styleAppliedConfig) => {
 // src/config.ts
 var configInfo = { ...CONFIG_INFO };
 var getConfigString = (configReady) => Object.entries(configReady.config).reduce((acc, [key, infoProp]) => {
-  if (typeof infoProp === "string" || typeof infoProp === "number") {
+  if (typeof infoProp === "string" || typeof infoProp === "number" || typeof infoProp === "boolean") {
     acc.push(infoProp);
   }
   return acc;
@@ -281,7 +282,6 @@ var updateEditorConfiguration = (configReady) => {
   editorConfig.update("cursorBlinking", "phase", vscode3.ConfigurationTarget.Global);
   const tabSize = editorConfig.get("tabSize");
   const insertSpaces = editorConfig.get("insertSpaces");
-  const indentSize = editorConfig.get("indentSize");
   configReady.status.indent.size = Number(tabSize ? tabSize : 4);
   configReady.status.indent.type = insertSpaces ? "\n" : "	";
   configReady.status.indent.regex = insertSpaces ? new RegExp(`^( {${configReady.status.indent.size}}|[\r
@@ -472,72 +472,89 @@ var statusOf = {
     contentText: (nth, selectionCount, lines, characters) => `< Multi Selection ... Of (${nth} of ${selectionCount}, with Total ${lines} Lines ${characters} Characters )`
   }
 };
+var cursorOnlyStatus = (editor, type) => {
+  return [{
+    contentText: statusOf[type.KEY].contentText(editor.selection.active.character),
+    range: createRangeSPEP(editor.selection.active, editor.selection.active),
+    isWholeLine: true
+  }];
+};
+var singleLineStatus = (editor, type) => {
+  return [{
+    contentText: statusOf[type.KEY].contentText(Math.abs(editor.selection.end.character - editor.selection.start.character)),
+    range: createRangeSPEP(editor.selection.active, editor.selection.active),
+    isWholeLine: true
+  }];
+};
+var multilineStatus = (editor, status2, type) => {
+  const text = editor.document.getText(editor.selection);
+  const count = text.replace(status2.indent.regex, "").length;
+  const args = Math.abs(editor.selection.end.line - editor.selection.start.line) + 1;
+  return [{
+    contentText: statusOf[type.KEY].contentText(args, count, "Anchor"),
+    range: createRangeSPEP(editor.selection.anchor, editor.selection.anchor),
+    isWholeLine: true
+  }, {
+    contentText: statusOf[type.KEY].contentText(args, count, "Cursor"),
+    range: createRangeSPEP(editor.selection.active, editor.selection.active),
+    isWholeLine: true
+  }];
+};
+var multiCursorStatus = (editor, status2, type) => {
+  let length = editor.selections.length;
+  let idx = 0;
+  let charCount = 0;
+  let lineCount = 0;
+  let isSingleLine = editor.selections[0].start.line === editor.selections[0].end.line;
+  let lineDiff = 0;
+  const statusInfo = [];
+  if (isSingleLine) {
+    lineDiff = 1;
+  } else {
+    lineDiff = Math.abs(editor.selections[0].end.line - editor.selections[0].start.line) + 1;
+  }
+  while (idx < length) {
+    if (isSingleLine) {
+      charCount = charCount + (editor.selections[idx].end.character - editor.selections[idx].start.character);
+      lineCount = lineCount + lineDiff;
+    } else {
+      const text = editor.document.getText(editor.selections[idx]);
+      charCount = charCount + text.replace(status2.indent.regex, "").length;
+      lineCount = lineCount + lineDiff;
+    }
+    idx++;
+  }
+  idx = 0;
+  while (idx < length) {
+    statusInfo.push({
+      contentText: statusOf[type.KEY].contentText(idx + 1, length, lineCount, charCount),
+      range: createRangeSPEP(editor.selections[idx].start, editor.selections[idx].end),
+      isWholeLine: true
+    });
+    idx++;
+  }
+  return statusInfo;
+};
 var statusInfoSplit = (editor, status2, type) => {
   return {
-    ["CURSOR_ONLY" /* CURSOR_ONLY */]: () => [{
-      contentText: statusOf[type.KEY].contentText(editor.selection.active.character),
-      range: createRangeSPEP(editor.selection.active, editor.selection.active),
-      isWholeLine: true
-    }],
-    ["SINGLE_LINE" /* SINGLE_LINE */]: () => [{
-      contentText: statusOf[type.KEY].contentText(Math.abs(editor.selection.end.character - editor.selection.start.character)),
-      range: createRangeSPEP(editor.selection.active, editor.selection.active),
-      isWholeLine: true
-    }],
-    ["MULTI_LINE" /* MULTI_LINE */]: () => {
-      const text = editor.document.getText(editor.selection);
-      const count = text.replace(status2.indent.regex, "").length;
-      const args = Math.abs(editor.selection.end.line - editor.selection.start.line) + 1;
-      return [{
-        contentText: statusOf[type.KEY].contentText(args, count, "Anchor"),
-        range: createRangeSPEP(editor.selection.anchor, editor.selection.anchor),
-        isWholeLine: true
-      }, {
-        contentText: statusOf[type.KEY].contentText(args, count, "Cursor"),
-        range: createRangeSPEP(editor.selection.active, editor.selection.active),
-        isWholeLine: true
-      }];
-    },
-    ["MULTI_CURSOR" /* MULTI_CURSOR */]: () => {
-      let length = editor.selections.length;
-      let idx = 0;
-      let charCount = 0;
-      let lineCount = 0;
-      let isSingleLine = editor.selections[0].start.line === editor.selections[0].end.line;
-      let lineDiff = 0;
-      const statusInfo = [];
-      if (isSingleLine) {
-        lineDiff = 1;
-      } else {
-        lineDiff = Math.abs(editor.selections[0].end.line - editor.selections[0].start.line) + 1;
-      }
-      while (idx < length) {
-        if (isSingleLine) {
-          charCount = charCount + (editor.selections[idx].end.character - editor.selections[idx].start.character);
-          lineCount = lineCount + lineDiff;
-        } else {
-        }
-        idx++;
-      }
-      idx = 0;
-      while (idx < length) {
-        statusInfo.push({
-          contentText: statusOf[type.KEY].contentText(idx + 1, length, lineCount, charCount),
-          range: createRangeSPEP(editor.selections[idx].start, editor.selections[idx].end),
-          isWholeLine: true
-        });
-        idx++;
-      }
-      return statusInfo;
-    }
+    ["CURSOR_ONLY" /* CURSOR_ONLY */]: () => cursorOnlyStatus(editor, type),
+    ["SINGLE_LINE" /* SINGLE_LINE */]: () => singleLineStatus(editor, type),
+    ["MULTI_LINE" /* MULTI_LINE */]: () => multilineStatus(editor, status2, type),
+    ["MULTI_CURSOR" /* MULTI_CURSOR */]: () => multiCursorStatus(editor, status2, type)
   };
 };
 var statusDecorationType = (statusInfo, generalConfig) => {
+  const textColor = generalConfig.statusTextColor;
+  const textOpacity = generalConfig.statusTextOpacity;
+  const defaultColor = NO_CONFIGURATION_GENERAL_DEFAULT.statusTextColor;
+  const defaultOpacity = NO_CONFIGURATION_GENERAL_DEFAULT.statusTextOpacity;
+  const background = void 0;
   return {
     isWholeLine: statusInfo.isWholeLine,
     after: {
       contentText: statusInfo.contentText,
-      color: hexToRgbaStringLiteral(generalConfig.statusTextColor, generalConfig.statusTextOpacity, NO_CONFIGURATION_GENERAL_DEFAULT.statusTextColor, NO_CONFIGURATION_GENERAL_DEFAULT.statusTextOpacity),
+      color: hexToRgbaStringLiteral(textColor, textOpacity, defaultColor, defaultOpacity),
+      background,
       fontWeight: "light",
       fontStyle: "italic",
       textDecoration: "none",
@@ -677,7 +694,9 @@ var decorationCoordinator = ({ editor, decorationList, decorationInfo, loadConfi
   const textEditorDecoration = decorationList[decorationInfo.KEY];
   if (textEditorDecoration) {
     const borderConfig = loadConfig.borderPositionInfo[decorationInfo.KEY];
-    status(editor, loadConfig.status, loadConfig.generalConfigInfo, decorationInfo);
+    if (loadConfig.generalConfigInfo.statusTextEnabled) {
+      status(editor, loadConfig.status, loadConfig.generalConfigInfo, decorationInfo);
+    }
     const context = {
       editor,
       borderConfig,

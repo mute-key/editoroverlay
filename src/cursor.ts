@@ -7,7 +7,6 @@ import * as Type from './type/type.d';
 import * as config from './config';
 import {
     DECORATION_STYLE_KEY,
-    DECORATION_TYPE_MASK,
     DECORATION_INFO,
     APPLIED_DECORATION
 } from './constant';
@@ -58,7 +57,9 @@ const decorationCoordinator: Type.DecorationCoordinatorFunc = ({ editor, decorat
     if (textEditorDecoration) {
         const borderConfig: Type.BorderPositionParserType = loadConfig.borderPositionInfo[decorationInfo.KEY];
 
-        status(editor, loadConfig.status, loadConfig.generalConfigInfo, decorationInfo);
+        if (loadConfig.generalConfigInfo.statusTextEnabled) {
+            status(editor, loadConfig.status, loadConfig.generalConfigInfo, decorationInfo);
+        }
 
         const context: Type.SelectionTypeToDecorationContext = {
             editor,

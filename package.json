@@ -73,6 +73,11 @@
                     "default": 0.4,
                     "description": "opacity of background color of selection in %. 1 is no opacity."
                 },
+                "cursorlinehighlight.statusTextEnabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable inline status text."
+                },
                 "cursorlinehighlight.statusTextOpacity": {
                     "type": "number",
                     "enum": [
