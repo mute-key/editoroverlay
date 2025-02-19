@@ -68,12 +68,15 @@ export const enum DECORATION_STYLE_KEY {
     SINGLE_LINE = 'SINGLE_LINE',
     MULTI_LINE = 'MULTI_LINE',
     MULTI_CURSOR = 'MULTI_CURSOR',
-    GENERAL = 'GENERAL',
+    // GENERAL = 'GENERAL',
 };
 
 export const enum DECORATION_GENERAL_STYLE_CONFIG_KEY {
     OPACITY = 'borderOpacity',
     BACKGROUND_OPACITY = 'backgroundOpacity',
+    STATUS_TEXT_OPACITY = 'statusTextOpacity',
+    STATUS_TEXT_COLOR = 'statusTextColor',
+    STATUS_TEXT_BACKGROUND_COLOR = 'statusTextBackgroundColor',
     BORDER_WIDTH = 'borderWidth',
     BORDER_COLOR = 'borderColor',
     BACKGROUND_COLOR = 'backgroundColor',
@@ -109,6 +112,14 @@ export const CONFIG_INFO = {
     name: undefined,
     config: undefined,
     configHashKey: undefined,
+    status: {
+        position: undefined,
+        decorationType: undefined,
+        indent: {
+            size: undefined,
+            type: undefined
+        } as const,
+    } as const,
     decorationList: {
         CURSOR_ONLY: undefined,
         SINGLE_LINE: undefined,
@@ -124,9 +135,12 @@ export const CONFIG_INFO = {
     generalConfigInfo: {
         borderOpacity: undefined,
         backgroundOpacity: undefined,
+        statusTextOpacity: undefined,
         borderWidth: undefined,
         borderColor: undefined,
         backgroundColor: undefined,
+        statusTextColor: undefined,
+        statusTextBackgroundColor: undefined
     } as const
 } as const;
 
@@ -229,7 +243,9 @@ export const DECORATION_STYLE_PREFIX = {
  */
 export const NO_CONFIGURATION_GENERAL_DEFAULT: Type.NoConfigurationGeneraType = {
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.OPACITY]: 1,
-    [DECORATION_GENERAL_STYLE_CONFIG_KEY.BACKGROUND_OPACITY]: 0.5
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.BACKGROUND_OPACITY]: 0.5,
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_COLOR]: '#FF0000',
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_OPACITY]: 1
 } as const;
 
 export const NO_CONFIGURATION_DEOCORATION_DEFAULT: Type.NoConfigurationDecorationType = {

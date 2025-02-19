@@ -9,13 +9,17 @@ import {
     DECORATION_GENERAL_STYLE_CONFIG_KEY,
     DECORATION_TYPE_MASK,
     SELECTION_TYPE,
-    BORDER_POSITION_VARIATION
+    BORDER_POSITION_VARIATION,
+    DECORATION_STYLE_KEY
 } from '../constant';
 
 
 type NoConfigurationGeneraType = {
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.OPACITY]: number
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.BACKGROUND_OPACITY]: number
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_OPACITY]?: number
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_COLOR]?: string
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_BACKGROUND_COLOR]?: string
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.BORDER_WIDTH]?: string
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.BORDER_COLOR]?: string
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.BACKGROUND_COLOR]?: string
@@ -78,21 +82,64 @@ type GeneralConfigInfoType = {
     borderWidth?: string
     borderColor?: string
     backgroundColor?: string
+    statusTextOpacity?: number,
+    statusTextColor?: string,
+    statusTextBackgroundColor?: string,
 }
 
 type ConfigInfoType = {
-    name: string | undefined
-    config: vscode.WorkspaceConfiguration | undefined,
-    configHashKey: string | undefined
-    decorationList: DecorationType
-    generalConfigInfo: GeneralConfigInfoType
-    borderPositionInfo: BorderPositionInfoType
+    name?: string
+    config?: vscode.WorkspaceConfiguration,
+    configHashKey?: string
 }
+
+type StatusInfoType = {
+    contentText: string
+    isWholeLine: boolean
+    range: vscode.Range
+}
+type StatusOfType = {
+    [SELECTION_TYPE.CURSOR_ONLY]: {
+        contentText: ((col: string) => string),
+    }
+    [SELECTION_TYPE.SINGLE_LINE]: {
+        contentText: ((characters: string) => string),
+    }
+    [SELECTION_TYPE.MULTI_LINE]: {
+        contentText: ((line: string, position: string, characters: string) => string),
+    }
+    [SELECTION_TYPE.MULTI_CURSOR]: {
+        contentText: ((nth: string, selectionCount: string, lines: string, characters: string) => string),
+    }
+} 
+
+type StatusType = {
+    position: string // inline | nextline,
+    decorationType: vscode.TextEditorDecorationType[] | undefined,
+    indent: {
+        size: number,
+        type: string,
+        regex: RegExp,
+    }
+}
+
+type StatusReadyType = {
+    decorationType: vscode.TextEditorDecorationType[]
+} & StatusType
+
+type statusInfoSplitType = {
+    [k in keyof typeof DECORATION_STYLE_KEY]: () => StatusInfoType[]
+};
+
 
 type ConfigInfoReadyType = {
     name: string
     config: vscode.WorkspaceConfiguration,
     configHashKey: string,
+    status: StatusType,
+    decorationList: DecorationType
+    borderPositionInfo: BorderPositionInfoType
+    generalConfigInfo: GeneralConfigInfoType
 } & ConfigInfoType
 
 // type SelectionConfigFunctionType<T> = (config: T) => DecorationStyleConfigType[];
@@ -108,39 +155,6 @@ type ColourConfigTransformType = {
     fn: (v: string, n: number, d: string) => string
 }
 
-/**
- * [Type.DecorationStyleKey]
- * 
- * DECORATION_STYLE_KEY.USE_OVERRIDE: optional
- * if style to use override value.
- * 
- * DECORATION_STYLE_KEY.IS_WHOLE_LINE
- * if border is to be displayed for whole line.
- * 
- * DECORATION_STYLE_KEY.BORDER_WITH
- * css style border with.
- * 
- * DECORATION_STYLE_KEY.BORDER_COLOR
- * css style border color.
- * 
- * DECORATION_STYLE_KEY.BORDER_STYLE
- * css style border style.
- * 
- * DECORATION_STYLE_KEY.BORDER_RADIUS: optional
- * css style border radious.
- * 
- * DECORATION_STYLE_KEY.BACKGROUND_COLOR: optional>
- * css style background color.
- * 
- * comment, unused but for future reference;
- * https://code.visualstudio.com/api/references/vscode-api#ThemeColor
- * https://code.visualstudio.com/api/references/vscode-api#OverviewRulerLane
- * 
- * Usage example;
- * new vscode.ThemeColor()
- * vscode.OverviewRulerLane
- * 
- */
 type DecorationStyleConfigType = {
     [DECORATION_STYLE_CONFIG_KEY.USE_OVERRIDE]?: boolean
     [DECORATION_STYLE_CONFIG_KEY.IS_WHOLE_LINE]: boolean
@@ -152,8 +166,8 @@ type DecorationStyleConfigType = {
     [DECORATION_STYLE_CONFIG_KEY.BACKGROUND_COLOR]?: string
     [DECORATION_STYLE_CONFIG_KEY.OVERVIEW_RULER_COLOR]?: string | vscode.ThemeColor,
     [DECORATION_STYLE_CONFIG_KEY.OVERVIEW_RULER_LANE]?: vscode.OverviewRulerLane
-    before?: any
-    after?: any
+    // before?: any
+    // after?: any
     // [DECORATION_STYLE_KEY.FONT_WEIGHT]: string
 }
 
@@ -192,6 +206,13 @@ type DecorationContext = {
 type SetDecorationOnEditorFunc = (context: DecorationContext) => void;
 
 type DecorationCoordinatorFunc = (context: DecorationContext) => DecorationWithRangeType[] | undefined;
+
+type decorationCoordinatorSplit = {
+    [SELECTION_TYPE.CURSOR_ONLY]: any
+    [SELECTION_TYPE.SINGLE_LINE]: any
+    [SELECTION_TYPE.MULTI_LINE]: any
+    [SELECTION_TYPE.MULTI_CURSOR]: any
+} 
 
 type createRange = {
     startPosition: number[] | vscode.Position

@@ -17,6 +17,9 @@ import {
     BORDER_WIDTH_DEFINITION,
     SYSTEM_MESSAGE,
     CONFIG_INFO } from './constant';
+    import {
+        createEditorDecorationType
+    } from './decoration';
 
 /**
  * workspace configuration could have been 'default' but
@@ -60,12 +63,24 @@ const ifConfigChanged = (configReady: Type.ConfigInfoReadyType): boolean => {
  * editor config overwrite.
  * 
  */
-const updateEditorConfiguration = (): void => {
+const updateEditorConfiguration = (configReady: Type.ConfigInfoReadyType): void => {
     const editorConfig = vscode.workspace.getConfiguration("editor");
     editorConfig.update("renderLineHighlight", 'gutter', vscode.ConfigurationTarget.Global);
     editorConfig.update("roundedSelection", false, vscode.ConfigurationTarget.Global);
     editorConfig.update("cursorBlinking", 'phase', vscode.ConfigurationTarget.Global);
 
+    const tabSize = editorConfig.get<string | number | undefined>("tabSize");
+    const insertSpaces = editorConfig.get<string | number | undefined>("insertSpaces");
+    const indentSize = editorConfig.get<string | number | undefined>("indentSize");
+
+    configReady.status.indent.size = Number(tabSize ? tabSize : 4);
+    configReady.status.indent.type = insertSpaces ? '\n' : '\t';
+    configReady.status.indent.regex = insertSpaces
+        ? new RegExp(`^( {${configReady.status.indent.size}}|[\r\n]+)*$`, 'gm')
+        : /(\t|[\r\n]+)*$/gm;
+
+    // console.log("Default Tab Size:", config.get("tabSize"));
+    // console.log("Default Insert Spaces:", config.get("insertSpaces"));
     // this is very cool but not necessary.
     // editorConfig.update("cursorSmoothCaretAnimation", 'on', vscode.ConfigurationTarget.Global);
 };
@@ -89,7 +104,7 @@ const initialiseConfig = (context: vscode.ExtensionContext): Type.ConfigInfoRead
 
     if (!configReady.configHashKey) {
         setConfigHashKey(configReady);
-        updateEditorConfiguration();
+        updateEditorConfiguration(configReady);
     } else {
         if (!ifConfigChanged(configReady)) {
             return;
@@ -199,7 +214,7 @@ const createDecorationType: Type.CreateDecorationFunctionType = (
                 styledConfig.push(conf);
                 return styledConfig;
             }, [] as Type.DecorationStyleConfigType[]).reduce((textEditorDecoration, styleAppliedConfig) => {
-                textEditorDecoration.push(vscode.window.createTextEditorDecorationType(styleAppliedConfig));
+                textEditorDecoration.push(createEditorDecorationType(styleAppliedConfig));
                 return textEditorDecoration;
             }, [] as vscode.TextEditorDecorationType[]);
 

@@ -63,7 +63,7 @@ const capitalize = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1)
  * @returns
  * 
  */
-const hexToRgbaStringLiteral = (hex: string, opacity: number, defaultValue: string): string => {
+const hexToRgbaStringLiteral = (hex: string, opacity: number = 0.6, defaultValue: string, opacityDefault?: number): string => {
     hex = hex.replace(/^#/, "");
 
     if (hex.length === 3) {
@@ -74,6 +74,7 @@ const hexToRgbaStringLiteral = (hex: string, opacity: number, defaultValue: stri
     if (!regex.test(hex)) {
         // using default value.
         hex = defaultValue.replace(/^#/, "");
+        opacity = opacityDefault as number;
     }
 
     const r = parseInt(hex.substring(0, 2), 16);
