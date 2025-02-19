@@ -5,27 +5,27 @@
 import * as vscode from 'vscode';
 import * as Type from './type/type.d';
 import {
+    regex,
     fnv1aHash,
     capitalize,
     readBits,
     hexToRgbaStringLiteral,
-    sendAutoDismissMessage } from './util';
+    sendAutoDismissMessage
+} from './util';
 import {
     NO_CONFIGURATION_GENERAL_DEFAULT,
     NO_CONFIGURATION_DEOCORATION_DEFAULT,
     DECORATION_STYLE_PREFIX,
     BORDER_WIDTH_DEFINITION,
+    CONFIG_INFO
+} from './constant/object';
+import {
     SYSTEM_MESSAGE,
-    CONFIG_INFO } from './constant';
-    import {
-        createEditorDecorationType
-    } from './decoration';
+} from './constant/enum';
+import {
+    createEditorDecorationType
+} from './decoration';
 
-/**
- * workspace configuration could have been 'default' but
- * i think undefined is more difinitive for unset default value.
- * 
- */
 const configInfo: Type.ConfigInfoType = { ...CONFIG_INFO };
 
 
@@ -76,11 +76,9 @@ const updateEditorConfiguration = (configReady: Type.ConfigInfoReadyType): void 
     configReady.status.indent.size = Number(tabSize ? tabSize : 4);
     configReady.status.indent.type = insertSpaces ? '\n' : '\t';
     configReady.status.indent.regex = insertSpaces
-        ? new RegExp(`^( {${configReady.status.indent.size}}|[\r\n]+)*$`, 'gm')
-        : /(\t|[\r\n]+)*$/gm;
+        ? regex.indentRegex(configReady.status.indent.size)
+        : regex.tagRegex;
 
-    // console.log("Default Tab Size:", config.get("tabSize"));
-    // console.log("Default Insert Spaces:", config.get("insertSpaces"));
     // this is very cool but not necessary.
     // editorConfig.update("cursorSmoothCaretAnimation", 'on', vscode.ConfigurationTarget.Global);
 };
@@ -126,6 +124,14 @@ const configNameTransformer = (configNameString: string, configNameTransform: Ty
     return configNameTransform.reduce((str, transform) => transform(str), configNameString);
 };
 
+const isConfigValueValid = (configInfo: Type.ConfigInfoReadyType, configPrefix: string, configNameString: string, value: any, defaultValue: any) => {
+    const config = vscode.workspace.getConfiguration(configInfo.name);
+
+    if (value === null || value.length === 0) {
+
+    }
+};
+
 const getConfigValue: Type.DecorationConfigGetFunctionType = <T extends Type.DecorationStyleConfigValueType>(
     configInfo: Type.ConfigInfoReadyType,
     configPrefix: Type.DecorationStyleConfigPrefixType,
@@ -138,11 +144,13 @@ const getConfigValue: Type.DecorationConfigGetFunctionType = <T extends Type.Dec
         if (configNameTransform && configNameTransform.length) {
             configNameString = configNameTransformer(configName, configNameTransform);
         }
-        
+
         const value = configInfo.config.get<T>(configPrefix + configNameString, defaultValue);
         if (value === undefined) {
             console.warn(`Config value for ${configName} is undefined or caused an error. Using default value.`);
-        } 
+        }
+
+        //return isConfigValueValid(configInfo, configPrefix, configNameString,  value, defaultValue) ? value : defaultValue;
 
         return value ?? defaultValue;
     } catch (err) {
@@ -163,7 +171,7 @@ const colorConfigTransform: Record<string, Type.ColourConfigTransformType> = {
 };
 
 /**
- * @param config-
+ * @param config
  * @param decorationKey
  * @returns
  * 
@@ -178,7 +186,7 @@ const getConfigSet = (configInfo: Type.ConfigInfoReadyType, decorationKey: Type.
         const configValue: string | boolean = getConfigValue(configInfo, configPrefix, checkConfigKeyAndCast(configName, defaultConfigDefinition), defaultValue, [capitalize]);
 
         // configValue can be boolean. 
-        if (configValue !== undefined) { 
+        if (configValue !== undefined) {
             if (Object.hasOwn(colorConfigTransform, configName)) {
                 const colorTransform = colorConfigTransform[configName];
                 config[configName] = colorTransform.fn(configValue as string, configInfo.generalConfigInfo[colorTransform.of] as number, defaultValue as string);

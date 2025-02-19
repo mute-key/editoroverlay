@@ -1,10 +1,22 @@
 import * as vscode from 'vscode';
+import * as Type from './type/type.d';
 
 const sendAutoDismissMessage = (text: string, dismiss: number) => {
     const message = vscode.window.showInformationMessage(text);
     setTimeout(() => {
         message?.then(() => {});
     }, dismiss);
+};
+
+const sendMessage = (text: string, dismiss: number) => {
+    const message = vscode.window.showWarningMessage(text).then(
+        // to setting.  
+    );
+};
+
+const regex: Type.regexType  = {
+    indentRegex: (indentSize: string | number) => new RegExp(`^( {${indentSize}}|[\r\n]+)*$`, 'gm'),
+    tagRegex: /(\t|[\r\n]+)*$/gm
 };
 
 /**
@@ -85,6 +97,7 @@ const hexToRgbaStringLiteral = (hex: string, opacity: number = 0.6, defaultValue
 };
 
 export {
+    regex,
     fnv1aHash,
     readBits,
     capitalize,

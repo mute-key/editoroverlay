@@ -7,9 +7,13 @@ import * as Type from './type/type.d';
 import * as config from './config';
 import {
     DECORATION_STYLE_KEY,
+} from './constant/enum';
+
+import {
     DECORATION_INFO,
     APPLIED_DECORATION
-} from './constant';
+} from './constant/object';
+
 import {
     cursorOnlyDecorationWithRange,
     singelLineDecorationWithRange,
@@ -20,6 +24,9 @@ import {
 import {
     applyDecoration
 } from './decoration';
+import {
+    regex
+} from './util';
 
 /**
  * @param editor
@@ -67,7 +74,7 @@ const decorationCoordinator: Type.DecorationCoordinatorFunc = ({ editor, decorat
             textEditorDecoration
         };
 
-        const fnSplit =  {
+        const fnSplit = {
             [DECORATION_STYLE_KEY.CURSOR_ONLY]: () => cursorOnlyDecorationWithRange(context),
             [DECORATION_STYLE_KEY.SINGLE_LINE]: () => singelLineDecorationWithRange(context),
             [DECORATION_STYLE_KEY.MULTI_LINE]: () => multiLineDecorationWithRange(context),
@@ -120,8 +127,6 @@ const cursorActivate = async (context: vscode.ExtensionContext): Promise<vscode.
             return;
         }
 
-        console.log(loadConfig.generalConfigInfo);
-
         const activeEditor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
 
         if (activeEditor) {
@@ -165,10 +170,16 @@ const editorIndentOption = (config: Type.ConfigInfoReadyType, editor: vscode.Tex
     config.status.indent.size = Number(editor.options.tabSize ?? editor.options.indentSize ?? 4);
     config.status.indent.type = editor.options.insertSpaces ? '\n' : '\t';
     config.status.indent.regex = editor.options.insertSpaces
-        ? new RegExp(`^ {${config.status.indent.size}}`, 'gm')
-        : /\t/gm;
+        ? regex.indentRegex(config.status.indent.size)
+        : regex.tagRegex;
 };
 
+const editorViewportChanged = () => {
+    vscode.window.onDidChangeTextEditorVisibleRanges((event: vscode.TextEditorVisibleRangesChangeEvent) => {
+        // event.textEditor.revealRange(new vscode.Range(new vscode.Position(0, 0), new vscode.Range(0, 0))
+        //     , vscode.TextEditorRevealType.Default))
+    });
+};
 
 const editorOptionChange = (config: Type.ConfigInfoReadyType): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorOptions((event: vscode.TextEditorOptionsChangeEvent) => {
@@ -180,6 +191,7 @@ const activeEditorChanged = (config: Type.ConfigInfoReadyType): vscode.Disposabl
     return vscode.window.onDidChangeActiveTextEditor((editor: vscode.TextEditor | undefined) => {
         if (editor) {
             editorIndentOption(config, editor);
+
             // quick release of decorations.
             // this method feels smoother than tracking the last active editor in object literal, 
             // and resetting the decoration. 

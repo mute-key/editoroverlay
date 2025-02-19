@@ -5,13 +5,15 @@
 import * as vscode from 'vscode';
 import {
     DECORATION_STYLE_CONFIG_KEY,
-    DECORATION_STYLE_PREFIX,
     DECORATION_GENERAL_STYLE_CONFIG_KEY,
     DECORATION_TYPE_MASK,
     SELECTION_TYPE,
     BORDER_POSITION_VARIATION,
     DECORATION_STYLE_KEY
-} from '../constant';
+} from '../constant/enum';
+import {
+    DECORATION_STYLE_PREFIX,
+} from '../constant/object';
 
 type NoConfigurationGeneraType = {
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.OPACITY]: number
@@ -88,6 +90,29 @@ type GeneralConfigInfoType = {
     statusTextBackgroundColor?: string,
 }
 
+
+type StatusDecorationType = {
+    isWholeLine?: boolean,
+    rangeBehavior?: any,
+    after: {
+        contentText?: string,
+        color?: string,
+        backgroundColor?: string | null,
+        fontWeight: string,
+        fontStyle: string,
+        textDecoration: string,
+        margin: string,
+    }
+}
+
+type StatusDecorationReadyType = {
+    isWholeLine: boolean,
+    after: {
+        contentText: string,
+        color: string,
+    }
+} & StatusDecorationType
+
 type ConfigInfoType = {
     name?: string
     config?: vscode.WorkspaceConfiguration,
@@ -132,6 +157,10 @@ type statusInfoSplitType = {
     [k in keyof typeof DECORATION_STYLE_KEY]: () => StatusInfoType[]
 };
 
+type regexType = {
+    indentRegex: (args: string | number) => RegExp
+    tagRegex: RegExp
+}
 
 type ConfigInfoReadyType = {
     name: string
