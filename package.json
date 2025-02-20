@@ -3,7 +3,7 @@
     "publisher": "mutekey",
     "displayName": "Cursor/Selection Line Highlight",
     "description": "Apply configurable decorations on cursor line and selection lines.",
-    "version": "0.9.1",
+    "version": "1.0.0",
     "icon": "./misc/icon.png",
     "engines": {
         "vscode": "^1.96.0"
