@@ -21,7 +21,7 @@ type NoConfigurationGeneraType = {
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_ENABLED]: boolean
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_OPACITY]: number
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_COLOR]: string
-    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_BACKGROUND_COLOR]?: string
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_BACKGROUND_COLOR]?: string | null
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.BORDER_WIDTH]?: string
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.BORDER_COLOR]?: string
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.BACKGROUND_COLOR]?: string
@@ -59,7 +59,7 @@ type DecorationConfigGetFunctionType = <T extends DecorationStyleConfigValueType
     configName: DecorationStyleConfigNameType | GeneralConfigNameOnlyType,
     defaultValue: T,
     configNameChange?: StringTransformFunc
-) => T
+) => T | null
 
 type DecorationTypeSplit = {
     [K in keyof typeof DECORATION_STYLE_PREFIX]: string[]
@@ -223,7 +223,7 @@ type DecorationInfoType = {
 }
 
 
-type UnsetDecorationFunctionType = (decorationList: DecorationType, editor?: vscode.TextEditor) => (decorationInfo: DecorationInfoPropType) => boolean;
+type UnsetDecorationFunctionType = (config: ConfigInfoReadyType, editor?: vscode.TextEditor, dispose?: boolean) => (decorationInfo: DecorationInfoPropType) => boolean;
 
 type UnsetFunctionType = (decorationInfo: DecorationInfoPropType) => boolean
 

@@ -136,7 +136,7 @@ var CONFIG_INFO = {
     backgroundOpacity: void 0,
     // borderWidth: undefined,
     // borderColor: undefined,
-    backgroundColor: void 0,
+    // backgroundColor: undefined,
     statusTextEnabled: void 0,
     statusTextColor: void 0,
     statusTextOpacity: void 0,
@@ -223,8 +223,8 @@ var NO_CONFIGURATION_GENERAL_DEFAULT = {
   ["backgroundOpacity" /* BACKGROUND_OPACITY */]: 0.5,
   ["statusTextEnabled" /* STATUS_TEXT_ENABLED */]: true,
   ["statusTextColor" /* STATUS_TEXT_COLOR */]: "#FF0000",
-  ["statusTextOpacity" /* STATUS_TEXT_OPACITY */]: 1
-  // [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_BACKGROUND_COLOR]: '#FF0000',
+  ["statusTextOpacity" /* STATUS_TEXT_OPACITY */]: 1,
+  ["statusTextBackgroundColor" /* STATUS_TEXT_BACKGROUND_COLOR */]: null
 };
 var NO_CONFIGURATION_DEOCORATION_DEFAULT = {
   ["CURSOR_ONLY" /* CURSOR_ONLY */]: {
@@ -263,12 +263,11 @@ var NO_CONFIGURATION_DEOCORATION_DEFAULT = {
 
 // src/decoration.ts
 var vscode2 = __toESM(require("vscode"));
-var applyDecoration = (editor, decoraiton, range) => {
-  editor.setDecorations(decoraiton, range);
-};
-var createEditorDecorationType = (styleAppliedConfig) => {
-  return vscode2.window.createTextEditorDecorationType(styleAppliedConfig);
-};
+var applyDecoration = (editor, decoraiton, range) => editor.setDecorations(decoraiton, range);
+var createEditorDecorationType = (styleAppliedConfig) => vscode2.window.createTextEditorDecorationType(styleAppliedConfig);
+var disposeDecoration = (decorationList) => decorationList.forEach((decorationType) => {
+  decorationType.dispose();
+});
 
 // src/config.ts
 var configInfo = { ...CONFIG_INFO };
@@ -290,6 +289,7 @@ var ifConfigChanged = (configReady) => {
   if (configReady.configHashKey === configHash) {
     return false;
   } else {
+    configReady.configError = [];
     configReady.config = vscode3.workspace.getConfiguration(configReady.name);
     configReady.configHashKey = configHash;
     if (configReady.configError.length === 0) {
@@ -298,6 +298,14 @@ var ifConfigChanged = (configReady) => {
       sendAutoDismissMessage("error in config", 1500);
     }
     return true;
+  }
+};
+var updateEachEditorConfiguration = (key, value) => {
+  const editorConfig = vscode3.workspace.getConfiguration("editor");
+  if (value === null || value === "null" || String(value).length === 0) {
+    editorConfig.update(key, null, vscode3.ConfigurationTarget.Global);
+  } else {
+    editorConfig.update(key, value, vscode3.ConfigurationTarget.Global);
   }
 };
 var updateEditorConfiguration = (configReady) => {
@@ -322,14 +330,17 @@ var initialiseConfig = (context) => {
     return;
   }
   const configReady = configInfo;
+  if (!configReady.configError) {
+    configReady.configError = [];
+  }
   if (!configReady.configHashKey) {
     setConfigHashKey(configReady);
     updateEditorConfiguration(configReady);
   } else {
     if (!ifConfigChanged(configReady)) {
       return configReady;
+    } else {
     }
-    ;
   }
   if (createDecorationTypeBuilder(configReady)) {
     return configReady;
@@ -342,14 +353,24 @@ var checkConfigKeyAndCast = (key, config) => {
 var configNameTransformer = (configNameString, configNameTransform) => configNameTransform.reduce((str, transform) => transform(str), configNameString);
 var isConfigValueValid = (configInfo2, configPrefix, configNameString, value, defaultValue) => {
   const configName = configPrefix + configNameString;
-  if (configName.toLocaleLowerCase().includes("color")) {
+  const configKeyWithScope = configInfo2.name + "." + configName;
+  if (configName.toLocaleLowerCase().includes("bordercolor")) {
     if (!isValidHexColor(String(value))) {
-      configInfo2.configError.push(configInfo2.name + "." + configName);
+      configInfo2.configError.push(configKeyWithScope);
+      return defaultValue;
+    }
+  } else if (configName.toLocaleLowerCase().includes("backgroundcolor")) {
+    if (value === null || value === "null" || String(value).length === 0) {
+      updateEachEditorConfiguration(configKeyWithScope, null);
+      return null;
+    }
+    if (!isValidHexColor(String(value))) {
+      configInfo2.configError.push(configKeyWithScope);
       return defaultValue;
     }
   } else if (configName.toLocaleLowerCase().includes("borderwidth")) {
     if (!isValidWidth(String(value))) {
-      configInfo2.configError.push(configInfo2.name + "." + configName);
+      configInfo2.configError.push(configKeyWithScope);
       return defaultValue;
     }
   }
@@ -386,7 +407,7 @@ var getConfigSet = (configInfo2, decorationKey) => {
   const defaultConfigDefinition = NO_CONFIGURATION_DEOCORATION_DEFAULT[decorationKey];
   return Object.entries(defaultConfigDefinition).reduce((config, [configName, defaultValue]) => {
     const configValue = getConfigValue(configInfo2, configPrefix, checkConfigKeyAndCast(configName, defaultConfigDefinition), defaultValue, [capitalize]);
-    if (configValue !== void 0) {
+    if (configValue !== void 0 && configValue !== null) {
       if (Object.hasOwn(colorConfigTransform, configName)) {
         const colorTransform = colorConfigTransform[configName];
         config[configName] = colorTransform.fn(configValue, configInfo2.generalConfigInfo[colorTransform.of], defaultValue);
@@ -465,12 +486,14 @@ var borderPositionParser = (selectionType, borderPosition2) => {
   };
 };
 var createDecorationTypeBuilder = (configReady) => {
-  configReady.configError = [];
   for (const key in configReady.generalConfigInfo) {
     configReady.generalConfigInfo[key] = getConfigValue(configReady, "", key, NO_CONFIGURATION_GENERAL_DEFAULT[key]);
   }
   for (const key in configReady.decorationList) {
     const selectionType = key;
+    if (configReady.decorationList[selectionType]) {
+      disposeDecoration(configReady.decorationList[selectionType]);
+    }
     const configSet = getConfigSet(configReady, selectionType);
     const parsed = borderPositionParser(selectionType, configSet.borderPosition);
     configReady.borderPositionInfo[selectionType] = parsed;
@@ -480,7 +503,7 @@ var createDecorationTypeBuilder = (configReady) => {
     if (!decorationTypeList) {
       return false;
     }
-    configReady.decorationList[key] = decorationTypeList;
+    configReady.decorationList[selectionType] = decorationTypeList;
   }
   return true;
 };
@@ -799,6 +822,7 @@ var cursorActivate = async (context) => {
       });
     }
     return [
+      onActiveWindowChange(loadConfig),
       activeEditorChanged(loadConfig),
       selectionChanged(loadConfig),
       editorOptionChange(loadConfig),
@@ -829,9 +853,51 @@ var editorIndentOption = (config, editor) => {
   config.status.indent.type = editor.options.insertSpaces ? "\n" : "	";
   config.status.indent.regex = editor.options.insertSpaces ? regex.indentRegex(config.status.indent.size) : regex.tagRegex;
 };
-var editorOptionChange = (config) => {
-  return vscode5.window.onDidChangeTextEditorOptions((event) => {
-    editorIndentOption(config, event.textEditor);
+var resetDecoration = (config, editor, dispose) => (decorationInfo) => {
+  if (editor) {
+    config.status.decorationType?.forEach((decorationType) => {
+      decorationType.dispose();
+    });
+    config.decorationList[decorationInfo.KEY]?.forEach((decorationType) => {
+      if (Array.isArray(decorationType)) {
+        decorationType.forEach((decorationType2) => {
+          applyDecoration(editor, decorationType2, []);
+          if (dispose) {
+          }
+        });
+      } else {
+        applyDecoration(editor, decorationType, []);
+        if (dispose) {
+        }
+      }
+    });
+    return true;
+  }
+  return false;
+};
+var resetDecorationWrapper = (config, editor, dispose) => {
+  const resetFunction = (decorationInfo) => {
+    return resetDecoration(config, editor, dispose)(decorationInfo);
+  };
+  resetOtherDecoration(DECORATION_INFO.RESET, resetFunction);
+};
+var resetOtherDecoration = (currentDecoration, reset) => Object.values(DECORATION_INFO).filter((info) => currentDecoration.MASK & info.MASK).map((info) => reset(info)).every(Boolean);
+var onActiveWindowChange = (config) => {
+  return vscode5.window.onDidChangeWindowState((event) => {
+    if (event.focused) {
+      if (vscode5.window.activeTextEditor) {
+        setDecorationOnEditor({
+          editor: vscode5.window.activeTextEditor,
+          decorationList: config.decorationList,
+          decorationInfo: DECORATION_INFO.CURSOR_ONLY,
+          loadConfig: config
+        });
+      }
+    } else {
+      vscode5.window.visibleTextEditors.forEach((editor) => {
+        resetDecorationWrapper(config, editor);
+      });
+    }
   });
 };
 var activeEditorChanged = (config) => {
@@ -855,6 +921,11 @@ var activeEditorChanged = (config) => {
         loadConfig: config
       });
     }
+  });
+};
+var editorOptionChange = (config) => {
+  return vscode5.window.onDidChangeTextEditorOptions((event) => {
+    editorIndentOption(config, event.textEditor);
   });
 };
 var selectionChanged = (config) => {
@@ -881,7 +952,7 @@ var configChanged = (context) => {
   return vscode5.workspace.onDidChangeConfiguration((event) => {
     if (event) {
       const configReady = initialiseConfig(context);
-      if (configReady && configReady.configError) {
+      if (configReady) {
       }
     }
   });

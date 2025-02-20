@@ -11,6 +11,11 @@ export const enum SYSTEM_MESSAGE {
     RELOADING_CONFIG = 'Config has been changed. Reloading configuration. (Messaage Dismiss in 2 second.)'
 }
 
+export const enum GLOBAL_STATE_KEY {
+    CONFIG_UPDATED = 'configUpdated',
+    CONFIG_HASHKEY = 'configHashkey',
+}
+
 export const enum SELECTION_TYPE {
     RESET = 'RESET',
     CURSOR_ONLY = 'CURSOR_ONLY',

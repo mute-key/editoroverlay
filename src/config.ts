@@ -22,10 +22,12 @@ import {
     CONFIG_INFO
 } from './constant/object';
 import {
+    GLOBAL_STATE_KEY,
     SYSTEM_MESSAGE,
 } from './constant/enum';
 import {
-    createEditorDecorationType
+    createEditorDecorationType,
+    disposeDecoration
 } from './decoration';
 
 const configInfo: Type.ConfigInfoType = { ...CONFIG_INFO };
@@ -51,6 +53,7 @@ const ifConfigChanged = (configReady: Type.ConfigInfoReadyType): boolean => {
     if (configReady.configHashKey === configHash) {
         return false;
     } else {
+        configReady.configError = [];
         configReady.config = vscode.workspace.getConfiguration(configReady.name);
         configReady.configHashKey = configHash;
 
@@ -61,6 +64,15 @@ const ifConfigChanged = (configReady: Type.ConfigInfoReadyType): boolean => {
         }
 
         return true;
+    }
+};
+
+const updateEachEditorConfiguration = (key: string, value: any): void => {
+    const editorConfig = vscode.workspace.getConfiguration("editor");
+    if (value === null || value === 'null' || String(value).length === 0 ) {
+        editorConfig.update(key, null, vscode.ConfigurationTarget.Global);
+    } else {
+        editorConfig.update(key, value, vscode.ConfigurationTarget.Global);
     }
 };
 
@@ -105,13 +117,20 @@ const initialiseConfig = (context: vscode.ExtensionContext): Type.ConfigInfoRead
     // typecasting as well as referencing the object with definitive variable name
     const configReady = configInfo as Type.ConfigInfoReadyType;
 
+
+    if (!configReady.configError) {
+        configReady.configError = [];
+    }
+
     if (!configReady.configHashKey) {
         setConfigHashKey(configReady);
         updateEditorConfiguration(configReady);
     } else {
         if (!ifConfigChanged(configReady)) {
             return configReady;
-        };
+        } else {
+            
+        }
     }
 
     if (createDecorationTypeBuilder(configReady)) {
@@ -128,19 +147,32 @@ const checkConfigKeyAndCast = <T extends Type.DecorationStyleConfigNameType | Ty
 const configNameTransformer = (configNameString: string, configNameTransform: Type.StringTransformFunc): string => 
     configNameTransform.reduce((str, transform) => transform(str), configNameString);
 
-const configNameToSettingName = (configName: string) =>  
-    capitalize(configName.split('').reduce((string, characater) => string += /^[A-Z]/.test(characater) ? ' ' + characater : characater));
+// const configNameToSettingName = (configName: string) =>  
+//     capitalize(configName.split('').reduce((string, characater) => string += /^[A-Z]/.test(characater) ? ' ' + characater : characater));
 
-const isConfigValueValid = <T>(configInfo: Type.ConfigInfoReadyType, configPrefix: string, configNameString: string, value: T, defaultValue: T): T => {
+const isConfigValueValid = <T extends string | number | boolean | null>(configInfo: Type.ConfigInfoReadyType, configPrefix: string, configNameString: string, value: T, defaultValue: T): T | null => {
     const configName = configPrefix + configNameString;
-    if (configName.toLocaleLowerCase().includes('color')) {
+    const configKeyWithScope = configInfo.name + '.' + configName;
+
+    if (configName.toLocaleLowerCase().includes('bordercolor')) {
+        // console.log(configName, value, isValidHexColor(String(value)));
         if (!isValidHexColor(String(value))) {
-            configInfo.configError.push(configInfo.name + '.' + configName);
+            configInfo.configError.push(configKeyWithScope);
+            return defaultValue;
+        } 
+    } else if (configName.toLocaleLowerCase().includes('backgroundcolor')) {
+        if (value === null || value === 'null' || String(value).length === 0 ) {
+            updateEachEditorConfiguration(configKeyWithScope, null);
+            return null;
+        }
+
+        if (!isValidHexColor(String(value))) {
+            configInfo.configError.push(configKeyWithScope);
             return defaultValue;
         }
     } else if (configName.toLocaleLowerCase().includes('borderwidth')) {
         if (!isValidWidth(String(value))) {
-            configInfo.configError.push(configInfo.name + '.' + configName);
+            configInfo.configError.push(configKeyWithScope);
             return defaultValue;
         }
     }
@@ -154,7 +186,7 @@ const getConfigValue: Type.DecorationConfigGetFunctionType = <T extends Type.Dec
     configName: Type.DecorationStyleConfigNameType | Type.GeneralConfigNameOnlyType,
     defaultValue: T,
     configNameTransform?: Type.StringTransformFunc
-): T => {
+): T | null => {
     try {
         let configNameString = configName as string;
         if (configNameTransform && configNameTransform.length) {
@@ -198,10 +230,10 @@ const getConfigSet = (configInfo: Type.ConfigInfoReadyType, decorationKey: Type.
 
     return Object.entries(defaultConfigDefinition).reduce((config, [configName, defaultValue]) => {
 
-        const configValue: string | boolean = getConfigValue(configInfo, configPrefix, checkConfigKeyAndCast(configName, defaultConfigDefinition), defaultValue, [capitalize]);
+        const configValue: string | boolean | number | null = getConfigValue(configInfo, configPrefix, checkConfigKeyAndCast(configName, defaultConfigDefinition), defaultValue, [capitalize]);
 
         // configValue can be boolean. 
-        if (configValue !== undefined) {
+        if (configValue !== undefined && configValue !== null) {
             if (Object.hasOwn(colorConfigTransform, configName)) {
                 const colorTransform = colorConfigTransform[configName];
                 config[configName] = colorTransform.fn(configValue as string, configInfo.generalConfigInfo[colorTransform.of] as number, defaultValue as string);
@@ -310,16 +342,18 @@ const borderPositionParser = (selectionType: Type.DecorationStyleKeyOnlyType, bo
  * 
  */
 const createDecorationTypeBuilder = (configReady: Type.ConfigInfoReadyType): boolean => {
-
-    configReady.configError = [];
-
+    
     for (const key in configReady.generalConfigInfo) {
         configReady.generalConfigInfo[key] = getConfigValue(configReady, "", key as Type.GeneralConfigNameOnlyType, NO_CONFIGURATION_GENERAL_DEFAULT[key]);
     }
 
     for (const key in configReady.decorationList) {
-
         const selectionType = key as Type.DecorationStyleKeyOnlyType;
+
+        if (configReady.decorationList[selectionType]) {
+            disposeDecoration(configReady.decorationList[selectionType]);
+        }
+
         const configSet: Type.DecorationStyleConfigType = getConfigSet(configReady, selectionType);
         const parsed = borderPositionParser(selectionType, configSet.borderPosition);
 
@@ -336,12 +370,13 @@ const createDecorationTypeBuilder = (configReady: Type.ConfigInfoReadyType): boo
             return false;
         }
 
-        configReady.decorationList[key] = decorationTypeList;
+        configReady.decorationList[selectionType] = decorationTypeList;
     }
 
     return true;
 };
 
 export {
-    initialiseConfig
+    initialiseConfig,
+    getConfigHash
 };

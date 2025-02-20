@@ -51,7 +51,7 @@ export const CONFIG_INFO = {
         backgroundOpacity: undefined,
         // borderWidth: undefined,
         // borderColor: undefined,
-        backgroundColor: undefined,
+        // backgroundColor: undefined,
         statusTextEnabled: undefined,
         statusTextColor: undefined,
         statusTextOpacity: undefined,
@@ -176,7 +176,7 @@ export const NO_CONFIGURATION_GENERAL_DEFAULT: Type.NoConfigurationGeneraType = 
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_ENABLED]: true,
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_COLOR]: '#FF0000',
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_OPACITY]: 1,
-    // [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_BACKGROUND_COLOR]: '#FF0000',
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_BACKGROUND_COLOR]: null,
 } as const;
 
 export const NO_CONFIGURATION_DEOCORATION_DEFAULT: Type.NoConfigurationDecorationType = {
