@@ -83,7 +83,6 @@ const multiCursorStatus = (editor: vscode.TextEditor, status: Type.StatusType, t
     let lineCount = 0;
     let isSingleLine = editor.selections[0].start.line === editor.selections[0].end.line;
     let lineDiff = 0;
-    let lastEndline = 0;
     const statusInfo: Type.StatusInfoType[] = [];
     const statusLine: number[] = [];
 
@@ -102,14 +101,16 @@ const multiCursorStatus = (editor: vscode.TextEditor, status: Type.StatusType, t
             charCount = charCount + text.replace(status.indent.regex, "").length;
             lineCount = lineCount + lineDiff;
         }
-        statusLine.push(editor.selections[idx].end.line);
+        
         idx++;
     }
 
     idx = length;
+    
 
     while (idx--) {
-        if (lastEndline === editor.selections[idx].end.line) {
+        const lineSet = new Set(statusLine);
+        if (lineSet.has(editor.selections[idx].end.line)) {
             continue;
         }
 
@@ -119,6 +120,7 @@ const multiCursorStatus = (editor: vscode.TextEditor, status: Type.StatusType, t
             isWholeLine: true
         });
 
+        statusLine.push(editor.selections[idx].end.line);
         lastEndline = editor.selections[idx].end.line;
 
         idx++;

@@ -8,8 +8,8 @@ const applyDecoration = (
 ) =>  editor.setDecorations(decoraiton, range);
 
 const createEditorDecorationType = (
-    styleAppliedConfig: Type.DecorationStyleConfigType
-) => vscode.window.createTextEditorDecorationType(styleAppliedConfig);
+    styleAppliedConfig: Type.DecorationStyleConfigType | Type.StatusDecorationReadyType
+) => vscode.window.createTextEditorDecorationType(styleAppliedConfig as vscode.DecorationRenderOptions);
 
 const disposeDecoration = (
     decorationList: vscode.TextEditorDecorationType[]

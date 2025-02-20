@@ -9,7 +9,6 @@ const sendAutoDismissMessage = (text: string, dismiss: number) => {
 };
 
 const fixConfuration = (confingError: string[]) => {
-    console.log(confingError);
     vscode.window.showErrorMessage(
         "Invalid Value(s) in Configuration.", 
         ...['Fix Configuration', 'Ignore']        

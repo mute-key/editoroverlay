@@ -51,7 +51,6 @@ var sendAutoDismissMessage = (text, dismiss) => {
   }, dismiss);
 };
 var fixConfuration = (confingError) => {
-  console.log(confingError);
   vscode.window.showErrorMessage(
     "Invalid Value(s) in Configuration.",
     ...["Fix Configuration", "Ignore"]
@@ -568,7 +567,6 @@ var multiCursorStatus = (editor, status2, type) => {
   let lineCount = 0;
   let isSingleLine = editor.selections[0].start.line === editor.selections[0].end.line;
   let lineDiff = 0;
-  let lastEndline = 0;
   const statusInfo = [];
   const statusLine = [];
   if (isSingleLine) {
@@ -585,12 +583,12 @@ var multiCursorStatus = (editor, status2, type) => {
       charCount = charCount + text.replace(status2.indent.regex, "").length;
       lineCount = lineCount + lineDiff;
     }
-    statusLine.push(editor.selections[idx].end.line);
     idx++;
   }
   idx = length;
   while (idx--) {
-    if (lastEndline === editor.selections[idx].end.line) {
+    const lineSet = new Set(statusLine);
+    if (lineSet.has(editor.selections[idx].end.line)) {
       continue;
     }
     statusInfo.push({
@@ -598,6 +596,7 @@ var multiCursorStatus = (editor, status2, type) => {
       range: createRangeSPEP(editor.selections[idx].start, editor.selections[idx].end),
       isWholeLine: true
     });
+    statusLine.push(editor.selections[idx].end.line);
     lastEndline = editor.selections[idx].end.line;
     idx++;
   }
