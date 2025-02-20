@@ -49,14 +49,15 @@ export const CONFIG_INFO = {
     generalConfigInfo: {
         borderOpacity: undefined,
         backgroundOpacity: undefined,
-        borderWidth: undefined,
-        borderColor: undefined,
+        // borderWidth: undefined,
+        // borderColor: undefined,
         backgroundColor: undefined,
         statusTextEnabled: undefined,
         statusTextColor: undefined,
         statusTextOpacity: undefined,
         statusTextBackgroundColor: undefined,
-    } as const
+    } as const,
+    configError: undefined
 } as const;
 
 export const STATUS_INFO_DEFAULT_DECORATION = {
@@ -64,12 +65,11 @@ export const STATUS_INFO_DEFAULT_DECORATION = {
     after: {
         contentText: undefined,
         color: undefined,
-        background: undefined,
+        backgroundColor: undefined,
         fontWeight: 'light',
         fontStyle: 'italic',
         textDecoration: 'none',
-        margin: '0 0 0 20px',
-        width: '100wh',
+        margin: '0 0 0 20px'
     } as const
 } as const;
 
@@ -176,13 +176,13 @@ export const NO_CONFIGURATION_GENERAL_DEFAULT: Type.NoConfigurationGeneraType = 
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_ENABLED]: true,
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_COLOR]: '#FF0000',
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_OPACITY]: 1,
-    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_BACKGROUND_COLOR]: '#FF0000',
+    // [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_BACKGROUND_COLOR]: '#FF0000',
 } as const;
 
 export const NO_CONFIGURATION_DEOCORATION_DEFAULT: Type.NoConfigurationDecorationType = {
     [DECORATION_STYLE_KEY.CURSOR_ONLY]: {
         [DECORATION_STYLE_CONFIG_KEY.IS_WHOLE_LINE]: true,
-        [DECORATION_STYLE_CONFIG_KEY.BORDER_WIDTH]: '3px',
+        [DECORATION_STYLE_CONFIG_KEY.BORDER_WIDTH]: '2px',
         [DECORATION_STYLE_CONFIG_KEY.BORDER_STYLE]: 'dotted',
         [DECORATION_STYLE_CONFIG_KEY.BORDER_COLOR]: '#ff0000',
         [DECORATION_STYLE_CONFIG_KEY.BORDER_POSITION]: 'bottom',
@@ -190,7 +190,7 @@ export const NO_CONFIGURATION_DEOCORATION_DEFAULT: Type.NoConfigurationDecoratio
     } as const,
     [DECORATION_STYLE_KEY.SINGLE_LINE]: {
         [DECORATION_STYLE_CONFIG_KEY.IS_WHOLE_LINE]: false,
-        [DECORATION_STYLE_CONFIG_KEY.BORDER_WIDTH]: '3px',
+        [DECORATION_STYLE_CONFIG_KEY.BORDER_WIDTH]: '2px',
         [DECORATION_STYLE_CONFIG_KEY.BORDER_STYLE]: 'dotted',
         [DECORATION_STYLE_CONFIG_KEY.BORDER_COLOR]: '#ff0000',
         [DECORATION_STYLE_CONFIG_KEY.BORDER_POSITION]: 'bottom',
@@ -198,7 +198,7 @@ export const NO_CONFIGURATION_DEOCORATION_DEFAULT: Type.NoConfigurationDecoratio
     } as const,
     [DECORATION_STYLE_KEY.MULTI_LINE]: {
         [DECORATION_STYLE_CONFIG_KEY.IS_WHOLE_LINE]: true,
-        [DECORATION_STYLE_CONFIG_KEY.BORDER_WIDTH]: '3px',
+        [DECORATION_STYLE_CONFIG_KEY.BORDER_WIDTH]: '2px',
         [DECORATION_STYLE_CONFIG_KEY.BORDER_STYLE]: 'dotted',
         [DECORATION_STYLE_CONFIG_KEY.BORDER_COLOR]: '#ff0000',
         [DECORATION_STYLE_CONFIG_KEY.BORDER_POSITION]: 'bottom',
@@ -206,7 +206,7 @@ export const NO_CONFIGURATION_DEOCORATION_DEFAULT: Type.NoConfigurationDecoratio
     } as const,
     [DECORATION_STYLE_KEY.MULTI_CURSOR]: {
         [DECORATION_STYLE_CONFIG_KEY.IS_WHOLE_LINE]: false,
-        [DECORATION_STYLE_CONFIG_KEY.BORDER_WIDTH]: '3px',
+        [DECORATION_STYLE_CONFIG_KEY.BORDER_WIDTH]: '2px',
         [DECORATION_STYLE_CONFIG_KEY.BORDER_STYLE]: 'dotted',
         [DECORATION_STYLE_CONFIG_KEY.BORDER_COLOR]: '#ff0000',
         [DECORATION_STYLE_CONFIG_KEY.BORDER_POSITION]: 'bottom',

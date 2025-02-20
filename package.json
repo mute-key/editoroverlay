@@ -78,6 +78,21 @@
                     "default": true,
                     "description": "Enable inline status text."
                 },
+                "cursorlinehighlight.statusTextIconEnabled": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "(Not working yet) Enable inline status icon text."
+                },
+                "cursorlinehighlight.statusTextColor": {
+                    "type": "string",
+                    "default": "#93A5C1",
+                    "description": "Change the Inline Status Text color. Color must be in hex color of #RRGGBB."
+                },
+                "cursorlinehighlight.statusTextBackgroundColor": {
+                    "type": "string",
+                    "default": null,
+                    "description": "Change the Inline Status Text background color. Color must be in hex color of #RRGGBB or null (No background)."
+                },
                 "cursorlinehighlight.statusTextOpacity": {
                     "type": "number",
                     "enum": [
@@ -95,40 +110,15 @@
                     "default": 0.6,
                     "description": "opacity of background color of selection in %. 1 is no opacity."
                 },
-                "cursorlinehighlight.statusTextColor": {
-                    "type": "string",
-                    "default": "#93A5C1",
-                    "description": "Change the Inline Status Text color. Color must be in hex color of (#RRGGBB) or (#RRGGBBAA)"
-                },
-                "cursorlinehighlight.statusTextBackgroundColor": {
-                    "type": "string",
-                    "default": null,
-                    "description": "Change the Inline Status Text color. Color must be in hex color of (#RRGGBB) or (#RRGGBBAA)"
-                },
-                "cursorlinehighlight.borderWidth": {
-                    "type": "string",
-                    "default": null,
-                    "description": "overwrite border width of all selection type. (Not working Yet)"
-                },
-                "cursorlinehighlight.borderColor": {
-                    "type": "string",
-                    "default": null,
-                    "description": "overwrite border color of all selection type. (Not working Yet)"
-                },
-                "cursorlinehighlight.backgroundColor": {
-                    "type": "string",
-                    "default": null,
-                    "description": "overwrite background color of all selection area. (Not working Yet)"
-                },
                 "cursorlinehighlight.cursorOnlyBorderColor": {
                     "type": "string",
                     "default": "#93A5C1",
-                    "description": "Change the border color. Color must be in hex color of (#RRGGBB) or (#RRGGBBAA)"
+                    "description": "Change the border color. Color must be in hex color of #RRGGBB."
                 },
                 "cursorlinehighlight.cursorOnlyBackgroundColor": {
                     "type": "string",
                     "default": "#383F49",
-                    "description": "Change the background color. Color must be in hex color of (#RRGGBB) or (#RRGGBBAA)"
+                    "description": "Change the background color. Color must be in hex color of #RRGGBB or null (No background)."
                 },
                 "cursorlinehighlight.cursorOnlyBorderPosition": {
                     "type": "string",
@@ -142,7 +132,7 @@
                 "cursorlinehighlight.cursorOnlyBorderWidth": {
                     "type": "string",
                     "default": "2px",
-                    "description": "Border width, all css width foramt works."
+                    "description": "Border width, should use unit of 'px' or 'em'."
                 },
                 "cursorlinehighlight.cursorOnlyBorderStyle": {
                     "type": [
@@ -171,12 +161,12 @@
                 "cursorlinehighlight.singleLineBorderColor": {
                     "type": "string",
                     "default": "#93A5C1",
-                    "description": "Change the border color. Color must be in hex color of (#RRGGBB) or (#RRGGBBAA)"
+                    "description": "Change the border color. Color must be in hex color of #RRGGBB."
                 },
                 "cursorlinehighlight.singleLineBackgroundColor": {
                     "type": "string",
                     "default": "#383F49",
-                    "description": "Change the background color. Color must be in hex color of (#RRGGBB) or (#RRGGBBAA)"
+                    "description": "Change the background color. Color must be in hex color of #RRGGBB or null (No background)."
                 },
                 "cursorlinehighlight.singleLine": {
                     "type": "string",
@@ -190,7 +180,7 @@
                 "cursorlinehighlight.singleLineBorderWidth": {
                     "type": "string",
                     "default": "2px",
-                    "description": "Border width, all css width foramt works."
+                    "description": "Border width, should use unit of 'px' or 'em'."
                 },
                 "cursorlinehighlight.singleLineBorderStyle": {
                     "type": "string",
@@ -205,12 +195,12 @@
                 "cursorlinehighlight.multiLineBorderColor": {
                     "type": "string",
                     "default": "#93A5C1",
-                    "description": "Change the border color. Color must be in hex color of (#RRGGBB) or (#RRGGBBAA)"
+                    "description": "Change the border color. Color must be in hex color of #RRGGBB."
                 },
                 "cursorlinehighlight.multiLineBackgroundColor": {
                     "type": "string",
                     "default": "#383F49",
-                    "description": "Change the background color. Color must be in hex color of (#RRGGBB) or (#RRGGBBAA)"
+                    "description": "Change the background color. Color must be in hex color of #RRGGBB or null (No background)."
                 },
                 "cursorlinehighlight.multiLineBorderPosition": {
                     "type": "string",
@@ -223,7 +213,7 @@
                 "cursorlinehighlight.multiLineBorderWidth": {
                     "type": "string",
                     "default": "2px",
-                    "description": "Border width, all css width foramt works."
+                    "description": "Border width, should use unit of 'px' or 'em'."
                 },
                 "cursorlinehighlight.multiLineBorderStyle": {
                     "type": "string",
@@ -238,12 +228,12 @@
                 "cursorlinehighlight.multiCursorBorderColor": {
                     "type": "string",
                     "default": "#93A5C1",
-                    "description": "Change the border color. Color must be in hex color of (#RRGGBB) or (#RRGGBBAA)"
+                    "description": "Change the border color. Color must be in hex color of #RRGGBB."
                 },
                 "cursorlinehighlight.multiCursorBackgroundColor": {
                     "type": "string",
                     "default": "#383F49",
-                    "description": "Change the background color. Color must be in hex color of (#RRGGBB) or (#RRGGBBAA)"
+                    "description": "Change the background color. Color must be in hex color of #RRGGBB or null (No background)."
                 },
                 "cursorlinehighlight.multiCursorBorderPosition": {
                     "type": "string",
@@ -255,7 +245,7 @@
                 "cursorlinehighlight.multiCursorBorderWidth": {
                     "type": "string",
                     "default": "2px",
-                    "description": "Border width, all css width foramt works."
+                    "description": "Border width, should use unit of 'px' or 'em'."
                 },
                 "cursorlinehighlight.multiCursorBorderStyle": {
                     "type": "string",

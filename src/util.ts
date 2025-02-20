@@ -4,19 +4,29 @@ import * as Type from './type/type.d';
 const sendAutoDismissMessage = (text: string, dismiss: number) => {
     const message = vscode.window.showInformationMessage(text);
     setTimeout(() => {
-        message?.then(() => {});
+        message?.then(() => { });
     }, dismiss);
 };
 
-const sendMessage = (text: string, dismiss: number) => {
-    const message = vscode.window.showWarningMessage(text).then(
-        // to setting.  
-    );
+const fixConfuration = (confingError: string[]) => {
+    console.log(confingError);
+    vscode.window.showErrorMessage(
+        "Invalid Value(s) in Configuration.", 
+        ...['Fix Configuration', 'Ignore']        
+    ).then(selection => {
+        if (selection === "Fix Configuration") {
+            vscode.commands.executeCommand("workbench.action.openSettings", confingError.join(' '));
+        }
+    });
 };
 
-const regex: Type.regexType  = {
+const isValidHexColor = (color: string) => /^#[A-Fa-f0-9]{6}$/.test(color);
+
+const isValidWidth = (width: string) => /^[0-9]px$|^[0-9]em$/.test(width);
+
+const regex: Type.regexType = {
     indentRegex: (indentSize: string | number) => new RegExp(`^( {${indentSize}}|[\r\n]+)*$`, 'gm'),
-    tagRegex: /(\t|[\r\n]+)*$/gm
+    tagRegex: /(\t|[\r\n]+)*$/gm,
 };
 
 /**
@@ -102,5 +112,8 @@ export {
     readBits,
     capitalize,
     hexToRgbaStringLiteral,
-    sendAutoDismissMessage
+    sendAutoDismissMessage,
+    isValidHexColor,
+    isValidWidth,
+    fixConfuration
 };

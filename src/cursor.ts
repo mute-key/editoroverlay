@@ -8,12 +8,10 @@ import * as config from './config';
 import {
     DECORATION_STYLE_KEY,
 } from './constant/enum';
-
 import {
     DECORATION_INFO,
     APPLIED_DECORATION
 } from './constant/object';
-
 import {
     cursorOnlyDecorationWithRange,
     singelLineDecorationWithRange,
@@ -25,7 +23,8 @@ import {
     applyDecoration
 } from './decoration';
 import {
-    regex
+    regex,
+    fixConfuration
 } from './util';
 
 /**
@@ -129,6 +128,10 @@ const cursorActivate = async (context: vscode.ExtensionContext): Promise<vscode.
 
         const activeEditor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
 
+        if (loadConfig.configError.length > 0) {
+            fixConfuration(loadConfig.configError);
+        }
+
         if (activeEditor) {
             setDecorationOnEditor({
                 editor: activeEditor,
@@ -190,6 +193,11 @@ const editorOptionChange = (config: Type.ConfigInfoReadyType): vscode.Disposable
 const activeEditorChanged = (config: Type.ConfigInfoReadyType): vscode.Disposable => {
     return vscode.window.onDidChangeActiveTextEditor((editor: vscode.TextEditor | undefined) => {
         if (editor) {
+
+            if (config.configError.length > 0) {
+                fixConfuration(config.configError);
+            }
+            
             editorIndentOption(config, editor);
 
             // quick release of decorations.
@@ -241,7 +249,10 @@ const selectionChanged = (config: Type.ConfigInfoReadyType): vscode.Disposable =
 const configChanged = (context: vscode.ExtensionContext): vscode.Disposable => {
     return vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
         if (event) {
-            config.initialiseConfig(context);
+            const configReady = config.initialiseConfig(context);
+            if (configReady && configReady.configError) {
+
+            }
         }
     });
 };

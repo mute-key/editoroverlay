@@ -11,7 +11,6 @@ import {
     DECORATION_STYLE_KEY,
 } from './constant/enum';
 import {
-    STATUS_INFO_DEFAULT_DECORATION,
     NO_CONFIGURATION_GENERAL_DEFAULT
 } from './constant/object';
 

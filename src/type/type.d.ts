@@ -113,6 +113,11 @@ type StatusDecorationReadyType = {
     }
 } & StatusDecorationType
 
+type configErrorType = {
+    on: string,
+    currentValue: string
+}
+
 type ConfigInfoType = {
     name?: string
     config?: vscode.WorkspaceConfiguration,
@@ -170,6 +175,7 @@ type ConfigInfoReadyType = {
     decorationList: DecorationType
     borderPositionInfo: BorderPositionInfoType
     generalConfigInfo: GeneralConfigInfoType
+    configError: string[]
 } & ConfigInfoType
 
 // type SelectionConfigFunctionType<T> = (config: T) => DecorationStyleConfigType[];

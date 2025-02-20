@@ -40,7 +40,7 @@ export const enum DECORATION_STYLE_CONFIG_KEY {
     OVERVIEW_RULER_LANE = 'overviewRulerLane',
     // gutterIconPath: vscode.Uri.file('path/to/icon.svg'),
     // gutterIconSize: 'contain',
-};
+}
 
 /**
  * configurable border position enum in setting.
@@ -55,7 +55,7 @@ export const enum BORDER_POSITION_VARIATION {
     LEFT = 'left'
     // BOTTOM_LEFT = 'bottom-left',
     // TOP_LEFT = 'top-left',
-};
+}
 
 /**
  * this enum does not need RESET field.
@@ -68,7 +68,7 @@ export const enum DECORATION_STYLE_KEY {
     MULTI_LINE = 'MULTI_LINE',
     MULTI_CURSOR = 'MULTI_CURSOR',
     // GENERAL = 'GENERAL',
-};
+}
 
 export const enum DECORATION_GENERAL_STYLE_CONFIG_KEY {
     OPACITY = 'borderOpacity',
@@ -80,7 +80,7 @@ export const enum DECORATION_GENERAL_STYLE_CONFIG_KEY {
     BORDER_WIDTH = 'borderWidth',
     BORDER_COLOR = 'borderColor',
     BACKGROUND_COLOR = 'backgroundColor',
-};
+}
 
 /**
  * Array loop execution time: 21565757 nanoseconds
