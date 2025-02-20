@@ -10,9 +10,7 @@ import {
     capitalize,
     readBits,
     hexToRgbaStringLiteral,
-    sendAutoDismissMessage,
-    isValidHexColor,
-    isValidWidth,
+    sendAutoDismissMessage
 } from './util';
 import {
     NO_CONFIGURATION_GENERAL_DEFAULT,
@@ -22,7 +20,6 @@ import {
     CONFIG_INFO
 } from './constant/object';
 import {
-    GLOBAL_STATE_KEY,
     SYSTEM_MESSAGE,
 } from './constant/enum';
 import {
@@ -30,7 +27,9 @@ import {
     disposeDecoration
 } from './decoration';
 
+
 const configInfo: Type.ConfigInfoType = { ...CONFIG_INFO };
+
 
 const getConfigString = (configReady: Type.ConfigInfoReadyType): string => Object.entries(configReady.config).reduce((acc, [key, infoProp]) => {
     if (typeof infoProp === 'string' || typeof infoProp === 'number' || typeof infoProp === 'boolean') {
@@ -149,6 +148,10 @@ const configNameTransformer = (configNameString: string, configNameTransform: Ty
 
 // const configNameToSettingName = (configName: string) =>  
 //     capitalize(configName.split('').reduce((string, characater) => string += /^[A-Z]/.test(characater) ? ' ' + characater : characater));
+
+const isValidHexColor = (color: string) => regex.isValidHexColor.test(color);
+
+const isValidWidth = (width: string) => regex.isValidWidth.test(width);
 
 const isConfigValueValid = <T extends string | number | boolean | null>(configInfo: Type.ConfigInfoReadyType, configPrefix: string, configNameString: string, value: T, defaultValue: T): T | null => {
     const configName = configPrefix + configNameString;

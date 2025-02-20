@@ -19,13 +19,11 @@ const fixConfuration = (confingError: string[]) => {
     });
 };
 
-const isValidHexColor = (color: string) => /^#[A-Fa-f0-9]{6}$/.test(color);
-
-const isValidWidth = (width: string) => /^[0-9]px$|^[0-9]em$/.test(width);
-
 const regex: Type.regexType = {
     indentRegex: (indentSize: string | number) => new RegExp(`^( {${indentSize}}|[\r\n]+)*$`, 'gm'),
     tagRegex: /(\t|[\r\n]+)*$/gm,
+    isValidHexColor: /^#[A-Fa-f0-9]{6}$/,
+    isValidWidth: /^[0-9]px$|^[0-9]em$/
 };
 
 /**
@@ -112,7 +110,5 @@ export {
     capitalize,
     hexToRgbaStringLiteral,
     sendAutoDismissMessage,
-    isValidHexColor,
-    isValidWidth,
     fixConfuration
 };

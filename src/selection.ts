@@ -1,18 +1,9 @@
 import * as vscode from 'vscode';
 import * as Type from './type/type.d';
-import {
-    hexToRgbaStringLiteral
-} from './util';
-import {
-    applyDecoration,
-    createEditorDecorationType
-} from './decoration';
-import {
-    DECORATION_STYLE_KEY,
-} from './constant/enum';
-import {
-    NO_CONFIGURATION_GENERAL_DEFAULT
-} from './constant/object';
+import { hexToRgbaStringLiteral } from './util';
+import { applyDecoration, createEditorDecorationType } from './decoration';
+import { DECORATION_STYLE_KEY,} from './constant/enum';
+import { NO_CONFIGURATION_GENERAL_DEFAULT } from './constant/object';
 
 const createRangeNNNN = (startLine: number, startChar: number, endLine: number, endChar: number): vscode.Range => {
     return new vscode.Range(new vscode.Position(startLine, startChar), new vscode.Position(endLine, endChar));
@@ -107,7 +98,6 @@ const multiCursorStatus = (editor: vscode.TextEditor, status: Type.StatusType, t
 
     idx = length;
     
-
     while (idx--) {
         const lineSet = new Set(statusLine);
         if (lineSet.has(editor.selections[idx].end.line)) {
@@ -121,7 +111,6 @@ const multiCursorStatus = (editor: vscode.TextEditor, status: Type.StatusType, t
         });
 
         statusLine.push(editor.selections[idx].end.line);
-        lastEndline = editor.selections[idx].end.line;
 
         idx++;
     }
@@ -157,7 +146,7 @@ const statusDecorationType = (statusInfo: Type.StatusInfoType, generalConfig: Ty
         after: {
             contentText: statusInfo.contentText,
             color: hexToRgbaStringLiteral(textColor, textOpacity, defaultColor, defaultOpacity),
-            backgroundColor: undefined,
+            backgroundColor: generalConfig.statusTextBackgroundColor,
             fontWeight: 'light',
             fontStyle: 'italic',
             textDecoration: 'none',
@@ -199,13 +188,10 @@ const status = (editor: vscode.TextEditor, status: Type.StatusType, generalConfi
 
     if (status.decorationType) {
         disposeStatusInfo(status as Type.StatusReadyType);
-        status.decorationType = undefined;
         status.decorationType = setStatusInfoDecoration(editor, statusInfo, generalConfig);
     } else {
         status.decorationType = setStatusInfoDecoration(editor, statusInfo, generalConfig);
     }
-    
-    
 };
 
 const cursorOnlyDecorationWithRange: Type.SelectionTypeToDecorationFunc = (context): Type.DecorationWithRangeType[] => {

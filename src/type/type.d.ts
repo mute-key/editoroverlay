@@ -164,7 +164,9 @@ type statusInfoSplitType = {
 
 type regexType = {
     indentRegex: (args: string | number) => RegExp
-    tagRegex: RegExp
+    tagRegex: RegExp,
+    isValidHexColor: RegExp,
+    isValidWidth: RegExp,
 }
 
 type ConfigInfoReadyType = {

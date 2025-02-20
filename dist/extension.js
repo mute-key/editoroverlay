@@ -60,12 +60,12 @@ var fixConfuration = (confingError) => {
     }
   });
 };
-var isValidHexColor = (color) => /^#[A-Fa-f0-9]{6}$/.test(color);
-var isValidWidth = (width) => /^[0-9]px$|^[0-9]em$/.test(width);
 var regex = {
   indentRegex: (indentSize) => new RegExp(`^( {${indentSize}}|[\r
 ]+)*$`, "gm"),
-  tagRegex: /(\t|[\r\n]+)*$/gm
+  tagRegex: /(\t|[\r\n]+)*$/gm,
+  isValidHexColor: /^#[A-Fa-f0-9]{6}$/,
+  isValidWidth: /^[0-9]px$|^[0-9]em$/
 };
 var readBits = (value, trueValue, falseValue, bitLength) => {
   let idx = bitLength ? bitLength : 4;
@@ -350,6 +350,8 @@ var checkConfigKeyAndCast = (key, config) => {
   return key;
 };
 var configNameTransformer = (configNameString, configNameTransform) => configNameTransform.reduce((str, transform) => transform(str), configNameString);
+var isValidHexColor = (color) => regex.isValidHexColor.test(color);
+var isValidWidth = (width) => regex.isValidWidth.test(width);
 var isConfigValueValid = (configInfo2, configPrefix, configNameString, value, defaultValue) => {
   const configName = configPrefix + configNameString;
   const configKeyWithScope = configInfo2.name + "." + configName;
@@ -597,7 +599,6 @@ var multiCursorStatus = (editor, status2, type) => {
       isWholeLine: true
     });
     statusLine.push(editor.selections[idx].end.line);
-    lastEndline = editor.selections[idx].end.line;
     idx++;
   }
   return statusInfo;
@@ -621,7 +622,7 @@ var statusDecorationType = (statusInfo, generalConfig) => {
     after: {
       contentText: statusInfo.contentText,
       color: hexToRgbaStringLiteral(textColor, textOpacity, defaultColor, defaultOpacity),
-      backgroundColor: void 0,
+      backgroundColor: generalConfig.statusTextBackgroundColor,
       fontWeight: "light",
       fontStyle: "italic",
       textDecoration: "none",
@@ -649,7 +650,6 @@ var status = (editor, status2, generalConfig, type) => {
   const statusInfo = statusInfoSplit(editor, status2, type)[type.KEY]();
   if (status2.decorationType) {
     disposeStatusInfo(status2);
-    status2.decorationType = void 0;
     status2.decorationType = setStatusInfoDecoration(editor, statusInfo, generalConfig);
   } else {
     status2.decorationType = setStatusInfoDecoration(editor, statusInfo, generalConfig);
@@ -861,13 +861,9 @@ var resetDecoration = (config, editor, dispose) => (decorationInfo) => {
       if (Array.isArray(decorationType)) {
         decorationType.forEach((decorationType2) => {
           applyDecoration(editor, decorationType2, []);
-          if (dispose) {
-          }
         });
       } else {
         applyDecoration(editor, decorationType, []);
-        if (dispose) {
-        }
       }
     });
     return true;
@@ -894,7 +890,7 @@ var onActiveWindowChange = (config) => {
       }
     } else {
       vscode5.window.visibleTextEditors.forEach((editor) => {
-        resetDecorationWrapper(config, editor);
+        resetDecorationWrapper(config, editor, true);
       });
     }
   });

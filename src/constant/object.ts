@@ -60,19 +60,6 @@ export const CONFIG_INFO = {
     configError: undefined
 } as const;
 
-export const STATUS_INFO_DEFAULT_DECORATION = {
-    isWholeLine: undefined,
-    after: {
-        contentText: undefined,
-        color: undefined,
-        backgroundColor: undefined,
-        fontWeight: 'light',
-        fontStyle: 'italic',
-        textDecoration: 'none',
-        margin: '0 0 0 20px'
-    } as const
-} as const;
-
 export const APPLIED_DECORATION = {
     applied: undefined,
     editorDecoration: undefined

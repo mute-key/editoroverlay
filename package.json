@@ -3,7 +3,8 @@
     "publisher": "mutekey",
     "displayName": "Cursor/Selection Line Highlight",
     "description": "Apply configurable decorations on cursor line and selection lines.",
-    "version": "0.0.34",
+    "version": "0.9.0",
+    "icon": "./misc/icon.png",
     "engines": {
         "vscode": "^1.96.0"
     },
@@ -36,229 +37,285 @@
     ],
     "main": "./dist/extension.js",
     "contributes": {
-        "configuration": {
-            "title": "CursorLine Highlight Settings",
-            "properties": {
-                "cursorlinehighlight.borderOpacity": {
-                    "type": "number",
-                    "enum": [
-                        0.1,
-                        0.2,
-                        0.3,
-                        0.4,
-                        0.5,
-                        0.6,
-                        0.7,
-                        0.8,
-                        0.9,
-                        1
-                    ],
-                    "default": 0.7,
-                    "description": "opacity of decoration border in %. 1 is no opacity."
-                },
-                "cursorlinehighlight.backgroundOpacity": {
-                    "type": "number",
-                    "enum": [
-                        0.1,
-                        0.2,
-                        0.3,
-                        0.4,
-                        0.5,
-                        0.6,
-                        0.7,
-                        0.8,
-                        0.9,
-                        1
-                    ],
-                    "default": 0.4,
-                    "description": "opacity of background color of selection in %. 1 is no opacity."
-                },
-                "cursorlinehighlight.statusTextEnabled": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Enable inline status text."
-                },
-                "cursorlinehighlight.statusTextIconEnabled": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "(Not working yet) Enable inline status icon text."
-                },
-                "cursorlinehighlight.statusTextColor": {
-                    "type": "string",
-                    "default": "#93A5C1",
-                    "description": "Change the Inline Status Text color. Color must be in hex color of #RRGGBB."
-                },
-                "cursorlinehighlight.statusTextBackgroundColor": {
-                    "type": "string",
-                    "default": null,
-                    "description": "Change the Inline Status Text background color. Color must be in hex color of #RRGGBB or null (No background)."
-                },
-                "cursorlinehighlight.statusTextOpacity": {
-                    "type": "number",
-                    "enum": [
-                        0.1,
-                        0.2,
-                        0.3,
-                        0.4,
-                        0.5,
-                        0.6,
-                        0.7,
-                        0.8,
-                        0.9,
-                        1
-                    ],
-                    "default": 0.6,
-                    "description": "opacity of background color of selection in %. 1 is no opacity."
-                },
-                "cursorlinehighlight.cursorOnlyBorderColor": {
-                    "type": "string",
-                    "default": "#93A5C1",
-                    "description": "Change the border color. Color must be in hex color of #RRGGBB."
-                },
-                "cursorlinehighlight.cursorOnlyBackgroundColor": {
-                    "type": "string",
-                    "default": "#383F49",
-                    "description": "Change the background color. Color must be in hex color of #RRGGBB or null (No background)."
-                },
-                "cursorlinehighlight.cursorOnlyBorderPosition": {
-                    "type": "string",
-                    "enum": [
-                        "bottom | is Whole Line",
-                        "bottom | before Cursor",
-                        "bottom | after Cursor"
-                    ],
-                    "default": "bottom | is Whole Line"
-                },
-                "cursorlinehighlight.cursorOnlyBorderWidth": {
-                    "type": "string",
-                    "default": "2px",
-                    "description": "Border width, should use unit of 'px' or 'em'."
-                },
-                "cursorlinehighlight.cursorOnlyBorderStyle": {
-                    "type": [
-                        "string"
-                    ],
-                    "enum": [
-                        "solid",
-                        "dotted",
-                        "dashed"
-                    ],
-                    "default": "dotted",
-                    "description": "Main Border style on current line."
-                },
-                "cursorlinehighlight.cursorOnlyBorderStyleWithafterCursor": {
-                    "type": [
-                        "string"
-                    ],
-                    "enum": [
-                        "solid",
-                        "dotted",
-                        "dashed"
-                    ],
-                    "default": "dotted",
-                    "description": "(not working yet) Use this border style only when [bottom | after Cursor]. this is border style for previous range."
-                },
-                "cursorlinehighlight.singleLineBorderColor": {
-                    "type": "string",
-                    "default": "#93A5C1",
-                    "description": "Change the border color. Color must be in hex color of #RRGGBB."
-                },
-                "cursorlinehighlight.singleLineBackgroundColor": {
-                    "type": "string",
-                    "default": "#383F49",
-                    "description": "Change the background color. Color must be in hex color of #RRGGBB or null (No background)."
-                },
-                "cursorlinehighlight.singleLine": {
-                    "type": "string",
-                    "enum": [
-                        "bottom | selection Only",
-                        "top-bottom | selection Only",
-                        "top-right-bottom-left"
-                    ],
-                    "default": "bottom | Selection Only"
-                },
-                "cursorlinehighlight.singleLineBorderWidth": {
-                    "type": "string",
-                    "default": "2px",
-                    "description": "Border width, should use unit of 'px' or 'em'."
-                },
-                "cursorlinehighlight.singleLineBorderStyle": {
-                    "type": "string",
-                    "enum": [
-                        "solid",
-                        "dotted",
-                        "dashed"
-                    ],
-                    "default": "solid",
-                    "description": "Border style on current selection."
-                },
-                "cursorlinehighlight.multiLineBorderColor": {
-                    "type": "string",
-                    "default": "#93A5C1",
-                    "description": "Change the border color. Color must be in hex color of #RRGGBB."
-                },
-                "cursorlinehighlight.multiLineBackgroundColor": {
-                    "type": "string",
-                    "default": "#383F49",
-                    "description": "Change the background color. Color must be in hex color of #RRGGBB or null (No background)."
-                },
-                "cursorlinehighlight.multiLineBorderPosition": {
-                    "type": "string",
-                    "enum": [
-                        "top-bottom | is Whole Line",
-                        "left | at Line Start"
-                    ],
-                    "default": "top-bottom | is Whole Line"
-                },
-                "cursorlinehighlight.multiLineBorderWidth": {
-                    "type": "string",
-                    "default": "2px",
-                    "description": "Border width, should use unit of 'px' or 'em'."
-                },
-                "cursorlinehighlight.multiLineBorderStyle": {
-                    "type": "string",
-                    "enum": [
-                        "solid",
-                        "dotted",
-                        "dashed"
-                    ],
-                    "default": "dashed",
-                    "description": "Border style on current selection."
-                },
-                "cursorlinehighlight.multiCursorBorderColor": {
-                    "type": "string",
-                    "default": "#93A5C1",
-                    "description": "Change the border color. Color must be in hex color of #RRGGBB."
-                },
-                "cursorlinehighlight.multiCursorBackgroundColor": {
-                    "type": "string",
-                    "default": "#383F49",
-                    "description": "Change the background color. Color must be in hex color of #RRGGBB or null (No background)."
-                },
-                "cursorlinehighlight.multiCursorBorderPosition": {
-                    "type": "string",
-                    "enum": [
-                        "top-right-bottom-left"
-                    ],
-                    "default": "top-right-bottom-left"
-                },
-                "cursorlinehighlight.multiCursorBorderWidth": {
-                    "type": "string",
-                    "default": "2px",
-                    "description": "Border width, should use unit of 'px' or 'em'."
-                },
-                "cursorlinehighlight.multiCursorBorderStyle": {
-                    "type": "string",
-                    "enum": [
-                        "solid",
-                        "dotted",
-                        "dashed"
-                    ],
-                    "default": "dotted",
-                    "description": "Border style on current selection."
+        "configuration": [
+            {
+                "title": "General Settings",
+                "properties": {
+                    "cursorlinehighlight.borderOpacity": {
+                        "type": "number",
+                        "enum": [
+                            0.1,
+                            0.2,
+                            0.3,
+                            0.4,
+                            0.5,
+                            0.6,
+                            0.7,
+                            0.8,
+                            0.9,
+                            1
+                        ],
+                        "default": 0.7,
+                        "description": "opacity of decoration border in %. 1 is no opacity.",
+                        "order": 1
+                    },
+                    "cursorlinehighlight.backgroundOpacity": {
+                        "type": "number",
+                        "enum": [
+                            0.1,
+                            0.2,
+                            0.3,
+                            0.4,
+                            0.5,
+                            0.6,
+                            0.7,
+                            0.8,
+                            0.9,
+                            1
+                        ],
+                        "default": 0.3,
+                        "description": "opacity of background color of selection in %. 1 is no opacity.",
+                        "order": 2
+                    },
+                    "cursorlinehighlight.statusTextEnabled": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Enable inline status text.",
+                        "order": 3
+                    },
+                    "cursorlinehighlight.statusTextIconEnabled": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "(Not working yet) Enable inline status icon text.",
+                        "order": 4
+                    },
+                    "cursorlinehighlight.statusTextColor": {
+                        "type": "string",
+                        "default": "#93A5C1",
+                        "description": "Change the Inline Status Text color. Color must be in hex color of #RRGGBB.",
+                        "order": 5
+                    },
+                    "cursorlinehighlight.statusTextBackgroundColor": {
+                        "type": "string",
+                        "default": null,
+                        "description": "Change the Inline Status Text background color. Color must be in hex color of #RRGGBB or null (No background).",
+                        "order": 6
+                    },
+                    "cursorlinehighlight.statusTextOpacity": {
+                        "type": "number",
+                        "enum": [
+                            0.1,
+                            0.2,
+                            0.3,
+                            0.4,
+                            0.5,
+                            0.6,
+                            0.7,
+                            0.8,
+                            0.9,
+                            1
+                        ],
+                        "default": 0.5,
+                        "description": "opacity of background color of selection in %. 1 is no opacity.",
+                        "order": 7
+                        
+                    }
+                }
+            },
+            {
+                "title": "Cursor Only Settings",
+                "properties": {
+                    "cursorlinehighlight.cursorOnlyBorderColor": {
+                        "type": "string",
+                        "default": "#93A5C1",
+                        "description": "Change the border color. Color must be in hex color of #RRGGBB.",
+                        "order": 1
+                    },
+                    "cursorlinehighlight.cursorOnlyBackgroundColor": {
+                        "type": "string",
+                        "default": "#383F49",
+                        "description": "Change the background color. Color must be in hex color of #RRGGBB or null (No background).",
+                        "order": 2
+                    },
+                    "cursorlinehighlight.cursorOnlyBorderPosition": {
+                        "type": "string",
+                        "enum": [
+                            "bottom | is Whole Line",
+                            "bottom | before Cursor",
+                            "bottom | after Cursor"
+                        ],
+                        "default": "bottom | is Whole Line",
+                        "description": "Border position on current selection.",
+                        "order": 3
+                    },
+                    "cursorlinehighlight.cursorOnlyBorderWidth": {
+                        "type": "string",
+                        "default": "2px",
+                        "description": "Border width, should use unit of 'px' or 'em'.",
+                        "order": 4
+                    },
+                    "cursorlinehighlight.cursorOnlyBorderStyle": {
+                        "type": [
+                            "string"
+                        ],
+                        "enum": [
+                            "solid",
+                            "dotted",
+                            "dashed"
+                        ],
+                        "default": "dotted",
+                        "description": "Main Border style on current line.",
+                        "order": 5
+                    },
+                    "cursorlinehighlight.cursorOnlyBorderStyleWithafterCursor": {
+                        "type": [
+                            "string"
+                        ],
+                        "enum": [
+                            "solid",
+                            "dotted",
+                            "dashed"
+                        ],
+                        "default": "dotted",
+                        "description": "(not working yet) Use this border style only when [bottom | after Cursor]. this is border style for previous range.",
+                        "order": 6
+                    }
+                }
+            },
+            {
+                "title": "Single Line Settings",
+                "properties": {
+                    "cursorlinehighlight.singleLineBorderColor": {
+                        "type": "string",
+                        "default": "#93A5C1",
+                        "description": "Change the border color. Color must be in hex color of #RRGGBB.",
+                        "order": 1
+                    },
+                    "cursorlinehighlight.singleLineBackgroundColor": {
+                        "type": "string",
+                        "default": "#383F49",
+                        "description": "Change the background color. Color must be in hex color of #RRGGBB or null (No background).",
+                        "order": 2
+                    },
+                    "cursorlinehighlight.singleLine": {
+                        "type": "string",
+                        "enum": [
+                            "bottom | selection Only",
+                            "top-bottom | selection Only",
+                            "top-right-bottom-left"
+                        ],
+                        "default": "bottom | Selection Only",
+                        "description": "Border position on current selection.",
+                        "order": 3
+                    },
+                    "cursorlinehighlight.singleLineBorderWidth": {
+                        "type": "string",
+                        "default": "2px",
+                        "description": "Border width, should use unit of 'px' or 'em'.",
+                        "order": 4
+                    },
+                    "cursorlinehighlight.singleLineBorderStyle": {
+                        "type": "string",
+                        "enum": [
+                            "solid",
+                            "dotted",
+                            "dashed"
+                        ],
+                        "default": "solid",
+                        "description": "Border style on current selection.",
+                        "order": 5
+                    }
+                }
+            },
+            {
+                "title": "Multi Line Settings",
+                "properties": {
+                    "cursorlinehighlight.multiLineBorderColor": {
+                        "type": "string",
+                        "default": "#93A5C1",
+                        "description": "Change the border color. Color must be in hex color of #RRGGBB.",
+                        "order": 1
+                    },
+                    "cursorlinehighlight.multiLineBackgroundColor": {
+                        "type": "string",
+                        "default": "#383F49",
+                        "description": "Change the background color. Color must be in hex color of #RRGGBB or null (No background).",
+                        "order": 2
+                    },
+                    "cursorlinehighlight.multiLineBorderPosition": {
+                        "type": "string",
+                        "enum": [
+                            "top-bottom | is Whole Line",
+                            "left | at Line Start"
+                        ],
+                        "default": "top-bottom | is Whole Line",
+                        "description": "Border position on current selection.",
+                        "order": 3
+                        
+                    },
+                    "cursorlinehighlight.multiLineBorderWidth": {
+                        "type": "string",
+                        "default": "2px",
+                        "description": "Border width, should use unit of 'px' or 'em'.",
+                        "order": 4
+                    },
+                    "cursorlinehighlight.multiLineBorderStyle": {
+                        "type": "string",
+                        "enum": [
+                            "solid",
+                            "dotted",
+                            "dashed"
+                        ],
+                        "default": "dashed",
+                        "description": "Border style on current selection.",
+                        "order": 5
+                    }
+                }
+            },
+            {
+                "title": "Multi Cursor Settings",
+                "properties": {
+                    "cursorlinehighlight.multiCursorBorderColor": {
+                        "type": "string",
+                        "default": "#93A5C1",
+                        "description": "Change the border color. Color must be in hex color of #RRGGBB.",
+                        "order": 1
+                    },
+                    "cursorlinehighlight.multiCursorBackgroundColor": {
+                        "type": "string",
+                        "default": "#383F49",
+                        "description": "Change the background color. Color must be in hex color of #RRGGBB or null (No background).",
+                        "order": 2
+                    },
+                    "cursorlinehighlight.multiCursorBorderPosition": {
+                        "type": "string",
+                        "enum": [
+                            "top-right-bottom-left"
+                        ],
+                        "default": "top-right-bottom-left",
+                        "description": "Border position on current selection.",
+                        "order": 3
+                    },
+                    "cursorlinehighlight.multiCursorBorderWidth": {
+                        "type": "string",
+                        "default": "2px",
+                        "description": "Border width, should use unit of 'px' or 'em'.",
+                        "order": 4
+                    },
+                    "cursorlinehighlight.multiCursorBorderStyle": {
+                        "type": "string",
+                        "enum": [
+                            "solid",
+                            "dotted",
+                            "dashed"
+                        ],
+                        "default": "dotted",
+                        "description": "Border style on current selection.",
+                        "order": 5
+                    }
                 }
             }
-        }
+        ]
     },
     "scripts": {
         "vscode:prepublish": "pnpm run package",

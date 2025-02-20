@@ -194,15 +194,15 @@ const resetDecoration: Type.UnsetDecorationFunctionType = (
             if (Array.isArray(decorationType)) {
                 decorationType.forEach((decorationType: vscode.TextEditorDecorationType) => {
                     applyDecoration(editor, decorationType, []);
-                    if (dispose) {
-                        // decorationType.dispose();
-                    }
+                    // if (dispose) {
+                    //     decorationType.dispose();
+                    // }
                 });
             } else {
                 applyDecoration(editor, decorationType, []);
-                if (dispose) {
-                    // decorationType.dispose();
-                }
+                // if (dispose) {
+                //     decorationType.dispose();
+                // }
             }
         });
         return true;
@@ -241,7 +241,7 @@ const onActiveWindowChange = (config: Type.ConfigInfoReadyType): vscode.Disposab
         } else {
             // reset all decoration on all editors.
             vscode.window.visibleTextEditors.forEach((editor: vscode.TextEditor) => {
-                resetDecorationWrapper(config, editor);
+                resetDecorationWrapper(config, editor, true);
             });
         }
     });
@@ -281,13 +281,11 @@ const activeEditorChanged = (config: Type.ConfigInfoReadyType): vscode.Disposabl
     });
 };
 
-
 const editorOptionChange = (config: Type.ConfigInfoReadyType): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorOptions((event: vscode.TextEditorOptionsChangeEvent) => {
         editorIndentOption(config, event.textEditor);
     });
 };
-
 
 const selectionChanged = (config: Type.ConfigInfoReadyType): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) => {
@@ -320,7 +318,9 @@ const configChanged = (context: vscode.ExtensionContext): vscode.Disposable => {
 
             const configReady = config.initialiseConfig(context);
             if (configReady) {
-
+                // if (configReady.configError.length) {
+                //     sendAutoDismissMessage('All Configuration Ok.', 2000);   
+                // }
             }
         }
     });
