@@ -3,13 +3,11 @@
  * 
  */
 import * as vscode from 'vscode';
-import * as Type from './type/type.d';
 import * as config from './config';
 import {
     DECORATION_INFO
 } from './constant/object';
 import {
-    applyDecoration,
     setDecorationOnEditor
 } from './decoration';
 import {

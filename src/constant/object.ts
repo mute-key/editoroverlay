@@ -21,6 +21,9 @@ import {
  * workspace configuration could have been 'default' but
  * i think undefined is more difinitive for unset default value.
  * 
+ * i think need to split this into 2 to static and dynamic.
+ * this is getting to heavy to read.
+ * 
  */
 export const CONFIG_INFO = {
     name: undefined,
