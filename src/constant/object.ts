@@ -15,8 +15,8 @@ import {
 // ==============================================================================
 
 /**
- * readonly config object lteral structure. 
- * import, shallow copy, as Type.ConfigInfoType. 
+ * readonly config object lteral structure.
+ * import, shallow copy, as Type.ConfigInfoType.
  * 
  * workspace configuration could have been 'default' but
  * i think undefined is more difinitive for unset default value.
@@ -57,16 +57,15 @@ export const CONFIG_INFO = {
         statusTextOpacity: undefined,
         statusTextBackgroundColor: undefined,
     } as const,
-    configError: undefined
-} as const;
-
-export const APPLIED_DECORATION = {
-    applied: undefined,
-    editorDecoration: undefined
+    configError: undefined,
+    appliedDecoration: {
+        applied: undefined,
+        editorDecoration: undefined
+    } as const,
 } as const;
 
 /**
- * type split done 
+ * type split done
  * 
  */
 export const SINGLE_BORDER_SELECTION = {

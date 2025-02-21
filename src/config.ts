@@ -27,9 +27,7 @@ import {
     disposeDecoration
 } from './decoration';
 
-
 const configInfo: Type.ConfigInfoType = { ...CONFIG_INFO };
-
 
 const getConfigString = (configReady: Type.ConfigInfoReadyType): string => Object.entries(configReady.config).reduce((acc, [key, infoProp]) => {
     if (typeof infoProp === 'string' || typeof infoProp === 'number' || typeof infoProp === 'boolean') {
@@ -116,7 +114,6 @@ const initialiseConfig = (context: vscode.ExtensionContext): Type.ConfigInfoRead
     // typecasting as well as referencing the object with definitive variable name
     const configReady = configInfo as Type.ConfigInfoReadyType;
 
-
     if (!configReady.configError) {
         configReady.configError = [];
     }
@@ -143,10 +140,10 @@ const checkConfigKeyAndCast = <T extends Type.DecorationStyleConfigNameType | Ty
     return key as T;
 };
 
-const configNameTransformer = (configNameString: string, configNameTransform: Type.StringTransformFunc): string => 
+const configNameTransformer = (configNameString: string, configNameTransform: Type.StringTransformFunc): string =>
     configNameTransform.reduce((str, transform) => transform(str), configNameString);
 
-// const configNameToSettingName = (configName: string) =>  
+// const configNameToSettingName = (configName: string) =>
 //     capitalize(configName.split('').reduce((string, characater) => string += /^[A-Z]/.test(characater) ? ' ' + characater : characater));
 
 const isValidHexColor = (color: string) => regex.isValidHexColor.test(color);
@@ -162,7 +159,7 @@ const isConfigValueValid = <T extends string | number | boolean | null>(configIn
         if (!isValidHexColor(String(value))) {
             configInfo.configError.push(configKeyWithScope);
             return defaultValue;
-        } 
+        }
     } else if (configName.toLocaleLowerCase().includes('backgroundcolor')) {
         if (value === null || value === 'null' || String(value).length === 0 ) {
             updateEachEditorConfiguration(configKeyWithScope, null);
@@ -235,7 +232,7 @@ const getConfigSet = (configInfo: Type.ConfigInfoReadyType, decorationKey: Type.
 
         const configValue: string | boolean | number | null = getConfigValue(configInfo, configPrefix, checkConfigKeyAndCast(configName, defaultConfigDefinition), defaultValue, [capitalize]);
 
-        // configValue can be boolean. 
+        // configValue can be boolean.
         if (configValue !== undefined && configValue !== null) {
             if (Object.hasOwn(colorConfigTransform, configName)) {
                 const colorTransform = colorConfigTransform[configName];
@@ -380,6 +377,5 @@ const createDecorationTypeBuilder = (configReady: Type.ConfigInfoReadyType): boo
 };
 
 export {
-    initialiseConfig,
-    getConfigHash
+    initialiseConfig
 };

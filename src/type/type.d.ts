@@ -90,7 +90,6 @@ type GeneralConfigInfoType = {
     statusTextBackgroundColor?: string,
 }
 
-
 type StatusDecorationType = {
     isWholeLine?: boolean,
     rangeBehavior?: any,
@@ -142,7 +141,7 @@ type StatusOfType = {
     [SELECTION_TYPE.MULTI_CURSOR]: {
         contentText: ((nth: string, selectionCount: string, lines: string, characters: string) => string),
     }
-} 
+}
 
 type StatusType = {
     position: string // inline | nextline,
@@ -169,6 +168,11 @@ type regexType = {
     isValidWidth: RegExp,
 }
 
+type appliedDecoration = {
+    applied: DecorationInfoPropType,
+    editorDecoration: vscode.TextEditorDecorationType[]
+};
+
 type ConfigInfoReadyType = {
     name: string
     config: vscode.WorkspaceConfiguration,
@@ -177,7 +181,8 @@ type ConfigInfoReadyType = {
     decorationList: DecorationType
     borderPositionInfo: BorderPositionInfoType
     generalConfigInfo: GeneralConfigInfoType
-    configError: string[]
+    configError: string[],
+    appliedDecoration: appliedDecoration
 } & ConfigInfoType
 
 // type SelectionConfigFunctionType<T> = (config: T) => DecorationStyleConfigType[];
@@ -189,7 +194,7 @@ type SelectionConfigFunctionType = (config: DecorationStyleConfigType, decoratio
 type CreateDecorationFunctionType = (config: DecorationStyleConfigType, decorationKey: DecorationStyleKeyOnlyType) => (decorationTypeSplit: SelectionConfigFunctionType) => vscode.TextEditorDecorationType[] | undefined
 
 type ColourConfigTransformType = {
-    of: string, 
+    of: string,
     fn: (v: string, n: number, d: string) => string
 }
 
@@ -224,7 +229,6 @@ type DecorationInfoType = {
     [SELECTION_TYPE.MULTI_CURSOR]: DecorationInfoPropType
 }
 
-
 type UnsetDecorationFunctionType = (config: ConfigInfoReadyType, editor?: vscode.TextEditor, dispose?: boolean) => (decorationInfo: DecorationInfoPropType) => boolean;
 
 type UnsetFunctionType = (decorationInfo: DecorationInfoPropType) => boolean
@@ -250,7 +254,7 @@ type decorationCoordinatorSplit = {
     [SELECTION_TYPE.SINGLE_LINE]: any
     [SELECTION_TYPE.MULTI_LINE]: any
     [SELECTION_TYPE.MULTI_CURSOR]: any
-} 
+}
 
 type createRange = {
     startPosition: number[] | vscode.Position
