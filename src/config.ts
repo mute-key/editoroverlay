@@ -17,7 +17,8 @@ import {
     NO_CONFIGURATION_DEOCORATION_DEFAULT,
     DECORATION_STYLE_PREFIX,
     BORDER_WIDTH_DEFINITION,
-    CONFIG_INFO
+    CONFIG_INFO,
+    DECORATION_STATUS
 } from './constant/object';
 import {
     SYSTEM_MESSAGE,
@@ -28,6 +29,8 @@ import {
 } from './decoration';
 
 const configInfo: Type.ConfigInfoType = { ...CONFIG_INFO };
+
+const decorationStatus: Type.DecorationStatusType = { ... DECORATION_STATUS };
 
 const getConfigString = (configReady: Type.ConfigInfoReadyType): string => Object.entries(configReady.config).reduce((acc, [key, infoProp]) => {
     if (typeof infoProp === 'string' || typeof infoProp === 'number' || typeof infoProp === 'boolean') {
@@ -97,7 +100,7 @@ const updateEditorConfiguration = (configReady: Type.ConfigInfoReadyType): void 
     // editorConfig.update("cursorSmoothCaretAnimation", 'on', vscode.ConfigurationTarget.Global);
 };
 
-const initialiseConfig = (context: vscode.ExtensionContext): Type.ConfigInfoReadyType | undefined => {
+const initialiseConfig = (context: vscode.ExtensionContext): Type.InitialiseConfigType | undefined => {
     const name = context.extension.packageJSON.name;
 
     if (!name) {
@@ -123,14 +126,22 @@ const initialiseConfig = (context: vscode.ExtensionContext): Type.ConfigInfoRead
         updateEditorConfiguration(configReady);
     } else {
         if (!ifConfigChanged(configReady)) {
-            return configReady;
+            // return configReady;
+            return {
+                config: configReady,
+                decoration: decorationStatus
+            };
         } else {
             
         }
     }
 
-    if (createDecorationTypeBuilder(configReady)) {
-        return configReady;
+    if (createDecorationTypeBuilder(configReady, decorationStatus)) {
+        // return configReady;
+        return {
+            config: configReady,
+            decoration: decorationStatus
+        };
     }
 
     return;
@@ -155,7 +166,6 @@ const isConfigValueValid = <T extends string | number | boolean | null>(configIn
     const configKeyWithScope = configInfo.name + '.' + configName;
 
     if (configName.toLocaleLowerCase().includes('bordercolor')) {
-        // console.log(configName, value, isValidHexColor(String(value)));
         if (!isValidHexColor(String(value))) {
             configInfo.configError.push(configKeyWithScope);
             return defaultValue;
@@ -341,17 +351,17 @@ const borderPositionParser = (selectionType: Type.DecorationStyleKeyOnlyType, bo
  * @returns
  * 
  */
-const createDecorationTypeBuilder = (configReady: Type.ConfigInfoReadyType): boolean => {
+const createDecorationTypeBuilder = (configReady: Type.ConfigInfoReadyType, decorationStatus: Type.DecorationStatusType): boolean => {
     
     for (const key in configReady.generalConfigInfo) {
         configReady.generalConfigInfo[key] = getConfigValue(configReady, "", key as Type.GeneralConfigNameOnlyType, NO_CONFIGURATION_GENERAL_DEFAULT[key]);
     }
 
-    for (const key in configReady.decorationList) {
+    for (const key in decorationStatus.decorationList) {
         const selectionType = key as Type.DecorationStyleKeyOnlyType;
 
-        if (configReady.decorationList[selectionType]) {
-            disposeDecoration(configReady.decorationList[selectionType]);
+        if (decorationStatus.decorationList[selectionType]) {
+            disposeDecoration(decorationStatus.decorationList[selectionType]);
         }
 
         const configSet: Type.DecorationStyleConfigType = getConfigSet(configReady, selectionType);
@@ -369,8 +379,8 @@ const createDecorationTypeBuilder = (configReady: Type.ConfigInfoReadyType): boo
         if (!decorationTypeList) {
             return false;
         }
-
-        configReady.decorationList[selectionType] = decorationTypeList;
+        
+        decorationStatus.decorationList[selectionType] = decorationTypeList;
     }
 
     return true;

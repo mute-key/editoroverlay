@@ -4,6 +4,7 @@
  */
 import * as vscode from 'vscode';
 import * as config from './config';
+import * as Type from './type/type.d';
 import {
     DECORATION_INFO
 } from './constant/object';
@@ -11,7 +12,6 @@ import {
     setDecorationOnEditor
 } from './decoration';
 import {
-    regex,
     fixConfuration
 } from './util';
 import {
@@ -21,6 +21,7 @@ import {
     selectionChanged,
     configChanged,
 } from './event';
+
 
 /**
  * @param editor
@@ -32,37 +33,41 @@ const cursorActivate = async (context: vscode.ExtensionContext): Promise<vscode.
         await context.extension.activate();
 
         const loadConfig = config.initialiseConfig(context);
+
         if (!loadConfig) {
             console.error('Failed to initialize config.');
             return;
         }
 
-        if (!loadConfig.decorationList) {
+        const configReady = loadConfig.config; 
+        const decorationStatus = loadConfig.decoration;
+
+        if (!decorationStatus.decorationList) {
             console.error('Failed to initialize decorationList.');
             return;
         }
 
         const activeEditor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
 
-        if (loadConfig.configError.length > 0) {
-            fixConfuration(loadConfig.configError);
+        if (configReady.configError.length > 0) {
+            fixConfuration(configReady.configError);
         }
 
         if (activeEditor) {
             setDecorationOnEditor({
+                loadConfig: configReady,
                 editor: activeEditor,
-                decorationList: loadConfig.decorationList,
                 decorationInfo: DECORATION_INFO.CURSOR_ONLY,
-                loadConfig: loadConfig
+                decorationStatus: decorationStatus
             });
         }
 
         return [
-            onActiveWindowChange(loadConfig),
-            activeEditorChanged(loadConfig),
-            selectionChanged(loadConfig),
-            editorOptionChange(loadConfig),
-            configChanged(context),
+            onActiveWindowChange(configReady, decorationStatus),
+            activeEditorChanged(configReady, decorationStatus),
+            selectionChanged(configReady, decorationStatus),
+            editorOptionChange(configReady),
+            configChanged(context, decorationStatus),
         ]; // event functions
     } catch (err) {
         console.error('Error during extension activation: ', err);

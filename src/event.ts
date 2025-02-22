@@ -19,28 +19,28 @@ import {
     getSelectionType
 } from './editor';
 
-const onActiveWindowChange = (config: Type.ConfigInfoReadyType): vscode.Disposable => {
+const onActiveWindowChange = (config: Type.ConfigInfoReadyType, decorationStatus: Type.DecorationStatusType): vscode.Disposable => {
     return vscode.window.onDidChangeWindowState((event: vscode.WindowState) => {
         if (event.focused) {
             // apply decoration to active editor.
             if (vscode.window.activeTextEditor) {
                 setDecorationOnEditor({
+                    loadConfig: config,
                     editor: vscode.window.activeTextEditor,
-                    decorationList: config.decorationList,
                     decorationInfo: DECORATION_INFO.CURSOR_ONLY,
-                    loadConfig: config
+                    decorationStatus: decorationStatus
                 });
             }
         } else {
             // reset all decoration on all editors.
             vscode.window.visibleTextEditors.forEach((editor: vscode.TextEditor) => {
-                resetDecorationWrapper(config, editor, true);
+                resetDecorationWrapper(decorationStatus, editor, true);
             });
         }
     });
 };
 
-const activeEditorChanged = (config: Type.ConfigInfoReadyType): vscode.Disposable => {
+const activeEditorChanged = (config: Type.ConfigInfoReadyType, decorationStatus: Type.DecorationStatusType): vscode.Disposable => {
     return vscode.window.onDidChangeActiveTextEditor((editor: vscode.TextEditor | undefined) => {
         if (editor) {
 
@@ -57,18 +57,18 @@ const activeEditorChanged = (config: Type.ConfigInfoReadyType): vscode.Disposabl
             // and resetting the decoration. 
 
             vscode.window.visibleTextEditors.forEach(editor => {
-                if (config.appliedDecoration.editorDecoration !== undefined) {
-                    config.appliedDecoration.editorDecoration.forEach(decoration => {
+                if (decorationStatus.appliedDecoration.editorDecoration !== undefined) {
+                    decorationStatus.appliedDecoration.editorDecoration.forEach(decoration => {
                         applyDecoration(editor, decoration, []);
                     });
                 }
             });
 
             setDecorationOnEditor({
+                loadConfig: config,
                 editor: editor,
-                decorationList: config.decorationList,
                 decorationInfo: DECORATION_INFO.CURSOR_ONLY,
-                loadConfig: config
+                decorationStatus: decorationStatus
             });
         }
     });
@@ -80,7 +80,7 @@ const editorOptionChange = (config: Type.ConfigInfoReadyType): vscode.Disposable
     });
 };
 
-const selectionChanged = (config: Type.ConfigInfoReadyType): vscode.Disposable => {
+const selectionChanged = (config: Type.ConfigInfoReadyType, decorationStatus: Type.DecorationStatusType): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) => {
         if (event.selections) {
             const decorationType: Type.DecorationInfoPropType | undefined = getSelectionType(event.textEditor);
@@ -88,28 +88,28 @@ const selectionChanged = (config: Type.ConfigInfoReadyType): vscode.Disposable =
                 return;
             }
 
-            isDecorationChanged(config, event.textEditor, config.appliedDecoration, decorationType);
+            isDecorationChanged(event.textEditor, decorationStatus, decorationType);
 
-            if (!config.decorationList[decorationType.KEY]) {
+            if (!decorationStatus.decorationList[decorationType.KEY]) {
                 return;
             }
 
             setDecorationOnEditor({
+                loadConfig: config,
                 editor: event.textEditor,
-                decorationList: config.decorationList,
                 decorationInfo: decorationType,
-                loadConfig: config
+                decorationStatus: decorationStatus
             });
         }
     });
 };
 
-const configChanged = (context: vscode.ExtensionContext): vscode.Disposable => {
+const configChanged = (context: vscode.ExtensionContext, decorationStatus: Type.DecorationStatusType): vscode.Disposable => {
     return vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
         if (event) {
             // need to dispose all decorations... 
 
-            const configReady = config.initialiseConfig(context);
+            const configReady = config.initialiseConfig(context, decorationStatus);
             if (configReady) {
                 // if (configReady.configError.length) {
                 //     sendAutoDismissMessage('All Configuration Ok.', 2000);   

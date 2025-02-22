@@ -169,8 +169,8 @@ type regexType = {
 }
 
 type appliedDecoration = {
-    applied: DecorationInfoPropType,
-    editorDecoration: vscode.TextEditorDecorationType[]
+    applied?: DecorationInfoPropType,
+    editorDecoration?: vscode.TextEditorDecorationType[]
 };
 
 type ConfigInfoReadyType = {
@@ -178,12 +178,23 @@ type ConfigInfoReadyType = {
     config: vscode.WorkspaceConfiguration,
     configHashKey: string,
     status: StatusType,
-    decorationList: DecorationType
     borderPositionInfo: BorderPositionInfoType
     generalConfigInfo: GeneralConfigInfoType
     configError: string[],
-    appliedDecoration: appliedDecoration
 } & ConfigInfoType
+
+type InitialiseConfigType = {
+    config: ConfigInfoReadyType,
+    decoration: DecorationStatusType
+}
+
+type DecorationStatusType = {
+    status?: {
+        decorationType: vscode.TextEditorDecorationType[] | undefined,
+    }
+    decorationList: DecorationType
+    appliedDecoration: appliedDecoration
+}
 
 // type SelectionConfigFunctionType<T> = (config: T) => DecorationStyleConfigType[];
 
@@ -229,7 +240,7 @@ type DecorationInfoType = {
     [SELECTION_TYPE.MULTI_CURSOR]: DecorationInfoPropType
 }
 
-type UnsetDecorationFunctionType = (config: ConfigInfoReadyType, editor?: vscode.TextEditor, dispose?: boolean) => (decorationInfo: DecorationInfoPropType) => boolean;
+type UnsetDecorationFunctionType = (decorationStatus: DecorationStatusType, editor?: vscode.TextEditor, dispose?: boolean) => (decorationInfo: DecorationInfoPropType) => boolean;
 
 type UnsetFunctionType = (decorationInfo: DecorationInfoPropType) => boolean
 
@@ -239,10 +250,10 @@ type DecorationWithRangeType = {
 }
 
 type DecorationContext = {
-    editor: vscode.TextEditor;
-    decorationList: DecorationType;
-    decorationInfo: DecorationInfoPropType;
     loadConfig: ConfigInfoReadyType
+    editor: vscode.TextEditor
+    decorationInfo: DecorationInfoPropType;
+    decorationStatus: DecorationStatusType
 };
 
 type SetDecorationOnEditorFunc = (context: DecorationContext) => void;

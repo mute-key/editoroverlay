@@ -31,17 +31,10 @@ export const CONFIG_INFO = {
     configHashKey: undefined,
     status: {
         position: undefined,
-        decorationType: undefined,
         indent: {
             size: undefined,
             type: undefined
         } as const,
-    } as const,
-    decorationList: {
-        CURSOR_ONLY: undefined,
-        SINGLE_LINE: undefined,
-        MULTI_LINE: undefined,
-        MULTI_CURSOR: undefined,
     } as const,
     borderPositionInfo: {
         CURSOR_ONLY: undefined,
@@ -52,21 +45,29 @@ export const CONFIG_INFO = {
     generalConfigInfo: {
         borderOpacity: undefined,
         backgroundOpacity: undefined,
-        // borderWidth: undefined,
-        // borderColor: undefined,
-        // backgroundColor: undefined,
         statusTextEnabled: undefined,
         statusTextColor: undefined,
         statusTextOpacity: undefined,
         statusTextBackgroundColor: undefined,
     } as const,
     configError: undefined,
+} as const;
+
+export const DECORATION_STATUS = {
+    status: {
+        decorationType: undefined,
+    } as const,
+    decorationList: {
+        CURSOR_ONLY: undefined,
+        SINGLE_LINE: undefined,
+        MULTI_LINE: undefined,
+        MULTI_CURSOR: undefined,
+    } as const,
     appliedDecoration: {
         applied: undefined,
         editorDecoration: undefined
     } as const,
-} as const;
-
+};
 /**
  * type split done
  * 
