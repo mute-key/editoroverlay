@@ -126,8 +126,5 @@ export {
     cursorOnlyDecorationWithRange,
     singelLineDecorationWithRange,
     multiLineDecorationWithRange,
-    multiCursorDecorationWithRange,
-    createRangeNNNN,
-    createRangeSPEP,
-    createRangeNNEP,
+    multiCursorDecorationWithRange
 };

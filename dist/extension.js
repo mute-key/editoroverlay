@@ -551,12 +551,10 @@ var resetDecoration = (decorationStatus2, editor, dispose) => (decorationInfo) =
   return false;
 };
 var resetOtherDecoration = (currentDecoration, reset) => Object.values(DECORATION_INFO).filter((info) => currentDecoration.MASK & info.MASK).map((info) => reset(info)).every(Boolean);
-var resetDecorationWrapper = (decorationStatus2, editor, dispose) => {
-  const resetFunction = (decorationInfo) => {
-    return resetDecoration(decorationStatus2, editor, dispose)(decorationInfo);
-  };
-  resetOtherDecoration(DECORATION_INFO.RESET, resetFunction);
-};
+var resetDecorationWrapper = (decorationStatus2, editor, dispose) => resetOtherDecoration(
+  DECORATION_INFO.RESET,
+  (decorationInfo) => resetDecoration(decorationStatus2, editor, dispose)(decorationInfo)
+);
 var isDecorationChanged = (editor, decorationStatus2, decorationInfo) => {
   if (decorationStatus2.appliedDecoration.applied) {
     if (decorationStatus2.appliedDecoration.applied.MASK !== decorationInfo.MASK) {
@@ -607,8 +605,6 @@ var setDecorationOnEditor = ({ editor, decorationInfo, loadConfig, decorationSta
 };
 
 // src/config.ts
-var configInfo = { ...CONFIG_INFO };
-var decorationStatus = { ...DECORATION_STATUS };
 var getConfigString = (configReady) => Object.entries(configReady.config).reduce((acc, [key, infoProp]) => {
   if (typeof infoProp === "string" || typeof infoProp === "number" || typeof infoProp === "boolean") {
     acc.push(infoProp);
@@ -657,6 +653,8 @@ var updateEditorConfiguration = (configReady) => {
   configReady.status.indent.type = insertSpaces ? "\n" : "	";
   configReady.status.indent.regex = insertSpaces ? regex.indentRegex(configReady.status.indent.size) : regex.tagRegex;
 };
+var configInfo = { ...CONFIG_INFO };
+var decorationStatus = { ...DECORATION_STATUS };
 var initialiseConfig = (context) => {
   const name = context.extension.packageJSON.name;
   if (!name) {

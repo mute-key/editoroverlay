@@ -28,9 +28,6 @@ import {
     disposeDecoration
 } from './decoration';
 
-const configInfo: Type.ConfigInfoType = { ...CONFIG_INFO };
-
-const decorationStatus: Type.DecorationStatusType = { ... DECORATION_STATUS };
 
 const getConfigString = (configReady: Type.ConfigInfoReadyType): string => Object.entries(configReady.config).reduce((acc, [key, infoProp]) => {
     if (typeof infoProp === 'string' || typeof infoProp === 'number' || typeof infoProp === 'boolean') {
@@ -99,6 +96,10 @@ const updateEditorConfiguration = (configReady: Type.ConfigInfoReadyType): void 
     // this is very cool but not necessary.
     // editorConfig.update("cursorSmoothCaretAnimation", 'on', vscode.ConfigurationTarget.Global);
 };
+
+const configInfo: Type.ConfigInfoType = { ...CONFIG_INFO };
+
+const decorationStatus: Type.DecorationStatusType = { ... DECORATION_STATUS };
 
 const initialiseConfig = (context: vscode.ExtensionContext): Type.InitialiseConfigType | undefined => {
     const name = context.extension.packageJSON.name;

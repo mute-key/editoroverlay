@@ -3,7 +3,7 @@
  * 
  */
 import * as vscode from 'vscode';
-import { cursorActivate } from './cursor';
+import { cursorActivate } from './activate';
 
 export function activate(context: vscode.ExtensionContext) {
     cursorActivate(context).then((event: void | vscode.Disposable[]) => {

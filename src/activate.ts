@@ -22,7 +22,6 @@ import {
     configChanged,
 } from './event';
 
-
 /**
  * @param editor
  * @param decorationInfo

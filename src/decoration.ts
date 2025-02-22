@@ -45,30 +45,30 @@ const resetDecoration: Type.UnsetDecorationFunctionType = (
 ) => (
     decorationInfo: Type.DecorationInfoPropType
 ): boolean => {
-    if (editor) {
-        decorationStatus.status?.decorationType?.forEach((decorationType) => {
-            decorationType.dispose();
-        });
+        if (editor) {
+            decorationStatus.status?.decorationType?.forEach((decorationType) => {
+                decorationType.dispose();
+            });
 
-        decorationStatus.decorationList[decorationInfo.KEY]?.forEach(decorationType => {
-            if (Array.isArray(decorationType)) {
-                decorationType.forEach((decorationType: vscode.TextEditorDecorationType) => {
+            decorationStatus.decorationList[decorationInfo.KEY]?.forEach(decorationType => {
+                if (Array.isArray(decorationType)) {
+                    decorationType.forEach((decorationType: vscode.TextEditorDecorationType) => {
+                        applyDecoration(editor, decorationType, []);
+                        // if (dispose) {
+                        // decorationType.dispose();
+                        // }
+                    });
+                } else {
                     applyDecoration(editor, decorationType, []);
                     // if (dispose) {
                     // decorationType.dispose();
                     // }
-                });
-            } else {
-                applyDecoration(editor, decorationType, []);
-                // if (dispose) {
-                // decorationType.dispose();
-                // }
-            }
-        });
-        return true;
-    }
-    return false;
-};
+                }
+            });
+            return true;
+        }
+        return false;
+    };
 
 const resetOtherDecoration = (
     currentDecoration: Type.DecorationInfoPropType,
@@ -79,12 +79,15 @@ const resetOtherDecoration = (
         .map(info => reset(info))
         .every(Boolean);
 
-const resetDecorationWrapper = (decorationStatus: Type.DecorationStatusType, editor: vscode.TextEditor, dispose?: boolean) => {
-    const resetFunction = (decorationInfo: Type.DecorationInfoPropType): boolean => {
-        return resetDecoration(decorationStatus, editor, dispose)(decorationInfo);
-    };
-    resetOtherDecoration(DECORATION_INFO.RESET, resetFunction);
-};
+const resetDecorationWrapper = (
+    decorationStatus: Type.DecorationStatusType,
+    editor: vscode.TextEditor,
+    dispose?: boolean
+): boolean =>
+    resetOtherDecoration(
+        DECORATION_INFO.RESET,
+        (decorationInfo: Type.DecorationInfoPropType): boolean =>
+            resetDecoration(decorationStatus, editor, dispose)(decorationInfo));
 
 const isDecorationChanged = (
     editor: vscode.TextEditor,
