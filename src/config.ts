@@ -131,9 +131,7 @@ const initialiseConfig = (context: vscode.ExtensionContext): Type.InitialiseConf
                 config: configReady,
                 decoration: decorationStatus
             };
-        } else {
-            
-        }
+        } 
     }
 
     if (createDecorationTypeBuilder(configReady, decorationStatus)) {

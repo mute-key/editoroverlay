@@ -109,7 +109,7 @@ const configChanged = (context: vscode.ExtensionContext, decorationStatus: Type.
         if (event) {
             // need to dispose all decorations... 
 
-            const configReady = config.initialiseConfig(context, decorationStatus);
+            const configReady = config.initialiseConfig(context);
             if (configReady) {
                 // if (configReady.configError.length) {
                 //     sendAutoDismissMessage('All Configuration Ok.', 2000);   

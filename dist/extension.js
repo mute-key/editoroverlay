@@ -35,7 +35,7 @@ __export(extension_exports, {
 });
 module.exports = __toCommonJS(extension_exports);
 
-// src/cursor.ts
+// src/activate.ts
 var vscode7 = __toESM(require("vscode"));
 
 // src/config.ts
@@ -680,7 +680,6 @@ var initialiseConfig = (context) => {
         config: configReady,
         decoration: decorationStatus
       };
-    } else {
     }
   }
   if (createDecorationTypeBuilder(configReady, decorationStatus)) {
@@ -925,14 +924,14 @@ var selectionChanged = (config, decorationStatus2) => {
 var configChanged = (context, decorationStatus2) => {
   return vscode6.workspace.onDidChangeConfiguration((event) => {
     if (event) {
-      const configReady = initialiseConfig(context, decorationStatus2);
+      const configReady = initialiseConfig(context);
       if (configReady) {
       }
     }
   });
 };
 
-// src/cursor.ts
+// src/activate.ts
 var cursorActivate = async (context) => {
   try {
     await context.extension.activate();

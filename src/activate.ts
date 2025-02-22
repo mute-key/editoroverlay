@@ -39,8 +39,8 @@ const cursorActivate = async (context: vscode.ExtensionContext): Promise<vscode.
             return;
         }
 
-        const configReady = loadConfig.config; 
-        const decorationStatus = loadConfig.decoration;
+        const configReady: Type.ConfigInfoReadyType = loadConfig.config; 
+        const decorationStatus: Type.DecorationStatusType = loadConfig.decoration;
 
         if (!decorationStatus.decorationList) {
             console.error('Failed to initialize decorationList.');
