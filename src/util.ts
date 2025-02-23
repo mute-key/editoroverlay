@@ -20,8 +20,8 @@ const fixConfuration = (confingError: string[]) => {
 };
 
 const regex: Type.regexType = {
-    indentRegex: (indentSize: string | number) => new RegExp(`^( {${indentSize}}|[\r\n]+)*$`, 'gm'),
-    tagRegex: /(\t|[\r\n]+)*$/gm,
+    indentAndEOLRegex: (indentSize: string | number) => new RegExp(`^( {${indentSize}}|[\r\n]+)*$`, 'gm'),
+    tagtAndEOLRegex: /(\t|[\r\n]+)*$/gm,
     isValidHexColor: /^#[A-Fa-f0-9]{6}$/,
     isValidWidth: /^[0-9]px$|^[0-9]em$/
 };

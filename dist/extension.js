@@ -61,9 +61,9 @@ var fixConfuration = (confingError) => {
   });
 };
 var regex = {
-  indentRegex: (indentSize) => new RegExp(`^( {${indentSize}}|[\r
+  indentAndEOLRegex: (indentSize) => new RegExp(`^( {${indentSize}}|[\r
 ]+)*$`, "gm"),
-  tagRegex: /(\t|[\r\n]+)*$/gm,
+  tagtAndEOLRegex: /(\t|[\r\n]+)*$/gm,
   isValidHexColor: /^#[A-Fa-f0-9]{6}$/,
   isValidWidth: /^[0-9]px$|^[0-9]em$/
 };
@@ -269,7 +269,7 @@ var vscode2 = __toESM(require("vscode"));
 var editorIndentOption = (config, editor) => {
   config.status.indent.size = Number(editor.options.tabSize ?? editor.options.indentSize ?? 4);
   config.status.indent.type = editor.options.insertSpaces ? "\n" : "	";
-  config.status.indent.regex = editor.options.insertSpaces ? regex.indentRegex(config.status.indent.size) : regex.tagRegex;
+  config.status.indent.regex = editor.options.insertSpaces ? regex.indentAndEOLRegex(config.status.indent.size) : regex.tagtAndEOLRegex;
 };
 var getSelectionType = (editor) => {
   if (editor.selections.length === 1) {
@@ -292,8 +292,8 @@ var createRangeNNNN = (startLine, startChar, endLine, endChar) => {
 var createRangeSPEP = (start, end) => {
   return new vscode2.Range(start, end);
 };
-var createRangeNNEP = (line, char, end) => {
-  return new vscode2.Range(new vscode2.Position(line, char), end);
+var createRangeNNEP = (line, startChar, end) => {
+  return new vscode2.Range(new vscode2.Position(line, startChar), end);
 };
 
 // src/selection.ts
@@ -436,11 +436,7 @@ var multiCursorStatus = (editor, status2, type) => {
   let lineDiff = 0;
   const statusInfo = [];
   const statusLine = [];
-  if (isSingleLine) {
-    lineDiff = 1;
-  } else {
-    lineDiff = Math.abs(editor.selections[0].end.line - editor.selections[0].start.line) + 1;
-  }
+  lineDiff = isSingleLine ? 1 : Math.abs(editor.selections[0].end.line - editor.selections[0].start.line) + 1;
   while (idx < length) {
     if (isSingleLine) {
       charCount = charCount + (editor.selections[idx].end.character - editor.selections[idx].start.character);
@@ -495,7 +491,7 @@ var statusDecorationType = (statusInfo, generalConfig) => {
     }
   };
 };
-var setStatusInfoDecoration = (editor, statusInfo, generalConfig) => {
+var setStatusDecoration = (editor, statusInfo, generalConfig) => {
   const statusInfoList = [];
   let length = statusInfo.length;
   while (length--) {
@@ -509,15 +505,16 @@ var disposeStatusInfo = (status2) => {
   let length = status2.decorationType.length;
   while (length--) {
     status2.decorationType[length].dispose();
+    delete status2.decorationType[length];
   }
 };
 var status = (editor, status2, generalConfig, type) => {
   const statusInfo = statusInfoSplit(editor, status2, type)[type.KEY]();
   if (status2.decorationType) {
     disposeStatusInfo(status2);
-    status2.decorationType = setStatusInfoDecoration(editor, statusInfo, generalConfig);
+    status2.decorationType = setStatusDecoration(editor, statusInfo, generalConfig);
   } else {
-    status2.decorationType = setStatusInfoDecoration(editor, statusInfo, generalConfig);
+    status2.decorationType = setStatusDecoration(editor, statusInfo, generalConfig);
   }
 };
 
@@ -527,11 +524,7 @@ var createEditorDecorationType = (styleAppliedConfig) => vscode4.window.createTe
 var disposeDecoration = (decorationList) => decorationList.forEach((decorationType) => {
   decorationType.dispose();
 });
-var resetLastAppliedDecoration = (editor, decorationType) => {
-  decorationType.forEach((decoration) => {
-    applyDecoration(editor, decoration, []);
-  });
-};
+var resetLastAppliedDecoration = (editor, decorationType) => decorationType.forEach((decoration) => applyDecoration(editor, decoration, []));
 var resetDecoration = (decorationStatus2, editor, dispose) => (decorationInfo) => {
   if (editor) {
     decorationStatus2.status?.decorationType?.forEach((decorationType) => {
@@ -615,8 +608,8 @@ var getConfigHash = (configReady) => {
   const configString = getConfigString(configReady);
   return fnv1aHash(configString);
 };
-var setConfigHashKey = (configInfo2) => {
-  configInfo2.configHashKey = fnv1aHash(getConfigString(configInfo2));
+var setConfigHashKey = (configReady) => {
+  configReady.configHashKey = fnv1aHash(getConfigString(configReady));
 };
 var ifConfigChanged = (configReady) => {
   const configHash = getConfigHash(configReady);
@@ -628,8 +621,6 @@ var ifConfigChanged = (configReady) => {
     configReady.configHashKey = configHash;
     if (configReady.configError.length === 0) {
       sendAutoDismissMessage("Config has been changed. Reloading configuration. (Messaage Dismiss in 2 second.)" /* RELOADING_CONFIG */, 1500);
-    } else {
-      sendAutoDismissMessage("error in config", 1500);
     }
     return true;
   }
@@ -651,7 +642,7 @@ var updateEditorConfiguration = (configReady) => {
   const insertSpaces = editorConfig.get("insertSpaces");
   configReady.status.indent.size = Number(tabSize ? tabSize : 4);
   configReady.status.indent.type = insertSpaces ? "\n" : "	";
-  configReady.status.indent.regex = insertSpaces ? regex.indentRegex(configReady.status.indent.size) : regex.tagRegex;
+  configReady.status.indent.regex = insertSpaces ? regex.indentAndEOLRegex(configReady.status.indent.size) : regex.tagtAndEOLRegex;
 };
 var configInfo = { ...CONFIG_INFO };
 var decorationStatus = { ...DECORATION_STATUS };
@@ -919,11 +910,11 @@ var selectionChanged = (config, decorationStatus2) => {
     }
   });
 };
-var configChanged = (context, decorationStatus2) => {
+var configChanged = (context) => {
   return vscode6.workspace.onDidChangeConfiguration((event) => {
     if (event) {
-      const configReady = initialiseConfig(context);
-      if (configReady) {
+      const loadConfig = initialiseConfig(context);
+      if (loadConfig) {
       }
     }
   });
@@ -961,7 +952,7 @@ var cursorActivate = async (context) => {
       activeEditorChanged(configReady, decorationStatus2),
       selectionChanged(configReady, decorationStatus2),
       editorOptionChange(configReady),
-      configChanged(context, decorationStatus2)
+      configChanged(context)
     ];
   } catch (err) {
     console.error("Error during extension activation: ", err);

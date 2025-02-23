@@ -53,6 +53,10 @@ export const CONFIG_INFO = {
     configError: undefined,
 } as const;
 
+/**
+ * decoration status object to set and unset decorations on editor.
+ * to be used as shallow copied object.
+ */
 export const DECORATION_STATUS = {
     status: {
         decorationType: undefined,
@@ -68,8 +72,9 @@ export const DECORATION_STATUS = {
         editorDecoration: undefined
     } as const,
 };
+
 /**
- * type split done
+ *  
  * 
  */
 export const SINGLE_BORDER_SELECTION = {

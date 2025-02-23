@@ -29,20 +29,21 @@ import {
 } from './decoration';
 
 
-const getConfigString = (configReady: Type.ConfigInfoReadyType): string => Object.entries(configReady.config).reduce((acc, [key, infoProp]) => {
-    if (typeof infoProp === 'string' || typeof infoProp === 'number' || typeof infoProp === 'boolean') {
-        acc.push(infoProp as string);
-    }
-    return acc;
-}, [] as string[]).join('');
+const getConfigString = (configReady: Type.ConfigInfoReadyType): string =>
+    Object.entries(configReady.config).reduce((acc, [key, infoProp]) => {
+        if (typeof infoProp === 'string' || typeof infoProp === 'number' || typeof infoProp === 'boolean') {
+            acc.push(infoProp as string);
+        }
+        return acc;
+    }, [] as string[]).join('');
 
 const getConfigHash = (configReady: Type.ConfigInfoReadyType): string => {
     const configString = getConfigString(configReady);
     return fnv1aHash(configString);
 };
 
-const setConfigHashKey = (configInfo: Type.ConfigInfoReadyType): void => {
-    configInfo.configHashKey = fnv1aHash(getConfigString(configInfo));
+const setConfigHashKey = (configReady: Type.ConfigInfoReadyType): void => {
+    configReady.configHashKey = fnv1aHash(getConfigString(configReady));
 };
 
 const ifConfigChanged = (configReady: Type.ConfigInfoReadyType): boolean => {
@@ -56,17 +57,15 @@ const ifConfigChanged = (configReady: Type.ConfigInfoReadyType): boolean => {
 
         if (configReady.configError.length === 0) {
             sendAutoDismissMessage(SYSTEM_MESSAGE.RELOADING_CONFIG, 1500);
-        } else {
-            sendAutoDismissMessage('error in config', 1500);
         }
-
         return true;
     }
 };
 
 const updateEachEditorConfiguration = (key: string, value: any): void => {
     const editorConfig = vscode.workspace.getConfiguration("editor");
-    if (value === null || value === 'null' || String(value).length === 0 ) {
+    if (value === null || value === 'null' || String(value).length === 0) {
+        // this will add setting as string literal 'null'. 
         editorConfig.update(key, null, vscode.ConfigurationTarget.Global);
     } else {
         editorConfig.update(key, value, vscode.ConfigurationTarget.Global);
@@ -90,8 +89,8 @@ const updateEditorConfiguration = (configReady: Type.ConfigInfoReadyType): void 
     configReady.status.indent.size = Number(tabSize ? tabSize : 4);
     configReady.status.indent.type = insertSpaces ? '\n' : '\t';
     configReady.status.indent.regex = insertSpaces
-        ? regex.indentRegex(configReady.status.indent.size)
-        : regex.tagRegex;
+        ? regex.indentAndEOLRegex(configReady.status.indent.size)
+        : regex.tagtAndEOLRegex;
 
     // this is very cool but not necessary.
     // editorConfig.update("cursorSmoothCaretAnimation", 'on', vscode.ConfigurationTarget.Global);
@@ -99,7 +98,7 @@ const updateEditorConfiguration = (configReady: Type.ConfigInfoReadyType): void 
 
 const configInfo: Type.ConfigInfoType = { ...CONFIG_INFO };
 
-const decorationStatus: Type.DecorationStatusType = { ... DECORATION_STATUS };
+const decorationStatus: Type.DecorationStatusType = { ...DECORATION_STATUS };
 
 const initialiseConfig = (context: vscode.ExtensionContext): Type.InitialiseConfigType | undefined => {
     const name = context.extension.packageJSON.name;
@@ -127,16 +126,14 @@ const initialiseConfig = (context: vscode.ExtensionContext): Type.InitialiseConf
         updateEditorConfiguration(configReady);
     } else {
         if (!ifConfigChanged(configReady)) {
-            // return configReady;
             return {
                 config: configReady,
                 decoration: decorationStatus
             };
-        } 
+        }
     }
 
     if (createDecorationTypeBuilder(configReady, decorationStatus)) {
-        // return configReady;
         return {
             config: configReady,
             decoration: decorationStatus
@@ -156,9 +153,11 @@ const configNameTransformer = (configNameString: string, configNameTransform: Ty
 // const configNameToSettingName = (configName: string) =>
 //     capitalize(configName.split('').reduce((string, characater) => string += /^[A-Z]/.test(characater) ? ' ' + characater : characater));
 
-const isValidHexColor = (color: string) => regex.isValidHexColor.test(color);
+const isValidHexColor = (color: string) =>
+    regex.isValidHexColor.test(color);
 
-const isValidWidth = (width: string) => regex.isValidWidth.test(width);
+const isValidWidth = (width: string) =>
+    regex.isValidWidth.test(width);
 
 const isConfigValueValid = <T extends string | number | boolean | null>(configInfo: Type.ConfigInfoReadyType, configPrefix: string, configNameString: string, value: T, defaultValue: T): T | null => {
     const configName = configPrefix + configNameString;
@@ -170,7 +169,7 @@ const isConfigValueValid = <T extends string | number | boolean | null>(configIn
             return defaultValue;
         }
     } else if (configName.toLocaleLowerCase().includes('backgroundcolor')) {
-        if (value === null || value === 'null' || String(value).length === 0 ) {
+        if (value === null || value === 'null' || String(value).length === 0) {
             updateEachEditorConfiguration(configKeyWithScope, null);
             return null;
         }
@@ -266,32 +265,32 @@ const createDecorationType: Type.CreateDecorationFunctionType = (
 ) => (
     decorationTypeSplit: Type.SelectionConfigFunctionType
 ) => {
-    try {
-        const split = decorationTypeSplit(config, decorationKey);
-        if (!split || split.length === 0) {
+        try {
+            const split = decorationTypeSplit(config, decorationKey);
+            if (!split || split.length === 0) {
+                return;
+            }
+
+            const decorationTypeStack = split.reduce((styledConfig, str) => {
+                const conf = { ...config };
+                conf.borderWidth = str;
+                styledConfig.push(conf);
+                return styledConfig;
+            }, [] as Type.DecorationStyleConfigType[]).reduce((textEditorDecoration, styleAppliedConfig) => {
+                textEditorDecoration.push(createEditorDecorationType(styleAppliedConfig));
+                return textEditorDecoration;
+            }, [] as vscode.TextEditorDecorationType[]);
+
+            if (decorationTypeStack.length === 0) {
+                return;
+            }
+
+            return decorationTypeStack;
+        } catch (err) {
+            console.log('creating decoration type thrown error:', decorationKey, err);
             return;
         }
-
-        const decorationTypeStack = split.reduce((styledConfig, str) => {
-            const conf = { ...config };
-            conf.borderWidth = str;
-            styledConfig.push(conf);
-            return styledConfig;
-        }, [] as Type.DecorationStyleConfigType[]).reduce((textEditorDecoration, styleAppliedConfig) => {
-            textEditorDecoration.push(createEditorDecorationType(styleAppliedConfig));
-            return textEditorDecoration;
-        }, [] as vscode.TextEditorDecorationType[]);
-
-        if (decorationTypeStack.length === 0) {
-            return;
-        }
-
-        return decorationTypeStack;
-    } catch (err) {
-        console.log('creating decoration type thrown error:', decorationKey, err);
-        return;
-    }
-};
+    };
 
 const decorationTypeSplit = (config: Type.DecorationStyleConfigType, decorationKey: Type.DecorationStyleKeyOnlyType): string[] | undefined => {
     if (Object.hasOwn(BORDER_WIDTH_DEFINITION, decorationKey)) {
@@ -351,7 +350,7 @@ const borderPositionParser = (selectionType: Type.DecorationStyleKeyOnlyType, bo
  * 
  */
 const createDecorationTypeBuilder = (configReady: Type.ConfigInfoReadyType, decorationStatus: Type.DecorationStatusType): boolean => {
-    
+
     for (const key in configReady.generalConfigInfo) {
         configReady.generalConfigInfo[key] = getConfigValue(configReady, "", key as Type.GeneralConfigNameOnlyType, NO_CONFIGURATION_GENERAL_DEFAULT[key]);
     }
@@ -378,7 +377,7 @@ const createDecorationTypeBuilder = (configReady: Type.ConfigInfoReadyType, deco
         if (!decorationTypeList) {
             return false;
         }
-        
+
         decorationStatus.decorationList[selectionType] = decorationTypeList;
     }
 

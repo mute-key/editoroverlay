@@ -51,9 +51,9 @@ const singleLineStatus = (editor: vscode.TextEditor, type: Type.DecorationInfoPr
 };
 
 const multilineStatus = (editor: vscode.TextEditor, status: Type.StatusType, type: Type.DecorationInfoPropType): Type.StatusInfoType[] => {
+    
     const text = editor.document.getText(editor.selection);
     const count = text.replace(status.indent.regex, "").length;
-    // const count = text.length;
     const args = Math.abs(editor.selection.end.line - editor.selection.start.line) + 1;
 
     return [{
@@ -77,11 +77,7 @@ const multiCursorStatus = (editor: vscode.TextEditor, status: Type.StatusType, t
     const statusInfo: Type.StatusInfoType[] = [];
     const statusLine: number[] = [];
 
-    if (isSingleLine) {
-        lineDiff = 1;
-    } else {
-        lineDiff = Math.abs(editor.selections[0].end.line - editor.selections[0].start.line) + 1;
-    }
+    lineDiff = isSingleLine ? 1 : Math.abs(editor.selections[0].end.line - editor.selections[0].start.line) + 1;
 
     while (idx < length) {
         if (isSingleLine) {
@@ -92,7 +88,6 @@ const multiCursorStatus = (editor: vscode.TextEditor, status: Type.StatusType, t
             charCount = charCount + text.replace(status.indent.regex, "").length;
             lineCount = lineCount + lineDiff;
         }
-        
         idx++;
     }
 
@@ -155,7 +150,7 @@ const statusDecorationType = (statusInfo: Type.StatusInfoType, generalConfig: Ty
     };
 };
 
-const setStatusInfoDecoration = (
+const setStatusDecoration = (
     editor: vscode.TextEditor,
     statusInfo: Type.StatusInfoType[],
     generalConfig: Type.GeneralConfigInfoType
@@ -173,14 +168,21 @@ const setStatusInfoDecoration = (
     return statusInfoList;
 };
 
+/**
+ * status decoration needs to be displosed in order to recreate with 
+ * different content text, meaning to display the status info text.
+ * 
+ * @param status 
+ */
 const disposeStatusInfo = (status: Type.StatusReadyType): void => {
     let length = status.decorationType.length;
     while (length--) {
         status.decorationType[length].dispose();
+        delete status.decorationType[length];
     }
 };
 
-const status = (editor: vscode.TextEditor, status: Type.StatusType, generalConfig: Type.GeneralConfigInfoType, type: Type.DecorationInfoPropType) => {
+const status = (editor: vscode.TextEditor, status: Type.StatusType, generalConfig: Type.GeneralConfigInfoType, type: Type.DecorationInfoPropType): void => {
     const statusInfo = statusInfoSplit(editor, status, type)[type.KEY]();
 
     // editor.revealRange(editor.selection, vscode.TextEditorRevealType.Default);
@@ -188,9 +190,9 @@ const status = (editor: vscode.TextEditor, status: Type.StatusType, generalConfi
 
     if (status.decorationType) {
         disposeStatusInfo(status as Type.StatusReadyType);
-        status.decorationType = setStatusInfoDecoration(editor, statusInfo, generalConfig);
+        status.decorationType = setStatusDecoration(editor, statusInfo, generalConfig);
     } else {
-        status.decorationType = setStatusInfoDecoration(editor, statusInfo, generalConfig);
+        status.decorationType = setStatusDecoration(editor, statusInfo, generalConfig);
     }
 };
 

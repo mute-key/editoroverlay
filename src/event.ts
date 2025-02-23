@@ -104,13 +104,11 @@ const selectionChanged = (config: Type.ConfigInfoReadyType, decorationStatus: Ty
     });
 };
 
-const configChanged = (context: vscode.ExtensionContext, decorationStatus: Type.DecorationStatusType): vscode.Disposable => {
+const configChanged = (context: vscode.ExtensionContext): vscode.Disposable => {
     return vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
         if (event) {
-            // need to dispose all decorations... 
-
-            const configReady = config.initialiseConfig(context);
-            if (configReady) {
+            const loadConfig = config.initialiseConfig(context);
+            if (loadConfig) {
                 // if (configReady.configError.length) {
                 //     sendAutoDismissMessage('All Configuration Ok.', 2000);   
                 // }

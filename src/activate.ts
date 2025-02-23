@@ -66,7 +66,7 @@ const cursorActivate = async (context: vscode.ExtensionContext): Promise<vscode.
             activeEditorChanged(configReady, decorationStatus),
             selectionChanged(configReady, decorationStatus),
             editorOptionChange(configReady),
-            configChanged(context, decorationStatus),
+            configChanged(context),
         ]; // event functions
     } catch (err) {
         console.error('Error during extension activation: ', err);

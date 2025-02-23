@@ -32,11 +32,10 @@ const disposeDecoration = (
     decorationType.dispose();
 });
 
-const resetLastAppliedDecoration = (editor: vscode.TextEditor, decorationType: vscode.TextEditorDecorationType[]) => {
-    decorationType.forEach(decoration => {
-        applyDecoration(editor, decoration, []);
-    });
-};
+const resetLastAppliedDecoration = (
+    editor: vscode.TextEditor,
+    decorationType: vscode.TextEditorDecorationType[]
+) => decorationType.forEach(decoration => applyDecoration(editor, decoration, []));
 
 const resetDecoration: Type.UnsetDecorationFunctionType = (
     decorationStatus: Type.DecorationStatusType,
@@ -55,13 +54,13 @@ const resetDecoration: Type.UnsetDecorationFunctionType = (
                     decorationType.forEach((decorationType: vscode.TextEditorDecorationType) => {
                         applyDecoration(editor, decorationType, []);
                         // if (dispose) {
-                        // decorationType.dispose();
+                        //     decorationType.dispose();
                         // }
                     });
                 } else {
                     applyDecoration(editor, decorationType, []);
                     // if (dispose) {
-                    // decorationType.dispose();
+                    //     decorationType.dispose();
                     // }
                 }
             });
