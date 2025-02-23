@@ -51,6 +51,7 @@ const singelLineDecorationWithRange: Type.SelectionTypeToDecorationFunc = ({ edi
         range: [createRangeSPEP(editor.selection.start, editor.selection.end)]
     }];
 };
+
 const multiLineDecorationWithRange: Type.SelectionTypeToDecorationFunc = ({ editor, borderConfig, textEditorDecoration }): Type.DecorationWithRangeType[] => {
     if (borderConfig.borderPosition === 'left') {
 
@@ -70,14 +71,14 @@ const multiLineDecorationWithRange: Type.SelectionTypeToDecorationFunc = ({ edit
 
         const decorationWithRange: Type.DecorationWithRangeType[] = [];
 
-        decorationWithRange.push(...[{
+        decorationWithRange.push({
             decoration: textEditorDecoration[0],
             range: [createRangeSPEP(editor.selection.start, editor.selection.start)]
         },
         {
             decoration: textEditorDecoration[1],
             range: [createRangeSPEP(editor.selection.end, editor.selection.end)]
-        }]);
+        });
 
         if (Math.abs(editor.selection.start.line - editor.selection.end.line) > 1) {
             decorationWithRange.push({

@@ -4,6 +4,7 @@
     "displayName": "Cursor/Selection Line Highlight",
     "description": "Apply configurable decorations on cursor line and selection lines.",
     "version": "1.0.1",
+    "icon": "./misc/icon.png",
     "engines": {
         "vscode": "^1.96.0"
     },
