@@ -272,6 +272,8 @@ type createRange = {
     endPosition: number[] | vscode.Position
 }
 
+type CoordinatorSplitType = Record<string, (context: SelectionTypeToDecorationContext) => DecorationWithRangeType[]>
+
 type SelectionTypeToDecorationContext = {
     editor: vscode.TextEditor,
     borderConfig: BorderPositionParserType

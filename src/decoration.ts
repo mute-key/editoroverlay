@@ -44,30 +44,24 @@ const resetDecoration: Type.UnsetDecorationFunctionType = (
 ) => (
     decorationInfo: Type.DecorationInfoPropType
 ): boolean => {
-        if (editor) {
-            decorationStatus.status?.decorationType?.forEach((decorationType) => {
-                decorationType.dispose();
-            });
+    if (editor) {
+        decorationStatus.status?.decorationType?.forEach((decorationType) => {
+            decorationType.dispose();
+        });
 
-            decorationStatus.decorationList[decorationInfo.KEY]?.forEach(decorationType => {
-                if (Array.isArray(decorationType)) {
-                    decorationType.forEach((decorationType: vscode.TextEditorDecorationType) => {
-                        applyDecoration(editor, decorationType, []);
-                        // if (dispose) {
-                        //     decorationType.dispose();
-                        // }
-                    });
-                } else {
+        decorationStatus.decorationList[decorationInfo.KEY]?.forEach(decorationType => {
+            if (Array.isArray(decorationType)) {
+                decorationType.forEach((decorationType: vscode.TextEditorDecorationType) => {
                     applyDecoration(editor, decorationType, []);
-                    // if (dispose) {
-                    //     decorationType.dispose();
-                    // }
-                }
-            });
-            return true;
-        }
-        return false;
-    };
+                });
+            } else {
+                applyDecoration(editor, decorationType, []);
+            }
+        });
+        return true;
+    }
+    return false;
+};
 
 const resetOtherDecoration = (
     currentDecoration: Type.DecorationInfoPropType,
@@ -104,6 +98,13 @@ const isDecorationChanged = (
     return true;
 };
 
+const coordinatorSplit: Type.CoordinatorSplitType = {
+    [DECORATION_STYLE_KEY.CURSOR_ONLY]: (context: Type.SelectionTypeToDecorationContext) => cursorOnlyDecorationWithRange(context),
+    [DECORATION_STYLE_KEY.SINGLE_LINE]: (context: Type.SelectionTypeToDecorationContext) => singelLineDecorationWithRange(context),
+    [DECORATION_STYLE_KEY.MULTI_LINE]: (context: Type.SelectionTypeToDecorationContext) => multiLineDecorationWithRange(context),
+    [DECORATION_STYLE_KEY.MULTI_CURSOR]: (context: Type.SelectionTypeToDecorationContext) => multiCursorDecorationWithRange(context),
+};
+
 /**
  * decoraiton range should be depends of the border position, current setup is with default border styles.
  * 
@@ -119,21 +120,12 @@ const decorationCoordinator: Type.DecorationCoordinatorFunc = ({ loadConfig, edi
         if (loadConfig.generalConfigInfo.statusTextEnabled) {
             status(editor, loadConfig.status, loadConfig.generalConfigInfo, decorationInfo);
         }
-
-        const context: Type.SelectionTypeToDecorationContext = {
+        
+        return coordinatorSplit[decorationInfo.KEY]({
             editor,
             borderConfig,
             textEditorDecoration
-        };
-
-        const fnSplit = {
-            [DECORATION_STYLE_KEY.CURSOR_ONLY]: () => cursorOnlyDecorationWithRange(context),
-            [DECORATION_STYLE_KEY.SINGLE_LINE]: () => singelLineDecorationWithRange(context),
-            [DECORATION_STYLE_KEY.MULTI_LINE]: () => multiLineDecorationWithRange(context),
-            [DECORATION_STYLE_KEY.MULTI_CURSOR]: () => multiCursorDecorationWithRange(context),
-        };
-
-        return fnSplit[decorationInfo.KEY]();
+        });
     }
     return;
 };
@@ -145,13 +137,10 @@ const setDecorationOnEditor: Type.SetDecorationOnEditorFunc = ({ editor, decorat
         decorationStatus.appliedDecoration.editorDecoration = textEditorDecoration;
 
         const decorationWithRange = decorationCoordinator({ editor, decorationInfo, loadConfig, decorationStatus });
+
         if (!decorationWithRange) {
             return;
         }
-
-        // if (!editorDecoration.appliedDecoration) {
-        //     return;
-        // }
 
         isDecorationChanged(editor, decorationStatus, decorationInfo);
 
