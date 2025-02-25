@@ -7,6 +7,8 @@ cursor/selection range highlight extension.
 * multi line: when you select multiple lines in single selection.
 * multi cursor: when selection is more than 1, meaning when you use multi cursor editing.
 
-### configuration 
+this extension will also display status text where the selection is.
+
+### configuration
 
 `ctrl + shift + p` and Settign UI, and search 'cursorline'

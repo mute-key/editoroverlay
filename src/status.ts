@@ -19,7 +19,7 @@ import {
 
 const statusOf: Type.StatusOfType = {
     [DECORATION_STYLE_KEY.CURSOR_ONLY]: {
-        contentText: (col: string) => `< Editing ... At (Col ${col})`,
+        contentText: (col: string, end: string) => col === end ? `< Editing ... At (Col ${col})` : `< Editing ... At (Col ${col}/${end})`
     },
     [DECORATION_STYLE_KEY.SINGLE_LINE]: {
         contentText: (characters: string) => `< Selection ... Of (${characters} Characters)`,
@@ -36,7 +36,7 @@ const statusOf: Type.StatusOfType = {
 
 const cursorOnlyStatus = (editor: vscode.TextEditor, type: Type.DecorationInfoPropType): Type.StatusInfoType[] => {
     return [{
-        contentText: statusOf[type.KEY].contentText(editor.selection.active.character),
+        contentText: statusOf[type.KEY].contentText(editor.selection.active.character, editor.document.lineAt(editor.selection.active.line).text.length),
         range: createRangeSPEP(editor.selection.active, editor.selection.active),
         isWholeLine: true
     }];

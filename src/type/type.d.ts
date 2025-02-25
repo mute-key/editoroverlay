@@ -130,7 +130,7 @@ type StatusInfoType = {
 }
 type StatusOfType = {
     [SELECTION_TYPE.CURSOR_ONLY]: {
-        contentText: ((col: string) => string),
+        contentText: ((col: string, end: string) => string),
     }
     [SELECTION_TYPE.SINGLE_LINE]: {
         contentText: ((characters: string) => string),

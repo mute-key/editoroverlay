@@ -387,7 +387,7 @@ var multiCursorDecorationWithRange = ({ editor, borderConfig, textEditorDecorati
 var vscode3 = __toESM(require("vscode"));
 var statusOf = {
   ["CURSOR_ONLY" /* CURSOR_ONLY */]: {
-    contentText: (col) => `< Editing ... At (Col ${col})`
+    contentText: (col, end) => col === end ? `< Editing ... At (Col ${col})` : `< Editing ... At (Col ${col}/${end})`
   },
   ["SINGLE_LINE" /* SINGLE_LINE */]: {
     contentText: (characters) => `< Selection ... Of (${characters} Characters)`
@@ -401,7 +401,7 @@ var statusOf = {
 };
 var cursorOnlyStatus = (editor, type) => {
   return [{
-    contentText: statusOf[type.KEY].contentText(editor.selection.active.character),
+    contentText: statusOf[type.KEY].contentText(editor.selection.active.character, editor.document.lineAt(editor.selection.active.line).text.length),
     range: createRangeSPEP(editor.selection.active, editor.selection.active),
     isWholeLine: true
   }];
