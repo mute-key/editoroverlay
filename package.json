@@ -3,7 +3,7 @@
     "publisher": "mutekey",
     "displayName": "Cursor/Selection Line Highlight",
     "description": "Apply configurable decorations on cursor line and selection lines.",
-    "version": "1.0.2",
+    "version": "1.0.5",
     "icon": "./misc/icon.png",
     "engines": {
         "vscode": "^1.96.0"
@@ -39,7 +39,7 @@
     "contributes": {
         "configuration": [
             {
-                "title": "General Settings",
+                "title": "General",
                 "properties": {
                     "cursorlinehighlight.borderOpacity": {
                         "type": "number",
@@ -76,29 +76,56 @@
                         "default": 0.3,
                         "description": "opacity of background color of selection in %. 1 is no opacity.",
                         "order": 2
-                    },
+                    }
+                }
+            },
+            {
+                "title": "Status Text",
+                "properties": {
                     "cursorlinehighlight.statusTextEnabled": {
                         "type": "boolean",
                         "default": true,
                         "description": "Enable inline status text.",
-                        "order": 3
+                        "order": 1
                     },
                     "cursorlinehighlight.statusTextIconEnabled": {
                         "type": "boolean",
                         "default": false,
                         "description": "(Not working yet) Enable inline status icon text.",
-                        "order": 4
+                        "order": 2
                     },
                     "cursorlinehighlight.statusTextColor": {
                         "type": "string",
                         "default": "#93A5C1",
                         "description": "Change the Inline Status Text color. Color must be in hex color of #RRGGBB.",
-                        "order": 5
+                        "order": 3
                     },
                     "cursorlinehighlight.statusTextBackgroundColor": {
                         "type": "string",
                         "default": null,
                         "description": "Change the Inline Status Text background color. Color must be in hex color of #RRGGBB or null (No background).",
+                        "order": 4
+                    },
+                    "cursorlinehighlight.statusTextFontStyle": {
+                        "type": "string",
+                        "enum": [
+                            "italic",
+                            "normal"
+                        ],
+                        "default": "italic",
+                        "description": "Border position on current selection.",
+                        "order": 5
+                    },
+                    "cursorlinehighlight.statusTextFontWeight": {
+                        "type": "string",
+                        "enum": [
+                            "lighter",
+                            "light",
+                            "normal",
+                            "bold"
+                        ],
+                        "default": "light",
+                        "description": "Border position on current selection.",
                         "order": 6
                     },
                     "cursorlinehighlight.statusTextOpacity": {
@@ -118,12 +145,11 @@
                         "default": 0.5,
                         "description": "opacity of background color of selection in %. 1 is no opacity.",
                         "order": 7
-                        
                     }
                 }
             },
             {
-                "title": "Cursor Only Settings",
+                "title": "Cursor Only",
                 "properties": {
                     "cursorlinehighlight.cursorOnlyBorderColor": {
                         "type": "string",
@@ -183,7 +209,7 @@
                 }
             },
             {
-                "title": "Single Line Settings",
+                "title": "Single Line",
                 "properties": {
                     "cursorlinehighlight.singleLineBorderColor": {
                         "type": "string",
@@ -228,7 +254,7 @@
                 }
             },
             {
-                "title": "Multi Line Settings",
+                "title": "Multi Line",
                 "properties": {
                     "cursorlinehighlight.multiLineBorderColor": {
                         "type": "string",
@@ -273,7 +299,7 @@
                 }
             },
             {
-                "title": "Multi Cursor Settings",
+                "title": "Multi Cursor",
                 "properties": {
                     "cursorlinehighlight.multiCursorBorderColor": {
                         "type": "string",

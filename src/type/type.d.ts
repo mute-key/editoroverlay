@@ -6,6 +6,7 @@ import * as vscode from 'vscode';
 import {
     DECORATION_STYLE_CONFIG_KEY,
     DECORATION_GENERAL_STYLE_CONFIG_KEY,
+    DECORATION_STATUS_STYLE_CONFIG_KEY,
     DECORATION_TYPE_MASK,
     SELECTION_TYPE,
     BORDER_POSITION_VARIATION,
@@ -19,12 +20,14 @@ type NoConfigurationGeneraType = {
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.OPACITY]: number
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.BACKGROUND_OPACITY]: number
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_ENABLED]: boolean
-    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_OPACITY]: number
-    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_COLOR]: string
-    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_BACKGROUND_COLOR]?: string | null
-    [DECORATION_GENERAL_STYLE_CONFIG_KEY.BORDER_WIDTH]?: string
-    [DECORATION_GENERAL_STYLE_CONFIG_KEY.BORDER_COLOR]?: string
-    [DECORATION_GENERAL_STYLE_CONFIG_KEY.BACKGROUND_COLOR]?: string
+}
+
+type NoConfigurationStatusType = {
+    [DECORATION_STATUS_STYLE_CONFIG_KEY.STATUS_TEXT_OPACITY]: number
+    [DECORATION_STATUS_STYLE_CONFIG_KEY.STATUS_TEXT_COLOR]: string
+    [DECORATION_STATUS_STYLE_CONFIG_KEY.STATUS_TEXT_BACKGROUND_COLOR]: string | null
+    [DECORATION_STATUS_STYLE_CONFIG_KEY.STATUS_TEXT_FONT_STYLE]: string,
+    [DECORATION_STATUS_STYLE_CONFIG_KEY.STATUS_TEXT_FONT_WEIGHT]: string,
 }
 
 type NoConfigurationDeocorationPropType = {
@@ -47,6 +50,8 @@ type DecorationStyleConfigNameType = `${DECORATION_STYLE_CONFIG_KEY}`
 
 type GeneralConfigNameOnlyType = `${DECORATION_GENERAL_STYLE_CONFIG_KEY}`
 
+type StatusTextConfigNameOnlyType = `${DECORATION_STATUS_STYLE_CONFIG_KEY}`
+
 type DecorationStyleKeyOnlyType = keyof typeof DECORATION_STYLE_PREFIX
 
 type DecorationStyleConfigValueType = string | number | boolean
@@ -56,13 +61,22 @@ type StringTransformFunc = ((s: string) => string)[]
 type DecorationConfigGetFunctionType = <T extends DecorationStyleConfigValueType>(
     config: ConfigInfoReadyType,
     prefix: DecorationStyleConfigPrefixType,
-    configName: DecorationStyleConfigNameType | GeneralConfigNameOnlyType,
+    configName: DecorationStyleConfigNameType | GeneralConfigNameOnlyType | StatusTextConfigNameOnlyType,
     defaultValue: T,
     configNameChange?: StringTransformFunc
 ) => T | null
 
 type DecorationTypeSplit = {
     [K in keyof typeof DECORATION_STYLE_PREFIX]: string[]
+}
+
+// type ConfigCondition = <T extends string | number | boolean | null>(configReady: ConfigInfoReadyType, configPrefix: string, configNameString: string, value: T, defaultValue: T) => T | null
+// type ConfigConditionFunc = <T extends string | number | boolean | null>() => T | null;
+
+type ConfigCondition = <T extends string | number | boolean | null>(configReady: ConfigInfoReadyType, configKeyWithScope: string, value: T, defaultValue: T) => {
+    bordercolor: () => T | null 
+    backgroundcolor: () => T | null 
+    borderwidth: () => T | null 
 }
 
 type BorderPositionKeyOnly = `${BORDER_POSITION_VARIATION}`;
@@ -85,9 +99,6 @@ type GeneralConfigInfoType = {
     borderColor?: string
     backgroundColor?: string
     statusTextEnabled: boolean,
-    statusTextOpacity: number,
-    statusTextColor: string,
-    statusTextBackgroundColor?: string,
 }
 
 type StatusDecorationType = {
@@ -97,8 +108,8 @@ type StatusDecorationType = {
         contentText?: string,
         color?: string,
         backgroundColor?: string | null,
-        fontWeight: string,
-        fontStyle: string,
+        fontWeight?: string,
+        fontStyle?: string,
         textDecoration: string,
         margin: string,
     }
@@ -117,17 +128,38 @@ type configErrorType = {
     currentValue: string
 }
 
+type StatusTextInfo = {
+    statusTextOpacity?: number,
+    statusTextColor?: string,
+    statusTextBackgroundColor?: string,
+    statusTextFontStyle?: string,
+    statusTextFontWeight?: string
+}
+
 type ConfigInfoType = {
     name?: string
     config?: vscode.WorkspaceConfiguration,
     configHashKey?: string
+    statusTextConfig?: StatusTextInfo
+}
+
+type IndentType = {
+    size?: number,
+    type?: string
+    regex?: RegExp
 }
 
 type StatusInfoType = {
+    indent: IndentType
+    statusText: StatusDecorationType
+}
+
+type StatusTextInfoType = {
     contentText: string
     isWholeLine: boolean
     range: vscode.Range
 }
+
 type StatusOfType = {
     [SELECTION_TYPE.CURSOR_ONLY]: {
         contentText: ((col: string, end: string) => string),
@@ -145,7 +177,7 @@ type StatusOfType = {
 
 type StatusType = {
     position: string // inline | nextline,
-    decorationType: vscode.TextEditorDecorationType[] | undefined,
+    decorationType?: vscode.TextEditorDecorationType[],
     indent: {
         size: number,
         type: string,
@@ -157,8 +189,8 @@ type StatusReadyType = {
     decorationType: vscode.TextEditorDecorationType[]
 } & StatusType
 
-type statusInfoSplitType = {
-    [k in keyof typeof DECORATION_STYLE_KEY]: () => StatusInfoType[]
+type statusTextInfoSplitType = {
+    [k in keyof typeof DECORATION_STYLE_KEY]: () => StatusTextInfoType[]
 };
 
 type regexType = {
@@ -177,32 +209,26 @@ type ConfigInfoReadyType = {
     name: string
     config: vscode.WorkspaceConfiguration,
     configHashKey: string,
-    status: StatusType,
     borderPositionInfo: BorderPositionInfoType
     generalConfigInfo: GeneralConfigInfoType
     configError: string[],
 } & ConfigInfoType
 
-type InitialiseConfigType = {
+type InitialisedConfigType = {
     config: ConfigInfoReadyType,
-    decoration: DecorationStatusType
+    decoration: DecorationStateType,
+    status: StatusInfoType
 }
 
-type DecorationStatusType = {
-    status?: {
-        decorationType: vscode.TextEditorDecorationType[] | undefined,
-    }
+type DecorationStateType = {
     decorationList: DecorationType
     appliedDecoration: appliedDecoration
+    statusText?: vscode.TextEditorDecorationType[]
 }
-
-// type SelectionConfigFunctionType<T> = (config: T) => DecorationStyleConfigType[];
-
-// type CreateDecorationFunctionType = <T>(config: T) => (selectionConfigFunc: SelectionConfigFunctionType<T>) => vscode.TextEditorDecorationType[]
 
 type SelectionConfigFunctionType = (config: DecorationStyleConfigType, decorationKey: DecorationStyleKeyOnlyType) => string[] | undefined
 
-type CreateDecorationFunctionType = (config: DecorationStyleConfigType, decorationKey: DecorationStyleKeyOnlyType) => (decorationTypeSplit: SelectionConfigFunctionType) => vscode.TextEditorDecorationType[] | undefined
+type CreateDecorationFunctionType = (config: DecorationStyleConfigType, decorationKey: DecorationStyleKeyOnlyType, decorationTypeSplit: SelectionConfigFunctionType) => vscode.TextEditorDecorationType[] | undefined
 
 type ColourConfigTransformType = {
     of: string,
@@ -240,7 +266,7 @@ type DecorationInfoType = {
     [SELECTION_TYPE.MULTI_CURSOR]: DecorationInfoPropType
 }
 
-type UnsetDecorationFunctionType = (decorationStatus: DecorationStatusType, editor?: vscode.TextEditor, dispose?: boolean) => (decorationInfo: DecorationInfoPropType) => boolean;
+type UnsetDecorationFunctionType = (decorationStatus: DecorationStateType, editor?: vscode.TextEditor, dispose?: boolean) => (decorationInfo: DecorationInfoPropType) => boolean;
 
 type UnsetFunctionType = (decorationInfo: DecorationInfoPropType) => boolean
 
@@ -250,10 +276,11 @@ type DecorationWithRangeType = {
 }
 
 type DecorationContext = {
-    loadConfig: ConfigInfoReadyType
     editor: vscode.TextEditor
+    configInfo: ConfigInfoReadyType
+    statusInfo?: StatusInfoType
     decorationInfo: DecorationInfoPropType;
-    decorationStatus: DecorationStatusType
+    decorationState: DecorationStateType
 };
 
 type SetDecorationOnEditorFunc = (context: DecorationContext) => void;
@@ -283,6 +310,6 @@ type SelectionTypeToDecorationContext = {
 type SelectionTypeToDecorationFunc = (context: SelectionTypeToDecorationContext) => DecorationWithRangeType[]
 
 type AppliedDecorationType = {
-    applied: DecorationInfoPropType | undefined,
-    editorDecoration: vscode.TextEditorDecorationType[] | undefined
+    applied?: DecorationInfoPropType,
+    editorDecoration?: vscode.TextEditorDecorationType[]
 }

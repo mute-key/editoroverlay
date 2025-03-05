@@ -2,16 +2,16 @@ import * as vscode from 'vscode';
 import * as Type from './type/type.d';
 import {
     regex
-} from './util';
+} from './util/util';
 import {
     DECORATION_INFO
 } from './constant/object';
 
-const editorIndentOption = (config: Type.ConfigInfoReadyType, editor: vscode.TextEditor): void => {
-    config.status.indent.size = Number(editor.options.tabSize ?? editor.options.indentSize ?? 4);
-    config.status.indent.type = editor.options.insertSpaces ? '\n' : '\t';
-    config.status.indent.regex = editor.options.insertSpaces
-        ? regex.indentAndEOLRegex(config.status.indent.size)
+const editorIndentOption = (statusInfo: Type.StatusInfoType, editor: vscode.TextEditor): void => {
+    statusInfo.indent.size = Number(editor.options.tabSize ?? editor.options.indentSize ?? 4);
+    statusInfo.indent.type = editor.options.insertSpaces ? '\n' : '\t';
+    statusInfo.indent.regex = editor.options.insertSpaces
+        ? regex.indentAndEOLRegex(statusInfo.indent.size)
         : regex.tagtAndEOLRegex;
 };
 

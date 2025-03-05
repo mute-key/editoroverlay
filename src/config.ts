@@ -11,23 +11,33 @@ import {
     readBits,
     hexToRgbaStringLiteral,
     sendAutoDismissMessage
-} from './util';
+} from './util/util';
 import {
     NO_CONFIGURATION_GENERAL_DEFAULT,
+    NO_CONFIGURATION_STATUS_DEFAULT,
     NO_CONFIGURATION_DEOCORATION_DEFAULT,
     DECORATION_STYLE_PREFIX,
     BORDER_WIDTH_DEFINITION,
     CONFIG_INFO,
-    DECORATION_STATUS
+    STATUS_INFO,
+    DECORATION_STATE
 } from './constant/object';
 import {
-    SYSTEM_MESSAGE,
+    SYSTEM_MESSAGE
 } from './constant/enum';
 import {
     createEditorDecorationType,
     disposeDecoration
 } from './decoration';
+import {
+    disposeStatusInfo
+} from './status';
 
+const configInfo: Type.ConfigInfoType = { ...CONFIG_INFO };
+
+const statusConfigInfo: Type.StatusInfoType = { ...STATUS_INFO };
+
+const decorationState: Type.DecorationStateType = { ...DECORATION_STATE };
 
 const getConfigString = (configReady: Type.ConfigInfoReadyType): string =>
     Object.entries(configReady.config).reduce((acc, [key, infoProp]) => {
@@ -76,71 +86,13 @@ const updateEachEditorConfiguration = (key: string, value: any): void => {
  * editor config overwrite.
  * 
  */
-const updateEditorConfiguration = (configReady: Type.ConfigInfoReadyType): void => {
+const updateEditorConfiguration = (): void => {
     const editorConfig = vscode.workspace.getConfiguration("editor");
     editorConfig.update("renderLineHighlight", 'gutter', vscode.ConfigurationTarget.Global);
     editorConfig.update("roundedSelection", false, vscode.ConfigurationTarget.Global);
-    editorConfig.update("cursorBlinking", 'phase', vscode.ConfigurationTarget.Global);
-
-    const tabSize = editorConfig.get<string | number | undefined>("tabSize");
-    const insertSpaces = editorConfig.get<string | number | undefined>("insertSpaces");
-    // const indentSize = editorConfig.get<string | number | undefined>("indentSize");
-
-    configReady.status.indent.size = Number(tabSize ? tabSize : 4);
-    configReady.status.indent.type = insertSpaces ? '\n' : '\t';
-    configReady.status.indent.regex = insertSpaces
-        ? regex.indentAndEOLRegex(configReady.status.indent.size)
-        : regex.tagtAndEOLRegex;
-
     // this is very cool but not necessary.
+    // editorConfig.update("cursorBlinking", 'phase', vscode.ConfigurationTarget.Global);
     // editorConfig.update("cursorSmoothCaretAnimation", 'on', vscode.ConfigurationTarget.Global);
-};
-
-const configInfo: Type.ConfigInfoType = { ...CONFIG_INFO };
-
-const decorationStatus: Type.DecorationStatusType = { ...DECORATION_STATUS };
-
-const initialiseConfig = (context: vscode.ExtensionContext): Type.InitialiseConfigType | undefined => {
-    const name = context.extension.packageJSON.name;
-
-    if (!name) {
-        return;
-    }
-
-    configInfo.name = name;
-    configInfo.config = vscode.workspace.getConfiguration(configInfo.name);
-
-    if (!configInfo.name && !configInfo.config) {
-        return;
-    }
-
-    // typecasting as well as referencing the object with definitive variable name
-    const configReady = configInfo as Type.ConfigInfoReadyType;
-
-    if (!configReady.configError) {
-        configReady.configError = [];
-    }
-
-    if (!configReady.configHashKey) {
-        setConfigHashKey(configReady);
-        updateEditorConfiguration(configReady);
-    } else {
-        if (!ifConfigChanged(configReady)) {
-            return {
-                config: configReady,
-                decoration: decorationStatus
-            };
-        }
-    }
-
-    if (createDecorationTypeBuilder(configReady, decorationStatus)) {
-        return {
-            config: configReady,
-            decoration: decorationStatus
-        };
-    }
-
-    return;
 };
 
 const checkConfigKeyAndCast = <T extends Type.DecorationStyleConfigNameType | Type.GeneralConfigNameOnlyType>(key: string, config: Type.NoConfigurationDeocorationPropType): T => {
@@ -153,36 +105,47 @@ const configNameTransformer = (configNameString: string, configNameTransform: Ty
 // const configNameToSettingName = (configName: string) =>
 //     capitalize(configName.split('').reduce((string, characater) => string += /^[A-Z]/.test(characater) ? ' ' + characater : characater));
 
-const isValidHexColor = (color: string) =>
-    regex.isValidHexColor.test(color);
-
-const isValidWidth = (width: string) =>
-    regex.isValidWidth.test(width);
-
-const isConfigValueValid = <T extends string | number | boolean | null>(configInfo: Type.ConfigInfoReadyType, configPrefix: string, configNameString: string, value: T, defaultValue: T): T | null => {
-    const configName = configPrefix + configNameString;
-    const configKeyWithScope = configInfo.name + '.' + configName;
-
-    if (configName.toLocaleLowerCase().includes('bordercolor')) {
-        if (!isValidHexColor(String(value))) {
-            configInfo.configError.push(configKeyWithScope);
+const configCondition: Type.ConfigCondition = <T extends string | number | boolean | null>(configReady: Type.ConfigInfoReadyType, configKeyWithScope: string, value: T, defaultValue: T) => {
+    return {
+        "bordercolor": () => {
+            if (!regex.isValidHexColor.test(String(value))) {
+                configReady.configError.push(configKeyWithScope);
+            }
             return defaultValue;
-        }
-    } else if (configName.toLocaleLowerCase().includes('backgroundcolor')) {
-        if (value === null || value === 'null' || String(value).length === 0) {
-            updateEachEditorConfiguration(configKeyWithScope, null);
-            return null;
-        }
+        },
+        "backgroundcolor": () => {
+            if (value === null || value === 'null' || String(value).length === 0) {
+                updateEachEditorConfiguration(configKeyWithScope, null);
+                return null;
+            }
 
-        if (!isValidHexColor(String(value))) {
-            configInfo.configError.push(configKeyWithScope);
+            if (!regex.isValidHexColor.test(String(value))) {
+                configReady.configError.push(configKeyWithScope);
+            }
             return defaultValue;
-        }
-    } else if (configName.toLocaleLowerCase().includes('borderwidth')) {
-        if (!isValidWidth(String(value))) {
-            configInfo.configError.push(configKeyWithScope);
+        },
+        "borderwidth": () => {
+            if (!regex.isValidWidth.test(String(value))) {
+                configReady.configError.push(configKeyWithScope);
+            }
             return defaultValue;
-        }
+        },
+        // "fontweight": () => {
+        //     if (!regex.isValidWidth.test(String(value))) {
+        //         configReady.configError.push(configKeyWithScope);
+        //     }
+        //     return defaultValue;
+        // }
+    };
+};
+
+const configConditional = <T extends string | number | boolean | null>(configReady: Type.ConfigInfoReadyType, configPrefix: string, configNameString: string, value: T, defaultValue: T): T | null => {
+    const configName = (configPrefix + configNameString);
+    const configKeyWithScope = configReady.name + '.' + configName;
+    const condition = configCondition(configReady, configKeyWithScope, value, defaultValue)[configName.toLowerCase()];
+
+    if (condition) {
+        return condition();
     }
 
     return value;
@@ -191,22 +154,24 @@ const isConfigValueValid = <T extends string | number | boolean | null>(configIn
 const getConfigValue: Type.DecorationConfigGetFunctionType = <T extends Type.DecorationStyleConfigValueType>(
     configInfo: Type.ConfigInfoReadyType,
     configPrefix: Type.DecorationStyleConfigPrefixType,
-    configName: Type.DecorationStyleConfigNameType | Type.GeneralConfigNameOnlyType,
+    configName: Type.DecorationStyleConfigNameType | Type.GeneralConfigNameOnlyType | Type.StatusTextConfigNameOnlyType,
     defaultValue: T,
     configNameTransform?: Type.StringTransformFunc
 ): T | null => {
     try {
         let configNameString = configName as string;
+
         if (configNameTransform && configNameTransform.length) {
             configNameString = configNameTransformer(configName, configNameTransform);
         }
 
         const value = configInfo.config.get<T>(configPrefix + configNameString, defaultValue);
+
         if (value === undefined) {
             console.warn(`Config value for ${configName} is undefined or caused an error. Using default value.`);
         }
 
-        return isConfigValueValid(configInfo, configPrefix, configNameString, value, defaultValue);
+        return configConditional(configInfo, configPrefix, configNameString, value, defaultValue);
 
     } catch (err) {
         console.error(`Failed to get config value for ${configPrefix + configName}:`, err);
@@ -237,9 +202,7 @@ const getConfigSet = (configInfo: Type.ConfigInfoReadyType, decorationKey: Type.
     const defaultConfigDefinition = NO_CONFIGURATION_DEOCORATION_DEFAULT[decorationKey];
 
     return Object.entries(defaultConfigDefinition).reduce((config, [configName, defaultValue]) => {
-
         const configValue: string | boolean | number | null = getConfigValue(configInfo, configPrefix, checkConfigKeyAndCast(configName, defaultConfigDefinition), defaultValue, [capitalize]);
-
         // configValue can be boolean.
         if (configValue !== undefined && configValue !== null) {
             if (Object.hasOwn(colorConfigTransform, configName)) {
@@ -261,36 +224,35 @@ const getConfigSet = (configInfo: Type.ConfigInfoReadyType, decorationKey: Type.
  */
 const createDecorationType: Type.CreateDecorationFunctionType = (
     config: Type.DecorationStyleConfigType,
-    decorationKey: Type.DecorationStyleKeyOnlyType
-) => (
+    decorationKey: Type.DecorationStyleKeyOnlyType,
     decorationTypeSplit: Type.SelectionConfigFunctionType
 ) => {
-        try {
-            const split = decorationTypeSplit(config, decorationKey);
-            if (!split || split.length === 0) {
-                return;
-            }
-
-            const decorationTypeStack = split.reduce((styledConfig, str) => {
-                const conf = { ...config };
-                conf.borderWidth = str;
-                styledConfig.push(conf);
-                return styledConfig;
-            }, [] as Type.DecorationStyleConfigType[]).reduce((textEditorDecoration, styleAppliedConfig) => {
-                textEditorDecoration.push(createEditorDecorationType(styleAppliedConfig));
-                return textEditorDecoration;
-            }, [] as vscode.TextEditorDecorationType[]);
-
-            if (decorationTypeStack.length === 0) {
-                return;
-            }
-
-            return decorationTypeStack;
-        } catch (err) {
-            console.log('creating decoration type thrown error:', decorationKey, err);
+    try {
+        const split = decorationTypeSplit(config, decorationKey);
+        if (!split || split.length === 0) {
             return;
         }
-    };
+
+        const decorationTypeStack = split.reduce((styledConfig, str) => {
+            const conf = { ...config };
+            conf.borderWidth = str;
+            styledConfig.push(conf);
+            return styledConfig;
+        }, [] as Type.DecorationStyleConfigType[]).reduce((textEditorDecoration, styleAppliedConfig) => {
+            textEditorDecoration.push(createEditorDecorationType(styleAppliedConfig));
+            return textEditorDecoration;
+        }, [] as vscode.TextEditorDecorationType[]);
+
+        if (decorationTypeStack.length === 0) {
+            return;
+        }
+
+        return decorationTypeStack;
+    } catch (err) {
+        console.log('creating decoration type thrown error:', decorationKey, err);
+        return;
+    }
+};
 
 const decorationTypeSplit = (config: Type.DecorationStyleConfigType, decorationKey: Type.DecorationStyleKeyOnlyType): string[] | undefined => {
     if (Object.hasOwn(BORDER_WIDTH_DEFINITION, decorationKey)) {
@@ -342,6 +304,32 @@ const borderPositionParser = (selectionType: Type.DecorationStyleKeyOnlyType, bo
     };
 };
 
+const setStatusConfig = (configReady: Type.ConfigInfoReadyType, statusConfigInfo: Type.StatusInfoType): void => {
+    const editorConfig = vscode.workspace.getConfiguration("editor");
+    const tabSize = editorConfig.get<string | number | undefined>("tabSize");
+    const insertSpaces = editorConfig.get<string | number | undefined>("insertSpaces");
+    // const indentSize = editorConfig.get<string | number | undefined>("indentSize");
+
+    statusConfigInfo.indent.size = Number(tabSize ? tabSize : 4);
+    statusConfigInfo.indent.type = insertSpaces ? '\n' : '\t';
+    statusConfigInfo.indent.regex = insertSpaces
+        ? regex.indentAndEOLRegex(statusConfigInfo.indent.size)
+        : regex.tagtAndEOLRegex;
+
+    if (configReady.statusTextConfig) {
+        const textColor = configReady.statusTextConfig.statusTextColor;
+        const textOpacity = configReady.statusTextConfig.statusTextOpacity;
+        const defaultColor = NO_CONFIGURATION_STATUS_DEFAULT.statusTextColor;
+        const defaultOpacity = NO_CONFIGURATION_STATUS_DEFAULT.statusTextOpacity;
+
+        statusConfigInfo.statusText.rangeBehavior = vscode.DecorationRangeBehavior.ClosedClosed;
+        statusConfigInfo.statusText.after.color = hexToRgbaStringLiteral(textColor as string, textOpacity, defaultColor, defaultOpacity);
+        statusConfigInfo.statusText.after.backgroundColor = configReady.statusTextConfig.statusTextBackgroundColor as string;
+        statusConfigInfo.statusText.after.fontWeight = configReady.statusTextConfig.statusTextFontWeight as string;
+        statusConfigInfo.statusText.after.fontStyle = configReady.statusTextConfig.statusTextFontStyle as string;
+    }
+};
+
 /**
  * wanted to avoid O(n^2) as much as possible but this is ok.
  * 
@@ -349,17 +337,17 @@ const borderPositionParser = (selectionType: Type.DecorationStyleKeyOnlyType, bo
  * @returns
  * 
  */
-const createDecorationTypeBuilder = (configReady: Type.ConfigInfoReadyType, decorationStatus: Type.DecorationStatusType): boolean => {
+const createDecorationTypeBuilder = (configReady: Type.ConfigInfoReadyType, statusConfigInfo: Type.StatusInfoType, decorationState: Type.DecorationStateType): boolean => {
 
     for (const key in configReady.generalConfigInfo) {
         configReady.generalConfigInfo[key] = getConfigValue(configReady, "", key as Type.GeneralConfigNameOnlyType, NO_CONFIGURATION_GENERAL_DEFAULT[key]);
     }
 
-    for (const key in decorationStatus.decorationList) {
+    for (const key in decorationState.decorationList) {
         const selectionType = key as Type.DecorationStyleKeyOnlyType;
 
-        if (decorationStatus.decorationList[selectionType]) {
-            disposeDecoration(decorationStatus.decorationList[selectionType]);
+        if (decorationState.decorationList[selectionType]) {
+            disposeDecoration(decorationState.decorationList[selectionType]);
         }
 
         const configSet: Type.DecorationStyleConfigType = getConfigSet(configReady, selectionType);
@@ -372,16 +360,72 @@ const createDecorationTypeBuilder = (configReady: Type.ConfigInfoReadyType, deco
         // configSet.overviewRulerColor = configSet.borderColor;
         // configSet.overviewRulerLane = vscode.OverviewRulerLane.Full;
 
-        const decorationTypeList = createDecorationType(configSet, selectionType)(decorationTypeSplit);
+        const decorationTypeList = createDecorationType(configSet, selectionType, decorationTypeSplit);
 
         if (!decorationTypeList) {
             return false;
         }
 
-        decorationStatus.decorationList[selectionType] = decorationTypeList;
+        decorationState.decorationList[selectionType] = decorationTypeList;
+    }
+
+    if (configReady.generalConfigInfo.statusTextEnabled) {
+        if (decorationState.statusText) {
+            disposeStatusInfo(decorationState);
+        }
+
+        for (const key in configReady.statusTextConfig) {
+            configReady.statusTextConfig[key] = getConfigValue(configReady, "", key as Type.StatusTextConfigNameOnlyType, NO_CONFIGURATION_STATUS_DEFAULT[key]);
+        }
+
+        setStatusConfig(configReady, statusConfigInfo);
     }
 
     return true;
+};
+
+const initialiseConfig = (context: vscode.ExtensionContext): Type.InitialisedConfigType | undefined => {
+    const name = context.extension.packageJSON.name;
+
+    if (!name) {
+        return;
+    }
+
+    configInfo.name = name;
+    configInfo.config = vscode.workspace.getConfiguration(configInfo.name);
+
+    if (!configInfo.name && !configInfo.config) {
+        return;
+    }
+
+    // typecasting as well as referencing the object with definitive variable name
+    const configReady = configInfo as Type.ConfigInfoReadyType;
+
+    if (!configReady.configError) {
+        configReady.configError = [];
+    }
+
+    if (!configReady.configHashKey) {
+        setConfigHashKey(configReady);
+        updateEditorConfiguration();
+    } else {
+        if (!ifConfigChanged(configReady)) {
+            return {
+                config: configReady,
+                decoration: decorationState,
+                status: statusConfigInfo
+            };
+        }
+    }
+
+    if (createDecorationTypeBuilder(configReady, statusConfigInfo, decorationState)) {
+        return {
+            config: configReady,
+            decoration: decorationState,
+            status: statusConfigInfo
+        };
+    }
+    return;
 };
 
 export {

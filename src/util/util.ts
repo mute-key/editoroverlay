@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import * as Type from './type/type.d';
+import * as Type from '../type/type.d';
 
 const sendAutoDismissMessage = (text: string, dismiss: number) => {
     const message = vscode.window.showInformationMessage(text);
@@ -8,7 +8,7 @@ const sendAutoDismissMessage = (text: string, dismiss: number) => {
     }, dismiss);
 };
 
-const fixConfuration = (confingError: string[]) => {
+const fixConfiguration = (confingError: string[]) => {
     vscode.window.showErrorMessage(
         "Invalid Value(s) in Configuration.", 
         ...['Fix Configuration', 'Ignore']        
@@ -110,5 +110,5 @@ export {
     capitalize,
     hexToRgbaStringLiteral,
     sendAutoDismissMessage,
-    fixConfuration
+    fixConfiguration
 };

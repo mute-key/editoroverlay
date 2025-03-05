@@ -1,4 +1,3 @@
-
 import * as vscode from 'vscode';
 import * as Type from './type/type.d';
 import * as config from './config';
@@ -12,93 +11,94 @@ import {
     DECORATION_INFO
 } from './constant/object';
 import {
-    fixConfuration
-} from './util';
+    fixConfiguration
+} from './util/util';
 import {
     editorIndentOption,
     getSelectionType
 } from './editor';
 
-const onActiveWindowChange = (config: Type.ConfigInfoReadyType, decorationStatus: Type.DecorationStatusType): vscode.Disposable => {
+const onActiveWindowChange = (configInfo: Type.ConfigInfoReadyType, statusInfo: Type.StatusInfoType, decorationState: Type.DecorationStateType): vscode.Disposable => {
     return vscode.window.onDidChangeWindowState((event: vscode.WindowState) => {
         if (event.focused) {
             // apply decoration to active editor.
             if (vscode.window.activeTextEditor) {
                 setDecorationOnEditor({
-                    loadConfig: config,
                     editor: vscode.window.activeTextEditor,
-                    decorationInfo: DECORATION_INFO.CURSOR_ONLY,
-                    decorationStatus: decorationStatus
+                    configInfo: configInfo,
+                    statusInfo: statusInfo,
+                    decorationState: decorationState,
+                    decorationInfo: DECORATION_INFO.CURSOR_ONLY
                 });
             }
         } else {
             // reset all decoration on all editors.
             vscode.window.visibleTextEditors.forEach((editor: vscode.TextEditor) => {
-                resetDecorationWrapper(decorationStatus, editor, true);
+                resetDecorationWrapper(decorationState, editor, true);
             });
         }
     });
 };
 
-const activeEditorChanged = (config: Type.ConfigInfoReadyType, decorationStatus: Type.DecorationStatusType): vscode.Disposable => {
+const activeEditorChanged = (configInfo: Type.ConfigInfoReadyType, statusInfo: Type.StatusInfoType, decorationState: Type.DecorationStateType): vscode.Disposable => {
     return vscode.window.onDidChangeActiveTextEditor((editor: vscode.TextEditor | undefined) => {
         if (editor) {
 
-            if (config.configError.length > 0) {
-                fixConfuration(config.configError);
+            if (configInfo.configError.length > 0) {
+                fixConfiguration(configInfo.configError);
             }
 
-            editorIndentOption(config, editor);
-
-            // resetDecorationWrapper(config, editor);
+            editorIndentOption(statusInfo, editor);
 
             // quick release of decorations.
             // this method feels smoother than tracking the last active editor in object literal, 
             // and resetting the decoration. 
 
             vscode.window.visibleTextEditors.forEach(editor => {
-                if (decorationStatus.appliedDecoration.editorDecoration !== undefined) {
-                    decorationStatus.appliedDecoration.editorDecoration.forEach(decoration => {
+                if (decorationState.appliedDecoration.editorDecoration !== undefined) {
+                    decorationState.appliedDecoration.editorDecoration.forEach(decoration => {
                         applyDecoration(editor, decoration, []);
                     });
                 }
             });
 
             setDecorationOnEditor({
-                loadConfig: config,
                 editor: editor,
-                decorationInfo: DECORATION_INFO.CURSOR_ONLY,
-                decorationStatus: decorationStatus
+                configInfo: configInfo,
+                statusInfo: statusInfo,
+                decorationState: decorationState,
+                decorationInfo: DECORATION_INFO.CURSOR_ONLY
             });
         }
     });
 };
 
-const editorOptionChange = (config: Type.ConfigInfoReadyType): vscode.Disposable => {
+const editorOptionChange = (statusInfo: Type.StatusInfoType,): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorOptions((event: vscode.TextEditorOptionsChangeEvent) => {
-        editorIndentOption(config, event.textEditor);
+        editorIndentOption(statusInfo, event.textEditor);
     });
 };
 
-const selectionChanged = (config: Type.ConfigInfoReadyType, decorationStatus: Type.DecorationStatusType): vscode.Disposable => {
+const selectionChanged = (configInfo: Type.ConfigInfoReadyType, statusInfo: Type.StatusInfoType, decorationState: Type.DecorationStateType): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) => {
         if (event.selections) {
-            const decorationType: Type.DecorationInfoPropType | undefined = getSelectionType(event.textEditor);
-            if (!decorationType) {
+            const decorationInfo: Type.DecorationInfoPropType | undefined = getSelectionType(event.textEditor);
+            if (!decorationInfo) {
                 return;
             }
 
-            isDecorationChanged(event.textEditor, decorationStatus, decorationType);
+            isDecorationChanged(event.textEditor, decorationState, decorationInfo);
 
-            if (!decorationStatus.decorationList[decorationType.KEY]) {
+            if (!decorationState.decorationList[decorationInfo.KEY]) {
                 return;
             }
 
             setDecorationOnEditor({
-                loadConfig: config,
                 editor: event.textEditor,
-                decorationInfo: decorationType,
-                decorationStatus: decorationStatus
+                configInfo: configInfo,
+                statusInfo: statusInfo,
+                decorationState: decorationState,
+                decorationInfo: decorationInfo
             });
         }
     });

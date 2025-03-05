@@ -1,11 +1,13 @@
 import * as vscode from 'vscode';
 import * as Type from './type/type.d';
-
-import { applyDecoration } from './decoration';
+import { 
+    applyDecoration 
+} from './decoration';
 import {
     createRangeNNNN,
     createRangeSPEP,
-    createRangeNNEP } from './editor';
+    createRangeNNEP 
+} from './editor';
 
 const cursorOnlyDecorationWithRange: Type.SelectionTypeToDecorationFunc = (context): Type.DecorationWithRangeType[] => {
     const { editor, borderConfig, textEditorDecoration } = context;

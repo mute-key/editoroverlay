@@ -79,12 +79,14 @@ export const enum DECORATION_GENERAL_STYLE_CONFIG_KEY {
     OPACITY = 'borderOpacity',
     BACKGROUND_OPACITY = 'backgroundOpacity',
     STATUS_TEXT_ENABLED = 'statusTextEnabled',
+}
+
+export const enum DECORATION_STATUS_STYLE_CONFIG_KEY {
     STATUS_TEXT_OPACITY = 'statusTextOpacity',
     STATUS_TEXT_COLOR = 'statusTextColor',
     STATUS_TEXT_BACKGROUND_COLOR = 'statusTextBackgroundColor',
-    BORDER_WIDTH = 'borderWidth',
-    BORDER_COLOR = 'borderColor',
-    BACKGROUND_COLOR = 'backgroundColor',
+    STATUS_TEXT_FONT_STYLE = 'statusTextFontStyle',
+    STATUS_TEXT_FONT_WEIGHT = 'statusTextFontWeight'
 }
 
 /**

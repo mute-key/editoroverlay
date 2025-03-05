@@ -1,10 +1,12 @@
+import { CommentThreadCollapsibleState } from 'vscode';
 import * as Type from '../type/type.d';
 
 import {
     BORDER_POSITION_MASK,
     BORDER_POSITION_VARIATION,
-    DECORATION_GENERAL_STYLE_CONFIG_KEY,
     DECORATION_STYLE_CONFIG_KEY,
+    DECORATION_GENERAL_STYLE_CONFIG_KEY,
+    DECORATION_STATUS_STYLE_CONFIG_KEY,
     DECORATION_STYLE_KEY,
     DECORATION_TYPE_MASK,
     SELECTION_TYPE
@@ -29,13 +31,6 @@ export const CONFIG_INFO = {
     name: undefined,
     config: undefined,
     configHashKey: undefined,
-    status: {
-        position: undefined,
-        indent: {
-            size: undefined,
-            type: undefined
-        } as const,
-    } as const,
     borderPositionInfo: {
         CURSOR_ONLY: undefined,
         SINGLE_LINE: undefined,
@@ -46,18 +41,46 @@ export const CONFIG_INFO = {
         borderOpacity: undefined,
         backgroundOpacity: undefined,
         statusTextEnabled: undefined,
+    } as const,
+    statusTextConfig: {
         statusTextColor: undefined,
         statusTextOpacity: undefined,
         statusTextBackgroundColor: undefined,
+        statusTextFontStyle: undefined,
+        statusTextFontWeight: undefined
     } as const,
     configError: undefined,
 } as const;
 
 /**
- * decoration status object to set and unset decorations on editor.
+ * 
+ */
+export const STATUS_INFO = {
+    indent: {
+        size: undefined,
+        type: undefined,
+        regex: undefined
+    } as const,
+    statusText: {
+        isWholeLine: undefined,
+        rangeBehavior: undefined,
+        after: {
+            contentText: undefined,
+            color: undefined,
+            backgroundColor: undefined,
+            fontWeight: undefined,
+            fontStyle: undefined,
+            textDecoration: 'none',
+            margin: '0 0 0 20px',
+        } as const
+    } as const,
+} as const;
+
+/**
+ * decoration state object to set or unset decorations on editor.
  * to be used as shallow copied object.
  */
-export const DECORATION_STATUS = {
+export const DECORATION_STATE = {
     status: {
         decorationType: undefined,
     } as const,
@@ -72,6 +95,7 @@ export const DECORATION_STATUS = {
         editorDecoration: undefined
     } as const,
 };
+
 
 /**
  *  
@@ -169,9 +193,14 @@ export const NO_CONFIGURATION_GENERAL_DEFAULT: Type.NoConfigurationGeneraType = 
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.OPACITY]: 1,
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.BACKGROUND_OPACITY]: 0.5,
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_ENABLED]: true,
-    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_COLOR]: '#FF0000',
-    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_OPACITY]: 1,
-    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_BACKGROUND_COLOR]: null,
+} as const;
+
+export const NO_CONFIGURATION_STATUS_DEFAULT: Type.NoConfigurationStatusType = {
+    [DECORATION_STATUS_STYLE_CONFIG_KEY.STATUS_TEXT_COLOR]: '#FF0000',
+    [DECORATION_STATUS_STYLE_CONFIG_KEY.STATUS_TEXT_OPACITY]: 1,
+    [DECORATION_STATUS_STYLE_CONFIG_KEY.STATUS_TEXT_BACKGROUND_COLOR]: null,
+    [DECORATION_STATUS_STYLE_CONFIG_KEY.STATUS_TEXT_FONT_STYLE]: 'normal',
+    [DECORATION_STATUS_STYLE_CONFIG_KEY.STATUS_TEXT_FONT_WEIGHT]: 'bold',
 } as const;
 
 export const NO_CONFIGURATION_DEOCORATION_DEFAULT: Type.NoConfigurationDecorationType = {
