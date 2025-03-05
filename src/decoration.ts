@@ -112,7 +112,7 @@ const coordinatorSplit: Type.CoordinatorSplitType = {
  * @returns
  * 
  */
-const decorationCoordinator: Type.DecorationCoordinatorFunc = ({ editor, configInfo, decorationInfo, decorationState }): Type.DecorationWithRangeType[] | undefined => {
+const decorationCoordinator: Type.DecorationCoordinatorFunc = ({ editor, configInfo, statusInfo, decorationInfo, decorationState }): Type.DecorationWithRangeType[] | undefined => {
     const textEditorDecoration: vscode.TextEditorDecorationType[] | undefined = decorationState.decorationList[decorationInfo.KEY];
     if (textEditorDecoration) {
         const borderConfig: Type.BorderPositionParserType = configInfo.borderPositionInfo[decorationInfo.KEY];
@@ -132,11 +132,13 @@ const setDecorationOnEditor: Type.SetDecorationOnEditorFunc = ({ editor, configI
 
         decorationState.appliedDecoration.editorDecoration = textEditorDecoration;
 
-        const decorationWithRange = decorationCoordinator({ editor, configInfo, decorationInfo, decorationState });
+        const decorationWithRange = decorationCoordinator({ editor, configInfo, statusInfo, decorationInfo, decorationState });
 
         if (!decorationWithRange) {
             return;
         }
+
+        isDecorationChanged(editor, decorationState, decorationInfo);
 
         if (configInfo.generalConfigInfo.statusTextEnabled) {
             status(editor, decorationState, statusInfo as Type.StatusInfoType, decorationInfo);
@@ -154,5 +156,6 @@ export {
     createEditorDecorationType,
     setDecorationOnEditor,
     resetDecorationWrapper,
+    resetLastAppliedDecoration,
     isDecorationChanged
 };

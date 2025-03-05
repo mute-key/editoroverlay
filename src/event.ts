@@ -18,14 +18,14 @@ import {
     getSelectionType
 } from './editor';
 
-const onActiveWindowChange = (configInfo: Type.ConfigInfoReadyType, statusInfo: Type.StatusInfoType, decorationState: Type.DecorationStateType): vscode.Disposable => {
+const onActiveWindowChange = (configReady: Type.ConfigInfoReadyType, statusInfo: Type.StatusInfoType, decorationState: Type.DecorationStateType): vscode.Disposable => {
     return vscode.window.onDidChangeWindowState((event: vscode.WindowState) => {
         if (event.focused) {
             // apply decoration to active editor.
             if (vscode.window.activeTextEditor) {
                 setDecorationOnEditor({
                     editor: vscode.window.activeTextEditor,
-                    configInfo: configInfo,
+                    configInfo: configReady,
                     statusInfo: statusInfo,
                     decorationState: decorationState,
                     decorationInfo: DECORATION_INFO.CURSOR_ONLY
@@ -40,12 +40,12 @@ const onActiveWindowChange = (configInfo: Type.ConfigInfoReadyType, statusInfo: 
     });
 };
 
-const activeEditorChanged = (configInfo: Type.ConfigInfoReadyType, statusInfo: Type.StatusInfoType, decorationState: Type.DecorationStateType): vscode.Disposable => {
+const activeEditorChanged = (configReady: Type.ConfigInfoReadyType, statusInfo: Type.StatusInfoType, decorationState: Type.DecorationStateType): vscode.Disposable => {
     return vscode.window.onDidChangeActiveTextEditor((editor: vscode.TextEditor | undefined) => {
         if (editor) {
 
-            if (configInfo.configError.length > 0) {
-                fixConfiguration(configInfo.configError);
+            if (configReady.configError.length > 0) {
+                fixConfiguration(configReady.configError);
             }
 
             editorIndentOption(statusInfo, editor);
@@ -64,7 +64,7 @@ const activeEditorChanged = (configInfo: Type.ConfigInfoReadyType, statusInfo: T
 
             setDecorationOnEditor({
                 editor: editor,
-                configInfo: configInfo,
+                configInfo: configReady,
                 statusInfo: statusInfo,
                 decorationState: decorationState,
                 decorationInfo: DECORATION_INFO.CURSOR_ONLY
@@ -79,7 +79,7 @@ const editorOptionChange = (statusInfo: Type.StatusInfoType,): vscode.Disposable
     });
 };
 
-const selectionChanged = (configInfo: Type.ConfigInfoReadyType, statusInfo: Type.StatusInfoType, decorationState: Type.DecorationStateType): vscode.Disposable => {
+const selectionChanged = (configReady: Type.ConfigInfoReadyType, statusInfo: Type.StatusInfoType, decorationState: Type.DecorationStateType): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) => {
         if (event.selections) {
             const decorationInfo: Type.DecorationInfoPropType | undefined = getSelectionType(event.textEditor);
@@ -95,7 +95,7 @@ const selectionChanged = (configInfo: Type.ConfigInfoReadyType, statusInfo: Type
 
             setDecorationOnEditor({
                 editor: event.textEditor,
-                configInfo: configInfo,
+                configInfo: configReady,
                 statusInfo: statusInfo,
                 decorationState: decorationState,
                 decorationInfo: decorationInfo
@@ -104,11 +104,16 @@ const selectionChanged = (configInfo: Type.ConfigInfoReadyType, statusInfo: Type
     });
 };
 
-const configChanged = (context: vscode.ExtensionContext): vscode.Disposable => {
+const configChanged = (context: vscode.ExtensionContext, configReady: Type.ConfigInfoReadyType, statusInfo: Type.StatusInfoType, decorationState: Type.DecorationStateType): vscode.Disposable => {
     return vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
         if (event) {
             const loadConfig = config.initialiseConfig(context);
             if (loadConfig) {
+                configReady = loadConfig.config;
+                statusInfo = loadConfig.status;
+                console.log(configReady);
+                console.log(statusInfo);
+                console.log(decorationState);
                 // if (configReady.configError.length) {
                 //     sendAutoDismissMessage('All Configuration Ok.', 2000);   
                 // }

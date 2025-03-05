@@ -123,8 +123,8 @@ const disposeStatusInfo = (decorationState: Type.DecorationStateType): void => {
         let length = decorationState.statusText.length;
         while (length--) {
             decorationState.statusText[length].dispose();
-            delete decorationState.statusText[length];
         }
+        decorationState.statusText = undefined;
     } 
 };
 

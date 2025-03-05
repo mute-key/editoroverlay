@@ -27,6 +27,7 @@ import {
 } from './constant/enum';
 import {
     createEditorDecorationType,
+    resetLastAppliedDecoration,
     disposeDecoration
 } from './decoration';
 import {
@@ -61,10 +62,15 @@ const ifConfigChanged = (configReady: Type.ConfigInfoReadyType): boolean => {
     if (configReady.configHashKey === configHash) {
         return false;
     } else {
+        if (decorationState.appliedDecoration.editorDecoration) {
+            decorationState.appliedDecoration.applied = undefined;
+            disposeDecoration(decorationState.appliedDecoration.editorDecoration);
+        }
+        
         configReady.configError = [];
         configReady.config = vscode.workspace.getConfiguration(configReady.name);
         configReady.configHashKey = configHash;
-
+        
         if (configReady.configError.length === 0) {
             sendAutoDismissMessage(SYSTEM_MESSAGE.RELOADING_CONFIG, 1500);
         }
