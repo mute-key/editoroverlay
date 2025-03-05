@@ -81,9 +81,6 @@ export const STATUS_INFO = {
  * to be used as shallow copied object.
  */
 export const DECORATION_STATE = {
-    status: {
-        decorationType: undefined,
-    } as const,
     decorationList: {
         CURSOR_ONLY: undefined,
         SINGLE_LINE: undefined,
@@ -94,6 +91,7 @@ export const DECORATION_STATE = {
         applied: undefined,
         editorDecoration: undefined
     } as const,
+    statusText: undefined,
 };
 
 

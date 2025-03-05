@@ -70,9 +70,6 @@ type DecorationTypeSplit = {
     [K in keyof typeof DECORATION_STYLE_PREFIX]: string[]
 }
 
-// type ConfigCondition = <T extends string | number | boolean | null>(configReady: ConfigInfoReadyType, configPrefix: string, configNameString: string, value: T, defaultValue: T) => T | null
-// type ConfigConditionFunc = <T extends string | number | boolean | null>() => T | null;
-
 type ConfigCondition = <T extends string | number | boolean | null>(configReady: ConfigInfoReadyType, configKeyWithScope: string, value: T, defaultValue: T) => {
     bordercolor: () => T | null 
     backgroundcolor: () => T | null 
@@ -266,9 +263,9 @@ type DecorationInfoType = {
     [SELECTION_TYPE.MULTI_CURSOR]: DecorationInfoPropType
 }
 
-type UnsetDecorationFunctionType = (decorationStatus: DecorationStateType, editor?: vscode.TextEditor, dispose?: boolean) => (decorationInfo: DecorationInfoPropType) => boolean;
+type UnsetDecorationFunctionType = (decorationStatus: DecorationStateType, editor?: vscode.TextEditor, dispose?: boolean) => (decorationInfo: DecorationInfoPropType) => void;
 
-type UnsetFunctionType = (decorationInfo: DecorationInfoPropType) => boolean
+type UnsetFunctionType = (decorationInfo: DecorationInfoPropType) => void
 
 type DecorationWithRangeType = {
     decoration: vscode.TextEditorDecorationType,

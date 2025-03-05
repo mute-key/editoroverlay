@@ -43,59 +43,53 @@ const resetDecoration: Type.UnsetDecorationFunctionType = (
     dispose?: boolean
 ) => (
     decorationInfo: Type.DecorationInfoPropType
-): boolean => {
-    if (editor) {
-        decorationState.statusText?.forEach((decorationType) => {
-            decorationType.dispose();
-        });
+): void => {
+        if (editor) {
+            decorationState.statusText?.forEach((decorationType) => {
+                decorationType.dispose();
+            });
 
-        decorationState.decorationList[decorationInfo.KEY]?.forEach(decorationType => {
-            if (Array.isArray(decorationType)) {
-                decorationType.forEach((decorationType: vscode.TextEditorDecorationType) => {
+            decorationState.decorationList[decorationInfo.KEY]?.forEach(decorationType => {
+                if (Array.isArray(decorationType)) {
+                    decorationType.forEach((decorationType: vscode.TextEditorDecorationType) => {
+                        applyDecoration(editor, decorationType, []);
+                    });
+                } else {
                     applyDecoration(editor, decorationType, []);
-                });
-            } else {
-                applyDecoration(editor, decorationType, []);
-            }
-        });
-        return true;
-    }
-    return false;
-};
+                }
+            });
+        }
+    };
 
 const resetOtherDecoration = (
     currentDecoration: Type.DecorationInfoPropType,
     reset: Type.UnsetFunctionType
-): boolean =>
+): void => {
     Object.values(DECORATION_INFO)
         .filter(info => currentDecoration.MASK & info.MASK)
         .map(info => reset(info))
         .every(Boolean);
+};
 
 const resetDecorationWrapper = (
     decorationState: Type.DecorationStateType,
     editor: vscode.TextEditor,
     dispose?: boolean
-): boolean =>
-    resetOtherDecoration(
-        DECORATION_INFO.RESET,
-        (decorationInfo: Type.DecorationInfoPropType): boolean =>
-            resetDecoration(decorationState, editor, dispose)(decorationInfo));
+): void =>
+    resetOtherDecoration(DECORATION_INFO.RESET, (decorationInfo: Type.DecorationInfoPropType): void =>
+        resetDecoration(decorationState, editor, dispose)(decorationInfo));
 
 const isDecorationChanged = (
     editor: vscode.TextEditor,
     decorationState: Type.DecorationStateType,
-    decorationInfo: Type.DecorationInfoPropType): boolean => {
+    decorationInfo: Type.DecorationInfoPropType): void => {
     if (decorationState.appliedDecoration.applied) {
         if (decorationState.appliedDecoration.applied.MASK !== decorationInfo.MASK) {
             resetLastAppliedDecoration(editor, decorationState.decorationList[decorationState.appliedDecoration.applied.KEY]);
             decorationState.appliedDecoration.applied = decorationInfo;
-            return true;
         }
-        return false;
     }
     decorationState.appliedDecoration.applied = decorationInfo;
-    return true;
 };
 
 const coordinatorSplit: Type.CoordinatorSplitType = {
@@ -112,7 +106,7 @@ const coordinatorSplit: Type.CoordinatorSplitType = {
  * @returns
  * 
  */
-const decorationCoordinator: Type.DecorationCoordinatorFunc = ({ editor, configInfo, statusInfo, decorationInfo, decorationState }): Type.DecorationWithRangeType[] | undefined => {
+const decorationCoordinator: Type.DecorationCoordinatorFunc = ({ editor, configInfo, decorationInfo, decorationState }): Type.DecorationWithRangeType[] | undefined => {
     const textEditorDecoration: vscode.TextEditorDecorationType[] | undefined = decorationState.decorationList[decorationInfo.KEY];
     if (textEditorDecoration) {
         const borderConfig: Type.BorderPositionParserType = configInfo.borderPositionInfo[decorationInfo.KEY];
@@ -132,7 +126,7 @@ const setDecorationOnEditor: Type.SetDecorationOnEditorFunc = ({ editor, configI
 
         decorationState.appliedDecoration.editorDecoration = textEditorDecoration;
 
-        const decorationWithRange = decorationCoordinator({ editor, configInfo, statusInfo, decorationInfo, decorationState });
+        const decorationWithRange = decorationCoordinator({ editor, configInfo, decorationInfo, decorationState });
 
         if (!decorationWithRange) {
             return;
