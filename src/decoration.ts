@@ -44,24 +44,24 @@ const resetDecoration: Type.UnsetDecorationFunctionType = (
 ) => (
     decorationInfo: Type.DecorationInfoPropType
 ): boolean => {
-        if (editor) {
-            decorationState.statusText?.forEach((decorationType) => {
-                decorationType.dispose();
-            });
+    if (editor) {
+        decorationState.statusText?.forEach((decorationType) => {
+            decorationType.dispose();
+        });
 
-            decorationState.decorationList[decorationInfo.KEY]?.forEach(decorationType => {
-                if (Array.isArray(decorationType)) {
-                    decorationType.forEach((decorationType: vscode.TextEditorDecorationType) => {
-                        applyDecoration(editor, decorationType, []);
-                    });
-                } else {
+        decorationState.decorationList[decorationInfo.KEY]?.forEach(decorationType => {
+            if (Array.isArray(decorationType)) {
+                decorationType.forEach((decorationType: vscode.TextEditorDecorationType) => {
                     applyDecoration(editor, decorationType, []);
-                }
-            });
-            return true;
-        }
-        return false;
-    };
+                });
+            } else {
+                applyDecoration(editor, decorationType, []);
+            }
+        });
+        return true;
+    }
+    return false;
+};
 
 const resetOtherDecoration = (
     currentDecoration: Type.DecorationInfoPropType,
@@ -138,8 +138,6 @@ const setDecorationOnEditor: Type.SetDecorationOnEditorFunc = ({ editor, configI
             return;
         }
 
-        isDecorationChanged(editor, decorationState, decorationInfo);
-
         if (configInfo.generalConfigInfo.statusTextEnabled) {
             status(editor, decorationState, statusInfo as Type.StatusInfoType, decorationInfo);
         }
@@ -156,6 +154,5 @@ export {
     createEditorDecorationType,
     setDecorationOnEditor,
     resetDecorationWrapper,
-    resetLastAppliedDecoration,
     isDecorationChanged
 };

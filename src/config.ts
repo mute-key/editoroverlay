@@ -27,7 +27,6 @@ import {
 } from './constant/enum';
 import {
     createEditorDecorationType,
-    resetLastAppliedDecoration,
     disposeDecoration
 } from './decoration';
 import {
