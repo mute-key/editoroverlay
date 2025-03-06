@@ -9,7 +9,9 @@ import {
     DECORATION_STATUS_STYLE_CONFIG_KEY,
     DECORATION_STYLE_KEY,
     DECORATION_TYPE_MASK,
-    SELECTION_TYPE
+    SELECTION_TYPE,
+    CONFIG_SECTION_KEY,
+    STATUS_CONTENT_TEXT_CONFIG_KEY
 } from './enum';
 
 // ==============================================================================
@@ -29,25 +31,29 @@ import {
  */
 export const CONFIG_INFO = {
     name: undefined,
-    config: undefined,
     configHashKey: undefined,
+    generalConfigInfo: {
+        borderOpacity: undefined,
+        backgroundOpacity: undefined,
+        statusTextEnabled: undefined,
+    } as const,
     borderPositionInfo: {
         CURSOR_ONLY: undefined,
         SINGLE_LINE: undefined,
         MULTI_LINE: undefined,
         MULTI_CURSOR: undefined,
     } as const,
-    generalConfigInfo: {
-        borderOpacity: undefined,
-        backgroundOpacity: undefined,
-        statusTextEnabled: undefined,
-    } as const,
     statusTextConfig: {
-        statusTextColor: undefined,
-        statusTextOpacity: undefined,
-        statusTextBackgroundColor: undefined,
-        statusTextFontStyle: undefined,
-        statusTextFontWeight: undefined
+        color: undefined,
+        opacity: undefined,
+        backgroundColor: undefined,
+        fontStyle: undefined,
+        fontWeight: undefined,
+        cursorOnlyText: undefined,
+        singleLineText: undefined,
+        multiLineCursorText: undefined,
+        multiLineAnchorText: undefined,
+        multiCursorText: undefined,
     } as const,
     configError: undefined,
 } as const;
@@ -61,7 +67,7 @@ export const STATUS_INFO = {
         type: undefined,
         regex: undefined
     } as const,
-    statusText: {
+    statusDecoration: {
         isWholeLine: undefined,
         rangeBehavior: undefined,
         after: {
@@ -74,6 +80,35 @@ export const STATUS_INFO = {
             margin: '0 0 0 20px',
         } as const
     } as const,
+} as const;
+
+
+export const STATUS_CONTENT_TEXT = {
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: {
+        contentText: undefined,
+        col: undefined
+    } as const,
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: {
+        contentText: undefined,
+        character: undefined
+    } as const,
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: {
+        contentText: undefined,
+        line: undefined,
+        character: undefined
+    } as const,
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: {
+        contentText: undefined,
+        line: undefined,
+        character: undefined
+    } as const,
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: {
+        contentText: undefined,
+        nth: undefined,
+        count: undefined,
+        line: undefined,
+        character: undefined
+    },
 } as const;
 
 /**
@@ -94,6 +129,14 @@ export const DECORATION_STATE = {
     statusText: undefined,
 };
 
+export const CONFIG_SECTION = {
+    [CONFIG_SECTION_KEY.GENERAL]: CONFIG_SECTION_KEY.GENERAL,
+    [CONFIG_SECTION_KEY.STATUS_TEXT]: CONFIG_SECTION_KEY.STATUS_TEXT,
+    [CONFIG_SECTION_KEY.CURSOR_ONLY]: CONFIG_SECTION_KEY.CURSOR_ONLY,
+    [CONFIG_SECTION_KEY.SINGLE_LINE]: CONFIG_SECTION_KEY.SINGLE_LINE,
+    [CONFIG_SECTION_KEY.MULTI_LINE]: CONFIG_SECTION_KEY.MULTI_LINE,
+    [CONFIG_SECTION_KEY.MULTI_CURSOR]: CONFIG_SECTION_KEY.MULTI_CURSOR
+} as const;
 
 /**
  *  

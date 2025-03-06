@@ -13,7 +13,7 @@ import {
     multiCursorDecorationWithRange
 } from './selection';
 import {
-    status
+    statusText
 } from './status';
 
 const applyDecoration = (
@@ -133,7 +133,7 @@ const setDecorationOnEditor: Type.SetDecorationOnEditorFunc = ({ editor, configI
         }
 
         if (configInfo.generalConfigInfo.statusTextEnabled) {
-            status(editor, decorationState, statusInfo as Type.StatusInfoType, decorationInfo);
+            statusText(editor, decorationState, statusInfo as Type.StatusInfoType, decorationInfo);
         }
 
         decorationWithRange.forEach(({ decoration, range }) => {

@@ -8,7 +8,7 @@ import { cursorActivate } from './activate';
 export function activate(context: vscode.ExtensionContext) {
     cursorActivate(context).then((event: void | vscode.Disposable[]) => {
         if (event) {
-            context.subscriptions.push(...event);
+            // context.subscriptions.push(...event);
         }
     });
 }

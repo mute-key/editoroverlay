@@ -11,11 +11,6 @@ export const enum SYSTEM_MESSAGE {
     RELOADING_CONFIG = 'Config has been changed. Reloading configuration. (Messaage Dismiss in 2 second.)'
 }
 
-export const enum GLOBAL_STATE_KEY {
-    CONFIG_UPDATED = 'configUpdated',
-    CONFIG_HASHKEY = 'configHashkey',
-}
-
 export const enum SELECTION_TYPE {
     RESET = 'RESET',
     CURSOR_ONLY = 'CURSOR_ONLY',
@@ -87,6 +82,23 @@ export const enum DECORATION_STATUS_STYLE_CONFIG_KEY {
     STATUS_TEXT_BACKGROUND_COLOR = 'statusTextBackgroundColor',
     STATUS_TEXT_FONT_STYLE = 'statusTextFontStyle',
     STATUS_TEXT_FONT_WEIGHT = 'statusTextFontWeight'
+}
+
+export const enum CONFIG_SECTION_KEY {
+    GENERAL = 'general',
+    STATUS_TEXT = 'statusText',
+    CURSOR_ONLY = 'cursorOnly',
+    SINGLE_LINE = 'singleLine',
+    MULTI_LINE = 'multiLine',
+    MULTI_CURSOR = 'multiCursor',
+}
+
+export const enum STATUS_CONTENT_TEXT_CONFIG_KEY {
+    CURSOR_ONLY_TEXT = 'cursorOnlyText',
+    SINGLE_LINE_TEXT = 'singleLineText',
+    MULTI_LINE_CURSOR_TEXT = 'multiLineCursorText',
+    MULTI_LINE_ANCHOR_TEXT = 'multiLineAnchorText',
+    MULTI_CURSOR_TEXT = 'multiCursorText',
 }
 
 /**

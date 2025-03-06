@@ -41,7 +41,7 @@
             {
                 "title": "General",
                 "properties": {
-                    "cursorlinehighlight.borderOpacity": {
+                    "cursorlinehighlight.general.borderOpacity": {
                         "type": "number",
                         "enum": [
                             0.1,
@@ -56,10 +56,10 @@
                             1
                         ],
                         "default": 0.7,
-                        "description": "opacity of decoration border in %. 1 is no opacity.",
+                        "markdownDescription": "opacity of decoration border in __```%```__. \n\n__```1```__ is no opacity.",
                         "order": 1
                     },
-                    "cursorlinehighlight.backgroundOpacity": {
+                    "cursorlinehighlight.general.backgroundOpacity": {
                         "type": "number",
                         "enum": [
                             0.1,
@@ -74,7 +74,7 @@
                             1
                         ],
                         "default": 0.3,
-                        "description": "opacity of background color of selection in %. 1 is no opacity.",
+                        "markdownDescription": "opacity of background color of selection in __```%```__. \n\n__```1```__ is no opacity.",
                         "order": 2
                     }
                 }
@@ -82,31 +82,31 @@
             {
                 "title": "Status Text",
                 "properties": {
-                    "cursorlinehighlight.statusTextEnabled": {
+                    "cursorlinehighlight.statusText.enabled": {
                         "type": "boolean",
                         "default": true,
                         "description": "Enable inline status text.",
                         "order": 1
                     },
-                    "cursorlinehighlight.statusTextIconEnabled": {
+                    "cursorlinehighlight.statusText.iconEnabled": {
                         "type": "boolean",
                         "default": false,
                         "description": "(Not working yet) Enable inline status icon text.",
                         "order": 2
                     },
-                    "cursorlinehighlight.statusTextColor": {
+                    "cursorlinehighlight.statusText.color": {
                         "type": "string",
                         "default": "#93A5C1",
-                        "description": "Change the Inline Status Text color. Color must be in hex color of #RRGGBB.",
+                        "markdownDescription": "Change the Inline Status Text color. \n\nColor must be in hex color of __```#RRGGBB```__.",
                         "order": 3
                     },
-                    "cursorlinehighlight.statusTextBackgroundColor": {
+                    "cursorlinehighlight.statusText.backgroundColor": {
                         "type": "string",
                         "default": null,
-                        "description": "Change the Inline Status Text background color. Color must be in hex color of #RRGGBB or null (No background).",
+                        "markdownDescription": "Change the Inline Status Text background color. \n\nColor must be in hex color of __```#RRGGBB```__,  __```null```__ or __```\"\"```__ (No background).",
                         "order": 4
                     },
-                    "cursorlinehighlight.statusTextOpacity": {
+                    "cursorlinehighlight.statusText.opacity": {
                         "type": "number",
                         "enum": [
                             0.1,
@@ -121,10 +121,10 @@
                             1
                         ],
                         "default": 0.5,
-                        "description": "opacity of background color of selection in %. 1 is no opacity.",
+                        "markdownDescription": "Opacity of background color of selection in __```%```__. __```1```__ is no opacity.",
                         "order": 5
                     },
-                    "cursorlinehighlight.statusTextFontStyle": {
+                    "cursorlinehighlight.statusText.fontStyle": {
                         "type": "string",
                         "enum": [
                             "italic",
@@ -134,7 +134,7 @@
                         "description": "Border position on current selection.",
                         "order": 6
                     },
-                    "cursorlinehighlight.statusTextFontWeight": {
+                    "cursorlinehighlight.statusText.fontWeight": {
                         "type": "string",
                         "enum": [
                             "lighter",
@@ -145,25 +145,55 @@
                         "default": "lighter",
                         "description": "Border position on current selection.",
                         "order": 7
+                    },
+                    "cursorlinehighlight.statusText.cursorOnlyText": {
+                        "type": "string",
+                        "default": "< Editing ... At (Col ${col})",
+                        "markdownDescription": "Status Text on Cursor Only Seelection. \n\n__```${col}```__ is where meta/delta information will be displayed.",
+                        "order": 8
+                    },
+                    "cursorlinehighlight.statusText.singleLineText": {
+                        "type": "string",
+                        "default": "< Selection ... Of (${character} Characters)",
+                        "markdownDescription": "Status Text on Single Line Seelection. \n\n__```${character}```__ is where selection information will be displayed.",
+                        "order": 9
+                    },
+                    "cursorlinehighlight.statusText.multiLineCursorText": {
+                        "type": "string",
+                        "default": "< Selection Cursor ... Of (${line} Lines, ${character} Characters, Indent/EOL Ignored)",
+                        "markdownDescription": "Status Text on Multi Line Seelection (Active Cursor). \n\n__```${line}```__, __```${character}```__ is where meta/delta information will be displayed.",
+                        "order": 10
+                    },
+                    "cursorlinehighlight.statusText.multiLineAnchorText": {
+                        "type": "string",
+                        "default": "< Selection Anchor ... Of (${line} Lines, ${char} Characters, Indent/EOL Ignored)",
+                        "markdownDescription": "Status Text on Multi Line Seelection (Anchor). \n\n__```${line}```__, __```${char}```__ is where meta/delta information will be displayed.",
+                        "order": 11
+                    },
+                    "cursorlinehighlight.statusText.multiCursorText": {
+                        "type": "string",
+                        "default": "< Multi Selection ... Of (${nth} of ${count}, with Total ${line} Lines ${character} Characters )",
+                        "markdownDescription": "Status Text on Multi Cursor Seelection. \n\n__```${nth}```__, __```${count}```__, __```${line}```__, __```${character}```__ is where meta/delta information will be displayed.",
+                        "order": 12
                     }
                 }
             },
             {
                 "title": "Cursor Only",
                 "properties": {
-                    "cursorlinehighlight.cursorOnlyBorderColor": {
+                    "cursorlinehighlight.cursorOnly.borderColor": {
                         "type": "string",
                         "default": "#93A5C1",
-                        "description": "Change the border color. Color must be in hex color of #RRGGBB.",
+                        "markdownDescription": "Change the border color. \n\nColor must be in hex color of __```#RRGGBB```__.",
                         "order": 1
                     },
-                    "cursorlinehighlight.cursorOnlyBackgroundColor": {
+                    "cursorlinehighlight.cursorOnly.backgroundColor": {
                         "type": "string",
                         "default": "#383F49",
-                        "description": "Change the background color. Color must be in hex color of #RRGGBB or null (No background).",
+                        "markdownDescription": "Change the background color. \n\nColor must be in hex color of __```#RRGGBB```__,  __```null```__ or __```\"\"```__ (No background).",
                         "order": 2
                     },
-                    "cursorlinehighlight.cursorOnlyBorderPosition": {
+                    "cursorlinehighlight.cursorOnly.borderPosition": {
                         "type": "string",
                         "enum": [
                             "bottom | is Whole Line",
@@ -174,13 +204,13 @@
                         "description": "Border position on current selection.",
                         "order": 3
                     },
-                    "cursorlinehighlight.cursorOnlyBorderWidth": {
+                    "cursorlinehighlight.cursorOnly.borderWidth": {
                         "type": "string",
                         "default": "2px",
-                        "description": "Border width, should use unit of 'px' or 'em'.",
+                        "markdownDescription": "Border width, should use unit of __```'px'```__ or __```'em'```__.",
                         "order": 4
                     },
-                    "cursorlinehighlight.cursorOnlyBorderStyle": {
+                    "cursorlinehighlight.cursorOnly.borderStyle": {
                         "type": [
                             "string"
                         ],
@@ -193,7 +223,7 @@
                         "description": "Main Border style on current line.",
                         "order": 5
                     },
-                    "cursorlinehighlight.cursorOnlyBorderStyleWithafterCursor": {
+                    "cursorlinehighlight.cursorOnly.borderStyleWithafterCursor": {
                         "type": [
                             "string"
                         ],
@@ -211,19 +241,19 @@
             {
                 "title": "Single Line",
                 "properties": {
-                    "cursorlinehighlight.singleLineBorderColor": {
+                    "cursorlinehighlight.singleLine.borderColor": {
                         "type": "string",
                         "default": "#93A5C1",
-                        "description": "Change the border color. Color must be in hex color of #RRGGBB.",
+                        "markdownDescription": "Change the border color. \n\nColor must be in hex color of __```#RRGGBB```__.",
                         "order": 1
                     },
-                    "cursorlinehighlight.singleLineBackgroundColor": {
+                    "cursorlinehighlight.singleLine.backgroundColor": {
                         "type": "string",
                         "default": "#383F49",
-                        "description": "Change the background color. Color must be in hex color of #RRGGBB or null (No background).",
+                        "markdownDescription": "Change the background color. \n\nColor must be in hex color of __```#RRGGBB```__,  __```null```__ or __```\"\"```__ (No background).",
                         "order": 2
                     },
-                    "cursorlinehighlight.singleLine": {
+                    "cursorlinehighlight.singleLine.": {
                         "type": "string",
                         "enum": [
                             "bottom | selection Only",
@@ -234,13 +264,13 @@
                         "description": "Border position on current selection.",
                         "order": 3
                     },
-                    "cursorlinehighlight.singleLineBorderWidth": {
+                    "cursorlinehighlight.singleLine.borderWidth": {
                         "type": "string",
                         "default": "2px",
-                        "description": "Border width, should use unit of 'px' or 'em'.",
+                        "markdownDescription": "Border width, should use unit of __```'px'```__ or __```'em'```__.",
                         "order": 4
                     },
-                    "cursorlinehighlight.singleLineBorderStyle": {
+                    "cursorlinehighlight.singleLine.borderStyle": {
                         "type": "string",
                         "enum": [
                             "solid",
@@ -256,19 +286,19 @@
             {
                 "title": "Multi Line",
                 "properties": {
-                    "cursorlinehighlight.multiLineBorderColor": {
+                    "cursorlinehighlight.multiLine.borderColor": {
                         "type": "string",
                         "default": "#93A5C1",
-                        "description": "Change the border color. Color must be in hex color of #RRGGBB.",
+                        "markdownDescription": "Change the border color. \n\nColor must be in hex color of __```#RRGGBB```__.",
                         "order": 1
                     },
-                    "cursorlinehighlight.multiLineBackgroundColor": {
+                    "cursorlinehighlight.multiLine.backgroundColor": {
                         "type": "string",
                         "default": "#383F49",
-                        "description": "Change the background color. Color must be in hex color of #RRGGBB or null (No background).",
+                        "markdownDescription": "Change the background color. \n\nColor must be in hex color of __```#RRGGBB```__,  __```null```__ or __```\"\"```__ (No background).",
                         "order": 2
                     },
-                    "cursorlinehighlight.multiLineBorderPosition": {
+                    "cursorlinehighlight.multiLine.borderPosition": {
                         "type": "string",
                         "enum": [
                             "top-bottom | is Whole Line",
@@ -277,15 +307,14 @@
                         "default": "top-bottom | is Whole Line",
                         "description": "Border position on current selection.",
                         "order": 3
-                        
                     },
-                    "cursorlinehighlight.multiLineBorderWidth": {
+                    "cursorlinehighlight.multiLine.borderWidth": {
                         "type": "string",
                         "default": "2px",
-                        "description": "Border width, should use unit of 'px' or 'em'.",
+                        "markdownDescription": "Border width, should use unit of __```'px'```__ or __```'em'```__.",
                         "order": 4
                     },
-                    "cursorlinehighlight.multiLineBorderStyle": {
+                    "cursorlinehighlight.multiLine.borderStyle": {
                         "type": "string",
                         "enum": [
                             "solid",
@@ -301,19 +330,19 @@
             {
                 "title": "Multi Cursor",
                 "properties": {
-                    "cursorlinehighlight.multiCursorBorderColor": {
+                    "cursorlinehighlight.multiCursor.borderColor": {
                         "type": "string",
                         "default": "#93A5C1",
-                        "description": "Change the border color. Color must be in hex color of #RRGGBB.",
+                        "markdownDescription": "Change the border color. \n\nColor must be in hex color of __```#RRGGBB```__.",
                         "order": 1
                     },
-                    "cursorlinehighlight.multiCursorBackgroundColor": {
+                    "cursorlinehighlight.multiCursor.backgroundColor": {
                         "type": "string",
                         "default": "#383F49",
-                        "description": "Change the background color. Color must be in hex color of #RRGGBB or null (No background).",
+                        "markdownDescription": "Change the background color. \n\nColor must be in hex color of __```#RRGGBB```__,  __```null```__ or __```\"\"```__ (No background).",
                         "order": 2
                     },
-                    "cursorlinehighlight.multiCursorBorderPosition": {
+                    "cursorlinehighlight.multiCursor.borderPosition": {
                         "type": "string",
                         "enum": [
                             "top-right-bottom-left"
@@ -322,13 +351,13 @@
                         "description": "Border position on current selection.",
                         "order": 3
                     },
-                    "cursorlinehighlight.multiCursorBorderWidth": {
+                    "cursorlinehighlight.multiCursor.borderWidth": {
                         "type": "string",
                         "default": "2px",
-                        "description": "Border width, should use unit of 'px' or 'em'.",
+                        "markdownDescription": "Border width, should use unit of __```'px'```__ or __```'em'```__.",
                         "order": 4
                     },
-                    "cursorlinehighlight.multiCursorBorderStyle": {
+                    "cursorlinehighlight.multiCursor.borderStyle": {
                         "type": "string",
                         "enum": [
                             "solid",

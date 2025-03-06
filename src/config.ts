@@ -7,7 +7,6 @@ import * as Type from './type/type.d';
 import {
     regex,
     fnv1aHash,
-    capitalize,
     readBits,
     hexToRgbaStringLiteral,
     sendAutoDismissMessage
@@ -19,8 +18,9 @@ import {
     DECORATION_STYLE_PREFIX,
     BORDER_WIDTH_DEFINITION,
     CONFIG_INFO,
+    CONFIG_SECTION,
     STATUS_INFO,
-    DECORATION_STATE
+    DECORATION_STATE,
 } from './constant/object';
 import {
     SYSTEM_MESSAGE
@@ -30,7 +30,8 @@ import {
     disposeDecoration
 } from './decoration';
 import {
-    disposeStatusInfo
+    disposeStatusInfo,
+    updateStatusContentText
 } from './status';
 
 const configInfo: Type.ConfigInfoType = { ...CONFIG_INFO };
@@ -39,13 +40,19 @@ const statusConfigInfo: Type.StatusInfoType = { ...STATUS_INFO };
 
 const decorationState: Type.DecorationStateType = { ...DECORATION_STATE };
 
-const getConfigString = (configReady: Type.ConfigInfoReadyType): string =>
-    Object.entries(configReady.config).reduce((acc, [key, infoProp]) => {
-        if (typeof infoProp === 'string' || typeof infoProp === 'number' || typeof infoProp === 'boolean') {
-            acc.push(infoProp as string);
-        }
-        return acc;
+const getConfigString = (configReady: Type.ConfigInfoReadyType): string => {
+    return Object.values(CONFIG_SECTION).reduce((sectionConfing, section) => {
+        const extensionConfig = vscode.workspace.getConfiguration(configReady.name + '.' + section);
+        const sectionConfingString = Object.entries(extensionConfig).reduce((configValue, [key, infoProp]) => {
+            if (typeof infoProp === 'string' || typeof infoProp === 'number' || typeof infoProp === 'boolean') {
+                configValue.push(infoProp as string);
+            }
+            return configValue;
+        }, [] as string[]).join('');
+        sectionConfing.push(sectionConfingString);
+        return sectionConfing;
     }, [] as string[]).join('');
+};
 
 const getConfigHash = (configReady: Type.ConfigInfoReadyType): string => {
     const configString = getConfigString(configReady);
@@ -67,7 +74,6 @@ const ifConfigChanged = (configReady: Type.ConfigInfoReadyType): boolean => {
         }
         
         configReady.configError = [];
-        configReady.config = vscode.workspace.getConfiguration(configReady.name);
         configReady.configHashKey = configHash;
         
         if (configReady.configError.length === 0) {
@@ -95,7 +101,7 @@ const updateEditorConfiguration = (): void => {
     const editorConfig = vscode.workspace.getConfiguration("editor");
     editorConfig.update("renderLineHighlight", 'gutter', vscode.ConfigurationTarget.Global);
     editorConfig.update("roundedSelection", false, vscode.ConfigurationTarget.Global);
-    // this is very cool but not necessary.
+    // this is cool but not necessary.
     // editorConfig.update("cursorBlinking", 'phase', vscode.ConfigurationTarget.Global);
     // editorConfig.update("cursorSmoothCaretAnimation", 'on', vscode.ConfigurationTarget.Global);
 };
@@ -103,9 +109,6 @@ const updateEditorConfiguration = (): void => {
 const checkConfigKeyAndCast = <T extends Type.DecorationStyleConfigNameType | Type.GeneralConfigNameOnlyType>(key: string, config: Type.NoConfigurationDeocorationPropType): T => {
     return key as T;
 };
-
-const configNameTransformer = (configNameString: string, configNameTransform: Type.StringTransformFunc): string =>
-    configNameTransform.reduce((str, transform) => transform(str), configNameString);
 
 // const configNameToSettingName = (configName: string) =>
 //     capitalize(configName.split('').reduce((string, characater) => string += /^[A-Z]/.test(characater) ? ' ' + characater : characater));
@@ -157,29 +160,24 @@ const configConditional = <T extends string | number | boolean | null>(configRea
 };
 
 const getConfigValue: Type.DecorationConfigGetFunctionType = <T extends Type.DecorationStyleConfigValueType>(
-    configInfo: Type.ConfigInfoReadyType,
-    configPrefix: Type.DecorationStyleConfigPrefixType,
+    configReady: Type.ConfigInfoReadyType,
+    configSection: vscode.WorkspaceConfiguration,
     configName: Type.DecorationStyleConfigNameType | Type.GeneralConfigNameOnlyType | Type.StatusTextConfigNameOnlyType,
-    defaultValue: T,
-    configNameTransform?: Type.StringTransformFunc
+    defaultValue: T
 ): T | null => {
     try {
-        let configNameString = configName as string;
-
-        if (configNameTransform && configNameTransform.length) {
-            configNameString = configNameTransformer(configName, configNameTransform);
-        }
-
-        const value = configInfo.config.get<T>(configPrefix + configNameString, defaultValue);
+        const value = configSection.get<T>(configName, defaultValue);
 
         if (value === undefined) {
             console.warn(`Config value for ${configName} is undefined or caused an error. Using default value.`);
         }
 
-        return configConditional(configInfo, configPrefix, configNameString, value, defaultValue);
+        // configConditional(configReady, configPrefix, configNameString, value, defaultValue);
+
+        return value;
 
     } catch (err) {
-        console.error(`Failed to get config value for ${configPrefix + configName}:`, err);
+        console.error(`Failed to get config value for ${configSection + '.' + configName}:`, err);
         return defaultValue;
     }
 };
@@ -201,18 +199,18 @@ const colorConfigTransform: Record<string, Type.ColourConfigTransformType> = {
  * @returns
  * 
  */
-const getConfigSet = (configInfo: Type.ConfigInfoReadyType, decorationKey: Type.DecorationStyleKeyOnlyType): Type.DecorationStyleConfigType => {
-
-    const configPrefix = DECORATION_STYLE_PREFIX[decorationKey];
+const getConfigSet = (configReady: Type.ConfigInfoReadyType, decorationKey: Type.DecorationStyleKeyOnlyType): Type.DecorationStyleConfigType => {
+    const configSectionName = DECORATION_STYLE_PREFIX[decorationKey];
     const defaultConfigDefinition = NO_CONFIGURATION_DEOCORATION_DEFAULT[decorationKey];
+    const configSection = getWorkspaceConfiguration(configReady.name + '.' + configSectionName);
 
     return Object.entries(defaultConfigDefinition).reduce((config, [configName, defaultValue]) => {
-        const configValue: string | boolean | number | null = getConfigValue(configInfo, configPrefix, checkConfigKeyAndCast(configName, defaultConfigDefinition), defaultValue, [capitalize]);
+        const configValue: string | boolean | number | null = getConfigValue(configReady, configSection, checkConfigKeyAndCast(configName, defaultConfigDefinition), defaultValue);
         // configValue can be boolean.
         if (configValue !== undefined && configValue !== null) {
             if (Object.hasOwn(colorConfigTransform, configName)) {
                 const colorTransform = colorConfigTransform[configName];
-                config[configName] = colorTransform.fn(configValue as string, configInfo.generalConfigInfo[colorTransform.of] as number, defaultValue as string);
+                config[configName] = colorTransform.fn(configValue as string, configReady.generalConfigInfo[colorTransform.of] as number, defaultValue as string);
             } else {
                 config[configName] = configValue;
             }
@@ -322,18 +320,20 @@ const setStatusConfig = (configReady: Type.ConfigInfoReadyType, statusConfigInfo
         : regex.tagtAndEOLRegex;
 
     if (configReady.statusTextConfig) {
-        const textColor = configReady.statusTextConfig.statusTextColor;
-        const textOpacity = configReady.statusTextConfig.statusTextOpacity;
+        const textColor = configReady.statusTextConfig.color;
+        const textOpacity = configReady.statusTextConfig.opacity;
         const defaultColor = NO_CONFIGURATION_STATUS_DEFAULT.statusTextColor;
         const defaultOpacity = NO_CONFIGURATION_STATUS_DEFAULT.statusTextOpacity;
 
-        statusConfigInfo.statusText.rangeBehavior = vscode.DecorationRangeBehavior.ClosedClosed;
-        statusConfigInfo.statusText.after.color = hexToRgbaStringLiteral(textColor as string, textOpacity, defaultColor, defaultOpacity);
-        statusConfigInfo.statusText.after.backgroundColor = configReady.statusTextConfig.statusTextBackgroundColor as string;
-        statusConfigInfo.statusText.after.fontWeight = configReady.statusTextConfig.statusTextFontWeight as string;
-        statusConfigInfo.statusText.after.fontStyle = configReady.statusTextConfig.statusTextFontStyle as string;
+        statusConfigInfo.statusDecoration.rangeBehavior = vscode.DecorationRangeBehavior.ClosedClosed;
+        statusConfigInfo.statusDecoration.after.color = hexToRgbaStringLiteral(textColor as string, textOpacity, defaultColor, defaultOpacity);
+        statusConfigInfo.statusDecoration.after.backgroundColor = configReady.statusTextConfig.backgroundColor as string;
+        statusConfigInfo.statusDecoration.after.fontWeight = configReady.statusTextConfig.fontWeight as string;
+        statusConfigInfo.statusDecoration.after.fontStyle = configReady.statusTextConfig.fontStyle as string;
     }
 };
+
+const getWorkspaceConfiguration = (section: string): vscode.WorkspaceConfiguration => vscode.workspace.getConfiguration(section);
 
 /**
  * wanted to avoid O(n^2) as much as possible but this is ok.
@@ -344,8 +344,9 @@ const setStatusConfig = (configReady: Type.ConfigInfoReadyType, statusConfigInfo
  */
 const createDecorationTypeBuilder = (configReady: Type.ConfigInfoReadyType, statusConfigInfo: Type.StatusInfoType, decorationState: Type.DecorationStateType): boolean => {
 
+    const generalConfig = getWorkspaceConfiguration(configInfo.name + '.' + CONFIG_SECTION.general);
     for (const key in configReady.generalConfigInfo) {
-        configReady.generalConfigInfo[key] = getConfigValue(configReady, "", key as Type.GeneralConfigNameOnlyType, NO_CONFIGURATION_GENERAL_DEFAULT[key]);
+        configReady.generalConfigInfo[key] = getConfigValue(configReady, generalConfig, key as Type.GeneralConfigNameOnlyType, NO_CONFIGURATION_GENERAL_DEFAULT[key]);
     }
 
     for (const key in decorationState.decorationList) {
@@ -379,11 +380,17 @@ const createDecorationTypeBuilder = (configReady: Type.ConfigInfoReadyType, stat
             disposeStatusInfo(decorationState);
         }
 
+        
+
+        const statusTextConfig = getWorkspaceConfiguration(configInfo.name + '.' + CONFIG_SECTION.statusText);
+
         for (const key in configReady.statusTextConfig) {
-            configReady.statusTextConfig[key] = getConfigValue(configReady, "", key as Type.StatusTextConfigNameOnlyType, NO_CONFIGURATION_STATUS_DEFAULT[key]);
+            configReady.statusTextConfig[key] = getConfigValue(configReady, statusTextConfig, key as Type.StatusTextConfigNameOnlyType, NO_CONFIGURATION_STATUS_DEFAULT[key]);
         }
 
         setStatusConfig(configReady, statusConfigInfo);
+
+        updateStatusContentText(configReady);
     }
 
     return true;
@@ -397,9 +404,8 @@ const initialiseConfig = (context: vscode.ExtensionContext): Type.InitialisedCon
     }
 
     configInfo.name = name;
-    configInfo.config = vscode.workspace.getConfiguration(configInfo.name);
-
-    if (!configInfo.name && !configInfo.config) {
+    
+    if (!configInfo.name) {
         return;
     }
 

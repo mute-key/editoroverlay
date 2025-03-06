@@ -1,5 +1,8 @@
 import * as vscode from 'vscode';
 import * as Type from '../type/type.d';
+import { 
+    STATUS_CONTENT_TEXT_CONFIG_KEY 
+} from '../constant/enum';
 
 const sendAutoDismissMessage = (text: string, dismiss: number) => {
     const message = vscode.window.showInformationMessage(text);
@@ -19,11 +22,34 @@ const fixConfiguration = (confingError: string[]) => {
     });
 };
 
-const regex: Type.regexType = {
+const regex: Type.RegexType = {
     indentAndEOLRegex: (indentSize: string | number) => new RegExp(`^( {${indentSize}}|[\r\n]+)*$`, 'gm'),
     tagtAndEOLRegex: /(\t|[\r\n]+)*$/gm,
     isValidHexColor: /^#[A-Fa-f0-9]{6}$/,
-    isValidWidth: /^[0-9]px$|^[0-9]em$/
+    isValidWidth: /^[0-9]px$|^[0-9]em$/,
+    isStatusContentTextValid: /s/s,
+    statusContentText: {
+        [STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: {
+            col: /\${col}/s
+        },
+        [STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: {
+            character: /\${character}/s
+        },
+        [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: {
+            line: /\${line}/s,
+            character: /\${character}/s   
+        },
+        [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: {
+            line: /\${line}/s,
+            character: /\${character}/s   
+        },
+        [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: {
+            nth: /\${nth}/s, 
+            count: /\${count}/s,
+            line: /\${line}/s,
+            character: /\${character}/s
+        },
+    }
 };
 
 /**
@@ -65,14 +91,39 @@ const fnv1aHash = (str: string): string => {
     return hash.toString(16);
 };
 
-/**
- * Capitalise first character.
- * 
- * @param
- * @returns
- * 
- */
-const capitalize = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
+const splitKeepPattern = (str: string, regex: RegExp) => {
+    const match: RegExpMatchArray | null = str.match(regex);
+    let split: string[] = [];
+
+    if (match && match.index) {
+        split = str.split(regex);
+        if (match.index === 0) {
+            split.unshift(match[0]);
+            return {
+                position: 0,
+                array: split
+            };
+        } else if (str.length === match.index + match[0].length) {
+            split.push(match[0]);
+            return {
+                position: 2,
+                array: split
+            };
+        } else {
+            split.push(split[1]);
+            split[1] = match[0];
+            return {
+                position: 1,
+                array: split
+            };
+        }
+    }
+
+    return {
+        position: undefined,
+        array: [str]  
+    };
+};
 
 /**
  * hex string with opcacity to rgba() string.
@@ -107,7 +158,7 @@ export {
     regex,
     fnv1aHash,
     readBits,
-    capitalize,
+    splitKeepPattern,
     hexToRgbaStringLiteral,
     sendAutoDismissMessage,
     fixConfiguration

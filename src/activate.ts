@@ -26,7 +26,7 @@ const cursorActivate = async (context: vscode.ExtensionContext): Promise<vscode.
         await context.extension.activate();
 
         const loadConfig = config.initialiseConfig(context);
-
+        
         if (!loadConfig) {
             console.error('Failed to initialize config.');
             return;

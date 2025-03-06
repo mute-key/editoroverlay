@@ -10,27 +10,68 @@ import {
     createEditorDecorationType,
     applyDecoration
 } from './decoration';
+import {
+    STATUS_CONTENT_TEXT
+} from './constant/object';
+import {
+    regex,
+    splitKeepPattern
+} from './util/util';
+
+const statusContentText = { ...STATUS_CONTENT_TEXT } as Type.StatusContentTextType;
+
+const updateStatusContentText = (configReady: Type.ConfigInfoReadyType) => {
+    if (configReady.generalConfigInfo.statusTextEnabled) {
+        Object.entries(statusContentText).forEach(([type, contentTextInfo]) => {
+            const statusText: Type.StatusTextInfo = configReady.statusTextConfig;
+            
+            if (statusText && statusText[type]) {
+                const regexObject: Type.RegexStatusContentTextUnion = regex.statusContentText[type];
+                Object.entries(regexObject).forEach(([key, regex]) => {
+                    if (!statusContentText[type].contentText) {
+                        statusContentText[type].contentText = [];
+                    }
+                    const match = splitKeepPattern(statusText[type], regex);;
+                    console.log(key, regex, match);
+                    console.log(configReady.statusTextConfig[type])
+                    statusContentText[type][key] = match.position;
+                    statusContentText[type].contentText.push(...match.array);
+                });
+            }
+        });
+    }
+
+    console.log(statusContentText);
+
+    return statusContentText;
+};
+
+// const cursorOnlyStatusText = (type: Type.DecorationInfoPropType) => {
+// statusContentText.CURSOR_ONLY.contentText
+// };
 
 const statusOf: Type.StatusOfType = {
     [DECORATION_STYLE_KEY.CURSOR_ONLY]: {
-        contentText: (col: string, end: string) => col === end ? `< Editing ... At (Col ${col})` : `< Editing ... At (Col ${col}/${end})`
+        contentText: (col: string) => `< Editing ... At (Col ${col})`
     },
     [DECORATION_STYLE_KEY.SINGLE_LINE]: {
-        contentText: (characters: string) => `< Selection ... Of (${characters} Characters)`,
+        contentText: (character: string) => `< Selection ... Of (${character} Characters)`,
     },
     [DECORATION_STYLE_KEY.MULTI_LINE]: {
-        contentText: (lines: string, characters: string, position: string) =>
-            `< Selection ${position} ... Of (${lines} Lines, ${characters} Characters, Indent/EOL Ignored)`,
+        contentText: (line: string, character: string, position: string) =>
+            `< Selection ${position} ... Of (${line} Lines, ${character} Characters, Indent/EOL Ignored)`,
     },
     [DECORATION_STYLE_KEY.MULTI_CURSOR]: {
-        contentText: (nth: string, selectionCount: string, lines: string, characters: string) =>
-            `< Multi Selection ... Of (${nth} of ${selectionCount}, with Total ${lines} Lines ${characters} Characters )`,
+        contentText: (nth: string, count: string, line: string, characters: string) =>
+            `< Multi Selection ... Of (${nth} of ${count}, with Total ${line} Lines ${characters} Characters )`,
     },
 };
 
 const cursorOnlyStatus = (editor: vscode.TextEditor, type: Type.DecorationInfoPropType): Type.StatusTextInfoType[] => {
+    const col = editor.selection.active.character;
+    const end = editor.document.lineAt(editor.selection.active.line).text.length;
     return [{
-        contentText: statusOf[type.KEY].contentText(editor.selection.active.character, editor.document.lineAt(editor.selection.active.line).text.length),
+        contentText: statusOf[type.KEY].contentText(col === end ? col : col + '/' + end),
         range: createRangeSPEP(editor.selection.active, editor.selection.active),
         isWholeLine: true
     }];
@@ -45,7 +86,7 @@ const singleLineStatus = (editor: vscode.TextEditor, type: Type.DecorationInfoPr
 };
 
 const multilineStatus = (editor: vscode.TextEditor, indent: Type.IndentType, type: Type.DecorationInfoPropType): Type.StatusTextInfoType[] => {
-    
+
     const text = editor.document.getText(editor.selection);
     const count = text.replace(indent.regex as RegExp, "").length;
     const args = Math.abs(editor.selection.end.line - editor.selection.start.line) + 1;
@@ -86,7 +127,7 @@ const multiCursorStatus = (editor: vscode.TextEditor, indent: Type.IndentType, t
     }
 
     idx = length;
-    
+
     while (idx--) {
         const lineSet = new Set(statusLine);
         if (lineSet.has(editor.selections[idx].end.line)) {
@@ -106,10 +147,10 @@ const multiCursorStatus = (editor: vscode.TextEditor, indent: Type.IndentType, t
     return statusTextInfo;
 };
 
-const statusDecorationType = (statusTextInfo: Type.StatusTextInfoType, statusText: Type.StatusDecorationType): Type.StatusDecorationReadyType => {
-    statusText.isWholeLine = statusTextInfo.isWholeLine;
-    statusText.after.contentText = statusTextInfo.contentText;
-    return statusText as Type.StatusDecorationReadyType;
+const statusDecorationType = (statusTextInfo: Type.StatusTextInfoType, statusDecorationType: Type.StatusDecorationType): Type.StatusDecorationReadyType => {
+    statusDecorationType.isWholeLine = statusTextInfo.isWholeLine;
+    statusDecorationType.after.contentText = statusTextInfo.contentText;
+    return statusDecorationType as Type.StatusDecorationReadyType;
 };
 
 /**
@@ -125,10 +166,10 @@ const disposeStatusInfo = (decorationState: Type.DecorationStateType): void => {
             decorationState.statusText[length].dispose();
         }
         decorationState.statusText = undefined;
-    } 
+    }
 };
 
-const statusTextInfoSplit = (editor: vscode.TextEditor, indent: Type.IndentType , type: Type.DecorationInfoPropType): Type.statusTextInfoSplitType => {
+const statusTextInfoSplit = (editor: vscode.TextEditor, indent: Type.IndentType, type: Type.DecorationInfoPropType): Type.statusTextInfoSplitType => {
     return {
         [DECORATION_STYLE_KEY.CURSOR_ONLY]: () => cursorOnlyStatus(editor, type),
         [DECORATION_STYLE_KEY.SINGLE_LINE]: () => singleLineStatus(editor, type),
@@ -137,23 +178,24 @@ const statusTextInfoSplit = (editor: vscode.TextEditor, indent: Type.IndentType 
     };
 };
 
-const status = (editor: vscode.TextEditor, decorationState: Type.DecorationStateType, statusInfo: Type.StatusInfoType, type: Type.DecorationInfoPropType): void => {
+const statusText = (editor: vscode.TextEditor, decorationState: Type.DecorationStateType, statusInfo: Type.StatusInfoType, type: Type.DecorationInfoPropType): void => {
     const statusTextInfo = statusTextInfoSplit(editor, statusInfo.indent, type)[type.KEY]();
     const statusInfoList: vscode.TextEditorDecorationType[] = [];
     let length: number = statusTextInfo.length;
 
     while (length--) {
-        const editorDecoration = createEditorDecorationType(statusDecorationType(statusTextInfo[length], statusInfo.statusText));
+        const editorDecoration = createEditorDecorationType(statusDecorationType(statusTextInfo[length], statusInfo.statusDecoration));
         applyDecoration(editor, editorDecoration, [statusTextInfo[length].range]);
         statusInfoList.push(editorDecoration);
     }
 
-    disposeStatusInfo(decorationState);  
+    disposeStatusInfo(decorationState);
 
-    decorationState.statusText =  statusInfoList;
+    decorationState.statusText = statusInfoList;
 };
 
 export {
-    status,
-    disposeStatusInfo
+    statusText,
+    disposeStatusInfo,
+    updateStatusContentText
 };

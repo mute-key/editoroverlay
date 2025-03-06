@@ -10,7 +10,8 @@ import {
     DECORATION_TYPE_MASK,
     SELECTION_TYPE,
     BORDER_POSITION_VARIATION,
-    DECORATION_STYLE_KEY
+    DECORATION_STYLE_KEY,
+    STATUS_CONTENT_TEXT_CONFIG_KEY
 } from '../constant/enum';
 import {
     DECORATION_STYLE_PREFIX,
@@ -59,8 +60,8 @@ type DecorationStyleConfigValueType = string | number | boolean
 type StringTransformFunc = ((s: string) => string)[]
 
 type DecorationConfigGetFunctionType = <T extends DecorationStyleConfigValueType>(
-    config: ConfigInfoReadyType,
-    prefix: DecorationStyleConfigPrefixType,
+    configReady: ConfigInfoReadyType,
+    configSection: vscode.WorkspaceConfiguration,
     configName: DecorationStyleConfigNameType | GeneralConfigNameOnlyType | StatusTextConfigNameOnlyType,
     defaultValue: T,
     configNameChange?: StringTransformFunc
@@ -71,9 +72,9 @@ type DecorationTypeSplit = {
 }
 
 type ConfigCondition = <T extends string | number | boolean | null>(configReady: ConfigInfoReadyType, configKeyWithScope: string, value: T, defaultValue: T) => {
-    bordercolor: () => T | null 
-    backgroundcolor: () => T | null 
-    borderwidth: () => T | null 
+    bordercolor: () => T | null
+    backgroundcolor: () => T | null
+    borderwidth: () => T | null
 }
 
 type BorderPositionKeyOnly = `${BORDER_POSITION_VARIATION}`;
@@ -126,18 +127,21 @@ type configErrorType = {
 }
 
 type StatusTextInfo = {
-    statusTextOpacity?: number,
-    statusTextColor?: string,
-    statusTextBackgroundColor?: string,
-    statusTextFontStyle?: string,
-    statusTextFontWeight?: string
+    opacity?: number,
+    color?: string,
+    backgroundColor?: string,
+    fontStyle?: string,
+    fontWeight?: string
+    cursorOnlyText?: string,
+    singleLineText?: string,
+    multiLineCursorText?: string,
+    multiLineAnchorText?: string,
+    multiCursorText?: string,
 }
 
 type ConfigInfoType = {
     name?: string
-    config?: vscode.WorkspaceConfiguration,
     configHashKey?: string
-    statusTextConfig?: StatusTextInfo
 }
 
 type IndentType = {
@@ -148,7 +152,7 @@ type IndentType = {
 
 type StatusInfoType = {
     indent: IndentType
-    statusText: StatusDecorationType
+    statusDecoration: StatusDecorationType
 }
 
 type StatusTextInfoType = {
@@ -159,7 +163,7 @@ type StatusTextInfoType = {
 
 type StatusOfType = {
     [SELECTION_TYPE.CURSOR_ONLY]: {
-        contentText: ((col: string, end: string) => string),
+        contentText: ((col: string) => string),
     }
     [SELECTION_TYPE.SINGLE_LINE]: {
         contentText: ((characters: string) => string),
@@ -170,6 +174,39 @@ type StatusOfType = {
     [SELECTION_TYPE.MULTI_CURSOR]: {
         contentText: ((nth: string, selectionCount: string, lines: string, characters: string) => string),
     }
+}
+
+type CursorOnlyContentTextType = {
+    contentText?: string[],
+    col?: number
+}
+
+type SingleLineContentTextType = {
+    contentText?: string[],
+    character?: number
+}
+
+type MultiLineContentTextType = {
+    contentText?: string[],
+    line?: number,
+    character?: number
+}
+
+type MultiCursorContentTextType = {
+    contentText?: string[],
+    nth?: number,
+    count?: number,
+    line?: number,
+    character?: number
+}
+
+
+type StatusContentTextType = {
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]:CursorOnlyContentTextType,
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]:SingleLineContentTextType,
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]:MultiLineContentTextType,
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]:MultiLineContentTextType,
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]:MultiCursorContentTextType
 }
 
 type StatusType = {
@@ -190,11 +227,48 @@ type statusTextInfoSplitType = {
     [k in keyof typeof DECORATION_STYLE_KEY]: () => StatusTextInfoType[]
 };
 
-type regexType = {
+type CursorOnlyStatusTextRegExp = {
+    col: RegExp
+}
+
+type SingleLineStatusTextRegExp = {
+    character: RegExp
+}
+
+type MultiLineCursorStatusTextRegExp = {
+    line: RegExp
+    character: RegExp
+}
+
+type MultiLineAnchorStatusTextRegExp = {
+    line: RegExp
+    character: RegExp
+}
+
+type MultiCursorStatusTextRegExp = {
+    nth: RegExp
+    count: RegExp
+    line: RegExp
+    character: RegExp
+}
+
+type RegexStatusContentTextUnion = CursorOnlyStatusTextRegExp | SingleLineStatusTextRegExp | MultiLineCursorStatusTextRegExp | MultiLineAnchorStatusTextRegExp | MultiCursorStatusTextRegExp
+
+type RegexStatusContentTextType = {
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: CursorOnlyStatusTextRegExp
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: SingleLineStatusTextRegExp
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: MultiLineCursorStatusTextRegExp
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: MultiLineAnchorStatusTextRegExp
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: MultiCursorStatusTextRegExp
+}
+
+type RegexType = {
     indentAndEOLRegex: (args: string | number) => RegExp
     tagtAndEOLRegex: RegExp,
     isValidHexColor: RegExp,
     isValidWidth: RegExp,
+    isStatusContentTextValid: RegExp,
+    statusContentText: RegexStatusContentTextType
 }
 
 type appliedDecoration = {
@@ -204,10 +278,10 @@ type appliedDecoration = {
 
 type ConfigInfoReadyType = {
     name: string
-    config: vscode.WorkspaceConfiguration,
     configHashKey: string,
     borderPositionInfo: BorderPositionInfoType
     generalConfigInfo: GeneralConfigInfoType
+    statusTextConfig: StatusTextInfo,
     configError: string[],
 } & ConfigInfoType
 
