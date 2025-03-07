@@ -27,27 +27,28 @@ const regex: Type.RegexType = {
     tagtAndEOLRegex: /(\t|[\r\n]+)*$/gm,
     isValidHexColor: /^#[A-Fa-f0-9]{6}$/,
     isValidWidth: /^[0-9]px$|^[0-9]em$/,
-    isStatusContentTextValid: /s/s,
+    ifStatusContentTextHasPlaceholder: /(\${[a-z]*})/g,
+    statusTextKeysOnly: /\${([^{}]+)}/s,
     statusContentText: {
         [STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: {
-            col: /\${col}/s
+            col: /(\${col})/s
         },
         [STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: {
-            character: /\${character}/s
+            character: /(\${character})/s
         },
         [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: {
-            line: /\${line}/s,
-            character: /\${character}/s   
+            line: /(\${line})/s,
+            character: /(\${character})/s
         },
         [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: {
-            line: /\${line}/s,
-            character: /\${character}/s   
+            line: /(\${line})/s,
+            character: /(\${character})/s   
         },
         [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: {
-            nth: /\${nth}/s, 
-            count: /\${count}/s,
-            line: /\${line}/s,
-            character: /\${character}/s
+            nth: /(\${nth})/s, 
+            count: /(\${count})/s,
+            line: /(\${line})/s,
+            character: /(\${character})/s
         },
     }
 };
@@ -91,27 +92,25 @@ const fnv1aHash = (str: string): string => {
     return hash.toString(16);
 };
 
-const splitKeepPattern = (str: string, regex: RegExp) => {
+const splitAndPosition = (str: string, regex: RegExp): Type.RegexSplitType | undefined => {
     const match: RegExpMatchArray | null = str.match(regex);
     let split: string[] = [];
 
     if (match && match.index) {
         split = str.split(regex);
-        if (match.index === 0) {
-            split.unshift(match[0]);
+        if (split[0].length === 0) {
+            delete split[0];
             return {
                 position: 0,
-                array: split
+                array: [...split]
             };
-        } else if (str.length === match.index + match[0].length) {
-            split.push(match[0]);
+        } else if (split[2].length === 0) {
+            delete split[2];
             return {
-                position: 2,
-                array: split
+                position: 1,
+                array: [...split]
             };
         } else {
-            split.push(split[1]);
-            split[1] = match[0];
             return {
                 position: 1,
                 array: split
@@ -119,10 +118,7 @@ const splitKeepPattern = (str: string, regex: RegExp) => {
         }
     }
 
-    return {
-        position: undefined,
-        array: [str]  
-    };
+    return;
 };
 
 /**
@@ -158,7 +154,7 @@ export {
     regex,
     fnv1aHash,
     readBits,
-    splitKeepPattern,
+    splitAndPosition,
     hexToRgbaStringLiteral,
     sendAutoDismissMessage,
     fixConfiguration

@@ -126,6 +126,11 @@ type configErrorType = {
     currentValue: string
 }
 
+type SearchObjectType = {
+    nextSearchString: string,
+    lastPosition: number
+}
+
 type StatusTextInfo = {
     opacity?: number,
     color?: string,
@@ -169,7 +174,8 @@ type StatusOfType = {
         contentText: ((characters: string) => string),
     }
     [SELECTION_TYPE.MULTI_LINE]: {
-        contentText: ((line: string, position: string, characters: string) => string),
+        contentTextCursor: ((line: string, characters: string) => string),
+        contentTextAnchor: ((line: string, characters: string) => string),
     }
     [SELECTION_TYPE.MULTI_CURSOR]: {
         contentText: ((nth: string, selectionCount: string, lines: string, characters: string) => string),
@@ -200,6 +206,8 @@ type MultiCursorContentTextType = {
     character?: number
 }
 
+type StatusContentTextUnion = CursorOnlyContentTextType | SingleLineContentTextType | MultiLineContentTextType | MultiCursorContentTextType;
+
 
 type StatusContentTextType = {
     [STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]:CursorOnlyContentTextType,
@@ -208,6 +216,7 @@ type StatusContentTextType = {
     [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]:MultiLineContentTextType,
     [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]:MultiCursorContentTextType
 }
+
 
 type StatusType = {
     position: string // inline | nextline,
@@ -267,8 +276,19 @@ type RegexType = {
     tagtAndEOLRegex: RegExp,
     isValidHexColor: RegExp,
     isValidWidth: RegExp,
-    isStatusContentTextValid: RegExp,
+    ifStatusContentTextHasPlaceholder: RegExp,
+    statusTextKeysOnly: RegExp,
     statusContentText: RegexStatusContentTextType
+}
+
+type nextSearchStringType = {
+    keep: string | string[] 
+    next?: string | string[]
+}
+
+type RegexSplitType = {
+    position: number,
+    array: string[]
 }
 
 type appliedDecoration = {

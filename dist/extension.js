@@ -66,27 +66,28 @@ var regex = {
   tagtAndEOLRegex: /(\t|[\r\n]+)*$/gm,
   isValidHexColor: /^#[A-Fa-f0-9]{6}$/,
   isValidWidth: /^[0-9]px$|^[0-9]em$/,
-  isStatusContentTextValid: /s/s,
+  ifStatusContentTextHasPlaceholder: /(\${[a-z]*})/g,
+  statusTextKeysOnly: /\${([^{}]+)}/s,
   statusContentText: {
     ["cursorOnlyText" /* CURSOR_ONLY_TEXT */]: {
-      col: /\${col}/s
+      col: /(\${col})/s
     },
     ["singleLineText" /* SINGLE_LINE_TEXT */]: {
-      character: /\${character}/s
+      character: /(\${character})/s
     },
     ["multiLineCursorText" /* MULTI_LINE_CURSOR_TEXT */]: {
-      line: /\${line}/s,
-      character: /\${character}/s
+      line: /(\${line})/s,
+      character: /(\${character})/s
     },
     ["multiLineAnchorText" /* MULTI_LINE_ANCHOR_TEXT */]: {
-      line: /\${line}/s,
-      character: /\${character}/s
+      line: /(\${line})/s,
+      character: /(\${character})/s
     },
     ["multiCursorText" /* MULTI_CURSOR_TEXT */]: {
-      nth: /\${nth}/s,
-      count: /\${count}/s,
-      line: /\${line}/s,
-      character: /\${character}/s
+      nth: /(\${nth})/s,
+      count: /(\${count})/s,
+      line: /(\${line})/s,
+      character: /(\${character})/s
     }
   }
 };
@@ -111,36 +112,31 @@ var fnv1aHash = (str) => {
   }
   return hash.toString(16);
 };
-var splitKeepPattern = (str, regex2) => {
+var splitAndPosition = (str, regex2) => {
   const match = str.match(regex2);
   let split = [];
   if (match && match.index) {
     split = str.split(regex2);
-    if (match.index === 0) {
-      split.unshift(match[0]);
+    if (split[0].length === 0) {
+      delete split[0];
       return {
         position: 0,
-        array: split
+        array: [...split]
       };
-    } else if (str.length === match.index + match[0].length) {
-      split.push(match[0]);
+    } else if (split[2].length === 0) {
+      delete split[2];
       return {
-        position: 2,
-        array: split
+        position: 1,
+        array: [...split]
       };
     } else {
-      split.push(split[1]);
-      split[1] = match[0];
       return {
         position: 1,
         array: split
       };
     }
   }
-  return {
-    position: void 0,
-    array: [str]
-  };
+  return;
 };
 var hexToRgbaStringLiteral = (hex, opacity = 0.6, defaultValue, opacityDefault) => {
   hex = hex.replace(/^#/, "");
@@ -496,38 +492,107 @@ var multiCursorDecorationWithRange = ({ editor, borderConfig, textEditorDecorati
 
 // src/status.ts
 var statusContentText = { ...STATUS_CONTENT_TEXT };
+var searchPlaceholder = (obj, key, regex2, searchObject, lastIndex) => {
+  const split = splitAndPosition(searchObject.nextSearchString, regex2);
+  if (split) {
+    if (lastIndex) {
+      obj.contentText?.push(...split.array);
+      obj[key] = searchObject.lastPosition + split.position;
+    } else {
+      if (split.position === 0) {
+        obj.contentText?.push(split.array[0]);
+        obj[key] = searchObject.lastPosition + split.position;
+        searchObject.nextSearchString = split.array[1];
+        searchObject.lastPosition = searchObject.lastPosition + split.position + 1;
+      } else if (split.position === 1 && split.array.length === 2) {
+        obj[key] = searchObject.lastPosition + split.position;
+        obj.contentText?.push(...split.array);
+      } else if (split.position === 1 && split.array.length === 3) {
+        obj.contentText?.push(split.array[0], split.array[1]);
+        obj[key] = searchObject.lastPosition + split.position;
+        searchObject.nextSearchString = split.array[2];
+        searchObject.lastPosition = searchObject.lastPosition + split.position + 1;
+      }
+    }
+  }
+};
 var updateStatusContentText = (configReady) => {
   if (configReady.generalConfigInfo.statusTextEnabled) {
     Object.entries(statusContentText).forEach(([type, contentTextInfo]) => {
       const statusText2 = configReady.statusTextConfig;
-      if (statusText2 && statusText2[type]) {
-        const regexObject = regex.statusContentText[type];
-        Object.entries(regexObject).forEach(([key, regex2]) => {
-          if (!statusContentText[type].contentText) {
-            statusContentText[type].contentText = [];
+      const regexObject = regex.statusContentText[type];
+      statusContentText[type].contentText = [];
+      const match = statusText2[type].match(regex.ifStatusContentTextHasPlaceholder);
+      if (match) {
+        if (match > Object.keys(regexObject).length) {
+          configReady.configError.push("statusText." + type);
+        }
+        let searchObject = {
+          nextSearchString: statusText2[type],
+          lastPosition: 0
+        };
+        match.forEach((search, index) => {
+          const regexKey = search.match(regex.statusTextKeysOnly);
+          if (Object.hasOwn(regexObject, regexKey[1])) {
+            searchPlaceholder(statusContentText[type], regexKey[1], regexObject[regexKey[1]], searchObject, index === match.length - 1);
+          } else {
+            configReady.configError.push("statusText." + type);
           }
-          const match = splitKeepPattern(statusText2[type], regex2);
-          ;
-          console.log(key, regex2, match);
-          console.log(configReady.statusTextConfig[type]);
-          statusContentText[type][key] = match.position;
-          statusContentText[type].contentText.push(...match.array);
         });
+      } else {
+        statusContentText[type].contentText.push(statusText2[type]);
       }
     });
   }
-  console.log(statusContentText);
-  return statusContentText;
 };
 var statusOf = {
   ["CURSOR_ONLY" /* CURSOR_ONLY */]: {
-    contentText: (col) => `< Editing ... At (Col ${col})`
+    contentText: (col) => {
+      const colIdx = statusContentText.cursorOnlyText.col;
+      const contentText = statusContentText.cursorOnlyText.contentText;
+      if (contentText) {
+        if (colIdx) {
+          contentText[colIdx] = col;
+        }
+        return contentText.join("");
+      }
+      return col;
+    }
   },
   ["SINGLE_LINE" /* SINGLE_LINE */]: {
     contentText: (character) => `< Selection ... Of (${character} Characters)`
   },
   ["MULTI_LINE" /* MULTI_LINE */]: {
-    contentText: (line, character, position) => `< Selection ${position} ... Of (${line} Lines, ${character} Characters, Indent/EOL Ignored)`
+    contentTextCursor: (line, character) => {
+      const characterIdx = statusContentText.multiLineCursorText.character;
+      const lineIdx = statusContentText.multiLineCursorText.line;
+      const contentText = statusContentText.multiLineCursorText.contentText;
+      if (contentText) {
+        if (lineIdx) {
+          contentText[lineIdx] = line;
+        }
+        if (characterIdx) {
+          contentText[characterIdx] = character;
+        }
+        return contentText.join("");
+      }
+      return line + "/" + character;
+    },
+    contentTextAnchor: (line, character) => {
+      const characterIdx = statusContentText.multiLineAnchorText.character;
+      const lineIdx = statusContentText.multiLineAnchorText.line;
+      const contentText = statusContentText.multiLineAnchorText.contentText;
+      if (contentText) {
+        if (lineIdx) {
+          contentText[lineIdx] = line;
+        }
+        if (characterIdx) {
+          contentText[characterIdx] = character;
+        }
+        return contentText.join("");
+      }
+      return line + "/" + character;
+    }
   },
   ["MULTI_CURSOR" /* MULTI_CURSOR */]: {
     contentText: (nth, count, line, characters) => `< Multi Selection ... Of (${nth} of ${count}, with Total ${line} Lines ${characters} Characters )`
@@ -554,11 +619,11 @@ var multilineStatus = (editor, indent, type) => {
   const count = text.replace(indent.regex, "").length;
   const args = Math.abs(editor.selection.end.line - editor.selection.start.line) + 1;
   return [{
-    contentText: statusOf[type.KEY].contentText(args, count, "Anchor"),
+    contentText: statusOf[type.KEY].contentTextCursor(args, count),
     range: createRangeSPEP(editor.selection.anchor, editor.selection.anchor),
     isWholeLine: true
   }, {
-    contentText: statusOf[type.KEY].contentText(args, count, "Cursor"),
+    contentText: statusOf[type.KEY].contentTextAnchor(args, count),
     range: createRangeSPEP(editor.selection.active, editor.selection.active),
     isWholeLine: true
   }];

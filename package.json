@@ -56,7 +56,7 @@
                             1
                         ],
                         "default": 0.7,
-                        "markdownDescription": "opacity of decoration border in __```%```__. \n\n__```1```__ is no opacity.",
+                        "markdownDescription": "Opacity of decoration border in __```%```__. __```1```__ is no opacity.",
                         "order": 1
                     },
                     "cursorlinehighlight.general.backgroundOpacity": {
@@ -74,7 +74,7 @@
                             1
                         ],
                         "default": 0.3,
-                        "markdownDescription": "opacity of background color of selection in __```%```__. \n\n__```1```__ is no opacity.",
+                        "markdownDescription": "Opacity of background color of selection in __```%```__. __```1```__ is no opacity.",
                         "order": 2
                     }
                 }
@@ -149,31 +149,31 @@
                     "cursorlinehighlight.statusText.cursorOnlyText": {
                         "type": "string",
                         "default": "< Editing ... At (Col ${col})",
-                        "markdownDescription": "Status Text on Cursor Only Seelection. \n\n__```${col}```__ is where meta/delta information will be displayed.",
+                        "markdownDescription": "Status Text for _'Cursor Only Selection'_. \n\n__```${col}```__ is where meta/delta information will be displayed.",
                         "order": 8
                     },
                     "cursorlinehighlight.statusText.singleLineText": {
                         "type": "string",
                         "default": "< Selection ... Of (${character} Characters)",
-                        "markdownDescription": "Status Text on Single Line Seelection. \n\n__```${character}```__ is where selection information will be displayed.",
+                        "markdownDescription": "Status Text for _'Single Line Selection'_. \n\n__```${character}```__ is where selection information will be displayed.",
                         "order": 9
                     },
                     "cursorlinehighlight.statusText.multiLineCursorText": {
                         "type": "string",
                         "default": "< Selection Cursor ... Of (${line} Lines, ${character} Characters, Indent/EOL Ignored)",
-                        "markdownDescription": "Status Text on Multi Line Seelection (Active Cursor). \n\n__```${line}```__, __```${character}```__ is where meta/delta information will be displayed.",
+                        "markdownDescription": "Status Text for _'Multi Line Selection (Active Cursor)'_. \n\n__```${line}```__, __```${character}```__ is where meta/delta information will be displayed.",
                         "order": 10
                     },
                     "cursorlinehighlight.statusText.multiLineAnchorText": {
                         "type": "string",
-                        "default": "< Selection Anchor ... Of (${line} Lines, ${char} Characters, Indent/EOL Ignored)",
-                        "markdownDescription": "Status Text on Multi Line Seelection (Anchor). \n\n__```${line}```__, __```${char}```__ is where meta/delta information will be displayed.",
+                        "default": "< Selection Anchor ... Of (${line} Lines, ${character} Characters, Indent/EOL Ignored)",
+                        "markdownDescription": "Status Text for _'Multi Line Selection (Anchor)'_. \n\n__```${line}```__, __```${character}```__ is where meta/delta information will be displayed.",
                         "order": 11
                     },
                     "cursorlinehighlight.statusText.multiCursorText": {
                         "type": "string",
-                        "default": "< Multi Selection ... Of (${nth} of ${count}, with Total ${line} Lines ${character} Characters )",
-                        "markdownDescription": "Status Text on Multi Cursor Seelection. \n\n__```${nth}```__, __```${count}```__, __```${line}```__, __```${character}```__ is where meta/delta information will be displayed.",
+                        "default": "< Multi Selection ... Of (${nth} of ${count}, with Total ${line} Lines ${character} Characters)",
+                        "markdownDescription": "Status Text for _'Multi Cursor Selection'_. \n\n__```${nth}```__, __```${count}```__, __```${line}```__, __```${character}```__ is where meta/delta information will be displayed.",
                         "order": 12
                     }
                 }
