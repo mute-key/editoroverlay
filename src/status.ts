@@ -21,31 +21,31 @@ const multiCursorContentTextState: (string | Type.ContentTextWithIndexFuncSignat
 const contentTextState = {
     [STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: (statusContentText) => {
         if (statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT].contentText) {
-            cursorOnlyContentTextState.length = 0;
+            cursorOnlyContentTextState.splice(0);
             cursorOnlyContentTextState.push(...statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT].contentText);
         }
     },
     [STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: (statusContentText) => {
         if (statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT].contentText) {
-            singleLineContentTextState.length = 0;
+            singleLineContentTextState.splice(0);
             singleLineContentTextState.push(...statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT].contentText);
         }
     },
     [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: (statusContentText) => {
         if (statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT].contentText) {
-            multiLineCursorContentTextState.length = 0;
+            multiLineCursorContentTextState.splice(0);
             multiLineCursorContentTextState.push(...statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT].contentText);
         }
     },
     [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: (statusContentText) => {
         if (statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT].contentText) {
-            multiLineAnchorContentTextState.length = 0;
+            multiLineAnchorContentTextState.splice(0);
             multiLineAnchorContentTextState.push(...statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT].contentText);
         }
     },
     [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: (statusContentText) => {
         if (statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT].contentText) {
-            multiCursorContentTextState.length = 0;
+            multiCursorContentTextState.splice(0);
             multiCursorContentTextState.push(...statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT].contentText);
         }
     },
@@ -213,7 +213,7 @@ const disposeStatusInfo = (decorationState: Type.DecorationStateType): void => {
         while (length--) {
             decorationState.statusText[length].dispose();
         }
-        decorationState.statusText = undefined;
+        decorationState.statusText = [];
     }
 };
 
@@ -248,7 +248,6 @@ const bindContentTextState = (type: string): Type.BindContentTextStateType => {
         contentTextState: contentTextState[type]
     };
 };
-
 
 export {
     statusText,

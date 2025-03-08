@@ -26,7 +26,6 @@ import {
     readBits 
 } from '../util/util';
 
-
 const checkConfigKeyAndCast = <T extends Type.DecorationStyleConfigNameType | Type.GeneralConfigNameOnlyType>(key: string, config: Type.NoConfigurationDeocorationPropType): T => {
     return key as T;
 };
@@ -90,69 +89,6 @@ const getConfigSet = (configReady: Type.ConfigInfoReadyType, decorationKey: Type
         return config;
     }, {} as Type.DecorationStyleConfigType);
 };
-
-/**
- * wanted to avoid O(n^2) as much as possible but this is ok.
- * 
- * @param configInfo
- * @returns
- * 
- */
-const createDecorationTypeBuilder = (configReady: Type.ConfigInfoReadyType, statusConfigInfo: Type.StatusInfoType, decorationState: Type.DecorationStateType): boolean => {
-
-    const generalConfig = getWorkspaceConfiguration(configReady.name + '.' + CONFIG_SECTION.general);
-
-    for (const key in configReady.generalConfigInfo) {
-        configReady.generalConfigInfo[key] = getConfigValue(configReady, generalConfig, key as Type.GeneralConfigNameOnlyType, NO_CONFIGURATION_GENERAL_DEFAULT[key]);
-    }
-
-    for (const key in decorationState.decorationList) {
-        const selectionType = key as Type.DecorationStyleKeyOnlyType;
-
-        if (decorationState.decorationList[selectionType]) {
-            disposeDecoration(decorationState.decorationList[selectionType]);
-        }
-
-        const configSet: Type.DecorationStyleConfigType = getConfigSet(configReady, selectionType);
-        const parsed = borderPositionParser(selectionType, String(configSet.borderPosition));
-
-        configReady.borderPositionInfo[selectionType] = parsed;
-        configSet.borderPosition = parsed.borderPosition;
-        configSet.isWholeLine = parsed.isWholeLine;
-
-        // configSet.overviewRulerColor = configSet.borderColor;
-        // configSet.overviewRulerLane = vscode.OverviewRulerLane.Full;
-
-        const decorationTypeList = createDecorationType(configSet, selectionType, decorationTypeSplit);
-
-        if (!decorationTypeList) {
-            return false;
-        }
-
-        decorationState.decorationList[selectionType] = decorationTypeList;
-    }
-
-    if (configReady.generalConfigInfo.statusTextEnabled) {
-        if (decorationState.statusText) {
-            disposeStatusInfo(decorationState);
-        }
-
-        
-
-        const statusTextConfig = getWorkspaceConfiguration(configReady.name + '.' + CONFIG_SECTION.statusText);
-
-        for (const key in configReady.statusTextConfig) {
-            configReady.statusTextConfig[key] = getConfigValue(configReady, statusTextConfig, key as Type.StatusTextConfigNameOnlyType, NO_CONFIGURATION_STATUS_DEFAULT[key]);
-        }
-
-        setStatusConfig(configReady, statusConfigInfo);
-
-        updateStatusContentText(configReady);
-    }
-
-    return true;
-};
-
 
 /**
  * @param config
@@ -241,6 +177,68 @@ const borderPositionParser = (selectionType: Type.DecorationStyleKeyOnlyType, bo
         selectionOnly: selectionOnly
     };
 };
+
+
+/**
+ * wanted to avoid O(n^2) as much as possible but this is ok.
+ * 
+ * @param configInfo
+ * @returns
+ * 
+ */
+const createDecorationTypeBuilder = (configReady: Type.ConfigInfoReadyType, statusConfigInfo: Type.StatusInfoType, decorationState: Type.DecorationStateType): boolean => {
+
+    const generalConfig = getWorkspaceConfiguration(configReady.name + '.' + CONFIG_SECTION.general);
+
+    for (const key in configReady.generalConfigInfo) {
+        configReady.generalConfigInfo[key] = getConfigValue(configReady, generalConfig, key as Type.GeneralConfigNameOnlyType, NO_CONFIGURATION_GENERAL_DEFAULT[key]);
+    }
+
+    for (const key in decorationState.decorationList) {
+        const selectionType = key as Type.DecorationStyleKeyOnlyType;
+
+        if (decorationState.decorationList[selectionType]) {
+            disposeDecoration(decorationState.decorationList[selectionType]);
+        }
+
+        const configSet: Type.DecorationStyleConfigType = getConfigSet(configReady, selectionType);
+        const parsed = borderPositionParser(selectionType, String(configSet.borderPosition));
+
+        configReady.borderPositionInfo[selectionType] = parsed;
+        configSet.borderPosition = parsed.borderPosition;
+        configSet.isWholeLine = parsed.isWholeLine;
+
+        // configSet.overviewRulerColor = configSet.borderColor;
+        // configSet.overviewRulerLane = vscode.OverviewRulerLane.Full;
+
+        const decorationTypeList = createDecorationType(configSet, selectionType, decorationTypeSplit);
+
+        if (!decorationTypeList) {
+            return false;
+        }
+
+        decorationState.decorationList[selectionType] = decorationTypeList;
+    }
+
+    if (configReady.generalConfigInfo.statusTextEnabled) {
+        if (decorationState.statusText) {
+            disposeStatusInfo(decorationState);
+        }
+
+        const statusTextConfig = getWorkspaceConfiguration(configReady.name + '.' + CONFIG_SECTION.statusText);
+
+        for (const key in configReady.statusTextConfig) {
+            configReady.statusTextConfig[key] = getConfigValue(configReady, statusTextConfig, key as Type.StatusTextConfigNameOnlyType, NO_CONFIGURATION_STATUS_DEFAULT[key]);
+        }
+
+        setStatusConfig(configReady, statusConfigInfo);
+
+        updateStatusContentText(configReady);
+    }
+
+    return true;
+};
+
 
 export {
     createDecorationTypeBuilder

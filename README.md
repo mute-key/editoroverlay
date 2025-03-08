@@ -19,67 +19,67 @@ this extension will also display status text where the selection is.
 > Opacity of decoration border in __```%```__. __```1```__ is no opacity.
 
 `General -> backgroundOpacity`
->Opacity of background color of selection in __```%```__. __```1```__ is no opacity.
+> Opacity of background color of selection in __```%```__. __```1```__ is no opacity.
 
-## Status text
+## Status Text
 
-`statusText.enabled`
->Enable inline status text.
+`statusText -> enabled`
+> Enable inline status text.
 
 `statusText -> color`
->Change the Inline Status Text color. Color must be in hex color of __```#RRGGBB```__.
+> Change the Inline Status Text color. <br>Must be in format of hex color representation as __```#RRGGBB```__.
 
 `statusText -> backgroundColor`
->Change the Inline Status Text background color. Color must be in hex color of __```#RRGGBB```__,  __```null```__ or __```""```__ (No background).
+> Change the Inline Status Text background color. <br>Must be in format of hex color representation as __```#RRGGBB```__, __```null```__ or __```""```__ (No background).
 
 `statusText -> opacity`
->Opacity of background color of selection in __```%```__. __```1```__ is no opacity.
+> Opacity of background color of selection in __```%```__. __```1```__ is no opacity.
 
 `statusText -> fontStyle`
->Border position on current selection.
+> Font style of status text.
 
 `statusText -> fontWeight`
->Border position on current selection.
+> Font weight of status text.
 
 `statusText -> cursorOnlyText`
->Status Text for _'Cursor Only Selection'_.
+> Status Text for Cursor Only Selection.<br>Example:<br> `< Editing ... At (idx ${zCol}, zero-based)`
 
-| placeholder | description |
+| Placeholder | Description |
 | -------- | ------- |
 | __```${col}```__ | Current position of cursor (as on status bar) |
 | __```${zCol}```__ | count of characters in line (Zero based)|
 | __```${ln}```__ | current line number |
 
 `statusText -> singleLineText`
-> Status Text for _'Single Line Selection'_.
+> Status Text for Single Line Selection.<br>Example:<br> `< Selection ... Of (${char} Characters)`
 
-| placeholder | description |
+| Placeholder | Description |
 | -------- | ------- |
 | __```${char}```__ | character count of selection |
 | __```${ln}```__ | current line number |
 
 `statusText -> multiLineCursorText`
->Status Text for _'Multi Line Selection (Active Cursor)'_. __```${ln}```__, __```${char}```__ is where meta/delta information will be displayed.
+> Status Text for _'Multi Line Selection (Active Cursor)'_.<br>Example:<br> `< Selection Cursor ... Of (${lc} Lines, ${char} Characters, Indent/EOL Ignored)`
 
-| placeholder | description |
+| Placeholder | Description |
 | -------- | ------- |
 | __```${ln}```__ | selection cursor line number |
 | __```${lc}```__ | line count of selection |
 | __```${char}```__ | character count of selection |
 
 `statusText -> multiLineAnchorText`
->Status Text for _'Multi Line Selection (Anchor)'_. __```${ln}```__, __```${char}```__ is where meta/delta information will be displayed.
+> Status Text for _'Multi Line Selection (Anchor)'_.<br>Example:<br> `< Selection Anchor ... Of (${lc} Lines, ${char} Characters, Indent/EOL Ignored)`
 
-| placeholder | description |
+| Placeholder | Description |
 | -------- | ------- |
 | __```${ln}```__ | selection anchor line number |
 | __```${lc}```__ | line count of selection |
 | __```${char}```__ | character count of selection |
 
 `statusText -> multiCursorText`
->Status Text for _'Multi Cursor Selection'_. __```${nth}```__, __```${count}```__, __```${ln}```__, __```${char}```__ is where meta/delta information will be displayed.
+> Status Text for _'Multi Cursor Selection'_.<br>Example:<br> `< Multi Selection ... Of (${nth} of ${count}, with Total ${lc} Lines ${char} Characters)`
 
-| placeholder | description |
+| Placeholder | Description |
 | -------- | ------- |
 | __```${nth}```__ | position of selection |
 | __```${count}```__ | count of selection |
@@ -90,10 +90,10 @@ this extension will also display status text where the selection is.
 ## Cursor Only
 
 `cursorOnly -> borderColor`
-> Change the border color. Color must be in hex color of __```#RRGGBB```__.
+> Change the border color. <br>Must be in format of hex color representation as __```#RRGGBB```__.
 
 `cursorOnly -> backgroundColor`
-> Change the background color. Color must be in hex color of __```#RRGGBB```__,  __```null```__ or __```""```__ (No background).
+> Change the background color. <br>Must be in format of hex color representation as __```#RRGGBB```__, __```null```__ or __```""```__ (No background).
 
 `cursorOnly -> borderPosition`
 > Border position on current selection.
@@ -104,16 +104,16 @@ this extension will also display status text where the selection is.
 `cursorOnly -> borderStyle`
 > Main Border style on current line.
 
-(not working yet) Use this border style only when [bottom | after Cursor]. this is border style for `cursorOnly.borderStyleWithafterCursor`
-> previous range.
+<!-- (not working yet) Use this border style only when [bottom | after Cursor]. this is border style for `cursorOnly.borderStyleWithafterCursor`
+> previous range. -->
 
 ## Single Line
 
 `singleLine -> borderColor`
-> Change the border color. Color must be in hex color of __```#RRGGBB```__.
+> Change the border color. <br>Must be in format of hex color representation as __```#RRGGBB```__.
 
 `singleLine -> backgroundColor`
-> Change the background color. Color must be in hex color of __```#RRGGBB```__,  __```null```__ or __```""```__ (No background).
+> Change the background color. <br>Must be in format of hex color representation as __```#RRGGBB```__, __```null```__ or __```""```__ (No background).
 
 `singleLine -> borderPosition`
 > Border position on current selection.
@@ -127,10 +127,10 @@ this extension will also display status text where the selection is.
 ## Multi Line
 
 `multiLine -> borderColor`
-> Change the border color. Color must be in hex color of __```#RRGGBB```__.
+> Change the border color. <br>Must be in format of hex color representation as __```#RRGGBB```__.
 
 `multiLine -> backgroundColor`
-> Change the background color. Color must be in hex color of __```#RRGGBB```__,  __```null```__ or __```""```__ (No background).
+> Change the background color. <br>Must be in format of hex color representation as __```#RRGGBB```__, __```null```__ or __```""```__ (No background).
 
 `multiLine -> borderPosition`
 > Border position on current selection.
@@ -144,10 +144,10 @@ this extension will also display status text where the selection is.
 ## Multi Cursor
 
 `multiCursor -> borderColor`
-> Change the border color. Color must be in hex color of __```#RRGGBB```__.
+> Change the border color. <br>Must be in format of hex color representation as __```#RRGGBB```__.
 
 `multiCursor -> backgroundColor`
-> Change the background color. Color must be in hex color of __```#RRGGBB```__,  __```null```__ or __```""```__ (No background).
+> Change the background color. <br>Must be in format of hex color representation as __```#RRGGBB```__, __```null```__ or __```""```__ (No background).
 
 `multiCursor -> borderPosition`
 > Border position on current selection.

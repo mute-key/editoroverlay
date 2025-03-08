@@ -1286,6 +1286,7 @@ var initialize = async (context) => {
 function activate(context) {
   initialize(context).then((event) => {
     if (event) {
+      context.subscriptions.push(...event);
     }
   });
 }
