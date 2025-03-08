@@ -21,26 +21,31 @@ const multiCursorContentTextState: (string | Type.ContentTextWithIndexFuncSignat
 const contentTextState = {
     [STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: (statusContentText) => {
         if (statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT].contentText) {
+            cursorOnlyContentTextState.length = 0;
             cursorOnlyContentTextState.push(...statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT].contentText);
         }
     },
     [STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: (statusContentText) => {
         if (statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT].contentText) {
+            singleLineContentTextState.length = 0;
             singleLineContentTextState.push(...statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT].contentText);
         }
     },
     [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: (statusContentText) => {
         if (statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT].contentText) {
+            multiLineCursorContentTextState.length = 0;
             multiLineCursorContentTextState.push(...statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT].contentText);
         }
     },
     [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: (statusContentText) => {
         if (statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT].contentText) {
+            multiLineAnchorContentTextState.length = 0;
             multiLineAnchorContentTextState.push(...statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT].contentText);
         }
     },
     [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: (statusContentText) => {
         if (statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT].contentText) {
+            multiCursorContentTextState.length = 0;
             multiCursorContentTextState.push(...statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT].contentText);
         }
     },
@@ -48,27 +53,37 @@ const contentTextState = {
 
 const statusOf: Type.StatusOfType = {
     [STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: {
+        ln: ({editor}) => editor.selection.active.line + 1,
         col: ({editor}) => {
+            const col = editor.selection.active.character + 1;
+            const end = editor.document.lineAt(editor.selection.active.line).text.length + 1;
+            return (col === end ? col : col + '/' + end);
+        },
+        zCol: ({editor}) => {
             const col = editor.selection.active.character;
             const end = editor.document.lineAt(editor.selection.active.line).text.length;
             return (col === end ? col : col + '/' + end);
-        },
+        }
     },
     [STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: {
-        character: ({editor}) => Math.abs(editor.selection.end.character - editor.selection.start.character),
+        ln: ({editor}) => editor.selection.active.line + 1,
+        char: ({editor}) => Math.abs(editor.selection.end.character - editor.selection.start.character),
     },
     [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: {
-        line: ({editor}) => (Math.abs(editor.selection.end.line - editor.selection.start.line) + 1),
-        character: ({editor, indent}) => editor.document.getText(editor.selection).replace(indent.regex, "").length,
+        ln: ({editor}) => editor.selection.active.line + 1,
+        lc: ({editor}) => (Math.abs(editor.selection.end.line - editor.selection.start.line) + 1),
+        char: ({editor, indent}) => editor.document.getText(editor.selection).replace(indent.regex, "").length
     },
     [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: {
-        line: ({editor}) => (Math.abs(editor.selection.end.line - editor.selection.start.line) + 1),
-        character: ({editor, indent}) => editor.document.getText(editor.selection).replace(indent.regex, "").length,
+        ln: ({editor}) => editor.selection.anchor.line + 1,
+        lc: ({editor}) => (Math.abs(editor.selection.end.line - editor.selection.start.line) + 1),
+        char: ({editor, indent}) => editor.document.getText(editor.selection).replace(indent.regex, "").length,  
     },
     [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: {
         nth: ({idx}) => idx,
         count: ({editor}) => editor.selections.length,
-        line: ({editor}) => {
+        ln: ({idx, editor}) => editor.selections[idx].end.line + 1,
+        lc: ({editor}) => {
             let idx = 0;
             let lineCount = 0;
             const length = editor.selections.length;
@@ -85,7 +100,7 @@ const statusOf: Type.StatusOfType = {
             }
             return lineCount;
         },
-        character: ({editor, indent}) => {
+        char: ({editor, indent}) => {
             let idx = 0;
             let charCount = 0;
             const length = editor.selections.length;

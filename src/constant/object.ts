@@ -85,28 +85,34 @@ export const STATUS_INFO = {
 export const STATUS_CONTENT_TEXT = {
     [STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: {
         contentText: undefined,
-        col: undefined
+        col: undefined,
+        zCol: undefined,
+        ln: undefined,
     } as const,
     [STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: {
         contentText: undefined,
-        character: undefined
+        char: undefined,
+        ln: undefined,
     } as const,
     [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: {
         contentText: undefined,
-        line: undefined,
-        character: undefined
+        ln: undefined,
+        lc: undefined,
+        char: undefined,
     } as const,
     [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: {
         contentText: undefined,
-        line: undefined,
-        character: undefined
+        ln: undefined,
+        lc: undefined,
+        char: undefined,
     } as const,
     [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: {
         contentText: undefined,
         nth: undefined,
         count: undefined,
-        line: undefined,
-        character: undefined
+        ln: undefined,
+        lc: undefined,
+        char: undefined
     },
 } as const;
 

@@ -17,9 +17,13 @@ import {
     createDecorationTypeBuilder
 } from './decoration';
 import {
+    patchConfig
+} from './patch';
+import {
     regex,
     fnv1aHash,
     sendAutoDismissMessage,
+    getWorkspaceConfiguration,
 } from '../util/util';
 import {
     disposeDecoration
@@ -33,7 +37,7 @@ const decorationState: Type.DecorationStateType = { ...DECORATION_STATE };
 
 const getConfigString = (configReady: Type.ConfigInfoReadyType): string => {
     return Object.values(CONFIG_SECTION).reduce((sectionConfing, section) => {
-        const extensionConfig = vscode.workspace.getConfiguration(configReady.name + '.' + section);
+        const extensionConfig = getWorkspaceConfiguration(configReady.name + '.' + section);
         const sectionConfingString = Object.entries(extensionConfig).reduce((configValue, [key, infoProp]) => {
             if (typeof infoProp === 'string' || typeof infoProp === 'number' || typeof infoProp === 'boolean') {
                 configValue.push(infoProp as string);
@@ -89,7 +93,7 @@ const updateEachEditorConfiguration = (key: string, value: any): void => {
  * 
  */
 const updateEditorConfiguration = (): void => {
-    const editorConfig = vscode.workspace.getConfiguration("editor");
+    const editorConfig = getWorkspaceConfiguration("editor");
     editorConfig.update("renderLineHighlight", 'gutter', vscode.ConfigurationTarget.Global);
     editorConfig.update("roundedSelection", false, vscode.ConfigurationTarget.Global);
     // this is cool but not necessary.
@@ -167,6 +171,7 @@ const initializeConfig = (context: vscode.ExtensionContext): Type.InitialisedCon
 
     if (!configReady.configError) {
         configReady.configError = [];
+        patchConfig(configReady);
     }
 
     if (!configReady.configHashKey) {

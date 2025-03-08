@@ -45,7 +45,7 @@ const castToFuncSignature = (result: Type.RegexSplitType | undefined): Type.Spli
     if (result) {
         return {
             ...result,
-            array: result.array as (string | (Type.ContentTextFuncSignature))[],
+            array: result.array.filter(entry => entry !== undefined) as (string | (Type.ContentTextFuncSignature))[],
         };
     }
 };
@@ -121,6 +121,7 @@ const updateStatusContentText = (configReady: Type.ConfigInfoReadyType): void =>
             }
             bind.contentTextState(statusContentText);
         });
+        console.log(statusContentText);
     }
 };
 

@@ -82,27 +82,33 @@ type statusTextInfoSplitType = {
 
 type CursorOnlyStatusTextRegExp = {
     col: RegExp
+    zCol: RegExp
+    ln: RegExp
 }
 
 type SingleLineStatusTextRegExp = {
-    character: RegExp
+    char: RegExp
+    ln: RegExp
 }
 
 type MultiLineCursorStatusTextRegExp = {
-    line: RegExp
-    character: RegExp
+    lc: RegExp
+    ln: RegExp
+    char: RegExp
 }
 
 type MultiLineAnchorStatusTextRegExp = {
-    line: RegExp
-    character: RegExp
+    lc: RegExp
+    ln: RegExp
+    char: RegExp
 }
 
 type MultiCursorStatusTextRegExp = {
     nth: RegExp
     count: RegExp
-    line: RegExp
-    character: RegExp
+    lc: RegExp
+    ln: RegExp
+    char: RegExp
 }
 
 type RegexStatusContentTextUnion = CursorOnlyStatusTextRegExp | SingleLineStatusTextRegExp | MultiLineCursorStatusTextRegExp | MultiLineAnchorStatusTextRegExp | MultiCursorStatusTextRegExp

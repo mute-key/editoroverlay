@@ -20,6 +20,7 @@ import {
 
 const onActiveWindowChange = (configInfo: Type.ConfigInfoReadyType, statusInfo: Type.StatusInfoType, decorationState: Type.DecorationStateType): vscode.Disposable => {
     return vscode.window.onDidChangeWindowState((event: vscode.WindowState) => {
+        console.log('onDidChangeWindowState');
         if (event.focused) {
             // apply decoration to active editor.
             if (vscode.window.activeTextEditor) {
@@ -42,6 +43,7 @@ const onActiveWindowChange = (configInfo: Type.ConfigInfoReadyType, statusInfo: 
 
 const activeEditorChanged = (configInfo: Type.ConfigInfoReadyType, statusInfo: Type.StatusInfoType, decorationState: Type.DecorationStateType): vscode.Disposable => {
     return vscode.window.onDidChangeActiveTextEditor((editor: vscode.TextEditor | undefined) => {
+        console.log('onDidChangeActiveTextEditor');
         if (editor) {
 
             if (configInfo.configError.length > 0) {
@@ -83,6 +85,7 @@ const editorOptionChange = (statusInfo: Type.StatusInfoType,): vscode.Disposable
 
 const selectionChanged = (configInfo: Type.ConfigInfoReadyType, statusInfo: Type.StatusInfoType, decorationState: Type.DecorationStateType): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) => {
+        console.log('onDidChangeTextEditorSelection');
         if (event.selections) {
             const decorationInfo: Type.DecorationInfoPropType | undefined = getSelectionType(event.textEditor);
             if (!decorationInfo) {
@@ -108,6 +111,7 @@ const selectionChanged = (configInfo: Type.ConfigInfoReadyType, statusInfo: Type
 
 const configChanged = (context: vscode.ExtensionContext): vscode.Disposable => {
     return vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
+        console.log('onDidChangeConfiguration');
         if (event) {
             const loadConfig = config.initializeConfig(context);
         }

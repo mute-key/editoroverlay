@@ -15,24 +15,30 @@ const sendAutoDismissMessage = (text: string, dismiss: number) => {
 
 const statusTextRegex: Record<string, Type.RegexStatusContentTextUnion> = {
     [STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: {
-        col: /(\${col})/s
+        col: /(\${col})/s,
+        zCol: /(\${zCol})/s,
+        ln: /(\${ln})/s
     },
     [STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: {
-        character: /(\${character})/s
+        char: /(\${char})/s,
+        ln: /(\${ln})/s
     },
     [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: {
-        line: /(\${line})/s,
-        character: /(\${character})/s
+        lc: /(\${lc})/s,
+        ln: /(\${ln})/s,
+        char: /(\${char})/s
     },
     [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: {
-        line: /(\${line})/s,
-        character: /(\${character})/s   
+        lc: /(\${lc})/s,
+        ln: /(\${ln})/s,
+        char: /(\${char})/s   
     },
     [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: {
         nth: /(\${nth})/s, 
         count: /(\${count})/s,
-        line: /(\${line})/s,
-        character: /(\${character})/s
+        lc: /(\${lc})/s,
+        ln: /(\${ln})/s,
+        char: /(\${char})/s
     },
 };
 
@@ -41,7 +47,7 @@ const regex: Type.RegexType = {
     tagtAndEOLRegex: /(\t|[\r\n]+)*$/gm,
     isValidHexColor: /^#[A-Fa-f0-9]{6}$/,
     isValidWidth: /^[0-9]px$|^[0-9]em$/,
-    ifStatusContentTextHasPlaceholder: /(\${[a-z]*})/g,
+    ifStatusContentTextHasPlaceholder: /(\${[A-z]*})/g,
     statusTextKeysOnly: /\${([^{}]+)}/s,
     statusContentText: statusTextRegex
 };
@@ -86,11 +92,13 @@ const fnv1aHash = (str: string): string => {
 };
 
 const splitAndPosition = (str: string, regex: RegExp): Type.RegexSplitType | undefined => {
+    // console.log(str, regex);
     const match: RegExpMatchArray | null = str.match(regex);
     let split: string[] = [];
-
-    if (match && match.index) {
+    console.log(str, match);
+    if (match && match.index !== undefined) {
         split = str.split(regex);
+        // console.log(split)
         if (split[0].length === 0) {
             delete split[0];
             return {
