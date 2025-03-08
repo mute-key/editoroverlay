@@ -4,7 +4,7 @@
  */
 import * as Type from './type/type.d';
 import * as vscode from 'vscode';
-import * as config from './config';
+import * as config from './config/config';
 import * as event from './event';
 import {
     DECORATION_INFO
@@ -14,18 +14,18 @@ import {
 } from './decoration';
 import {
     fixConfiguration
-} from './util/util';
+} from './error';
 
 /**
  * @param editor
  * @param decorationInfo
  * 
  */
-const cursorActivate = async (context: vscode.ExtensionContext): Promise<vscode.Disposable[] | void> => {
+const initialize = async (context: vscode.ExtensionContext): Promise<vscode.Disposable[] | void> => {
     try {
         await context.extension.activate();
 
-        const loadConfig = config.initialiseConfig(context);
+        const loadConfig = config.initializeConfig(context);
         
         if (!loadConfig) {
             console.error('Failed to initialize config.');
@@ -48,6 +48,8 @@ const cursorActivate = async (context: vscode.ExtensionContext): Promise<vscode.
         }
 
         if (activeEditor) {
+            // bindEditorWithStatusText(activeEditor);
+
             setDecorationOnEditor({
                 editor: activeEditor,
                 configInfo: configInfo,
@@ -71,5 +73,5 @@ const cursorActivate = async (context: vscode.ExtensionContext): Promise<vscode.
 };
 
 export {
-    cursorActivate
+    initialize
 };

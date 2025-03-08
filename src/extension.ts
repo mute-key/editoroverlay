@@ -3,10 +3,10 @@
  * 
  */
 import * as vscode from 'vscode';
-import { cursorActivate } from './activate';
+import { initialize } from './activate';
 
 export function activate(context: vscode.ExtensionContext) {
-    cursorActivate(context).then((event: void | vscode.Disposable[]) => {
+    initialize(context).then((event: void | vscode.Disposable[]) => {
         if (event) {
             // context.subscriptions.push(...event);
         }

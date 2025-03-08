@@ -36,123 +36,10 @@ __export(extension_exports, {
 module.exports = __toCommonJS(extension_exports);
 
 // src/activate.ts
-var vscode6 = __toESM(require("vscode"));
+var vscode8 = __toESM(require("vscode"));
 
-// src/config.ts
-var vscode4 = __toESM(require("vscode"));
-
-// src/util/util.ts
-var vscode = __toESM(require("vscode"));
-var sendAutoDismissMessage = (text, dismiss) => {
-  const message = vscode.window.showInformationMessage(text);
-  setTimeout(() => {
-    message?.then(() => {
-    });
-  }, dismiss);
-};
-var fixConfiguration = (confingError) => {
-  vscode.window.showErrorMessage(
-    "Invalid Value(s) in Configuration.",
-    ...["Fix Configuration", "Ignore"]
-  ).then((selection) => {
-    if (selection === "Fix Configuration") {
-      vscode.commands.executeCommand("workbench.action.openSettings", confingError.join(" "));
-    }
-  });
-};
-var regex = {
-  indentAndEOLRegex: (indentSize) => new RegExp(`^( {${indentSize}}|[\r
-]+)*$`, "gm"),
-  tagtAndEOLRegex: /(\t|[\r\n]+)*$/gm,
-  isValidHexColor: /^#[A-Fa-f0-9]{6}$/,
-  isValidWidth: /^[0-9]px$|^[0-9]em$/,
-  ifStatusContentTextHasPlaceholder: /(\${[a-z]*})/g,
-  statusTextKeysOnly: /\${([^{}]+)}/s,
-  statusContentText: {
-    ["cursorOnlyText" /* CURSOR_ONLY_TEXT */]: {
-      col: /(\${col})/s
-    },
-    ["singleLineText" /* SINGLE_LINE_TEXT */]: {
-      character: /(\${character})/s
-    },
-    ["multiLineCursorText" /* MULTI_LINE_CURSOR_TEXT */]: {
-      line: /(\${line})/s,
-      character: /(\${character})/s
-    },
-    ["multiLineAnchorText" /* MULTI_LINE_ANCHOR_TEXT */]: {
-      line: /(\${line})/s,
-      character: /(\${character})/s
-    },
-    ["multiCursorText" /* MULTI_CURSOR_TEXT */]: {
-      nth: /(\${nth})/s,
-      count: /(\${count})/s,
-      line: /(\${line})/s,
-      character: /(\${character})/s
-    }
-  }
-};
-var readBits = (value, trueValue, falseValue, bitLength) => {
-  let idx = bitLength ? bitLength : 4;
-  const array = [];
-  while (idx--) {
-    if (value >> idx & 1) {
-      array.push(trueValue);
-    } else {
-      array.push(falseValue);
-    }
-  }
-  return array;
-};
-var fnv1aHash = (str) => {
-  let hash = 2166136261;
-  for (let i = 0; i < str.length; i++) {
-    hash ^= str.charCodeAt(i);
-    hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
-    hash = hash >>> 0;
-  }
-  return hash.toString(16);
-};
-var splitAndPosition = (str, regex2) => {
-  const match = str.match(regex2);
-  let split = [];
-  if (match && match.index) {
-    split = str.split(regex2);
-    if (split[0].length === 0) {
-      delete split[0];
-      return {
-        position: 0,
-        array: [...split]
-      };
-    } else if (split[2].length === 0) {
-      delete split[2];
-      return {
-        position: 1,
-        array: [...split]
-      };
-    } else {
-      return {
-        position: 1,
-        array: split
-      };
-    }
-  }
-  return;
-};
-var hexToRgbaStringLiteral = (hex, opacity = 0.6, defaultValue, opacityDefault) => {
-  hex = hex.replace(/^#/, "");
-  if (hex.length === 3) {
-    hex = hex.split("").map((x) => x + x).join("");
-  }
-  const regex2 = /^[0-9A-Fa-f]{6}$/;
-  if (!regex2.test(hex)) {
-    hex = defaultValue.replace(/^#/, "");
-    opacity = opacityDefault;
-  }
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-};
+// src/config/config.ts
+var vscode5 = __toESM(require("vscode"));
 
 // src/constant/object.ts
 var CONFIG_INFO = {
@@ -368,8 +255,113 @@ var NO_CONFIGURATION_DEOCORATION_DEFAULT = {
   }
 };
 
-// src/decoration.ts
-var vscode3 = __toESM(require("vscode"));
+// src/config/status.ts
+var vscode4 = __toESM(require("vscode"));
+
+// src/util/util.ts
+var vscode = __toESM(require("vscode"));
+var getWorkspaceConfiguration = (section) => vscode.workspace.getConfiguration(section);
+var sendAutoDismissMessage = (text, dismiss) => {
+  const message = vscode.window.showInformationMessage(text);
+  setTimeout(() => {
+    message?.then(() => {
+    });
+  }, dismiss);
+};
+var statusTextRegex = {
+  ["cursorOnlyText" /* CURSOR_ONLY_TEXT */]: {
+    col: /(\${col})/s
+  },
+  ["singleLineText" /* SINGLE_LINE_TEXT */]: {
+    character: /(\${character})/s
+  },
+  ["multiLineCursorText" /* MULTI_LINE_CURSOR_TEXT */]: {
+    line: /(\${line})/s,
+    character: /(\${character})/s
+  },
+  ["multiLineAnchorText" /* MULTI_LINE_ANCHOR_TEXT */]: {
+    line: /(\${line})/s,
+    character: /(\${character})/s
+  },
+  ["multiCursorText" /* MULTI_CURSOR_TEXT */]: {
+    nth: /(\${nth})/s,
+    count: /(\${count})/s,
+    line: /(\${line})/s,
+    character: /(\${character})/s
+  }
+};
+var regex = {
+  indentAndEOLRegex: (indentSize) => new RegExp(`^( {${indentSize}}|[\r
+]+)*$`, "gm"),
+  tagtAndEOLRegex: /(\t|[\r\n]+)*$/gm,
+  isValidHexColor: /^#[A-Fa-f0-9]{6}$/,
+  isValidWidth: /^[0-9]px$|^[0-9]em$/,
+  ifStatusContentTextHasPlaceholder: /(\${[a-z]*})/g,
+  statusTextKeysOnly: /\${([^{}]+)}/s,
+  statusContentText: statusTextRegex
+};
+var readBits = (value, trueValue, falseValue, bitLength) => {
+  let idx = bitLength ? bitLength : 4;
+  const array = [];
+  while (idx--) {
+    if (value >> idx & 1) {
+      array.push(trueValue);
+    } else {
+      array.push(falseValue);
+    }
+  }
+  return array;
+};
+var fnv1aHash = (str) => {
+  let hash = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    hash ^= str.charCodeAt(i);
+    hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+    hash = hash >>> 0;
+  }
+  return hash.toString(16);
+};
+var splitAndPosition = (str, regex2) => {
+  const match = str.match(regex2);
+  let split = [];
+  if (match && match.index) {
+    split = str.split(regex2);
+    if (split[0].length === 0) {
+      delete split[0];
+      return {
+        position: 0,
+        array: [...split]
+      };
+    } else if (split[2].length === 0) {
+      delete split[2];
+      return {
+        position: 1,
+        array: [...split]
+      };
+    } else {
+      return {
+        position: 1,
+        array: split
+      };
+    }
+  }
+  return;
+};
+var hexToRgbaStringLiteral = (hex, opacity = 0.6, defaultValue, opacityDefault) => {
+  hex = hex.replace(/^#/, "");
+  if (hex.length === 3) {
+    hex = hex.split("").map((x) => x + x).join("");
+  }
+  const regex2 = /^[0-9A-Fa-f]{6}$/;
+  if (!regex2.test(hex)) {
+    hex = defaultValue.replace(/^#/, "");
+    opacity = opacityDefault;
+  }
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+};
 
 // src/editor.ts
 var vscode2 = __toESM(require("vscode"));
@@ -402,6 +394,9 @@ var createRangeSPEP = (start, end) => {
 var createRangeNNEP = (line, startChar, end) => {
   return new vscode2.Range(new vscode2.Position(line, startChar), end);
 };
+
+// src/decoration.ts
+var vscode3 = __toESM(require("vscode"));
 
 // src/selection.ts
 var cursorOnlyDecorationWithRange = (context) => {
@@ -490,216 +485,6 @@ var multiCursorDecorationWithRange = ({ editor, borderConfig, textEditorDecorati
   ];
 };
 
-// src/status.ts
-var statusContentText = { ...STATUS_CONTENT_TEXT };
-var searchPlaceholder = (obj, key, regex2, searchObject, lastIndex) => {
-  const split = splitAndPosition(searchObject.nextSearchString, regex2);
-  if (split) {
-    if (lastIndex) {
-      obj.contentText?.push(...split.array);
-      obj[key] = searchObject.lastPosition + split.position;
-    } else {
-      if (split.position === 0) {
-        obj.contentText?.push(split.array[0]);
-        obj[key] = searchObject.lastPosition + split.position;
-        searchObject.nextSearchString = split.array[1];
-        searchObject.lastPosition = searchObject.lastPosition + split.position + 1;
-      } else if (split.position === 1 && split.array.length === 2) {
-        obj[key] = searchObject.lastPosition + split.position;
-        obj.contentText?.push(...split.array);
-      } else if (split.position === 1 && split.array.length === 3) {
-        obj.contentText?.push(split.array[0], split.array[1]);
-        obj[key] = searchObject.lastPosition + split.position;
-        searchObject.nextSearchString = split.array[2];
-        searchObject.lastPosition = searchObject.lastPosition + split.position + 1;
-      }
-    }
-  }
-};
-var updateStatusContentText = (configReady) => {
-  if (configReady.generalConfigInfo.statusTextEnabled) {
-    Object.entries(statusContentText).forEach(([type, contentTextInfo]) => {
-      const statusText2 = configReady.statusTextConfig;
-      const regexObject = regex.statusContentText[type];
-      statusContentText[type].contentText = [];
-      const match = statusText2[type].match(regex.ifStatusContentTextHasPlaceholder);
-      if (match) {
-        if (match > Object.keys(regexObject).length) {
-          configReady.configError.push("statusText." + type);
-        }
-        let searchObject = {
-          nextSearchString: statusText2[type],
-          lastPosition: 0
-        };
-        match.forEach((search, index) => {
-          const regexKey = search.match(regex.statusTextKeysOnly);
-          if (Object.hasOwn(regexObject, regexKey[1])) {
-            searchPlaceholder(statusContentText[type], regexKey[1], regexObject[regexKey[1]], searchObject, index === match.length - 1);
-          } else {
-            configReady.configError.push("statusText." + type);
-          }
-        });
-      } else {
-        statusContentText[type].contentText.push(statusText2[type]);
-      }
-    });
-  }
-};
-var statusOf = {
-  ["CURSOR_ONLY" /* CURSOR_ONLY */]: {
-    contentText: (col) => {
-      const colIdx = statusContentText.cursorOnlyText.col;
-      const contentText = statusContentText.cursorOnlyText.contentText;
-      if (contentText) {
-        if (colIdx) {
-          contentText[colIdx] = col;
-        }
-        return contentText.join("");
-      }
-      return col;
-    }
-  },
-  ["SINGLE_LINE" /* SINGLE_LINE */]: {
-    contentText: (character) => `< Selection ... Of (${character} Characters)`
-  },
-  ["MULTI_LINE" /* MULTI_LINE */]: {
-    contentTextCursor: (line, character) => {
-      const characterIdx = statusContentText.multiLineCursorText.character;
-      const lineIdx = statusContentText.multiLineCursorText.line;
-      const contentText = statusContentText.multiLineCursorText.contentText;
-      if (contentText) {
-        if (lineIdx) {
-          contentText[lineIdx] = line;
-        }
-        if (characterIdx) {
-          contentText[characterIdx] = character;
-        }
-        return contentText.join("");
-      }
-      return line + "/" + character;
-    },
-    contentTextAnchor: (line, character) => {
-      const characterIdx = statusContentText.multiLineAnchorText.character;
-      const lineIdx = statusContentText.multiLineAnchorText.line;
-      const contentText = statusContentText.multiLineAnchorText.contentText;
-      if (contentText) {
-        if (lineIdx) {
-          contentText[lineIdx] = line;
-        }
-        if (characterIdx) {
-          contentText[characterIdx] = character;
-        }
-        return contentText.join("");
-      }
-      return line + "/" + character;
-    }
-  },
-  ["MULTI_CURSOR" /* MULTI_CURSOR */]: {
-    contentText: (nth, count, line, characters) => `< Multi Selection ... Of (${nth} of ${count}, with Total ${line} Lines ${characters} Characters )`
-  }
-};
-var cursorOnlyStatus = (editor, type) => {
-  const col = editor.selection.active.character;
-  const end = editor.document.lineAt(editor.selection.active.line).text.length;
-  return [{
-    contentText: statusOf[type.KEY].contentText(col === end ? col : col + "/" + end),
-    range: createRangeSPEP(editor.selection.active, editor.selection.active),
-    isWholeLine: true
-  }];
-};
-var singleLineStatus = (editor, type) => {
-  return [{
-    contentText: statusOf[type.KEY].contentText(Math.abs(editor.selection.end.character - editor.selection.start.character)),
-    range: createRangeSPEP(editor.selection.active, editor.selection.active),
-    isWholeLine: true
-  }];
-};
-var multilineStatus = (editor, indent, type) => {
-  const text = editor.document.getText(editor.selection);
-  const count = text.replace(indent.regex, "").length;
-  const args = Math.abs(editor.selection.end.line - editor.selection.start.line) + 1;
-  return [{
-    contentText: statusOf[type.KEY].contentTextCursor(args, count),
-    range: createRangeSPEP(editor.selection.anchor, editor.selection.anchor),
-    isWholeLine: true
-  }, {
-    contentText: statusOf[type.KEY].contentTextAnchor(args, count),
-    range: createRangeSPEP(editor.selection.active, editor.selection.active),
-    isWholeLine: true
-  }];
-};
-var multiCursorStatus = (editor, indent, type) => {
-  let length = editor.selections.length;
-  let idx = 0;
-  let charCount = 0;
-  let lineCount = 0;
-  let isSingleLine = editor.selections[0].start.line === editor.selections[0].end.line;
-  let lineDiff = 0;
-  const statusTextInfo = [];
-  const statusLine = [];
-  lineDiff = isSingleLine ? 1 : Math.abs(editor.selections[0].end.line - editor.selections[0].start.line) + 1;
-  while (idx < length) {
-    if (isSingleLine) {
-      charCount = charCount + (editor.selections[idx].end.character - editor.selections[idx].start.character);
-      lineCount = lineCount + lineDiff;
-    } else {
-      const text = editor.document.getText(editor.selections[idx]);
-      charCount = charCount + text.replace(indent.regex, "").length;
-      lineCount = lineCount + lineDiff;
-    }
-    idx++;
-  }
-  idx = length;
-  while (idx--) {
-    const lineSet = new Set(statusLine);
-    if (lineSet.has(editor.selections[idx].end.line)) {
-      continue;
-    }
-    statusTextInfo.push({
-      contentText: statusOf[type.KEY].contentText(idx + 1, length, lineCount, charCount),
-      range: createRangeSPEP(editor.selections[idx].start, editor.selections[idx].end),
-      isWholeLine: true
-    });
-    statusLine.push(editor.selections[idx].end.line);
-    idx++;
-  }
-  return statusTextInfo;
-};
-var statusDecorationType = (statusTextInfo, statusDecorationType2) => {
-  statusDecorationType2.isWholeLine = statusTextInfo.isWholeLine;
-  statusDecorationType2.after.contentText = statusTextInfo.contentText;
-  return statusDecorationType2;
-};
-var disposeStatusInfo = (decorationState2) => {
-  if (decorationState2.statusText) {
-    let length = decorationState2.statusText.length;
-    while (length--) {
-      decorationState2.statusText[length].dispose();
-    }
-    decorationState2.statusText = void 0;
-  }
-};
-var statusTextInfoSplit = (editor, indent, type) => {
-  return {
-    ["CURSOR_ONLY" /* CURSOR_ONLY */]: () => cursorOnlyStatus(editor, type),
-    ["SINGLE_LINE" /* SINGLE_LINE */]: () => singleLineStatus(editor, type),
-    ["MULTI_LINE" /* MULTI_LINE */]: () => multilineStatus(editor, indent, type),
-    ["MULTI_CURSOR" /* MULTI_CURSOR */]: () => multiCursorStatus(editor, indent, type)
-  };
-};
-var statusText = (editor, decorationState2, statusInfo, type) => {
-  const statusTextInfo = statusTextInfoSplit(editor, statusInfo.indent, type)[type.KEY]();
-  const statusInfoList = [];
-  let length = statusTextInfo.length;
-  while (length--) {
-    const editorDecoration = createEditorDecorationType(statusDecorationType(statusTextInfo[length], statusInfo.statusDecoration));
-    applyDecoration(editor, editorDecoration, [statusTextInfo[length].range]);
-    statusInfoList.push(editorDecoration);
-  }
-  disposeStatusInfo(decorationState2);
-  decorationState2.statusText = statusInfoList;
-};
-
 // src/decoration.ts
 var applyDecoration = (editor, decoraiton, range) => editor.setDecorations(decoraiton, range);
 var createEditorDecorationType = (styleAppliedConfig) => vscode3.window.createTextEditorDecorationType(styleAppliedConfig);
@@ -771,52 +556,284 @@ var setDecorationOnEditor = ({ editor, configInfo: configInfo2, statusInfo, deco
   }
 };
 
-// src/config.ts
-var configInfo = { ...CONFIG_INFO };
-var statusConfigInfo = { ...STATUS_INFO };
-var decorationState = { ...DECORATION_STATE };
-var getConfigString = (configReady) => {
-  return Object.values(CONFIG_SECTION).reduce((sectionConfing, section) => {
-    const extensionConfig = vscode4.workspace.getConfiguration(configReady.name + "." + section);
-    const sectionConfingString = Object.entries(extensionConfig).reduce((configValue, [key, infoProp]) => {
-      if (typeof infoProp === "string" || typeof infoProp === "number" || typeof infoProp === "boolean") {
-        configValue.push(infoProp);
-      }
-      return configValue;
-    }, []).join("");
-    sectionConfing.push(sectionConfingString);
-    return sectionConfing;
-  }, []).join("");
-};
-var getConfigHash = (configReady) => {
-  const configString = getConfigString(configReady);
-  return fnv1aHash(configString);
-};
-var setConfigHashKey = (configReady) => {
-  configReady.configHashKey = fnv1aHash(getConfigString(configReady));
-};
-var ifConfigChanged = (configReady) => {
-  const configHash = getConfigHash(configReady);
-  if (configReady.configHashKey === configHash) {
-    return false;
-  } else {
-    if (decorationState.appliedDecoration.editorDecoration) {
-      decorationState.appliedDecoration.applied = void 0;
-      disposeDecoration(decorationState.appliedDecoration.editorDecoration);
+// src/status.ts
+var cursorOnlyContentTextState = [];
+var singleLineContentTextState = [];
+var multiLineCursorContentTextState = [];
+var multiLineAnchorContentTextState = [];
+var multiCursorContentTextState = [];
+var contentTextState = {
+  ["cursorOnlyText" /* CURSOR_ONLY_TEXT */]: (statusContentText2) => {
+    if (statusContentText2["cursorOnlyText" /* CURSOR_ONLY_TEXT */].contentText) {
+      cursorOnlyContentTextState.push(...statusContentText2["cursorOnlyText" /* CURSOR_ONLY_TEXT */].contentText);
     }
-    configReady.configError = [];
-    configReady.configHashKey = configHash;
-    if (configReady.configError.length === 0) {
-      sendAutoDismissMessage("Config has been changed. Reloading configuration. (Messaage Dismiss in 2 second.)" /* RELOADING_CONFIG */, 1500);
+  },
+  ["singleLineText" /* SINGLE_LINE_TEXT */]: (statusContentText2) => {
+    if (statusContentText2["singleLineText" /* SINGLE_LINE_TEXT */].contentText) {
+      singleLineContentTextState.push(...statusContentText2["singleLineText" /* SINGLE_LINE_TEXT */].contentText);
     }
-    return true;
+  },
+  ["multiLineCursorText" /* MULTI_LINE_CURSOR_TEXT */]: (statusContentText2) => {
+    if (statusContentText2["multiLineCursorText" /* MULTI_LINE_CURSOR_TEXT */].contentText) {
+      multiLineCursorContentTextState.push(...statusContentText2["multiLineCursorText" /* MULTI_LINE_CURSOR_TEXT */].contentText);
+    }
+  },
+  ["multiLineAnchorText" /* MULTI_LINE_ANCHOR_TEXT */]: (statusContentText2) => {
+    if (statusContentText2["multiLineAnchorText" /* MULTI_LINE_ANCHOR_TEXT */].contentText) {
+      multiLineAnchorContentTextState.push(...statusContentText2["multiLineAnchorText" /* MULTI_LINE_ANCHOR_TEXT */].contentText);
+    }
+  },
+  ["multiCursorText" /* MULTI_CURSOR_TEXT */]: (statusContentText2) => {
+    if (statusContentText2["multiCursorText" /* MULTI_CURSOR_TEXT */].contentText) {
+      multiCursorContentTextState.push(...statusContentText2["multiCursorText" /* MULTI_CURSOR_TEXT */].contentText);
+    }
   }
 };
-var updateEditorConfiguration = () => {
-  const editorConfig = vscode4.workspace.getConfiguration("editor");
-  editorConfig.update("renderLineHighlight", "gutter", vscode4.ConfigurationTarget.Global);
-  editorConfig.update("roundedSelection", false, vscode4.ConfigurationTarget.Global);
+var statusOf = {
+  ["cursorOnlyText" /* CURSOR_ONLY_TEXT */]: {
+    col: ({ editor }) => {
+      const col = editor.selection.active.character;
+      const end = editor.document.lineAt(editor.selection.active.line).text.length;
+      return col === end ? col : col + "/" + end;
+    }
+  },
+  ["singleLineText" /* SINGLE_LINE_TEXT */]: {
+    character: ({ editor }) => Math.abs(editor.selection.end.character - editor.selection.start.character)
+  },
+  ["multiLineCursorText" /* MULTI_LINE_CURSOR_TEXT */]: {
+    line: ({ editor }) => Math.abs(editor.selection.end.line - editor.selection.start.line) + 1,
+    character: ({ editor, indent }) => editor.document.getText(editor.selection).replace(indent.regex, "").length
+  },
+  ["multiLineAnchorText" /* MULTI_LINE_ANCHOR_TEXT */]: {
+    line: ({ editor }) => Math.abs(editor.selection.end.line - editor.selection.start.line) + 1,
+    character: ({ editor, indent }) => editor.document.getText(editor.selection).replace(indent.regex, "").length
+  },
+  ["multiCursorText" /* MULTI_CURSOR_TEXT */]: {
+    nth: ({ idx }) => idx,
+    count: ({ editor }) => editor.selections.length,
+    line: ({ editor }) => {
+      let idx = 0;
+      let lineCount = 0;
+      const length = editor.selections.length;
+      const isSingleLine = editor.selections[0].start.line === editor.selections[0].end.line;
+      const lineDiff = isSingleLine ? 1 : Math.abs(editor.selections[0].end.line - editor.selections[0].start.line) + 1;
+      while (idx < length) {
+        if (isSingleLine) {
+          lineCount = lineCount + lineDiff;
+        } else {
+          lineCount = lineCount + lineDiff;
+        }
+        idx++;
+      }
+      return lineCount;
+    },
+    character: ({ editor, indent }) => {
+      let idx = 0;
+      let charCount = 0;
+      const length = editor.selections.length;
+      const isSingleLine = editor.selections[0].start.line === editor.selections[0].end.line;
+      while (idx < length) {
+        if (isSingleLine) {
+          charCount = charCount + (editor.selections[idx].end.character - editor.selections[idx].start.character);
+        } else {
+          const text = editor.document.getText(editor.selections[idx]);
+          charCount = charCount + text.replace(indent.regex, "").length;
+        }
+        idx++;
+      }
+      return charCount;
+    }
+  }
 };
+var cursorOnlyStatus = (editor) => {
+  const context = {
+    editor
+  };
+  return [{
+    contentText: cursorOnlyContentTextState.map((entry) => typeof entry === "string" ? entry : entry(context)).join(""),
+    range: createRangeSPEP(editor.selection.active, editor.selection.active),
+    isWholeLine: true
+  }];
+};
+var singleLineStatus = (editor) => {
+  const context = {
+    editor
+  };
+  return [{
+    contentText: singleLineContentTextState.map((entry) => typeof entry === "string" ? entry : entry(context)).join(""),
+    range: createRangeSPEP(editor.selection.active, editor.selection.active),
+    isWholeLine: true
+  }];
+};
+var multilineStatus = (editor, indent) => {
+  const context = {
+    editor,
+    indent
+  };
+  return [{
+    contentText: multiLineCursorContentTextState.map((entry) => typeof entry === "string" ? entry : entry(context)).join(""),
+    range: createRangeSPEP(editor.selection.anchor, editor.selection.anchor),
+    isWholeLine: true
+  }, {
+    contentText: multiLineAnchorContentTextState.map((entry) => typeof entry === "string" ? entry : entry(context)).join(""),
+    range: createRangeSPEP(editor.selection.active, editor.selection.active),
+    isWholeLine: true
+  }];
+};
+var multiCursorStatus = (editor, indent) => {
+  const statusTextInfo = [];
+  const statusLine = [];
+  let idx = editor.selections.length;
+  while (idx--) {
+    const lineSet = new Set(statusLine);
+    if (lineSet.has(editor.selections[idx].end.line)) {
+      continue;
+    }
+    const context = {
+      idx,
+      editor,
+      indent
+    };
+    statusTextInfo.push({
+      contentText: multiCursorContentTextState.map((entry) => typeof entry === "string" ? entry : entry(context)).join(""),
+      range: createRangeSPEP(editor.selections[idx].start, editor.selections[idx].end),
+      isWholeLine: true
+    });
+    statusLine.push(editor.selections[idx].end.line);
+    idx++;
+  }
+  return statusTextInfo;
+};
+var statusDecorationType = (statusTextInfo, statusDecorationType2) => {
+  statusDecorationType2.isWholeLine = statusTextInfo.isWholeLine;
+  statusDecorationType2.after.contentText = statusTextInfo.contentText;
+  return statusDecorationType2;
+};
+var disposeStatusInfo = (decorationState2) => {
+  if (decorationState2.statusText) {
+    let length = decorationState2.statusText.length;
+    while (length--) {
+      decorationState2.statusText[length].dispose();
+    }
+    decorationState2.statusText = void 0;
+  }
+};
+var statusTextInfoSplit = (editor, indent) => {
+  return {
+    ["CURSOR_ONLY" /* CURSOR_ONLY */]: () => cursorOnlyStatus(editor),
+    ["SINGLE_LINE" /* SINGLE_LINE */]: () => singleLineStatus(editor),
+    ["MULTI_LINE" /* MULTI_LINE */]: () => multilineStatus(editor, indent),
+    ["MULTI_CURSOR" /* MULTI_CURSOR */]: () => multiCursorStatus(editor, indent)
+  };
+};
+var statusText = (editor, decorationState2, statusInfo, type) => {
+  const statusTextInfo = statusTextInfoSplit(editor, statusInfo.indent)[type.KEY]();
+  const statusInfoList = [];
+  let length = statusTextInfo.length;
+  while (length--) {
+    const editorDecoration = createEditorDecorationType(statusDecorationType(statusTextInfo[length], statusInfo.statusDecoration));
+    applyDecoration(editor, editorDecoration, [statusTextInfo[length].range]);
+    statusInfoList.push(editorDecoration);
+  }
+  disposeStatusInfo(decorationState2);
+  decorationState2.statusText = statusInfoList;
+};
+var bindContentTextState = (type) => {
+  return {
+    statusOf: statusOf[type],
+    contentTextState: contentTextState[type]
+  };
+};
+
+// src/config/status.ts
+var statusContentText = { ...STATUS_CONTENT_TEXT };
+var setStatusConfig = (configReady, statusConfigInfo2) => {
+  const editorConfig = vscode4.workspace.getConfiguration("editor");
+  const tabSize = editorConfig.get("tabSize");
+  const insertSpaces = editorConfig.get("insertSpaces");
+  statusConfigInfo2.indent.size = Number(tabSize ? tabSize : 4);
+  statusConfigInfo2.indent.type = insertSpaces ? "\n" : "	";
+  statusConfigInfo2.indent.regex = insertSpaces ? regex.indentAndEOLRegex(statusConfigInfo2.indent.size) : regex.tagtAndEOLRegex;
+  if (configReady.statusTextConfig) {
+    const textColor = configReady.statusTextConfig.color;
+    const textOpacity = configReady.statusTextConfig.opacity;
+    const defaultColor = NO_CONFIGURATION_STATUS_DEFAULT.statusTextColor;
+    const defaultOpacity = NO_CONFIGURATION_STATUS_DEFAULT.statusTextOpacity;
+    statusConfigInfo2.statusDecoration.rangeBehavior = vscode4.DecorationRangeBehavior.ClosedClosed;
+    statusConfigInfo2.statusDecoration.after.color = hexToRgbaStringLiteral(textColor, textOpacity, defaultColor, defaultOpacity);
+    statusConfigInfo2.statusDecoration.after.backgroundColor = configReady.statusTextConfig.backgroundColor;
+    statusConfigInfo2.statusDecoration.after.fontWeight = configReady.statusTextConfig.fontWeight;
+    statusConfigInfo2.statusDecoration.after.fontStyle = configReady.statusTextConfig.fontStyle;
+  }
+};
+var castToFuncSignature = (result) => {
+  if (result) {
+    return {
+      ...result,
+      array: result.array
+    };
+  }
+};
+var searchPlaceholder = (obj, key, regex2, searchObject, lastIndex, statusOf2) => {
+  const split = castToFuncSignature(splitAndPosition(searchObject.nextSearchString, regex2));
+  if (split) {
+    if (Object.hasOwn(statusOf2, key)) {
+      split.array[split.position] = statusOf2[key];
+    }
+    if (lastIndex) {
+      obj.contentText?.push(...split.array);
+      obj[key] = searchObject.lastPosition + split.position;
+    } else {
+      if (split.position === 0) {
+        obj.contentText?.push(split.array[0]);
+        obj[key] = searchObject.lastPosition + split.position;
+        searchObject.nextSearchString = split.array[1];
+        searchObject.lastPosition = searchObject.lastPosition + split.position + 1;
+      } else if (split.position === 1 && split.array.length === 2) {
+        obj[key] = searchObject.lastPosition + split.position;
+        obj.contentText?.push(...split.array);
+      } else if (split.position === 1 && split.array.length === 3) {
+        obj.contentText?.push(split.array[0], split.array[1]);
+        obj[key] = searchObject.lastPosition + split.position;
+        searchObject.nextSearchString = split.array[2];
+        searchObject.lastPosition = searchObject.lastPosition + split.position + 1;
+      }
+    }
+  }
+};
+var updateStatusContentText = (configReady) => {
+  if (configReady.generalConfigInfo.statusTextEnabled) {
+    Object.entries(statusContentText).forEach(([type, contentTextInfo]) => {
+      const statusText2 = configReady.statusTextConfig;
+      const regexObject = regex.statusContentText[type];
+      const bind = bindContentTextState(type);
+      statusContentText[type].contentText = [];
+      const match = statusText2[type].match(regex.ifStatusContentTextHasPlaceholder);
+      if (match) {
+        if (match > Object.keys(regexObject).length) {
+          configReady.configError.push("statusText." + type);
+        }
+        let searchObject = {
+          nextSearchString: statusText2[type],
+          lastPosition: 0
+        };
+        match.forEach((search, index) => {
+          const regexKey = search.match(regex.statusTextKeysOnly);
+          if (Object.hasOwn(regexObject, regexKey[1])) {
+            searchPlaceholder(statusContentText[type], regexKey[1], regexObject[regexKey[1]], searchObject, index === match.length - 1, bind.statusOf);
+          } else {
+            configReady.configError.push("statusText." + type);
+          }
+        });
+      } else {
+        statusContentText[type].contentText.push(statusText2[type]);
+      }
+      bind.contentTextState(statusContentText);
+    });
+  }
+};
+
+// src/config/decoration.ts
 var checkConfigKeyAndCast = (key, config) => {
   return key;
 };
@@ -859,6 +876,40 @@ var getConfigSet = (configReady, decorationKey) => {
     return config;
   }, {});
 };
+var createDecorationTypeBuilder = (configReady, statusConfigInfo2, decorationState2) => {
+  const generalConfig = getWorkspaceConfiguration(configReady.name + "." + CONFIG_SECTION.general);
+  for (const key in configReady.generalConfigInfo) {
+    configReady.generalConfigInfo[key] = getConfigValue(configReady, generalConfig, key, NO_CONFIGURATION_GENERAL_DEFAULT[key]);
+  }
+  for (const key in decorationState2.decorationList) {
+    const selectionType = key;
+    if (decorationState2.decorationList[selectionType]) {
+      disposeDecoration(decorationState2.decorationList[selectionType]);
+    }
+    const configSet = getConfigSet(configReady, selectionType);
+    const parsed = borderPositionParser(selectionType, String(configSet.borderPosition));
+    configReady.borderPositionInfo[selectionType] = parsed;
+    configSet.borderPosition = parsed.borderPosition;
+    configSet.isWholeLine = parsed.isWholeLine;
+    const decorationTypeList = createDecorationType(configSet, selectionType, decorationTypeSplit);
+    if (!decorationTypeList) {
+      return false;
+    }
+    decorationState2.decorationList[selectionType] = decorationTypeList;
+  }
+  if (configReady.generalConfigInfo.statusTextEnabled) {
+    if (decorationState2.statusText) {
+      disposeStatusInfo(decorationState2);
+    }
+    const statusTextConfig = getWorkspaceConfiguration(configReady.name + "." + CONFIG_SECTION.statusText);
+    for (const key in configReady.statusTextConfig) {
+      configReady.statusTextConfig[key] = getConfigValue(configReady, statusTextConfig, key, NO_CONFIGURATION_STATUS_DEFAULT[key]);
+    }
+    setStatusConfig(configReady, statusConfigInfo2);
+    updateStatusContentText(configReady);
+  }
+  return true;
+};
 var createDecorationType = (config, decorationKey, decorationTypeSplit2) => {
   try {
     const split = decorationTypeSplit2(config, decorationKey);
@@ -885,7 +936,7 @@ var createDecorationType = (config, decorationKey, decorationTypeSplit2) => {
 };
 var decorationTypeSplit = (config, decorationKey) => {
   if (Object.hasOwn(BORDER_WIDTH_DEFINITION, decorationKey)) {
-    if (Object.hasOwn(BORDER_WIDTH_DEFINITION[decorationKey], config.borderPosition)) {
+    if (Object.hasOwn(BORDER_WIDTH_DEFINITION[decorationKey], String(config.borderPosition))) {
       return borderPosition(config, BORDER_WIDTH_DEFINITION[decorationKey][config.borderPosition]);
     }
     return;
@@ -895,7 +946,7 @@ var decorationTypeSplit = (config, decorationKey) => {
 var borderPosition = (config, borderWidthMask) => {
   const borderWidth = [];
   for (const bitMask of borderWidthMask) {
-    const border = readBits(bitMask, config.borderWidth, "0");
+    const border = readBits(bitMask, String(config.borderWidth), "0");
     borderWidth.push(border.join(" "));
   }
   return borderWidth;
@@ -926,61 +977,54 @@ var borderPositionParser = (selectionType, borderPosition2) => {
     selectionOnly
   };
 };
-var setStatusConfig = (configReady, statusConfigInfo2) => {
-  const editorConfig = vscode4.workspace.getConfiguration("editor");
-  const tabSize = editorConfig.get("tabSize");
-  const insertSpaces = editorConfig.get("insertSpaces");
-  statusConfigInfo2.indent.size = Number(tabSize ? tabSize : 4);
-  statusConfigInfo2.indent.type = insertSpaces ? "\n" : "	";
-  statusConfigInfo2.indent.regex = insertSpaces ? regex.indentAndEOLRegex(statusConfigInfo2.indent.size) : regex.tagtAndEOLRegex;
-  if (configReady.statusTextConfig) {
-    const textColor = configReady.statusTextConfig.color;
-    const textOpacity = configReady.statusTextConfig.opacity;
-    const defaultColor = NO_CONFIGURATION_STATUS_DEFAULT.statusTextColor;
-    const defaultOpacity = NO_CONFIGURATION_STATUS_DEFAULT.statusTextOpacity;
-    statusConfigInfo2.statusDecoration.rangeBehavior = vscode4.DecorationRangeBehavior.ClosedClosed;
-    statusConfigInfo2.statusDecoration.after.color = hexToRgbaStringLiteral(textColor, textOpacity, defaultColor, defaultOpacity);
-    statusConfigInfo2.statusDecoration.after.backgroundColor = configReady.statusTextConfig.backgroundColor;
-    statusConfigInfo2.statusDecoration.after.fontWeight = configReady.statusTextConfig.fontWeight;
-    statusConfigInfo2.statusDecoration.after.fontStyle = configReady.statusTextConfig.fontStyle;
+
+// src/config/config.ts
+var configInfo = { ...CONFIG_INFO };
+var statusConfigInfo = { ...STATUS_INFO };
+var decorationState = { ...DECORATION_STATE };
+var getConfigString = (configReady) => {
+  return Object.values(CONFIG_SECTION).reduce((sectionConfing, section) => {
+    const extensionConfig = vscode5.workspace.getConfiguration(configReady.name + "." + section);
+    const sectionConfingString = Object.entries(extensionConfig).reduce((configValue, [key, infoProp]) => {
+      if (typeof infoProp === "string" || typeof infoProp === "number" || typeof infoProp === "boolean") {
+        configValue.push(infoProp);
+      }
+      return configValue;
+    }, []).join("");
+    sectionConfing.push(sectionConfingString);
+    return sectionConfing;
+  }, []).join("");
+};
+var getConfigHash = (configReady) => {
+  const configString = getConfigString(configReady);
+  return fnv1aHash(configString);
+};
+var setConfigHashKey = (configReady) => {
+  configReady.configHashKey = fnv1aHash(getConfigString(configReady));
+};
+var ifConfigChanged = (configReady) => {
+  const configHash = getConfigHash(configReady);
+  if (configReady.configHashKey === configHash) {
+    return false;
+  } else {
+    if (decorationState.appliedDecoration.editorDecoration) {
+      decorationState.appliedDecoration.applied = void 0;
+      disposeDecoration(decorationState.appliedDecoration.editorDecoration);
+    }
+    configReady.configError = [];
+    configReady.configHashKey = configHash;
+    if (configReady.configError.length === 0) {
+      sendAutoDismissMessage("Config has been changed. Reloading configuration. (Messaage Dismiss in 2 second.)" /* RELOADING_CONFIG */, 1500);
+    }
+    return true;
   }
 };
-var getWorkspaceConfiguration = (section) => vscode4.workspace.getConfiguration(section);
-var createDecorationTypeBuilder = (configReady, statusConfigInfo2, decorationState2) => {
-  const generalConfig = getWorkspaceConfiguration(configInfo.name + "." + CONFIG_SECTION.general);
-  for (const key in configReady.generalConfigInfo) {
-    configReady.generalConfigInfo[key] = getConfigValue(configReady, generalConfig, key, NO_CONFIGURATION_GENERAL_DEFAULT[key]);
-  }
-  for (const key in decorationState2.decorationList) {
-    const selectionType = key;
-    if (decorationState2.decorationList[selectionType]) {
-      disposeDecoration(decorationState2.decorationList[selectionType]);
-    }
-    const configSet = getConfigSet(configReady, selectionType);
-    const parsed = borderPositionParser(selectionType, configSet.borderPosition);
-    configReady.borderPositionInfo[selectionType] = parsed;
-    configSet.borderPosition = parsed.borderPosition;
-    configSet.isWholeLine = parsed.isWholeLine;
-    const decorationTypeList = createDecorationType(configSet, selectionType, decorationTypeSplit);
-    if (!decorationTypeList) {
-      return false;
-    }
-    decorationState2.decorationList[selectionType] = decorationTypeList;
-  }
-  if (configReady.generalConfigInfo.statusTextEnabled) {
-    if (decorationState2.statusText) {
-      disposeStatusInfo(decorationState2);
-    }
-    const statusTextConfig = getWorkspaceConfiguration(configInfo.name + "." + CONFIG_SECTION.statusText);
-    for (const key in configReady.statusTextConfig) {
-      configReady.statusTextConfig[key] = getConfigValue(configReady, statusTextConfig, key, NO_CONFIGURATION_STATUS_DEFAULT[key]);
-    }
-    setStatusConfig(configReady, statusConfigInfo2);
-    updateStatusContentText(configReady);
-  }
-  return true;
+var updateEditorConfiguration = () => {
+  const editorConfig = vscode5.workspace.getConfiguration("editor");
+  editorConfig.update("renderLineHighlight", "gutter", vscode5.ConfigurationTarget.Global);
+  editorConfig.update("roundedSelection", false, vscode5.ConfigurationTarget.Global);
 };
-var initialiseConfig = (context) => {
+var initializeConfig = (context) => {
   const name = context.extension.packageJSON.name;
   if (!name) {
     return;
@@ -1016,13 +1060,28 @@ var initialiseConfig = (context) => {
 };
 
 // src/event.ts
-var vscode5 = __toESM(require("vscode"));
+var vscode7 = __toESM(require("vscode"));
+
+// src/error.ts
+var vscode6 = __toESM(require("vscode"));
+var fixConfiguration = (confingError) => {
+  vscode6.window.showErrorMessage(
+    "Invalid Value(s) in Configuration.",
+    ...["Fix Configuration", "Ignore"]
+  ).then((selection) => {
+    if (selection === "Fix Configuration") {
+      vscode6.commands.executeCommand("workbench.action.openSettings", confingError.join(" "));
+    }
+  });
+};
+
+// src/event.ts
 var onActiveWindowChange = (configInfo2, statusInfo, decorationState2) => {
-  return vscode5.window.onDidChangeWindowState((event) => {
+  return vscode7.window.onDidChangeWindowState((event) => {
     if (event.focused) {
-      if (vscode5.window.activeTextEditor) {
+      if (vscode7.window.activeTextEditor) {
         setDecorationOnEditor({
-          editor: vscode5.window.activeTextEditor,
+          editor: vscode7.window.activeTextEditor,
           configInfo: configInfo2,
           statusInfo,
           decorationState: decorationState2,
@@ -1030,20 +1089,20 @@ var onActiveWindowChange = (configInfo2, statusInfo, decorationState2) => {
         });
       }
     } else {
-      vscode5.window.visibleTextEditors.forEach((editor) => {
+      vscode7.window.visibleTextEditors.forEach((editor) => {
         resetDecorationWrapper(decorationState2, editor, true);
       });
     }
   });
 };
 var activeEditorChanged = (configInfo2, statusInfo, decorationState2) => {
-  return vscode5.window.onDidChangeActiveTextEditor((editor) => {
+  return vscode7.window.onDidChangeActiveTextEditor((editor) => {
     if (editor) {
       if (configInfo2.configError.length > 0) {
         fixConfiguration(configInfo2.configError);
       }
       editorIndentOption(statusInfo, editor);
-      vscode5.window.visibleTextEditors.forEach((editor2) => {
+      vscode7.window.visibleTextEditors.forEach((editor2) => {
         if (decorationState2.appliedDecoration.editorDecoration !== void 0) {
           decorationState2.appliedDecoration.editorDecoration.forEach((decoration) => {
             applyDecoration(editor2, decoration, []);
@@ -1061,12 +1120,12 @@ var activeEditorChanged = (configInfo2, statusInfo, decorationState2) => {
   });
 };
 var editorOptionChange = (statusInfo) => {
-  return vscode5.window.onDidChangeTextEditorOptions((event) => {
+  return vscode7.window.onDidChangeTextEditorOptions((event) => {
     editorIndentOption(statusInfo, event.textEditor);
   });
 };
 var selectionChanged = (configInfo2, statusInfo, decorationState2) => {
-  return vscode5.window.onDidChangeTextEditorSelection((event) => {
+  return vscode7.window.onDidChangeTextEditorSelection((event) => {
     if (event.selections) {
       const decorationInfo = getSelectionType(event.textEditor);
       if (!decorationInfo) {
@@ -1087,18 +1146,18 @@ var selectionChanged = (configInfo2, statusInfo, decorationState2) => {
   });
 };
 var configChanged = (context) => {
-  return vscode5.workspace.onDidChangeConfiguration((event) => {
+  return vscode7.workspace.onDidChangeConfiguration((event) => {
     if (event) {
-      const loadConfig = initialiseConfig(context);
+      const loadConfig = initializeConfig(context);
     }
   });
 };
 
 // src/activate.ts
-var cursorActivate = async (context) => {
+var initialize = async (context) => {
   try {
     await context.extension.activate();
-    const loadConfig = initialiseConfig(context);
+    const loadConfig = initializeConfig(context);
     if (!loadConfig) {
       console.error("Failed to initialize config.");
       return;
@@ -1110,7 +1169,7 @@ var cursorActivate = async (context) => {
       console.error("Failed to initialize decorationList.");
       return;
     }
-    const activeEditor = vscode6.window.activeTextEditor;
+    const activeEditor = vscode8.window.activeTextEditor;
     if (configInfo2.configError.length > 0) {
       fixConfiguration(configInfo2.configError);
     }
@@ -1132,13 +1191,13 @@ var cursorActivate = async (context) => {
     ];
   } catch (err) {
     console.error("Error during extension activation: ", err);
-    vscode6.window.showErrorMessage("Extension activation failed!", err);
+    vscode8.window.showErrorMessage("Extension activation failed!", err);
   }
 };
 
 // src/extension.ts
 function activate(context) {
-  cursorActivate(context).then((event) => {
+  initialize(context).then((event) => {
     if (event) {
     }
   });

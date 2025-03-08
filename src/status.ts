@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 import * as Type from './type/type.d';
-import * as Error from './type/error.d';
 import {
-    DECORATION_STYLE_KEY
+    DECORATION_STYLE_KEY,
+    STATUS_CONTENT_TEXT_CONFIG_KEY
 } from './constant/enum';
 import {
     createRangeSPEP,
@@ -11,211 +11,149 @@ import {
     createEditorDecorationType,
     applyDecoration
 } from './decoration';
-import {
-    STATUS_CONTENT_TEXT
-} from './constant/object';
-import {
-    regex,
-    splitAndPosition
-} from './util/util';
 
-const statusContentText = { ...STATUS_CONTENT_TEXT } as Type.StatusContentTextType;
+const cursorOnlyContentTextState: (string | Type.ContentTextFuncSignature)[] = [];
+const singleLineContentTextState: (string | Type.ContentTextFuncSignature)[] = [];
+const multiLineCursorContentTextState: (string | Type.ContentTextFuncSignature)[] = [];
+const multiLineAnchorContentTextState: (string | Type.ContentTextFuncSignature)[] = [];
+const multiCursorContentTextState: (string | Type.ContentTextWithIndexFuncSignature)[] = [];
 
-const searchPlaceholder = (obj: Type.StatusContentTextUnion, key: string, regex: RegExp, searchObject: Type.SearchObjectType, lastIndex: boolean): void => {
-    const split = splitAndPosition(searchObject.nextSearchString, regex);
-    if (split) {
-        if (lastIndex) {
-            obj.contentText?.push(...split.array);
-            obj[key] = searchObject.lastPosition + split.position;
-        } else {
-            if (split.position === 0) {
-
-                // placeholder is at index 0
-                obj.contentText?.push(split.array[0]);
-                obj[key] = searchObject.lastPosition + split.position;
-                searchObject.nextSearchString = split.array[1];
-                searchObject.lastPosition = searchObject.lastPosition + split.position + 1;
-
-            } else if (split.position === 1 && split.array.length === 2) {  
-
-                // placeholder is at last index in search string
-                obj[key] = searchObject.lastPosition + split.position;
-                obj.contentText?.push(...split.array);
-
-            } else if (split.position === 1 && split.array.length === 3) {
-
-                obj.contentText?.push(split.array[0], split.array[1]);
-                obj[key] = searchObject.lastPosition + split.position;
-                searchObject.nextSearchString = split.array[2];
-                searchObject.lastPosition = searchObject.lastPosition + split.position + 1;
-
-            }
+const contentTextState = {
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: (statusContentText) => {
+        if (statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT].contentText) {
+            cursorOnlyContentTextState.push(...statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT].contentText);
         }
-    }
-};
-
-const updateStatusContentText = (configReady: Type.ConfigInfoReadyType): void => {
-    if (configReady.generalConfigInfo.statusTextEnabled) {
-        Object.entries(statusContentText).forEach(([type, contentTextInfo]) => {
-            const statusText: Type.StatusTextInfo = configReady.statusTextConfig;
-            const regexObject: Type.RegexStatusContentTextUnion = regex.statusContentText[type];
-            statusContentText[type].contentText = [];
-
-            const match = statusText[type].match(regex.ifStatusContentTextHasPlaceholder);
-            if (match) {
-                if (match > Object.keys(regexObject).length) {
-                    configReady.configError.push('statusText.' + type);
-                    // number of placeholders should not exceeds that it required.
-                }
-
-                let searchObject: Type.SearchObjectType | undefined = {
-                    nextSearchString: statusText[type],
-                    lastPosition: 0
-                };
-
-                match.forEach((search, index) => {
-                    const regexKey = search.match(regex.statusTextKeysOnly);
-                    if (Object.hasOwn(regexObject, regexKey[1])) {
-                        searchPlaceholder(statusContentText[type], regexKey[1], regexObject[regexKey[1]], searchObject, index === match.length - 1);
-                    } else {
-                        configReady.configError.push('statusText.' + type);
-                        // not a valid placeholder
-                    }
-                });
-            } else {
-                statusContentText[type].contentText.push(statusText[type]);
-            }
-        });
-    }
+    },
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: (statusContentText) => {
+        if (statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT].contentText) {
+            singleLineContentTextState.push(...statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT].contentText);
+        }
+    },
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: (statusContentText) => {
+        if (statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT].contentText) {
+            multiLineCursorContentTextState.push(...statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT].contentText);
+        }
+    },
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: (statusContentText) => {
+        if (statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT].contentText) {
+            multiLineAnchorContentTextState.push(...statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT].contentText);
+        }
+    },
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: (statusContentText) => {
+        if (statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT].contentText) {
+            multiCursorContentTextState.push(...statusContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT].contentText);
+        }
+    },
 };
 
 const statusOf: Type.StatusOfType = {
-    [DECORATION_STYLE_KEY.CURSOR_ONLY]: {
-        contentText: (col: string) => {
-            const colIdx = statusContentText.cursorOnlyText.col;
-            const contentText = statusContentText.cursorOnlyText.contentText;
-            if (contentText) {
-                if (colIdx) {
-                    contentText[colIdx] = col;
-                }
-                
-                return contentText.join('');
-            }
-            return col;
-        }
-    },
-    [DECORATION_STYLE_KEY.SINGLE_LINE]: {
-        contentText: (character: string) => `< Selection ... Of (${character} Characters)`,
-    },
-    [DECORATION_STYLE_KEY.MULTI_LINE]: {
-        contentTextCursor: (line: string, character: string) => { 
-            const characterIdx = statusContentText.multiLineCursorText.character;
-            const lineIdx = statusContentText.multiLineCursorText.line;
-            const contentText = statusContentText.multiLineCursorText.contentText;
-            if (contentText) {
-                if (lineIdx) {
-                    contentText[lineIdx] = line;
-                }
-                if (characterIdx) {
-                    contentText[characterIdx] = character;
-                }
-                return contentText.join('');
-            }
-
-            return line + '/' + character;
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: {
+        col: ({editor}) => {
+            const col = editor.selection.active.character;
+            const end = editor.document.lineAt(editor.selection.active.line).text.length;
+            return (col === end ? col : col + '/' + end);
         },
-        contentTextAnchor: (line: string, character: string) => { 
-            const characterIdx = statusContentText.multiLineAnchorText.character;
-            const lineIdx = statusContentText.multiLineAnchorText.line;
-            const contentText = statusContentText.multiLineAnchorText.contentText;
-            if (contentText) {
-                if (lineIdx) {
-                    contentText[lineIdx] = line;
-                }
-                if (characterIdx) {
-                    contentText[characterIdx] = character;
-                }
-                return contentText.join('');
-            }
+    },
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: {
+        character: ({editor}) => Math.abs(editor.selection.end.character - editor.selection.start.character),
+    },
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: {
+        line: ({editor}) => (Math.abs(editor.selection.end.line - editor.selection.start.line) + 1),
+        character: ({editor, indent}) => editor.document.getText(editor.selection).replace(indent.regex, "").length,
+    },
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: {
+        line: ({editor}) => (Math.abs(editor.selection.end.line - editor.selection.start.line) + 1),
+        character: ({editor, indent}) => editor.document.getText(editor.selection).replace(indent.regex, "").length,
+    },
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: {
+        nth: ({idx}) => idx,
+        count: ({editor}) => editor.selections.length,
+        line: ({editor}) => {
+            let idx = 0;
+            let lineCount = 0;
+            const length = editor.selections.length;
+            const isSingleLine = editor.selections[0].start.line === editor.selections[0].end.line;
+            const lineDiff = isSingleLine ? 1 : Math.abs(editor.selections[0].end.line - editor.selections[0].start.line) + 1;
 
-            return line + '/' + character;
+            while (idx < length) {
+                if (isSingleLine) {
+                    lineCount = lineCount + lineDiff;
+                } else {
+                    lineCount = lineCount + lineDiff;
+                }
+                idx++;
+            }
+            return lineCount;
+        },
+        character: ({editor, indent}) => {
+            let idx = 0;
+            let charCount = 0;
+            const length = editor.selections.length;
+            const isSingleLine = editor.selections[0].start.line === editor.selections[0].end.line;
+
+            while (idx < length) {
+                if (isSingleLine) {
+                    charCount = charCount + (editor.selections[idx].end.character - editor.selections[idx].start.character);
+                } else {
+                    const text = editor.document.getText(editor.selections[idx]);
+                    charCount = charCount + text.replace(indent.regex, "").length;
+                }
+                idx++;
+            }
+            return charCount;
         }
     },
-    [DECORATION_STYLE_KEY.MULTI_CURSOR]: {
-        contentText: (nth: string, count: string, line: string, characters: string) =>
-            `< Multi Selection ... Of (${nth} of ${count}, with Total ${line} Lines ${characters} Characters )`,
-    },
 };
 
-const cursorOnlyStatus = (editor: vscode.TextEditor, type: Type.DecorationInfoPropType): Type.StatusTextInfoType[] => {
-    const col = editor.selection.active.character;
-    const end = editor.document.lineAt(editor.selection.active.line).text.length;
-    // const colIdx = statusContentText.cursorOnlyText.col;
-    // const contentTextArray = statusContentText.cursorOnlyText.contentText;
-    // let contentText = col.toString();
-
-    // if (colIdx && contentTextArray) {
-    //     contentTextArray[colIdx] = col === end ? col.toString() : col.toString() + '/' + end.toString();
-    //     contentText = contentTextArray.join('');
-    // }
+const cursorOnlyStatus = (editor: vscode.TextEditor): Type.StatusTextInfoType[] => {
+    const context = {
+        editor: editor,
+    };
 
     return [{
-        contentText: statusOf[type.KEY].contentText(col === end ? col : col + '/' + end),
+        contentText: cursorOnlyContentTextState.map(entry => typeof entry === 'string' ? entry : entry(context)).join(''),
         range: createRangeSPEP(editor.selection.active, editor.selection.active),
         isWholeLine: true
     }];
 };
 
-const singleLineStatus = (editor: vscode.TextEditor, type: Type.DecorationInfoPropType): Type.StatusTextInfoType[] => {
+const singleLineStatus = (editor: vscode.TextEditor): Type.StatusTextInfoType[] => {
+    const context = {
+        editor: editor,
+    };
+
     return [{
-        contentText: statusOf[type.KEY].contentText(Math.abs(editor.selection.end.character - editor.selection.start.character)),
+        contentText: singleLineContentTextState.map(entry => typeof entry === 'string' ? entry : entry(context)).join(''),
         range: createRangeSPEP(editor.selection.active, editor.selection.active),
         isWholeLine: true
     }];
 };
 
-const multilineStatus = (editor: vscode.TextEditor, indent: Type.IndentType, type: Type.DecorationInfoPropType): Type.StatusTextInfoType[] => {
+const multilineStatus = (editor: vscode.TextEditor, indent: Type.IndentType): Type.StatusTextInfoType[] => {
 
-    const text = editor.document.getText(editor.selection);
-    const count = text.replace(indent.regex as RegExp, "").length;
-    const args = Math.abs(editor.selection.end.line - editor.selection.start.line) + 1;
+    const context = {
+        editor: editor,
+        indent: indent
+    };
 
     return [{
-        contentText: statusOf[type.KEY].contentTextCursor(args, count),
+        contentText: multiLineCursorContentTextState.map(entry => typeof entry === 'string' ? entry : entry(context)).join(''),
         range: createRangeSPEP(editor.selection.anchor, editor.selection.anchor),
         isWholeLine: true
     }, {
-        contentText: statusOf[type.KEY].contentTextAnchor(args, count),
+        contentText: multiLineAnchorContentTextState.map(entry => typeof entry === 'string' ? entry : entry(context)).join(''),
         range: createRangeSPEP(editor.selection.active, editor.selection.active),
         isWholeLine: true
     }];
+
 };
 
-const multiCursorStatus = (editor: vscode.TextEditor, indent: Type.IndentType, type: Type.DecorationInfoPropType): Type.StatusTextInfoType[] => {
-    let length = editor.selections.length;
-    let idx = 0;
-    let charCount = 0;
-    let lineCount = 0;
-    let isSingleLine = editor.selections[0].start.line === editor.selections[0].end.line;
-    let lineDiff = 0;
+const multiCursorStatus = (editor: vscode.TextEditor, indent: Type.IndentType): Type.StatusTextInfoType[] => {
+
     const statusTextInfo: Type.StatusTextInfoType[] = [];
     const statusLine: number[] = [];
-
-    lineDiff = isSingleLine ? 1 : Math.abs(editor.selections[0].end.line - editor.selections[0].start.line) + 1;
-
-    while (idx < length) {
-        if (isSingleLine) {
-            charCount = charCount + (editor.selections[idx].end.character - editor.selections[idx].start.character);
-            lineCount = lineCount + lineDiff;
-        } else {
-            const text = editor.document.getText(editor.selections[idx]);
-            charCount = charCount + text.replace(indent.regex as RegExp, "").length;
-            lineCount = lineCount + lineDiff;
-        }
-        idx++;
-    }
-
-    idx = length;
+    
+    let idx = editor.selections.length;
 
     while (idx--) {
         const lineSet = new Set(statusLine);
@@ -223,8 +161,14 @@ const multiCursorStatus = (editor: vscode.TextEditor, indent: Type.IndentType, t
             continue;
         }
 
+        const context = {
+            idx: idx, 
+            editor: editor,
+            indent: indent
+        };
+
         statusTextInfo.push({
-            contentText: statusOf[type.KEY].contentText(idx + 1, length, lineCount, charCount),
+            contentText: multiCursorContentTextState.map(entry => typeof entry === 'string' ? entry : entry(context)).join(''),
             range: createRangeSPEP(editor.selections[idx].start, editor.selections[idx].end),
             isWholeLine: true
         });
@@ -258,17 +202,17 @@ const disposeStatusInfo = (decorationState: Type.DecorationStateType): void => {
     }
 };
 
-const statusTextInfoSplit = (editor: vscode.TextEditor, indent: Type.IndentType, type: Type.DecorationInfoPropType): Type.statusTextInfoSplitType => {
+const statusTextInfoSplit = (editor: vscode.TextEditor, indent: Type.IndentType): Type.statusTextInfoSplitType => {
     return {
-        [DECORATION_STYLE_KEY.CURSOR_ONLY]: () => cursorOnlyStatus(editor, type),
-        [DECORATION_STYLE_KEY.SINGLE_LINE]: () => singleLineStatus(editor, type),
-        [DECORATION_STYLE_KEY.MULTI_LINE]: () => multilineStatus(editor, indent, type),
-        [DECORATION_STYLE_KEY.MULTI_CURSOR]: () => multiCursorStatus(editor, indent, type),
+        [DECORATION_STYLE_KEY.CURSOR_ONLY]: () => cursorOnlyStatus(editor),
+        [DECORATION_STYLE_KEY.SINGLE_LINE]: () => singleLineStatus(editor),
+        [DECORATION_STYLE_KEY.MULTI_LINE]: () => multilineStatus(editor, indent),
+        [DECORATION_STYLE_KEY.MULTI_CURSOR]: () => multiCursorStatus(editor, indent),
     };
 };
 
 const statusText = (editor: vscode.TextEditor, decorationState: Type.DecorationStateType, statusInfo: Type.StatusInfoType, type: Type.DecorationInfoPropType): void => {
-    const statusTextInfo = statusTextInfoSplit(editor, statusInfo.indent, type)[type.KEY]();
+    const statusTextInfo = statusTextInfoSplit(editor, statusInfo.indent)[type.KEY]();
     const statusInfoList: vscode.TextEditorDecorationType[] = [];
     let length: number = statusTextInfo.length;
 
@@ -283,8 +227,16 @@ const statusText = (editor: vscode.TextEditor, decorationState: Type.DecorationS
     decorationState.statusText = statusInfoList;
 };
 
+const bindContentTextState = (type: string): Type.BindContentTextStateType => {
+    return {
+        statusOf: statusOf[type],
+        contentTextState: contentTextState[type]
+    };
+};
+
+
 export {
     statusText,
     disposeStatusInfo,
-    updateStatusContentText
+    bindContentTextState
 };

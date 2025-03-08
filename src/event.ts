@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as Type from './type/type.d';
-import * as config from './config';
+import * as config from './config/config';
 import {
     applyDecoration,
     setDecorationOnEditor,
@@ -12,7 +12,7 @@ import {
 } from './constant/object';
 import {
     fixConfiguration
-} from './util/util';
+} from './error';
 import {
     editorIndentOption,
     getSelectionType
@@ -62,6 +62,8 @@ const activeEditorChanged = (configInfo: Type.ConfigInfoReadyType, statusInfo: T
                 }
             });
 
+            // bindEditorWithStatusText(editor);
+
             setDecorationOnEditor({
                 editor: editor,
                 configInfo: configInfo,
@@ -107,7 +109,7 @@ const selectionChanged = (configInfo: Type.ConfigInfoReadyType, statusInfo: Type
 const configChanged = (context: vscode.ExtensionContext): vscode.Disposable => {
     return vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
         if (event) {
-            const loadConfig = config.initialiseConfig(context);
+            const loadConfig = config.initializeConfig(context);
         }
     });
 };

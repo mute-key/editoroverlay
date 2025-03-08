@@ -1,4 +1,3 @@
-import { CommentThreadCollapsibleState } from 'vscode';
 import * as Type from '../type/type.d';
 
 import {

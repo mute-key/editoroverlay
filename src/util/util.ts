@@ -4,6 +4,8 @@ import {
     STATUS_CONTENT_TEXT_CONFIG_KEY 
 } from '../constant/enum';
 
+const getWorkspaceConfiguration = (section: string): vscode.WorkspaceConfiguration => vscode.workspace.getConfiguration(section);
+
 const sendAutoDismissMessage = (text: string, dismiss: number) => {
     const message = vscode.window.showInformationMessage(text);
     setTimeout(() => {
@@ -11,15 +13,27 @@ const sendAutoDismissMessage = (text: string, dismiss: number) => {
     }, dismiss);
 };
 
-const fixConfiguration = (confingError: string[]) => {
-    vscode.window.showErrorMessage(
-        "Invalid Value(s) in Configuration.", 
-        ...['Fix Configuration', 'Ignore']        
-    ).then(selection => {
-        if (selection === "Fix Configuration") {
-            vscode.commands.executeCommand("workbench.action.openSettings", confingError.join(' '));
-        }
-    });
+const statusTextRegex: Record<string, Type.RegexStatusContentTextUnion> = {
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: {
+        col: /(\${col})/s
+    },
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: {
+        character: /(\${character})/s
+    },
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: {
+        line: /(\${line})/s,
+        character: /(\${character})/s
+    },
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: {
+        line: /(\${line})/s,
+        character: /(\${character})/s   
+    },
+    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: {
+        nth: /(\${nth})/s, 
+        count: /(\${count})/s,
+        line: /(\${line})/s,
+        character: /(\${character})/s
+    },
 };
 
 const regex: Type.RegexType = {
@@ -29,28 +43,7 @@ const regex: Type.RegexType = {
     isValidWidth: /^[0-9]px$|^[0-9]em$/,
     ifStatusContentTextHasPlaceholder: /(\${[a-z]*})/g,
     statusTextKeysOnly: /\${([^{}]+)}/s,
-    statusContentText: {
-        [STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: {
-            col: /(\${col})/s
-        },
-        [STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: {
-            character: /(\${character})/s
-        },
-        [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: {
-            line: /(\${line})/s,
-            character: /(\${character})/s
-        },
-        [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: {
-            line: /(\${line})/s,
-            character: /(\${character})/s   
-        },
-        [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: {
-            nth: /(\${nth})/s, 
-            count: /(\${count})/s,
-            line: /(\${line})/s,
-            character: /(\${character})/s
-        },
-    }
+    statusContentText: statusTextRegex
 };
 
 /**
@@ -157,5 +150,5 @@ export {
     splitAndPosition,
     hexToRgbaStringLiteral,
     sendAutoDismissMessage,
-    fixConfiguration
+    getWorkspaceConfiguration
 };
