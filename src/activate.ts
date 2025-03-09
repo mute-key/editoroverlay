@@ -11,10 +11,13 @@ import {
 } from './constant/object';
 import {
     setDecorationOnEditor
-} from './decoration';
+} from './editor/decoration/decoration';
 import {
     fixConfiguration
 } from './error';
+import { 
+    updateDiagonosticState 
+} from './editor/decoration/diagnostic';
 
 /**
  * @param editor
@@ -49,6 +52,7 @@ const initialize = async (context: vscode.ExtensionContext): Promise<vscode.Disp
 
         if (activeEditor) {
             // bindEditorWithStatusText(activeEditor);
+            updateDiagonosticState();
 
             setDecorationOnEditor({
                 editor: activeEditor,
@@ -63,6 +67,8 @@ const initialize = async (context: vscode.ExtensionContext): Promise<vscode.Disp
             event.onActiveWindowChange(configInfo, statusInfo, decorationState),
             event.activeEditorChanged(configInfo, statusInfo, decorationState),
             event.selectionChanged(configInfo, statusInfo, decorationState),
+            // event.visibleRangeChanged(),
+            event.diagnosticChanged(activeEditor),
             event.editorOptionChange(statusInfo),
             event.configChanged(context),
         ]; // event functions

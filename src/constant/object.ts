@@ -1,3 +1,4 @@
+import { Diagnostic } from 'vscode';
 import * as Type from '../type/type.d';
 
 import {
@@ -10,7 +11,9 @@ import {
     DECORATION_TYPE_MASK,
     SELECTION_TYPE,
     CONFIG_SECTION_KEY,
-    STATUS_CONTENT_TEXT_CONFIG_KEY
+    STATUS_CONTENT_TEXT_CONFIG_KEY,
+    DIAGNOSTIC_CONTENT_TEXT_CONFIG_KEY,
+    CONFIG_KEY_LINKER
 } from './enum';
 
 // ==============================================================================
@@ -34,7 +37,8 @@ export const CONFIG_INFO = {
     generalConfigInfo: {
         borderOpacity: undefined,
         backgroundOpacity: undefined,
-        statusTextEnabled: undefined,
+        statusTextEnabled: CONFIG_KEY_LINKER.STATUS_TEXT_ENABLED,
+        diagnosticTextEnabled: CONFIG_KEY_LINKER.DIAGNOSTIC_TEXT_ENABLED,
     } as const,
     borderPositionInfo: {
         CURSOR_ONLY: undefined,
@@ -82,6 +86,89 @@ export const STATUS_INFO = {
 } as const;
 
 
+/**
+ * decoration state object to set or unset decorations on editor.
+ * to be used as shallow copied object.
+ * 
+ * 이거 쪼개야겟다
+ */
+export const DECORATION_STATE = {
+    decorationList: {
+        CURSOR_ONLY: undefined,
+        SINGLE_LINE: undefined,
+        MULTI_LINE: undefined,
+        MULTI_CURSOR: undefined,
+    } as const,
+    appliedDecoration: {
+        applied: undefined,
+        editorDecoration: undefined
+    } as const,
+    statusText: undefined,
+    diagnosticText: undefined
+};
+
+/**
+ * this prob could be const enum too but this needs to be used as an object
+ * so this is object literal it is.
+ * 
+ */
+export const DECORATION_STYLE_PREFIX = {
+    CURSOR_ONLY: 'cursorOnly',
+    SINGLE_LINE: 'singleLine',
+    MULTI_LINE: 'multiLine',
+    MULTI_CURSOR: 'multiCursor',
+} as const;
+
+export const DIAGNOSTIC_CONFIG = {
+    autoHideDiagnostic: {
+        ok: undefined,
+        warning: undefined,
+        error: undefined,
+    } as const,
+    okTextStyle: {
+        color: undefined,
+        colorOpacity: undefined,
+        backgroundColor: undefined,
+        backgroundOpacity: undefined,
+        fontStyle: undefined,
+        fontWeight: undefined,
+        rounded: undefined,
+    } as const,
+    okContentText: undefined,
+    warningTextStyle: {
+        color: undefined,
+        colorOpacity: undefined,
+        backgroundColor: undefined,
+        backgroundOpacity: undefined,
+        fontStyle: undefined,
+        fontWeight: undefined,
+        rounded: undefined,
+    } as const,
+    warningContentText: undefined,
+    errorTextStyle: {
+        color: undefined,
+        colorOpacity: undefined,
+        backgroundColor: undefined,
+        backgroundOpacity: undefined,
+        fontStyle: undefined,
+        fontWeight: undefined,
+        rounded: undefined,
+    } as const,
+    errorContentText: undefined
+} as const;
+
+export const DIAGONOSTIC_STATE = {
+    total: 0,
+    source: 0,
+    severity: {
+        hint: 0,
+        info: 0,
+        warning: 0,
+        error: 0,
+    } as const,
+    diagonosticDecoration: []
+} as const;
+
 export const STATUS_CONTENT_TEXT = {
     [STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: {
         contentText: undefined,
@@ -116,23 +203,22 @@ export const STATUS_CONTENT_TEXT = {
     },
 } as const;
 
-/**
- * decoration state object to set or unset decorations on editor.
- * to be used as shallow copied object.
- */
-export const DECORATION_STATE = {
-    decorationList: {
-        CURSOR_ONLY: undefined,
-        SINGLE_LINE: undefined,
-        MULTI_LINE: undefined,
-        MULTI_CURSOR: undefined,
+export const DIAGNOSTIC_CONTENT_TEXT = {
+    [DIAGNOSTIC_CONTENT_TEXT_CONFIG_KEY.OK_CONTENT_TEXT]: {
+        contentText: undefined,
+    },
+    [DIAGNOSTIC_CONTENT_TEXT_CONFIG_KEY.WARNING_CONTENT_TEXT]: {
+        contentText: undefined,
+        src: undefined,
+        wrn: undefined,
     } as const,
-    appliedDecoration: {
-        applied: undefined,
-        editorDecoration: undefined
-    } as const,
-    statusText: undefined,
-};
+    [DIAGNOSTIC_CONTENT_TEXT_CONFIG_KEY.ERROR_CONTENT_TEXT]: {
+        contentText: undefined,
+        src: undefined,
+        err: undefined,
+    } as const
+} as const;
+
 
 export const CONFIG_SECTION = {
     [CONFIG_SECTION_KEY.GENERAL]: CONFIG_SECTION_KEY.GENERAL,
@@ -220,25 +306,13 @@ export const DECORATION_INFO: Type.DecorationInfoType = {
 } as const;
 
 /**
- * this prob could be const enum too but this needs to be used as an object
- * so this is object literal it is.
- * 
- */
-export const DECORATION_STYLE_PREFIX = {
-    CURSOR_ONLY: 'cursorOnly',
-    SINGLE_LINE: 'singleLine',
-    MULTI_LINE: 'multiLine',
-    MULTI_CURSOR: 'multiCursor',
-} as const;
-
-/**
  * to protect runtime as well as notify user that malformed configuration value in setting.json.
  * 
  */
 export const NO_CONFIGURATION_GENERAL_DEFAULT: Type.NoConfigurationGeneraType = {
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.OPACITY]: 1,
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.BACKGROUND_OPACITY]: 0.5,
-    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_ENABLED]: true,
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_ENABLED]: false,
 } as const;
 
 export const NO_CONFIGURATION_STATUS_DEFAULT: Type.NoConfigurationStatusType = {

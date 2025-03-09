@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as StatusType from './status.d';
 import * as DecorationType from './decoration.d';
+import * as DiagnosticType from './diagnostic.d';
 
 import {
     DECORATION_STYLE_CONFIG_KEY,
@@ -55,9 +56,8 @@ type DecorationStyleConfigValueType = string | number | boolean
 type StringTransformFunc = ((s: string) => string)[]
 
 type DecorationConfigGetFunctionType = <T extends DecorationStyleConfigValueType>(
-    configReady: ConfigInfoReadyType,
     configSection: vscode.WorkspaceConfiguration,
-    configName: DecorationStyleConfigNameType | GeneralConfigNameOnlyType | StatusTextConfigNameOnlyType,
+    configName: string,
     defaultValue: T,
     configNameChange?: StringTransformFunc
 ) => T | null
@@ -68,7 +68,7 @@ type ConfigCondition = <T extends string | number | boolean | null>(configReady:
     borderwidth: () => T | null
 }
 
-type BorderPositionKeyOnly = `${BORDER_POSITION_VARIATION}`;
+type BorderPositionKeyOnly = `${BORDER_POSITION_VARIATION}`
 
 type GeneralConfigInfoType = {
     borderOpacity?: number
@@ -76,7 +76,8 @@ type GeneralConfigInfoType = {
     borderWidth?: string
     borderColor?: string
     backgroundColor?: string
-    statusTextEnabled: boolean,
+    statusTextEnabled: boolean
+    diagnosticTextEnabled: boolean
 }
 
 type configErrorType = {
@@ -89,9 +90,10 @@ type RegexType = {
     tagtAndEOLRegex: RegExp,
     isValidHexColor: RegExp,
     isValidWidth: RegExp,
-    ifStatusContentTextHasPlaceholder: RegExp,
-    statusTextKeysOnly: RegExp,
+    ifContentTextHasPlaceholder: RegExp,
+    contentTextKeysOnly: RegExp,
     statusContentText: StatusType.RegexStatusContentTextType
+    diagnosticTextRegex: DiagnosticType.RegexDiagnosticContentTextType
 }
 
 type nextSearchStringType = {

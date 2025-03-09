@@ -84,13 +84,19 @@ export const enum DECORATION_STATUS_STYLE_CONFIG_KEY {
     STATUS_TEXT_FONT_WEIGHT = 'statusTextFontWeight'
 }
 
+export const enum CONFIG_KEY_LINKER {
+    STATUS_TEXT_ENABLED = 'statusText.enabled',
+    DIAGNOSTIC_TEXT_ENABLED = 'diagnosticText.enabled',
+}
+    
 export const enum CONFIG_SECTION_KEY {
     GENERAL = 'general',
-    STATUS_TEXT = 'statusText',
     CURSOR_ONLY = 'cursorOnly',
     SINGLE_LINE = 'singleLine',
     MULTI_LINE = 'multiLine',
     MULTI_CURSOR = 'multiCursor',
+    STATUS_TEXT = 'statusText',
+    DIAGNOSTIC_TEXT = 'diagnosticText'
 }
 
 export const enum STATUS_CONTENT_TEXT_CONFIG_KEY {
@@ -99,6 +105,12 @@ export const enum STATUS_CONTENT_TEXT_CONFIG_KEY {
     MULTI_LINE_CURSOR_TEXT = 'multiLineCursorText',
     MULTI_LINE_ANCHOR_TEXT = 'multiLineAnchorText',
     MULTI_CURSOR_TEXT = 'multiCursorText',
+}
+
+export const enum DIAGNOSTIC_CONTENT_TEXT_CONFIG_KEY {
+    OK_CONTENT_TEXT = 'okContentText',
+    WARNING_CONTENT_TEXT = 'warningContentText',
+    ERROR_CONTENT_TEXT = 'errorContentText',
 }
 
 /**

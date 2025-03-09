@@ -13,7 +13,7 @@ this extension will also display status text where the selection is.
 
 `ctrl + shift + p` and search/open Settign UI, then search 'cursorline'
 
-## General
+## 1. General
 
 `General -> borderOpacity`
 > Opacity of decoration border in __```%```__. __```1```__ is no opacity.
@@ -21,7 +21,7 @@ this extension will also display status text where the selection is.
 `General -> backgroundOpacity`
 > Opacity of background color of selection in __```%```__. __```1```__ is no opacity.
 
-## Status Text
+## 2. Selection Status
 
 `statusText -> enabled`
 > Enable inline status text.
@@ -42,7 +42,7 @@ this extension will also display status text where the selection is.
 > Font weight of status text.
 
 `statusText -> cursorOnlyText`
-> Status Text for Cursor Only Selection.<br>Example:<br> `< Editing ... At (idx ${zCol}, zero-based)`
+> Status Text for Cursor Only Selection.<br>Example: `< Editing ... At (idx ${zCol}, zero-based)`
 
 | Placeholder | Description |
 | -------- | ------- |
@@ -51,7 +51,7 @@ this extension will also display status text where the selection is.
 | __```${ln}```__ | current line number |
 
 `statusText -> singleLineText`
-> Status Text for Single Line Selection.<br>Example:<br> `< Selection ... Of (${char} Characters)`
+> Status Text for Single Line Selection.<br>Example: `< Selection ... Of (${char} Characters)`
 
 | Placeholder | Description |
 | -------- | ------- |
@@ -59,7 +59,7 @@ this extension will also display status text where the selection is.
 | __```${ln}```__ | current line number |
 
 `statusText -> multiLineCursorText`
-> Status Text for _'Multi Line Selection (Active Cursor)'_.<br>Example:<br> `< Selection Cursor ... Of (${lc} Lines, ${char} Characters, Indent/EOL Ignored)`
+> Status Text for _'Multi Line Selection (Active Cursor)'_.<br>Example: `< Selection Cursor ... Of (${lc} Lines, ${char} Characters, Indent/EOL Ignored)`
 
 | Placeholder | Description |
 | -------- | ------- |
@@ -68,7 +68,7 @@ this extension will also display status text where the selection is.
 | __```${char}```__ | character count of selection |
 
 `statusText -> multiLineAnchorText`
-> Status Text for _'Multi Line Selection (Anchor)'_.<br>Example:<br> `< Selection Anchor ... Of (${lc} Lines, ${char} Characters, Indent/EOL Ignored)`
+> Status Text for _'Multi Line Selection (Anchor)'_.<br>Example: `< Selection Anchor ... Of (${lc} Lines, ${char} Characters, Indent/EOL Ignored)`
 
 | Placeholder | Description |
 | -------- | ------- |
@@ -77,7 +77,7 @@ this extension will also display status text where the selection is.
 | __```${char}```__ | character count of selection |
 
 `statusText -> multiCursorText`
-> Status Text for _'Multi Cursor Selection'_.<br>Example:<br> `< Multi Selection ... Of (${nth} of ${count}, with Total ${lc} Lines ${char} Characters)`
+> Status Text for _'Multi Cursor Selection'_.<br>Example: `< Multi Selection ... Of (${nth} of ${count}, with Total ${lc} Lines ${char} Characters)`
 
 | Placeholder | Description |
 | -------- | ------- |
@@ -87,7 +87,7 @@ this extension will also display status text where the selection is.
 | __```${ln}```__ | selection line number of last line |
 | __```${char}```__ | total character count of selection |
 
-## Cursor Only
+## 3. Cursor Only
 
 `cursorOnly -> borderColor`
 > Change the border color. <br>Must be in format of hex color representation as __```#RRGGBB```__.
@@ -107,7 +107,7 @@ this extension will also display status text where the selection is.
 <!-- (not working yet) Use this border style only when [bottom | after Cursor]. this is border style for `cursorOnly.borderStyleWithafterCursor`
 > previous range. -->
 
-## Single Line
+## 4. Single Line
 
 `singleLine -> borderColor`
 > Change the border color. <br>Must be in format of hex color representation as __```#RRGGBB```__.
@@ -124,7 +124,7 @@ this extension will also display status text where the selection is.
 `singleLine -> borderStyle`
 > Border style on current selection.
 
-## Multi Line
+## 5. Multi Line
 
 `multiLine -> borderColor`
 > Change the border color. <br>Must be in format of hex color representation as __```#RRGGBB```__.
@@ -141,7 +141,7 @@ this extension will also display status text where the selection is.
 `multiLine -> borderStyle`
 > Border style on current selection.
 
-## Multi Cursor
+## 6. Multi Cursor
 
 `multiCursor -> borderColor`
 > Change the border color. <br>Must be in format of hex color representation as __```#RRGGBB```__.

@@ -1,12 +1,12 @@
 import * as vscode from 'vscode';
-import * as Type from './type/type.d';
+import * as Type from './type/type';
 import * as config from './config/config';
 import {
     applyDecoration,
     setDecorationOnEditor,
     resetDecorationWrapper,
     isDecorationChanged
-} from './decoration';
+} from './editor/decoration/decoration';
 import {
     DECORATION_INFO
 } from './constant/object';
@@ -16,11 +16,12 @@ import {
 import {
     editorIndentOption,
     getSelectionType
-} from './editor';
+} from './editor/editor';
+import { updateDiagonosticState } from './editor/decoration/diagnostic';
 
 const onActiveWindowChange = (configInfo: Type.ConfigInfoReadyType, statusInfo: Type.StatusInfoType, decorationState: Type.DecorationStateType): vscode.Disposable => {
     return vscode.window.onDidChangeWindowState((event: vscode.WindowState) => {
-        console.log('onDidChangeWindowState');
+        // console.log('onDidChangeWindowState');
         if (event.focused) {
             // apply decoration to active editor.
             if (vscode.window.activeTextEditor) {
@@ -43,7 +44,7 @@ const onActiveWindowChange = (configInfo: Type.ConfigInfoReadyType, statusInfo: 
 
 const activeEditorChanged = (configInfo: Type.ConfigInfoReadyType, statusInfo: Type.StatusInfoType, decorationState: Type.DecorationStateType): vscode.Disposable => {
     return vscode.window.onDidChangeActiveTextEditor((editor: vscode.TextEditor | undefined) => {
-        console.log('onDidChangeActiveTextEditor');
+        // console.log('onDidChangeActiveTextEditor');
         if (editor) {
 
             if (configInfo.configError.length > 0) {
@@ -85,7 +86,7 @@ const editorOptionChange = (statusInfo: Type.StatusInfoType,): vscode.Disposable
 
 const selectionChanged = (configInfo: Type.ConfigInfoReadyType, statusInfo: Type.StatusInfoType, decorationState: Type.DecorationStateType): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) => {
-        console.log('onDidChangeTextEditorSelection');
+        // console.log('onDidChangeTextEditorSelection');
         if (event.selections) {
             const decorationInfo: Type.DecorationInfoPropType | undefined = getSelectionType(event.textEditor);
             if (!decorationInfo) {
@@ -109,9 +110,29 @@ const selectionChanged = (configInfo: Type.ConfigInfoReadyType, statusInfo: Type
     });
 };
 
+const visibleRangeChanged = (): vscode.Disposable => {
+    return vscode.window.onDidChangeTextEditorVisibleRanges((event: vscode.TextEditorVisibleRangesChangeEvent) => {
+        if (event.visibleRanges) {
+            // console.log(event.visibleRanges);
+        }
+    });
+};
+
+
+// vscode.window.activeTextEditor?.visibleRanges
+
+const diagnosticChanged = (editor: vscode.TextEditor | undefined): vscode.Disposable => {
+    // context.extension.
+    return vscode.languages.onDidChangeDiagnostics((event: vscode.DiagnosticChangeEvent) => {
+        if (editor) {
+            updateDiagonosticState();
+        }
+    });
+};
+
 const configChanged = (context: vscode.ExtensionContext): vscode.Disposable => {
     return vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
-        console.log('onDidChangeConfiguration');
+        // console.log('onDidChangeConfiguration');
         if (event) {
             const loadConfig = config.initializeConfig(context);
         }
@@ -123,5 +144,7 @@ export {
     activeEditorChanged,
     editorOptionChange,
     selectionChanged,
+    visibleRangeChanged,
+    diagnosticChanged,
     configChanged,
 };

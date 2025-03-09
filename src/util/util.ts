@@ -1,8 +1,6 @@
 import * as vscode from 'vscode';
 import * as Type from '../type/type.d';
-import { 
-    STATUS_CONTENT_TEXT_CONFIG_KEY 
-} from '../constant/enum';
+import * as regexCollection from './regex';
 
 const getWorkspaceConfiguration = (section: string): vscode.WorkspaceConfiguration => vscode.workspace.getConfiguration(section);
 
@@ -13,43 +11,15 @@ const sendAutoDismissMessage = (text: string, dismiss: number) => {
     }, dismiss);
 };
 
-const statusTextRegex: Record<string, Type.RegexStatusContentTextUnion> = {
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: {
-        col: /(\${col})/s,
-        zCol: /(\${zCol})/s,
-        ln: /(\${ln})/s
-    },
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: {
-        char: /(\${char})/s,
-        ln: /(\${ln})/s
-    },
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: {
-        lc: /(\${lc})/s,
-        ln: /(\${ln})/s,
-        char: /(\${char})/s
-    },
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: {
-        lc: /(\${lc})/s,
-        ln: /(\${ln})/s,
-        char: /(\${char})/s   
-    },
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: {
-        nth: /(\${nth})/s, 
-        count: /(\${count})/s,
-        lc: /(\${lc})/s,
-        ln: /(\${ln})/s,
-        char: /(\${char})/s
-    },
-};
-
 const regex: Type.RegexType = {
-    indentAndEOLRegex: (indentSize: string | number) => new RegExp(`^( {${indentSize}}|[\r\n]+)*$`, 'gm'),
-    tagtAndEOLRegex: /(\t|[\r\n]+)*$/gm,
-    isValidHexColor: /^#[A-Fa-f0-9]{6}$/,
-    isValidWidth: /^[0-9]px$|^[0-9]em$/,
-    ifStatusContentTextHasPlaceholder: /(\${[A-z]*})/g,
-    statusTextKeysOnly: /\${([^{}]+)}/s,
-    statusContentText: statusTextRegex
+    indentAndEOLRegex: regexCollection.indentAndEOLRegex,
+    tagtAndEOLRegex: regexCollection.tagtAndEOLRegex,
+    isValidHexColor: regexCollection.isValidHexColor,
+    isValidWidth: regexCollection.isValidWidth,
+    ifContentTextHasPlaceholder: regexCollection.ifContentTextHasPlaceholder,
+    contentTextKeysOnly: regexCollection.contentTextKeysOnly,
+    statusContentText: regexCollection.statusTextRegex,
+    diagnosticTextRegex: regexCollection.diagnosticTextRegex
 };
 
 /**
@@ -92,13 +62,12 @@ const fnv1aHash = (str: string): string => {
 };
 
 const splitAndPosition = (str: string, regex: RegExp): Type.RegexSplitType | undefined => {
-    // console.log(str, regex);
+
     const match: RegExpMatchArray | null = str.match(regex);
     let split: string[] = [];
-    console.log(str, match);
+
     if (match && match.index !== undefined) {
         split = str.split(regex);
-        // console.log(split)
         if (split[0].length === 0) {
             delete split[0];
             return {

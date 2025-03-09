@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+
 import { 
     DECORATION_STYLE_KEY, 
     STATUS_CONTENT_TEXT_CONFIG_KEY 
@@ -176,7 +177,7 @@ type ContentTextFunc = Record<string, ContentTextFuncSignature | ContentTextWith
 
 type ContentTextStateFuncSignature = (statusContentText: StatusContentTextType) => void
 
-type ContentTextStateFunc = Record<string, ContentTextStateFuncSignature>
+// type ContentTextStateFunc = Record<string, ContentTextStateFuncSignature>
 
 type StatusOfType = {
     [k in STATUS_CONTENT_TEXT_CONFIG_KEY]: ContentTextFunc;

@@ -1,16 +1,19 @@
 import * as vscode from 'vscode';
-import * as Type from './type/type.d';
+import * as Type from '../../type/type';
+
+import {
+    createEditorDecorationType,
+    applyDecoration,
+    disposeDecoration
+} from './decoration';
 import {
     DECORATION_STYLE_KEY,
     STATUS_CONTENT_TEXT_CONFIG_KEY
-} from './constant/enum';
+} from '../../constant/enum';
 import {
     createRangeSPEP,
-} from './editor';
-import {
-    createEditorDecorationType,
-    applyDecoration
-} from './decoration';
+} from '../range';
+
 
 const cursorOnlyContentTextState: (string | Type.ContentTextFuncSignature)[] = [];
 const singleLineContentTextState: (string | Type.ContentTextFuncSignature)[] = [];
@@ -160,7 +163,6 @@ const multilineStatus = (editor: vscode.TextEditor, indent: Type.IndentType): Ty
         range: createRangeSPEP(editor.selection.active, editor.selection.active),
         isWholeLine: true
     }];
-
 };
 
 const multiCursorStatus = (editor: vscode.TextEditor, indent: Type.IndentType): Type.StatusTextInfoType[] => {
@@ -201,22 +203,6 @@ const statusDecorationType = (statusTextInfo: Type.StatusTextInfoType, statusDec
     return statusDecorationType as Type.StatusDecorationReadyType;
 };
 
-/**
- * status decoration needs to be displosed in order to recreate with 
- * different content text, meaning to display the status info text.
- * 
- * @param status 
- */
-const disposeStatusInfo = (decorationState: Type.DecorationStateType): void => {
-    if (decorationState.statusText) {
-        let length = decorationState.statusText.length;
-        while (length--) {
-            decorationState.statusText[length].dispose();
-        }
-        decorationState.statusText = [];
-    }
-};
-
 const statusTextInfoSplit = (editor: vscode.TextEditor, indent: Type.IndentType): Type.statusTextInfoSplitType => {
     return {
         [DECORATION_STYLE_KEY.CURSOR_ONLY]: () => cursorOnlyStatus(editor),
@@ -237,12 +223,12 @@ const statusText = (editor: vscode.TextEditor, decorationState: Type.DecorationS
         statusInfoList.push(editorDecoration);
     }
 
-    disposeStatusInfo(decorationState);
+    disposeDecoration(decorationState.statusText);
 
     decorationState.statusText = statusInfoList;
 };
 
-const bindContentTextState = (type: string): Type.BindContentTextStateType => {
+const bindStatusContentTextState = (type: string): Type.BindContentTextStateType => {
     return {
         statusOf: statusOf[type],
         contentTextState: contentTextState[type]
@@ -251,6 +237,9 @@ const bindContentTextState = (type: string): Type.BindContentTextStateType => {
 
 export {
     statusText,
-    disposeStatusInfo,
-    bindContentTextState
+    bindStatusContentTextState,
+    statusDecorationType,
+    statusTextInfoSplit,
+    statusOf,
+    contentTextState
 };

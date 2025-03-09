@@ -22,6 +22,7 @@ type DecorationStateType = {
     decorationList: DecorationType
     appliedDecoration: appliedDecoration
     statusText?: vscode.TextEditorDecorationType[]
+    diagnosticText?: vscode.TextEditorDecorationType[]
 }
 type DecorationStyleKeyOnlyType = keyof typeof DECORATION_STYLE_PREFIX
 

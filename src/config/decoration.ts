@@ -5,63 +5,23 @@ import {
     BORDER_WIDTH_DEFINITION, 
     DECORATION_STYLE_PREFIX, 
     NO_CONFIGURATION_DEOCORATION_DEFAULT, 
-    NO_CONFIGURATION_GENERAL_DEFAULT, 
-    NO_CONFIGURATION_STATUS_DEFAULT 
+    NO_CONFIGURATION_GENERAL_DEFAULT
 } from '../constant/object';
 import {
-    setStatusConfig,
-    updateStatusContentText
-} from './status';
-import {
-    disposeStatusInfo
-} from '../status';
-
+    colorConfigTransform,
+    getConfigValue
+} from './common';
 import {
     createEditorDecorationType,
     disposeDecoration
-} from '../decoration';
+} from '../editor/decoration/decoration';
 import { 
     getWorkspaceConfiguration, 
-    hexToRgbaStringLiteral, 
     readBits 
 } from '../util/util';
 
 const checkConfigKeyAndCast = <T extends Type.DecorationStyleConfigNameType | Type.GeneralConfigNameOnlyType>(key: string, config: Type.NoConfigurationDeocorationPropType): T => {
     return key as T;
-};
-
-const getConfigValue: Type.DecorationConfigGetFunctionType = <T extends Type.DecorationStyleConfigValueType>(
-    configReady: Type.ConfigInfoReadyType,
-    configSection: vscode.WorkspaceConfiguration,
-    configName: Type.DecorationStyleConfigNameType | Type.GeneralConfigNameOnlyType | Type.StatusTextConfigNameOnlyType,
-    defaultValue: T
-): T | null => {
-    try {
-        const value = configSection.get<T>(configName, defaultValue);
-
-        if (value === undefined) {
-            console.warn(`Config value for ${configName} is undefined or caused an error. Using default value.`);
-        }
-
-        // configConditional(configReady, configPrefix, configNameString, value, defaultValue);
-
-        return value;
-
-    } catch (err) {
-        console.error(`Failed to get config value for ${configSection + '.' + configName}:`, err);
-        return defaultValue;
-    }
-};
-
-const colorConfigTransform: Record<string, Type.ColourConfigTransformType> = {
-    borderColor: {
-        of: 'borderOpacity',
-        fn: (v: string, n: number, d: string) => hexToRgbaStringLiteral(v, n, d),
-    },
-    backgroundColor: {
-        of: 'backgroundOpacity',
-        fn: (v: string, n: number, d: string) => hexToRgbaStringLiteral(v, n, d),
-    }
 };
 
 /**
@@ -76,7 +36,7 @@ const getConfigSet = (configReady: Type.ConfigInfoReadyType, decorationKey: Type
     const configSection = getWorkspaceConfiguration(configReady.name + '.' + configSectionName);
 
     return Object.entries(defaultConfigDefinition).reduce((config, [configName, defaultValue]) => {
-        const configValue: string | boolean | number | null = getConfigValue(configReady, configSection, checkConfigKeyAndCast(configName, defaultConfigDefinition), defaultValue as Type.DecorationStyleConfigValueType);
+        const configValue: string | boolean | number | null = getConfigValue(configSection, checkConfigKeyAndCast(configName, defaultConfigDefinition), defaultValue as Type.DecorationStyleConfigValueType);
         // configValue can be boolean.
         if (configValue !== undefined && configValue !== null) {
             if (Object.hasOwn(colorConfigTransform, configName)) {
@@ -89,6 +49,7 @@ const getConfigSet = (configReady: Type.ConfigInfoReadyType, decorationKey: Type
         return config;
     }, {} as Type.DecorationStyleConfigType);
 };
+
 
 /**
  * @param config
@@ -188,10 +149,16 @@ const borderPositionParser = (selectionType: Type.DecorationStyleKeyOnlyType, bo
  */
 const createDecorationTypeBuilder = (configReady: Type.ConfigInfoReadyType, statusConfigInfo: Type.StatusInfoType, decorationState: Type.DecorationStateType): boolean => {
 
-    const generalConfig = getWorkspaceConfiguration(configReady.name + '.' + CONFIG_SECTION.general);
-
     for (const key in configReady.generalConfigInfo) {
-        configReady.generalConfigInfo[key] = getConfigValue(configReady, generalConfig, key as Type.GeneralConfigNameOnlyType, NO_CONFIGURATION_GENERAL_DEFAULT[key]);
+        if (configReady.generalConfigInfo[key]) {
+            const sectionLinker = configReady.generalConfigInfo[key].split('.');
+            const configSection = getWorkspaceConfiguration(configReady.name + '.' + sectionLinker[0]);
+            const configValue = getConfigValue(configSection, sectionLinker[1], NO_CONFIGURATION_GENERAL_DEFAULT[key]);
+            configReady.generalConfigInfo[key] = configValue;
+        } else {
+            const configSection = getWorkspaceConfiguration(configReady.name + '.' + CONFIG_SECTION.general);
+            configReady.generalConfigInfo[key] = getConfigValue(configSection, key , NO_CONFIGURATION_GENERAL_DEFAULT[key]);
+        }
     }
 
     for (const key in decorationState.decorationList) {
@@ -219,23 +186,6 @@ const createDecorationTypeBuilder = (configReady: Type.ConfigInfoReadyType, stat
 
         decorationState.decorationList[selectionType] = decorationTypeList;
     }
-
-    if (configReady.generalConfigInfo.statusTextEnabled) {
-        if (decorationState.statusText) {
-            disposeStatusInfo(decorationState);
-        }
-
-        const statusTextConfig = getWorkspaceConfiguration(configReady.name + '.' + CONFIG_SECTION.statusText);
-
-        for (const key in configReady.statusTextConfig) {
-            configReady.statusTextConfig[key] = getConfigValue(configReady, statusTextConfig, key as Type.StatusTextConfigNameOnlyType, NO_CONFIGURATION_STATUS_DEFAULT[key]);
-        }
-
-        setStatusConfig(configReady, statusConfigInfo);
-
-        updateStatusContentText(configReady);
-    }
-
     return true;
 };
 

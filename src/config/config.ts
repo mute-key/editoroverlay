@@ -27,7 +27,13 @@ import {
 } from '../util/util';
 import {
     disposeDecoration
-} from '../decoration';
+} from '../editor/decoration/decoration';
+import { 
+    updateStatusTextConfig
+} from './status';
+import { 
+    updateDiagnosticConfig 
+} from './diagonostic';
 
 const configInfo: Type.ConfigInfoType = { ...CONFIG_INFO };
 
@@ -67,10 +73,10 @@ const ifConfigChanged = (configReady: Type.ConfigInfoReadyType): boolean => {
             decorationState.appliedDecoration.applied = undefined;
             disposeDecoration(decorationState.appliedDecoration.editorDecoration);
         }
-        
+
         configReady.configError = [];
         configReady.configHashKey = configHash;
-        
+
         if (configReady.configError.length === 0) {
             sendAutoDismissMessage(SYSTEM_MESSAGE.RELOADING_CONFIG, 1500);
         }
@@ -100,8 +106,6 @@ const updateEditorConfiguration = (): void => {
     // editorConfig.update("cursorBlinking", 'phase', vscode.ConfigurationTarget.Global);
     // editorConfig.update("cursorSmoothCaretAnimation", 'on', vscode.ConfigurationTarget.Global);
 };
-
-
 
 // const configNameToSettingName = (configName: string) =>
 //     capitalize(configName.split('').reduce((string, characater) => string += /^[A-Z]/.test(characater) ? ' ' + characater : characater));
@@ -161,7 +165,7 @@ const initializeConfig = (context: vscode.ExtensionContext): Type.InitialisedCon
     }
 
     configInfo.name = name;
-    
+
     if (!configInfo.name) {
         return;
     }
@@ -188,6 +192,15 @@ const initializeConfig = (context: vscode.ExtensionContext): Type.InitialisedCon
     }
 
     if (createDecorationTypeBuilder(configReady, statusConfigInfo, decorationState)) {
+
+        if (configReady.generalConfigInfo.statusTextEnabled) {
+            updateStatusTextConfig(configReady, statusConfigInfo, decorationState);
+        }
+
+        if (configReady.generalConfigInfo.diagnosticTextEnabled) {
+            updateDiagnosticConfig(configReady, decorationState);
+        }
+
         return {
             config: configReady,
             decoration: decorationState,
@@ -195,6 +208,7 @@ const initializeConfig = (context: vscode.ExtensionContext): Type.InitialisedCon
         };
     }
     return;
+
 };
 
 export {

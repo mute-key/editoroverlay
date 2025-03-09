@@ -1,20 +1,21 @@
 import * as vscode from 'vscode';
-import * as Type from './type/type.d';
+import * as Type from '../../type/type';
 import {
     DECORATION_STYLE_KEY
-} from './constant/enum';
+} from '../../constant/enum';
 import {
     DECORATION_INFO
-} from './constant/object';
+} from '../../constant/object';
 import {
     cursorOnlyDecorationWithRange,
     singelLineDecorationWithRange,
     multiLineDecorationWithRange,
     multiCursorDecorationWithRange
-} from './selection';
+} from './range';
 import {
     statusText
 } from './status';
+import { updateDiagonosticDecoration } from './diagnostic';
 
 const applyDecoration = (
     editor: vscode.TextEditor,
@@ -27,7 +28,7 @@ const createEditorDecorationType = (
 ) => vscode.window.createTextEditorDecorationType(styleAppliedConfig as vscode.DecorationRenderOptions);
 
 const disposeDecoration = (
-    decorationList: vscode.TextEditorDecorationType[]
+    decorationList: vscode.TextEditorDecorationType[] = []
 ) => decorationList.forEach((decorationType) => {
     decorationType.dispose();
 });
@@ -44,22 +45,22 @@ const resetDecoration: Type.UnsetDecorationFunctionType = (
 ) => (
     decorationInfo: Type.DecorationInfoPropType
 ): void => {
-        if (editor) {
-            decorationState.statusText?.forEach((decorationType) => {
-                decorationType.dispose();
-            });
+    if (editor) {
+        decorationState.statusText?.forEach((decorationType) => {
+            decorationType.dispose();
+        });
 
-            decorationState.decorationList[decorationInfo.KEY]?.forEach(decorationType => {
-                if (Array.isArray(decorationType)) {
-                    decorationType.forEach((decorationType: vscode.TextEditorDecorationType) => {
-                        applyDecoration(editor, decorationType, []);
-                    });
-                } else {
+        decorationState.decorationList[decorationInfo.KEY]?.forEach(decorationType => {
+            if (Array.isArray(decorationType)) {
+                decorationType.forEach((decorationType: vscode.TextEditorDecorationType) => {
                     applyDecoration(editor, decorationType, []);
-                }
-            });
-        }
-    };
+                });
+            } else {
+                applyDecoration(editor, decorationType, []);
+            }
+        });
+    }
+};
 
 const resetOtherDecoration = (
     currentDecoration: Type.DecorationInfoPropType,
@@ -134,6 +135,10 @@ const setDecorationOnEditor: Type.SetDecorationOnEditorFunc = ({ editor, configI
 
         if (configInfo.generalConfigInfo.statusTextEnabled) {
             statusText(editor, decorationState, statusInfo as Type.StatusInfoType, decorationInfo);
+        }
+
+        if (configInfo.generalConfigInfo.diagnosticTextEnabled) {
+            updateDiagonosticDecoration(editor, decorationState);
         }
 
         decorationWithRange.forEach(({ decoration, range }) => {

@@ -43,143 +43,19 @@
                 "properties": {
                     "cursorlinehighlight.general.borderOpacity": {
                         "type": "number",
-                        "enum": [
-                            0.1,
-                            0.2,
-                            0.3,
-                            0.4,
-                            0.5,
-                            0.6,
-                            0.7,
-                            0.8,
-                            0.9,
-                            1
-                        ],
                         "default": 0.7,
+                        "minimum": 0,
+                        "maximum": 1,
                         "markdownDescription": "%description.general.borderOpacity%",
                         "order": 1
                     },
                     "cursorlinehighlight.general.backgroundOpacity": {
                         "type": "number",
-                        "enum": [
-                            0.1,
-                            0.2,
-                            0.3,
-                            0.4,
-                            0.5,
-                            0.6,
-                            0.7,
-                            0.8,
-                            0.9,
-                            1
-                        ],
                         "default": 0.3,
+                        "minimum": 0,
+                        "maximum": 1,
                         "markdownDescription": "%description.general.backgroundOpacity%",
                         "order": 2
-                    }
-                }
-            },
-            {
-                "title": "Status Text",
-                "properties": {
-                    "cursorlinehighlight.statusText.enabled": {
-                        "type": "boolean",
-                        "default": true,
-                        "description": "%description.statusText.enabled%",
-                        "order": 1
-                    },
-                    "cursorlinehighlight.statusText.iconEnabled": {
-                        "type": "boolean",
-                        "default": false,
-                        "description": "%description.statusText.iconEnabled%",
-                        "order": 2
-                    },
-                    "cursorlinehighlight.statusText.color": {
-                        "type": "string",
-                        "default": "#93A5C1",
-                        "markdownDescription": "%description.statusText.color%",
-                        "order": 3
-                    },
-                    "cursorlinehighlight.statusText.backgroundColor": {
-                        "type": "string",
-                        "default": null,
-                        "markdownDescription": "%description.statusText.backgroundColor%",
-                        "order": 4
-                    },
-                    "cursorlinehighlight.statusText.opacity": {
-                        "type": "number",
-                        "enum": [
-                            0.1,
-                            0.2,
-                            0.3,
-                            0.4,
-                            0.5,
-                            0.6,
-                            0.7,
-                            0.8,
-                            0.9,
-                            1
-                        ],
-                        "default": 0.5,
-                        "markdownDescription": "%description.statusText.opacity%",
-                        "order": 5
-                    },
-                    "cursorlinehighlight.statusText.fontStyle": {
-                        "type": "string",
-                        "enum": [
-                            "italic",
-                            "normal"
-                        ],
-                        "default": "italic",
-                        "description": "%description.statusText.fontStyle%",
-                        "order": 6
-                    },
-                    "cursorlinehighlight.statusText.fontWeight": {
-                        "type": "string",
-                        "enum": [
-                            "lighter",
-                            "light",
-                            "normal",
-                            "bold"
-                        ],
-                        "default": "lighter",
-                        "description": "%description.statusText.fontWeight%",
-                        "order": 7
-                    },
-                    "cursorlinehighlight.statusText.cursorOnlyText": {
-                        "type": "string",
-                        "default": "< Editing ... At (idx ${zCol}, zero-based)",
-                        "markdownDescription": "%description.statusText.cursorOnlyText%",
-                        "editPresentation": "singlelineText",
-                        "order": 8
-                    },
-                    "cursorlinehighlight.statusText.singleLineText": {
-                        "type": "string",
-                        "default": "< Selection ... Of (${char} Characters)",
-                        "markdownDescription": "%description.statusText.singleLineText%",
-                        "editPresentation": "singlelineText",
-                        "order": 9
-                    },
-                    "cursorlinehighlight.statusText.multiLineCursorText": {
-                        "type": "string",
-                        "default": "< Selection Cursor ... Of (${lc} Lines, ${char} Characters, Indent/EOL Ignored)",
-                        "markdownDescription": "%description.statusText.multiLineCursorText%",
-                        "editPresentation": "singlelineText",
-                        "order": 10
-                    },
-                    "cursorlinehighlight.statusText.multiLineAnchorText": {
-                        "type": "string",
-                        "default": "< Selection Anchor ... Of (${lc} Lines, ${char} Characters, Indent/EOL Ignored)",
-                        "markdownDescription": "%description.statusText.multiLineAnchorText%",
-                        "editPresentation": "singlelineText",
-                        "order": 11
-                    },
-                    "cursorlinehighlight.statusText.multiCursorText": {
-                        "type": "string",
-                        "default": "< Multi Selection ... Of (${nth} of ${count}, with Total ${lc} Lines ${char} Characters)",
-                        "markdownDescription": "%description.statusText.multiCursorText%",
-                        "editPresentation": "singlelineText",
-                        "order": 12
                     }
                 }
             },
@@ -189,12 +65,16 @@
                     "cursorlinehighlight.cursorOnly.borderColor": {
                         "type": "string",
                         "default": "#93A5C1",
+                        "pattern": "^#[A-Fa-f0-9]{6}$|^null$|^$",
+                        "patternErrorMessage": "Invalid Format",
                         "markdownDescription": "%description.cursorOnly.borderColor%",
                         "order": 1
                     },
                     "cursorlinehighlight.cursorOnly.backgroundColor": {
                         "type": "string",
                         "default": "#383F49",
+                        "pattern": "^#[A-Fa-f0-9]{6}$|^null$|^$",
+                        "patternErrorMessage": "Invalid Format",
                         "markdownDescription": "%description.cursorOnly.backgroundColor%",
                         "order": 2
                     },
@@ -249,12 +129,16 @@
                     "cursorlinehighlight.singleLine.borderColor": {
                         "type": "string",
                         "default": "#93A5C1",
+                        "pattern": "^#[A-Fa-f0-9]{6}$|^null$|^$",
+                        "patternErrorMessage": "Invalid Format",
                         "markdownDescription": "%description.singleLine.borderColor%",
                         "order": 1
                     },
                     "cursorlinehighlight.singleLine.backgroundColor": {
                         "type": "string",
                         "default": "#383F49",
+                        "pattern": "^#[A-Fa-f0-9]{6}$|^null$|^$",
+                        "patternErrorMessage": "Invalid Format",
                         "markdownDescription": "%description.singleLine.backgroundColor%",
                         "order": 2
                     },
@@ -294,12 +178,16 @@
                     "cursorlinehighlight.multiLine.borderColor": {
                         "type": "string",
                         "default": "#93A5C1",
+                        "pattern": "^#[A-Fa-f0-9]{6}$|^null$|^$",
+                        "patternErrorMessage": "Invalid Format",
                         "markdownDescription": "%description.multiLine.borderColor%",
                         "order": 1
                     },
                     "cursorlinehighlight.multiLine.backgroundColor": {
                         "type": "string",
                         "default": "#383F49",
+                        "pattern": "^#[A-Fa-f0-9]{6}$|^null$|^$",
+                        "patternErrorMessage": "Invalid Format",
                         "markdownDescription": "%description.multiLine.backgroundColor%",
                         "order": 2
                     },
@@ -338,12 +226,16 @@
                     "cursorlinehighlight.multiCursor.borderColor": {
                         "type": "string",
                         "default": "#93A5C1",
+                        "pattern": "^#[A-Fa-f0-9]{6}$|^null$|^$",
+                        "patternErrorMessage": "Invalid Format",
                         "markdownDescription": "%description.multiCursor.borderColor%",
                         "order": 1
                     },
                     "cursorlinehighlight.multiCursor.backgroundColor": {
                         "type": "string",
                         "default": "#383F49",
+                        "pattern": "^#[A-Fa-f0-9]{6}$|^null$|^$",
+                        "patternErrorMessage": "Invalid Format",
                         "markdownDescription": "%description.multiCursor.backgroundColor%",
                         "order": 2
                     },
@@ -372,6 +264,391 @@
                         "default": "dotted",
                         "description": "%description.multiCursor.borderStyle%",
                         "order": 5
+                    }
+                }
+            },
+            {
+                "title": "Status Text",
+                "properties": {
+                    "cursorlinehighlight.statusText.enabled": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "%description.statusText.enabled%",
+                        "order": 1
+                    },
+                    "cursorlinehighlight.statusText.iconEnabled": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "%description.statusText.iconEnabled%",
+                        "order": 2
+                    },
+                    "cursorlinehighlight.statusText.color": {
+                        "type": "string",
+                        "default": "#93A5C1",
+                        "pattern": "^#[A-Fa-f0-9]{6}$|^null$|^$",
+                        "patternErrorMessage": "Invalid Format",
+                        "markdownDescription": "%description.statusText.color%",
+                        "order": 3
+                    },
+                    "cursorlinehighlight.statusText.backgroundColor": {
+                        "type": "string",
+                        "default": null,
+                        "markdownDescription": "%description.statusText.backgroundColor%",
+                        "order": 4
+                    },
+                    "cursorlinehighlight.statusText.opacity": {
+                        "type": "number",
+                        "default": 0.5,
+                        "minimum": 0,
+                        "maximum": 1,
+                        "markdownDescription": "%description.statusText.opacity%",
+                        "order": 5
+                    },
+                    "cursorlinehighlight.statusText.fontStyle": {
+                        "type": "string",
+                        "enum": [
+                            "italic",
+                            "normal"
+                        ],
+                        "default": "italic",
+                        "description": "%description.statusText.fontStyle%",
+                        "order": 6
+                    },
+                    "cursorlinehighlight.statusText.fontWeight": {
+                        "type": "string",
+                        "enum": [
+                            "lighter",
+                            "light",
+                            "normal",
+                            "bold"
+                        ],
+                        "default": "lighter",
+                        "description": "%description.statusText.fontWeight%",
+                        "order": 7
+                    },
+                    "cursorlinehighlight.statusText.cursorOnlyText": {
+                        "type": "string",
+                        "default": "< Editing ... At (idx ${zCol}, zero-based)",
+                        "pattern": "(\t|[\r\n]+)*$",
+                        "patternErrorMessage": "Must be a single line text",
+                        "markdownDescription": "%description.statusText.cursorOnlyText%",
+                        "editPresentation": "singlelineText",
+                        "order": 8
+                    },
+                    "cursorlinehighlight.statusText.singleLineText": {
+                        "type": "string",
+                        "default": "< Selection ... Of (${char} Characters)",
+                        "pattern": "(\t|[\r\n]+)*$",
+                        "patternErrorMessage": "Must be a single line text",
+                        "markdownDescription": "%description.statusText.singleLineText%",
+                        "editPresentation": "singlelineText",
+                        "order": 9
+                    },
+                    "cursorlinehighlight.statusText.multiLineCursorText": {
+                        "type": "string",
+                        "default": "< Selection Cursor ... Of (${lc} Lines, ${char} Characters, Indent/EOL Ignored)",
+                        "pattern": "(\t|[\r\n]+)*$",
+                        "patternErrorMessage": "Must be a single line text",
+                        "markdownDescription": "%description.statusText.multiLineCursorText%",
+                        "editPresentation": "singlelineText",
+                        "order": 10
+                    },
+                    "cursorlinehighlight.statusText.multiLineAnchorText": {
+                        "type": "string",
+                        "default": "< Selection Anchor ... Of (${lc} Lines, ${char} Characters, Indent/EOL Ignored)",
+                        "pattern": "(\t|[\r\n]+)*$",
+                        "patternErrorMessage": "Must be a single line text",
+                        "markdownDescription": "%description.statusText.multiLineAnchorText%",
+                        "editPresentation": "singlelineText",
+                        "order": 11
+                    },
+                    "cursorlinehighlight.statusText.multiCursorText": {
+                        "type": "string",
+                        "default": "< Multi Selection ... Of (${nth} of ${count}, with Total ${lc} Lines ${char} Characters)",
+                        "pattern": "(\t|[\r\n]+)*$",
+                        "patternErrorMessage": "Must be a single line text",
+                        "markdownDescription": "%description.statusText.multiCursorText%",
+                        "editPresentation": "singlelineText",
+                        "order": 12
+                    }
+                }
+            },
+            {
+                "title": "Diagnostic Text",
+                "properties": {
+                    "cursorlinehighlight.diagnosticText.enabled": {
+                        "type": "boolean",
+                        "default": true,
+                        "markdownDescription": "",
+                        "order": 1
+                    },
+                    "cursorlinehighlight.diagnosticText.autoHideDiagnostic": {
+                        "type": "object",
+                        "scope": "resource",
+                        "default": {
+                            "ok": false,
+                            "hint": true,
+                            "information": true,
+                            "warning": true,
+                            "error": true
+                        },
+                        "markdownDescription": "",
+                        "order": 2,
+                        "additionalProperties": false,
+                        "properties": {
+                            "ok": {
+                                "type": "boolean",
+                                "default": false,
+                                "markdownDescription": ""
+                            },
+                            "warning": {
+                                "type": "boolean",
+                                "default": true,
+                                "markdownDescription": ""
+                            },
+                            "error": {
+                                "type": "boolean",
+                                "default": true,
+                                "markdownDescription": ""
+                            }
+                        }
+                    },
+                    "cursorlinehighlight.diagnosticText.okTextStyle": {
+                        "type": "object",
+                        "scope": "resource",
+                        "default": {
+                            "color": "#ffffff",
+                            "colorOpacity": 1,
+                            "backgroundColor": "#00ff00",
+                            "backgroundOpacity": 0.5,
+                            "fontStyle": "normal",
+                            "fontWeight": "bold",
+                            "rounded": "3px"
+                        },
+                        "markdownDescription": "",
+                        "order": 2,
+                        "additionalProperties": false,
+                        "properties": {
+                            "color": {
+                                "type": "string",
+                                "default": "#93A5C1",
+                                "pattern": "^#[A-Fa-f0-9]{6}$|^null$|^$",
+                                "patternErrorMessage": "Invalid Format",
+                                "markdownDescription": ""
+                            },
+                            "colorOpacity": {
+                                "type": "number",
+                                "default": 0.5,
+                                "minimum": 0,
+                                "maximum": 1
+                            },
+                            "backgroundColor": {
+                                "type": "string",
+                                "default": "#93A5C1",
+                                "pattern": "^#[A-Fa-f0-9]{6}$|^null$|^$",
+                                "patternErrorMessage": "Invalid Format",
+                                "markdownDescription": ""
+                            },
+                            "backgroundOpacity": {
+                                "type": "number",
+                                "default": 0.5,
+                                "minimum": 0,
+                                "maximum": 1,
+                                "markdownDescription": ""
+                            },
+                            "fontStyle": {
+                                "type": "string",
+                                "enum": [
+                                    "italic",
+                                    "normal"
+                                ],
+                                "default": "italic",
+                                "markdownDescription": ""
+                            },
+                            "fontWeight": {
+                                "type": "string",
+                                "enum": [
+                                    "lighter",
+                                    "light",
+                                    "normal",
+                                    "bold"
+                                ],
+                                "default": "lighter",
+                                "markdownDescription": ""
+                            },
+                            "rounded": {
+                                "type": "string",
+                                "default": "3px",
+                                "markdownDescription": ""
+                            }
+                        }
+                    },
+                    "cursorlinehighlight.diagnosticText.okContentText": {
+                        "type": "string",
+                        "default": "<>",
+                        "pattern": "(\t|[\r\n]+)*$",
+                        "patternErrorMessage": "Must be a single line text",
+                        "markdownDescription": "",
+                        "editPresentation": "singlelineText",
+                        "order": 12
+                    },
+                    "cursorlinehighlight.diagnosticText.warningTextStyle": {
+                        "type": "object",
+                        "scope": "resource",
+                        "default": {
+                            "color": "#ffffff",
+                            "colorOpacity": 1,
+                            "backgroundColor": "#00ff00",
+                            "backgroundOpacity": 0.5,
+                            "fontStyle": "normal",
+                            "fontWeight": "bold",
+                            "rounded": "3px"
+                        },
+                        "markdownDescription": "",
+                        "order": 2,
+                        "additionalProperties": false,
+                        "properties": {
+                            "color": {
+                                "type": "string",
+                                "default": "#93A5C1",
+                                "pattern": "^#[A-Fa-f0-9]{6}$|^null$|^$",
+                                "patternErrorMessage": "Invalid Format",
+                                "markdownDescription": ""
+                            },
+                            "colorOpacity": {
+                                "type": "number",
+                                "default": 0.5,
+                                "minimum": 0,
+                                "maximum": 1
+                            },
+                            "backgroundColor": {
+                                "type": "string",
+                                "default": "#93A5C1",
+                                "pattern": "^#[A-Fa-f0-9]{6}$|^null$|^$",
+                                "patternErrorMessage": "Invalid Format",
+                                "markdownDescription": ""
+                            },
+                            "backgroundOpacity": {
+                                "type": "number",
+                                "default": 0.5,
+                                "minimum": 0,
+                                "maximum": 1,
+                                "markdownDescription": ""
+                            },
+                            "fontStyle": {
+                                "type": "string",
+                                "enum": [
+                                    "italic",
+                                    "normal"
+                                ],
+                                "default": "italic",
+                                "markdownDescription": ""
+                            },
+                            "fontWeight": {
+                                "type": "string",
+                                "enum": [
+                                    "lighter",
+                                    "light",
+                                    "normal",
+                                    "bold"
+                                ],
+                                "default": "lighter",
+                                "markdownDescription": ""
+                            },
+                            "rounded": {
+                                "type": "string",
+                                "default": "3px",
+                                "markdownDescription": ""
+                            }
+                        }
+                    },
+                    "cursorlinehighlight.diagnosticText.warningContentText": {
+                        "type": "string",
+                        "default": "<${src}/${wrn}>",
+                        "pattern": "(\t|[\r\n]+)*$",
+                        "patternErrorMessage": "Must be a single line text",
+                        "markdownDescription": "",
+                        "editPresentation": "singlelineText",
+                        "order": 12
+                    },
+                    "cursorlinehighlight.diagnosticText.errorTextStyle": {
+                        "type": "object",
+                        "scope": "resource",
+                        "default": {
+                            "color": "#ffffff",
+                            "colorOpacity": 1,
+                            "backgroundColor": "#00ff00",
+                            "backgroundOpacity": 0.5,
+                            "fontStyle": "normal",
+                            "fontWeight": "bold",
+                            "rounded": "3px"
+                        },
+                        "markdownDescription": "",
+                        "order": 2,
+                        "additionalProperties": false,
+                        "properties": {
+                            "color": {
+                                "type": "string",
+                                "default": "#93A5C1",
+                                "pattern": "^#[A-Fa-f0-9]{6}$|^null$|^$",
+                                "patternErrorMessage": "Invalid Format",
+                                "markdownDescription": ""
+                            },
+                            "colorOpacity": {
+                                "type": "number",
+                                "default": 0.5,
+                                "minimum": 0,
+                                "maximum": 1
+                            },
+                            "backgroundColor": {
+                                "type": "string",
+                                "default": "#93A5C1",
+                                "pattern": "^#[A-Fa-f0-9]{6}$|^null$|^$",
+                                "patternErrorMessage": "Invalid Format",
+                                "markdownDescription": ""
+                            },
+                            "backgroundOpacity": {
+                                "type": "number",
+                                "default": 0.5,
+                                "minimum": 0,
+                                "maximum": 1,
+                                "markdownDescription": ""
+                            },
+                            "fontStyle": {
+                                "type": "string",
+                                "enum": [
+                                    "italic",
+                                    "normal"
+                                ],
+                                "default": "italic",
+                                "markdownDescription": ""
+                            },
+                            "fontWeight": {
+                                "type": "string",
+                                "enum": [
+                                    "lighter",
+                                    "light",
+                                    "normal",
+                                    "bold"
+                                ],
+                                "default": "lighter",
+                                "markdownDescription": ""
+                            },
+                            "rounded": {
+                                "type": "string",
+                                "default": "3px",
+                                "markdownDescription": ""
+                            }
+                        }
+                    },
+                    "cursorlinehighlight.diagnosticText.errorContentText": {
+                        "type": "string",
+                        "default": "<${src}/${err}>",
+                        "pattern": "(\t|[\r\n]+)*$",
+                        "patternErrorMessage": "Must be a single line text",
+                        "markdownDescription": "",
+                        "editPresentation": "singlelineText",
+                        "order": 12
                     }
                 }
             }
