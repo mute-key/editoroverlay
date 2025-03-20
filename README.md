@@ -13,6 +13,25 @@ this extension will also display status text where the selection is.
 
 `ctrl + shift + p` and search/open Settign UI, then search 'cursorline'
 
+
+## Table of contents 
+0. tl;dr
+1. General
+2. Status (Selection Status)
+3. Cursor Only 
+4. Single Line
+5. Multi Line
+6. Multi Cursor 
+7. Diagnostic (Workspace Problems)
+    - Bind to Current Editor 
+    - Bind To workspace 
+
+## 0. tl;dr
+
+
+
+
+
 ## 1. General
 
 `General -> borderOpacity`
@@ -21,7 +40,7 @@ this extension will also display status text where the selection is.
 `General -> backgroundOpacity`
 > Opacity of background color of selection in __```%```__. __```1```__ is no opacity.
 
-## 2. Selection Status
+## 2. Status (Selection)
 
 `statusText -> enabled`
 > Enable inline status text.
@@ -44,48 +63,48 @@ this extension will also display status text where the selection is.
 `statusText -> cursorOnlyText`
 > Status Text for Cursor Only Selection.<br>Example: `< Editing ... At (idx ${zCol}, zero-based)`
 
-| Placeholder | Description |
-| -------- | ------- |
-| __```${col}```__ | Current position of cursor (as on status bar) |
-| __```${zCol}```__ | count of characters in line (Zero based)|
-| __```${ln}```__ | current line number |
+| Placeholder       | Description                                   |
+| ----------------- | --------------------------------------------- |
+| __```${col}```__  | Current position of cursor (as on status bar) |
+| __```${zCol}```__ | count of characters in line (Zero based)      |
+| __```${ln}```__   | current line number                           |
 
 `statusText -> singleLineText`
 > Status Text for Single Line Selection.<br>Example: `< Selection ... Of (${char} Characters)`
 
-| Placeholder | Description |
-| -------- | ------- |
+| Placeholder       | Description                  |
+| ----------------- | ---------------------------- |
 | __```${char}```__ | character count of selection |
-| __```${ln}```__ | current line number |
+| __```${ln}```__   | current line number          |
 
 `statusText -> multiLineCursorText`
 > Status Text for _'Multi Line Selection (Active Cursor)'_.<br>Example: `< Selection Cursor ... Of (${lc} Lines, ${char} Characters, Indent/EOL Ignored)`
 
-| Placeholder | Description |
-| -------- | ------- |
-| __```${ln}```__ | selection cursor line number |
-| __```${lc}```__ | line count of selection |
+| Placeholder       | Description                  |
+| ----------------- | ---------------------------- |
+| __```${ln}```__   | selection cursor line number |
+| __```${lc}```__   | line count of selection      |
 | __```${char}```__ | character count of selection |
 
 `statusText -> multiLineAnchorText`
 > Status Text for _'Multi Line Selection (Anchor)'_.<br>Example: `< Selection Anchor ... Of (${lc} Lines, ${char} Characters, Indent/EOL Ignored)`
 
-| Placeholder | Description |
-| -------- | ------- |
-| __```${ln}```__ | selection anchor line number |
-| __```${lc}```__ | line count of selection |
+| Placeholder       | Description                  |
+| ----------------- | ---------------------------- |
+| __```${ln}```__   | selection anchor line number |
+| __```${lc}```__   | line count of selection      |
 | __```${char}```__ | character count of selection |
 
 `statusText -> multiCursorText`
 > Status Text for _'Multi Cursor Selection'_.<br>Example: `< Multi Selection ... Of (${nth} of ${count}, with Total ${lc} Lines ${char} Characters)`
 
-| Placeholder | Description |
-| -------- | ------- |
-| __```${nth}```__ | position of selection |
-| __```${count}```__ | count of selection |
-| __```${lc}```__ | total line count of selection |
-| __```${ln}```__ | selection line number of last line |
-| __```${char}```__ | total character count of selection |
+| Placeholder        | Description                        |
+| ------------------ | ---------------------------------- |
+| __```${nth}```__   | position of selection              |
+| __```${count}```__ | count of selection                 |
+| __```${lc}```__    | total line count of selection      |
+| __```${ln}```__    | selection line number of last line |
+| __```${char}```__  | total character count of selection |
 
 ## 3. Cursor Only
 
@@ -157,3 +176,46 @@ this extension will also display status text where the selection is.
 
 `multiCursor -> borderStyle`
 > Border style on current selection
+
+## 7. Diagnostic (Workspace problems) 
+
+
+
+
+## Extra 
+
+#### Color code 
+<!-- 
+#5eccff
+#19b4fd // blue 
+#009FFF
+#52b100 // dark green 
+#8ae71d // green
+#b3b3b3 // grey
+#fdf6e3 // white
+#c2c0b9
+#dc322e // red
+#ff5755 // red
+#ff706e // red
+#eb5856
+#ffd200
+#ff6b69
+#ff5b58
+#a3d900
+#89e71d
+
+#d0ff438e
+
+#FFD200
+#c49600
+
+#a3d900 -->
+
+#ffd200
+#c49600
+
+#52b100
+null
+#8ae71d
+null
+

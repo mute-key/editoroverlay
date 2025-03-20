@@ -57,6 +57,18 @@ export const enum BORDER_POSITION_VARIATION {
     // TOP_LEFT = 'top-left',
 }
 
+export const enum BORDER_POSITION_MASK {
+    NONE = 0b0000,
+    BOTTOM = 0b0010,
+    BOTTOM_LEFT = 0b0011,
+    TOP = 0b1000,
+    TOP_LEFT = 0b1001,
+    TOP_BOTTOM = 0b1010,
+    TOP_RIGHT_BOTTOM_LEFT = 0b1111,
+    LEFT = 0b0001,
+}
+
+
 /**
  * this enum does not need RESET field.
  * use as KEY only
@@ -88,7 +100,7 @@ export const enum CONFIG_KEY_LINKER {
     STATUS_TEXT_ENABLED = 'statusText.enabled',
     DIAGNOSTIC_TEXT_ENABLED = 'diagnosticText.enabled',
 }
-    
+
 export const enum CONFIG_SECTION_KEY {
     GENERAL = 'general',
     CURSOR_ONLY = 'cursorOnly',
@@ -107,25 +119,45 @@ export const enum STATUS_CONTENT_TEXT_CONFIG_KEY {
     MULTI_CURSOR_TEXT = 'multiCursorText',
 }
 
-export const enum DIAGNOSTIC_CONTENT_TEXT_CONFIG_KEY {
+export const enum DIAGNOSTIC_SEVERITY_KEY {
+    WARNING = 'warning',
+    ERROR = 'error'
+}
+
+export const enum DIAGNOSTIC_CONTENT_TEXT_KIND {
     OK_CONTENT_TEXT = 'okContentText',
     WARNING_CONTENT_TEXT = 'warningContentText',
     ERROR_CONTENT_TEXT = 'errorContentText',
 }
 
-/**
- * Array loop execution time: 21565757 nanoseconds
- * Bitwise loop execution time: 19745194 nanoseconds
- * - when loop size of 1000000.
- * 
- */
-export const enum BORDER_POSITION_MASK {
-    NONE = 0b0000,
-    BOTTOM = 0b0010,
-    BOTTOM_LEFT = 0b0011,
-    TOP = 0b1000,
-    TOP_LEFT = 0b1001,
-    TOP_BOTTOM = 0b1010,
-    TOP_RIGHT_BOTTOM_LEFT = 0b1111,
-    LEFT = 0b0001,
+export const enum DIAGNOSTIC_CONTENT_TEXT_KEY {
+    PLACEHOLDER_PROBLEM_CONTENT_TEXT = 'problemPlaceholderContentText',
+    PLACEHOLDER_ALL_OK_CONTENT_TEXT = 'allOkPlaceholderContentText',
+    OK_WORKSPACE_CONTENT_TEXT = 'okWorkspaceContentText',
+    OK_EDITOR_CONTENT_TEXT = 'okEditorContentText',
+    OK_ALL_CONTENT_TEXT = 'okAllContentText',
+    WARNING_WORKSPACE_CONTENT_TEXT = 'warningWorkspaceContentText',
+    WARNING_EDITOR_CONTENT_TEXT = 'warningEditorContentText',
+    ERROR_WORKSPACE_CONTENT_TEXT = 'errorWorkspaceContentText',
+    ERROR_EDITOR_CONTENT_TEXT = 'errorEditorContentText',
 }
+
+export const enum DIAGNOSTIC_TEXT_STYLE_KEY {
+    DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE = 'diagnosticPlaceholderTextStyle',
+    OK_NOTATION_TEXT_STYLE = 'okNotationTextStyle',
+    OK_TEXT_STYLE = 'okTextStyle',
+    WARNING_NOTATION_TEXT_STYLE = 'warningNotationTextStyle',
+    WARNINGTEXT_STYLE = 'warningTextStyle',
+    ERROR_NOTATION_TEXT_STYLE = 'errorNotationTextStyle',
+    ERROR_TEXT_STYLE = 'errorTextStyle', 
+}
+
+export const enum DIAGNOSTIC_BIOME {
+    NONE = 0,
+    ALL = 0b0111,
+    OK = 1 << 0,
+    WARN = 1 << 1,
+    ERR = 1 << 2,
+}
+
+

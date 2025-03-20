@@ -1,40 +1,40 @@
 import * as vscode from 'vscode';
 import * as StatusType from './status.d';
-import * as ConfigType from './config.d';
-import { 
-    DECORATION_STYLE_CONFIG_KEY, 
-    DECORATION_TYPE_MASK, SELECTION_TYPE 
-} from "src/constant/enum";
-import { 
-    DECORATION_STYLE_PREFIX 
-} from "src/constant/object";
+import * as ConfigType from './configuration';
+import * as DiagnosticType from './diagnostic.d';
+import { DECORATION_STYLE_CONFIG_KEY, DECORATION_TYPE_MASK, SELECTION_TYPE } from "src/constant/enum";
+import { DECORATION_STYLE_PREFIX } from "src/constant/object";
 
 type DecorationTypeSplit = {
     [K in keyof typeof DECORATION_STYLE_PREFIX]: string[]
 }
 
-type appliedDecoration = {
+type AppliedHighlightType = {
     applied?: DecorationInfoPropType,
-    editorDecoration?: vscode.TextEditorDecorationType[]
+    ofDecorationType?: vscode.TextEditorDecorationType[]
 };
 
 type DecorationStateType = {
-    decorationList: DecorationType
-    appliedDecoration: appliedDecoration
-    statusText?: vscode.TextEditorDecorationType[]
-    diagnosticText?: vscode.TextEditorDecorationType[]
+    highlightStyleList: HighlightType
+    appliedHighlight: AppliedHighlightType
+    selectionText: vscode.TextEditorDecorationType[] | readonly[]
+    diagnosticText: vscode.TextEditorDecorationType[] | readonly[],
+    statusInfo?: {
+        [key: string] : StatusType.StatusTextInfoType[]
+    }
 }
+
 type DecorationStyleKeyOnlyType = keyof typeof DECORATION_STYLE_PREFIX
 
-type DecorationType = Record<DecorationStyleKeyOnlyType, vscode.TextEditorDecorationType[] | undefined>;
+type HighlightType = Record<DecorationStyleKeyOnlyType, vscode.TextEditorDecorationType[] | undefined>;
 
-type UnsetDecorationFunctionType = (decorationStatus: DecorationStateType, editor?: vscode.TextEditor, dispose?: boolean) => (decorationInfo: DecorationInfoPropType) => void;
+type UnsetDecorationFunctionType = (decorationStatus: DecorationStateType, editor?: vscode.TextEditor) => (decorationInfo: DecorationInfoPropType) => void;
 
 type DecorationContext = {
     editor: vscode.TextEditor
     configInfo: ConfigType.ConfigInfoReadyType
-    statusInfo?: StatusType.StatusInfoType
-    decorationInfo: DecorationInfoPropType;
+    indentInfo: StatusType.IndentType
+    decorationInfo: DecorationInfoPropType
     decorationState: DecorationStateType
 };
 
@@ -45,7 +45,7 @@ type DecorationInfoPropType = {
 
 type SetDecorationOnEditorFunc = (context: DecorationContext) => void;
 
-type DecorationCoordinatorFunc = (context: DecorationContext) => DecorationWithRangeType[] | undefined;
+type DecorationCoordinatorFunc = (context: DecorationContext) => DecorationWithRangeType[];
 
 type UnsetFunctionType = (decorationInfo: DecorationInfoPropType) => void
 
@@ -76,7 +76,7 @@ type createRange = {
     endPosition: number[] | vscode.Position
 }
 
-type CoordinatorSplitType = Record<string, (context: SelectionTypeToDecorationContext) => DecorationWithRangeType[]>
+type CoordinatorSplitType = Record<string, (context: SelectionHighlightKindContext) => DecorationWithRangeType[]>
 
 type BorderPositionParserType = {
     isWholeLine: boolean,
@@ -89,13 +89,13 @@ type BorderPositionParserType = {
 
 type BorderPositionInfoType = Record<DecorationStyleKeyOnlyType, BorderPositionParserType | undefined>;
 
-type SelectionTypeToDecorationContext = {
+type SelectionHighlightKindContext = {
     editor: vscode.TextEditor,
     borderConfig: BorderPositionParserType
-    textEditorDecoration: vscode.TextEditorDecorationType[]
+    textEditorHighlight: vscode.TextEditorDecorationType[]
 }
 
-type SelectionTypeToDecorationFunc = (context: SelectionTypeToDecorationContext) => DecorationWithRangeType[]
+type SelectionTypeToDecorationFunc = (context: SelectionHighlightKindContext) => DecorationWithRangeType[]
 
 
 type DecorationStyleConfigType = {
@@ -122,3 +122,64 @@ type ColourConfigTransformType = {
     of: string,
     fn: (v: string, n: number, d: string) => string
 }
+
+type DecorationTextStyleConfig = {
+    color?: string
+    colorOpacity?: number
+    backgroundColor?: string
+    backgroundOpacity?: number
+    fontStyle?: string
+    fontWeight?: string,
+    margin?: string
+}
+
+type DecorationTextPrePostFixStyleConfig = {
+    prefix?: string
+    postfix?: string
+    color?: string
+    colorOpacity?: number
+    backgroundColor?: string
+    backgroundOpacity?: number
+    fontStyle?: string
+    fontWeight?: string
+    margin?: string
+}
+
+type DecorationRenderAfterOptionType = {
+    contentText?: string | any,
+    color?: string,
+    backgroundColor?: string,
+    fontWeight?: string,
+    fontStyle?: string,
+    textDecoration?: string,
+    margin?: string
+} & {}
+
+type DecorationRenderOptionType = {
+    isWholeLine?: boolean,
+    rangeBehavior?: any,
+    after: {
+    } & DecorationRenderAfterOptionType
+}
+
+type DecorationRenderOptionReadyType = {
+    isWholeLine: boolean,
+    after: {
+        contentText: string,
+        color: string,
+        backgroundColor: string | undefined
+    }
+} & DecorationRenderOptionType
+
+type ContentTextPositionType = {
+    contentText: (string | any)[],
+    position: {
+        [key: number]: string
+    }
+}
+
+type ContentTextCollectionType = {
+    [key: string] : ContentTextPositionType
+}
+
+

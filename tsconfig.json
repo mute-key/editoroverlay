@@ -15,7 +15,8 @@
 		// "noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
 		// "noUnusedParameters": true, /* Report errors on unused parameters. */
 		"declaration": true,
-		"declarationDir": "src/types"
+		"declarationDir": "src/types",
+		// "types": [],
 
 	},
 	"include": [

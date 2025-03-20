@@ -1,38 +1,30 @@
 import * as vscode from 'vscode';
 import * as Type from '../type/type';
-import {
-    regex
-} from '../util/util';
-import {
-    DECORATION_INFO
-} from '../constant/object';
+import Regex from '../util/regex.collection';
 
-const editorIndentOption = (statusInfo: Type.StatusInfoType, editor: vscode.TextEditor): void => {
-    statusInfo.indent.size = Number(editor.options.tabSize ?? editor.options.indentSize ?? 4);
-    statusInfo.indent.type = editor.options.insertSpaces ? '\n' : '\t';
-    statusInfo.indent.regex = editor.options.insertSpaces
-        ? regex.indentAndEOLRegex(statusInfo.indent.size)
-        : regex.tagtAndEOLRegex;
+const editorIndentOption = (editor?: vscode.TextEditor): Type.IndentType => {
+    const indentSize = Number(editor?.options.tabSize ?? editor?.options.indentSize ?? 4);
+    const indentType = editor?.options.insertSpaces ? '\n' : '\t';
+    const editorRegex = editor?.options.insertSpaces
+        ? Regex.indentAndEOLRegex(indentSize)
+        : Regex.tagtAndEOLRegex;
+
+    return {
+        size: indentSize ? indentSize : undefined,
+        type: indentType ? indentType : undefined,
+        regex: editorRegex ? editorRegex : undefined
+    };
 };
 
-const getSelectionType = (editor: vscode.TextEditor): Type.DecorationInfoPropType | undefined => {
-
-    if (editor.selections.length === 1) {
-        if (editor.selections[0].isEmpty) {
-            return DECORATION_INFO.CURSOR_ONLY;
-        } else {
-            if (editor.selections[0].isSingleLine) {
-                return DECORATION_INFO.SINGLE_LINE;
-            } else {
-                return DECORATION_INFO.MULTI_LINE;
-            }
-        }
-    } else if (editor.selections.length > 1) {
-        return DECORATION_INFO.MULTI_CURSOR;
-    }
+const updateIndentOption = (editor: vscode.TextEditor, indent: Type.IndentReadyType): void => {
+    indent.size = Number(editor.options.tabSize ?? editor.options.indentSize ?? 4);
+    indent.type = editor.options.insertSpaces ? '\n' : '\t';
+    indent.regex = editor.options.insertSpaces
+        ? Regex.indentAndEOLRegex(indent.size)
+        : Regex.tagtAndEOLRegex;
 };
 
 export {
     editorIndentOption,
-    getSelectionType
+    updateIndentOption,
 };

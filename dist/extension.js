@@ -35,13 +35,20 @@ __export(extension_exports, {
 });
 module.exports = __toCommonJS(extension_exports);
 
-// src/activate.ts
-var vscode10 = __toESM(require("vscode"));
-
-// src/config/config.ts
-var vscode7 = __toESM(require("vscode"));
+// src/initialize.ts
+var vscode13 = __toESM(require("vscode"));
 
 // src/constant/object.ts
+var vscode = __toESM(require("vscode"));
+var CONFIG_SECTION = {
+  ["general" /* GENERAL */]: "general" /* GENERAL */,
+  ["statusText" /* STATUS_TEXT */]: "statusText" /* STATUS_TEXT */,
+  ["cursorOnly" /* CURSOR_ONLY */]: "cursorOnly" /* CURSOR_ONLY */,
+  ["singleLine" /* SINGLE_LINE */]: "singleLine" /* SINGLE_LINE */,
+  ["multiLine" /* MULTI_LINE */]: "multiLine" /* MULTI_LINE */,
+  ["multiCursor" /* MULTI_CURSOR */]: "multiCursor" /* MULTI_CURSOR */,
+  ["diagnosticText" /* DIAGNOSTIC_TEXT */]: "diagnosticText" /* DIAGNOSTIC_TEXT */
+};
 var CONFIG_INFO = {
   name: void 0,
   configHashKey: void 0,
@@ -57,53 +64,68 @@ var CONFIG_INFO = {
     MULTI_LINE: void 0,
     MULTI_CURSOR: void 0
   },
-  statusTextConfig: {
-    color: void 0,
-    opacity: void 0,
-    backgroundColor: void 0,
-    fontStyle: void 0,
-    fontWeight: void 0,
-    cursorOnlyText: void 0,
-    singleLineText: void 0,
-    multiLineCursorText: void 0,
-    multiLineAnchorText: void 0,
-    multiCursorText: void 0
-  },
   configError: void 0
 };
-var STATUS_INFO = {
-  indent: {
-    size: void 0,
-    type: void 0,
-    regex: void 0
-  },
-  statusDecoration: {
-    isWholeLine: void 0,
-    rangeBehavior: void 0,
-    after: {
-      contentText: void 0,
-      color: void 0,
-      backgroundColor: void 0,
-      fontWeight: void 0,
-      fontStyle: void 0,
-      textDecoration: "none",
-      margin: "0 0 0 20px"
-    }
+var SELECTION_DECORAITON_CONFIG = {
+  color: void 0,
+  colorOpacity: void 0,
+  backgroundColor: void 0,
+  backgroundOpacity: void 0,
+  fontStyle: void 0,
+  fontWeight: void 0,
+  leftMargin: void 0,
+  cursorOnlyText: void 0,
+  singleLineText: void 0,
+  multiLineCursorText: void 0,
+  multiLineAnchorText: void 0,
+  multiCursorText: void 0,
+  selectionCountTextStyle: {
+    ln: void 0,
+    col: void 0,
+    zCol: void 0,
+    char: void 0,
+    lc: void 0,
+    nth: void 0,
+    count: void 0,
+    opacity: void 0,
+    fontStyle: void 0,
+    fontWeight: void 0
+  }
+};
+var SELECTION_CONTENT_TEXT_LIST = [
+  "cursorOnlyText",
+  "singleLineText",
+  "multiLineCursorText",
+  "multiLineAnchorText",
+  "multiCursorText"
+];
+var SELECTION_DECORATION_STYLE = {
+  leftMargin: void 0,
+  placeholderDecorationOption: {},
+  selectionDecorationOption: {
+    ln: void 0,
+    col: void 0,
+    zCol: void 0,
+    char: void 0,
+    lc: void 0,
+    nth: void 0,
+    count: void 0
   }
 };
 var DECORATION_STATE = {
-  decorationList: {
+  highlightStyleList: {
     CURSOR_ONLY: void 0,
     SINGLE_LINE: void 0,
     MULTI_LINE: void 0,
     MULTI_CURSOR: void 0
   },
-  appliedDecoration: {
+  appliedHighlight: {
     applied: void 0,
-    editorDecoration: void 0
+    ofDecorationType: void 0
   },
-  statusText: void 0,
-  diagnosticText: void 0
+  selectionText: [],
+  diagnosticText: [],
+  statusInfo: void 0
 };
 var DECORATION_STYLE_PREFIX = {
   CURSOR_ONLY: "cursorOnly",
@@ -111,110 +133,158 @@ var DECORATION_STYLE_PREFIX = {
   MULTI_LINE: "multiLine",
   MULTI_CURSOR: "multiCursor"
 };
-var DIAGNOSTIC_CONFIG = {
-  autoHideDiagnostic: {
-    ok: void 0,
-    warning: void 0,
-    error: void 0
-  },
-  okTextStyle: {
-    color: void 0,
-    colorOpacity: void 0,
-    backgroundColor: void 0,
-    backgroundOpacity: void 0,
-    fontStyle: void 0,
-    fontWeight: void 0,
-    rounded: void 0
-  },
-  okContentText: void 0,
-  warningTextStyle: {
-    color: void 0,
-    colorOpacity: void 0,
-    backgroundColor: void 0,
-    backgroundOpacity: void 0,
-    fontStyle: void 0,
-    fontWeight: void 0,
-    rounded: void 0
-  },
-  warningContentText: void 0,
-  errorTextStyle: {
-    color: void 0,
-    colorOpacity: void 0,
-    backgroundColor: void 0,
-    backgroundOpacity: void 0,
-    fontStyle: void 0,
-    fontWeight: void 0,
-    rounded: void 0
-  },
-  errorContentText: void 0
+var DECORATION_OPTION_CONFIG = {
+  isWholeLine: void 0,
+  rangeBehavior: void 0,
+  after: {}
 };
-var DIAGONOSTIC_STATE = {
-  total: 0,
-  source: 0,
-  severity: {
-    hint: 0,
-    info: 0,
-    warning: 0,
-    error: 0
+var DECORATION_OPTION_AFTER_CONFIG = {
+  contentText: void 0,
+  color: void 0,
+  backgroundColor: void 0,
+  fontWeight: void 0,
+  fontStyle: void 0,
+  textDecoration: void 0,
+  margin: void 0
+};
+var DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET = {
+  ["okContentText" /* OK_CONTENT_TEXT */]: "okEditorContentText" /* OK_EDITOR_CONTENT_TEXT */,
+  ["warningContentText" /* WARNING_CONTENT_TEXT */]: "warningEditorContentText" /* WARNING_EDITOR_CONTENT_TEXT */,
+  ["errorContentText" /* ERROR_CONTENT_TEXT */]: "errorEditorContentText" /* ERROR_EDITOR_CONTENT_TEXT */
+};
+var DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET = {
+  ["okContentText" /* OK_CONTENT_TEXT */]: "okWorkspaceContentText" /* OK_WORKSPACE_CONTENT_TEXT */,
+  ["warningContentText" /* WARNING_CONTENT_TEXT */]: "warningWorkspaceContentText" /* WARNING_WORKSPACE_CONTENT_TEXT */,
+  ["errorContentText" /* ERROR_CONTENT_TEXT */]: "errorWorkspaceContentText" /* ERROR_WORKSPACE_CONTENT_TEXT */
+};
+var DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER = {
+  ["okNotationTextStyle" /* OK_NOTATION_TEXT_STYLE */]: "okWorkspaceContentText",
+  ["warningNotationTextStyle" /* WARNING_NOTATION_TEXT_STYLE */]: "warningWorkspaceContentText",
+  ["errorNotationTextStyle" /* ERROR_NOTATION_TEXT_STYLE */]: "errorWorkspaceContentText"
+};
+var DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER = {
+  ["okNotationTextStyle" /* OK_NOTATION_TEXT_STYLE */]: "okEditorContentText",
+  ["warningNotationTextStyle" /* WARNING_NOTATION_TEXT_STYLE */]: "warningEditorContentText",
+  ["errorNotationTextStyle" /* ERROR_NOTATION_TEXT_STYLE */]: "errorEditorContentText"
+};
+var DIAGNOSTIC_ALL_PLACEHOLDER_LINKER = {
+  ["okNotationTextStyle" /* OK_NOTATION_TEXT_STYLE */]: "okAllContentText"
+};
+var DECORATION_OPTION_LINKER = {
+  problemPlaceholderContentText: ["diagnosticPlaceholderTextStyle" /* DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE */, void 0],
+  allOkPlaceholderContentText: ["diagnosticPlaceholderTextStyle" /* DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE */, void 0],
+  okWorkspaceContentText: ["okTextStyle" /* OK_TEXT_STYLE */, "okNotationTextStyle" /* OK_NOTATION_TEXT_STYLE */],
+  okEditorContentText: ["okTextStyle" /* OK_TEXT_STYLE */, "okNotationTextStyle" /* OK_NOTATION_TEXT_STYLE */],
+  okAllContentText: ["okTextStyle" /* OK_TEXT_STYLE */, "okNotationTextStyle" /* OK_NOTATION_TEXT_STYLE */],
+  warningWorkspaceContentText: ["warningTextStyle" /* WARNINGTEXT_STYLE */, "warningNotationTextStyle" /* WARNING_NOTATION_TEXT_STYLE */],
+  warningEditorContentText: ["warningTextStyle" /* WARNINGTEXT_STYLE */, "warningNotationTextStyle" /* WARNING_NOTATION_TEXT_STYLE */],
+  errorWorkspaceContentText: ["errorTextStyle" /* ERROR_TEXT_STYLE */, "errorNotationTextStyle" /* ERROR_NOTATION_TEXT_STYLE */],
+  errorEditorContentText: ["errorTextStyle" /* ERROR_TEXT_STYLE */, "errorNotationTextStyle" /* ERROR_NOTATION_TEXT_STYLE */]
+};
+var DIAGNOSTIC_STYLE_LIST = [
+  ["okNotationTextStyle" /* OK_NOTATION_TEXT_STYLE */, "okTextStyle" /* OK_TEXT_STYLE */],
+  ["warningNotationTextStyle" /* WARNING_NOTATION_TEXT_STYLE */, "warningTextStyle" /* WARNINGTEXT_STYLE */],
+  ["errorNotationTextStyle" /* ERROR_NOTATION_TEXT_STYLE */, "errorTextStyle" /* ERROR_TEXT_STYLE */]
+];
+var DIAGNOSTIC_VISIBILITY_CONFIG = {
+  DiagnosticKind: void 0,
+  placeTextOnPreviousOrNextLine: void 0,
+  overrideLayoutPlaceholderColorToHighestSeverity: void 0,
+  overrideAllOk: void 0,
+  hideOk: void 0,
+  hideWarning: void 0
+};
+var DIAGNOSTIC_CONFIG = {
+  leftMargin: void 0,
+  visibility: DIAGNOSTIC_VISIBILITY_CONFIG,
+  problemPlaceholderContentText: void 0,
+  allOkPlaceholderContentText: void 0,
+  ["diagnosticPlaceholderTextStyle" /* DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE */]: void 0,
+  ["okNotationTextStyle" /* OK_NOTATION_TEXT_STYLE */]: void 0,
+  ["okTextStyle" /* OK_TEXT_STYLE */]: void 0,
+  okWorkspaceContentText: void 0,
+  okEditorContentText: void 0,
+  okAllContentText: void 0,
+  ["warningNotationTextStyle" /* WARNING_NOTATION_TEXT_STYLE */]: void 0,
+  ["warningTextStyle" /* WARNINGTEXT_STYLE */]: void 0,
+  warningWorkspaceContentText: void 0,
+  warningEditorContentText: void 0,
+  ["errorNotationTextStyle" /* ERROR_NOTATION_TEXT_STYLE */]: void 0,
+  ["errorTextStyle" /* ERROR_TEXT_STYLE */]: void 0,
+  errorWorkspaceContentText: void 0,
+  errorEditorContentText: void 0
+};
+var DIAGNOSTIC_STATE = {
+  severity: 0,
+  editor: {
+    warning: {
+      total: 0
+    },
+    error: {
+      total: 0
+    }
   },
-  diagonosticDecoration: []
+  workspace: {
+    warning: {
+      source: 0,
+      total: 0
+    },
+    error: {
+      source: 0,
+      total: 0
+    }
+  }
+};
+var DIAGNOSTIC_DECORATION_STYLE = {
+  leftMargin: void 0,
+  diagonosticDecorationOption: {
+    ["diagnosticPlaceholderTextStyle" /* DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE */]: void 0,
+    ["okTextStyle" /* OK_TEXT_STYLE */]: void 0,
+    // change to const enum laster
+    ["okNotationTextStyle" /* OK_NOTATION_TEXT_STYLE */]: void 0,
+    // change to const enum laster
+    ["warningTextStyle" /* WARNINGTEXT_STYLE */]: void 0,
+    // change to const enum laster
+    ["warningNotationTextStyle" /* WARNING_NOTATION_TEXT_STYLE */]: void 0,
+    // change to const enum laster
+    ["errorTextStyle" /* ERROR_TEXT_STYLE */]: void 0,
+    // change to const enum laster
+    ["errorNotationTextStyle" /* ERROR_NOTATION_TEXT_STYLE */]: void 0
+    // change to const enum laster
+  }
+};
+var DIAGNOSTIC_SEVERITY_TO_KEY = {
+  [vscode.DiagnosticSeverity.Warning]: "warning" /* WARNING */,
+  [vscode.DiagnosticSeverity.Error]: "error" /* ERROR */
 };
 var STATUS_CONTENT_TEXT = {
-  ["cursorOnlyText" /* CURSOR_ONLY_TEXT */]: {
-    contentText: void 0,
-    col: void 0,
-    zCol: void 0,
-    ln: void 0
-  },
-  ["singleLineText" /* SINGLE_LINE_TEXT */]: {
-    contentText: void 0,
-    char: void 0,
-    ln: void 0
-  },
-  ["multiLineCursorText" /* MULTI_LINE_CURSOR_TEXT */]: {
-    contentText: void 0,
-    ln: void 0,
-    lc: void 0,
-    char: void 0
-  },
-  ["multiLineAnchorText" /* MULTI_LINE_ANCHOR_TEXT */]: {
-    contentText: void 0,
-    ln: void 0,
-    lc: void 0,
-    char: void 0
-  },
-  ["multiCursorText" /* MULTI_CURSOR_TEXT */]: {
-    contentText: void 0,
-    nth: void 0,
-    count: void 0,
-    ln: void 0,
-    lc: void 0,
-    char: void 0
-  }
+  ["cursorOnlyText" /* CURSOR_ONLY_TEXT */]: void 0,
+  ["singleLineText" /* SINGLE_LINE_TEXT */]: void 0,
+  ["multiLineCursorText" /* MULTI_LINE_CURSOR_TEXT */]: void 0,
+  ["multiLineAnchorText" /* MULTI_LINE_ANCHOR_TEXT */]: void 0,
+  ["multiCursorText" /* MULTI_CURSOR_TEXT */]: void 0
 };
 var DIAGNOSTIC_CONTENT_TEXT = {
-  ["okContentText" /* OK_CONTENT_TEXT */]: {
-    contentText: void 0
-  },
-  ["warningContentText" /* WARNING_CONTENT_TEXT */]: {
-    contentText: void 0,
-    src: void 0,
-    wrn: void 0
-  },
-  ["errorContentText" /* ERROR_CONTENT_TEXT */]: {
-    contentText: void 0,
-    src: void 0,
-    err: void 0
-  }
+  layout: {},
+  editor: {},
+  workspace: {},
+  all: {}
 };
-var CONFIG_SECTION = {
-  ["general" /* GENERAL */]: "general" /* GENERAL */,
-  ["statusText" /* STATUS_TEXT */]: "statusText" /* STATUS_TEXT */,
-  ["cursorOnly" /* CURSOR_ONLY */]: "cursorOnly" /* CURSOR_ONLY */,
-  ["singleLine" /* SINGLE_LINE */]: "singleLine" /* SINGLE_LINE */,
-  ["multiLine" /* MULTI_LINE */]: "multiLine" /* MULTI_LINE */,
-  ["multiCursor" /* MULTI_CURSOR */]: "multiCursor" /* MULTI_CURSOR */
+var DIAGNOSTIC_DECORATION_TEXT_KIND = {
+  contentText: void 0,
+  placeholder: void 0
 };
+var DIAGNOSTIC_CONTENT_TEXT_LIST = [
+  "problemPlaceholderContentText",
+  "allOkPlaceholderContentText",
+  "okWorkspaceContentText",
+  "okEditorContentText",
+  "okAllContentText",
+  "warningWorkspaceContentText",
+  "warningEditorContentText",
+  "errorWorkspaceContentText",
+  "errorEditorContentText"
+];
 var SINGLE_BORDER_SELECTION = {
   ["none" /* NONE */]: [
     0 /* NONE */
@@ -326,82 +396,621 @@ var NO_CONFIGURATION_DEOCORATION_DEFAULT = {
   }
 };
 
-// src/util/util.ts
-var vscode = __toESM(require("vscode"));
+// src/editor/decoration/decoration.ts
+var vscode4 = __toESM(require("vscode"));
 
-// src/util/regex.ts
-var indentAndEOLRegex = (indentSize) => new RegExp(`^( {${indentSize}}|[\r
-]+)*$`, "gm");
-var tagtAndEOLRegex = /(\t|[\r\n]+)*$/gm;
-var isValidHexColor = /^#[A-Fa-f0-9]{6}$/;
-var isValidWidth = /^[0-9]px$|^[0-9]em$/;
-var ifContentTextHasPlaceholder = /(\${[A-z]*})/g;
-var contentTextKeysOnly = /\${([^{}]+)}/s;
-var diagnosticTextRegex = {
-  // [DIAGNOSTIC_CONTENT_TEXT_CONFIG_KEY.OK_TEXT]: null,
-  ["warningContentText" /* WARNING_CONTENT_TEXT */]: {
-    src: /(\${src})/s,
-    wrn: /(\${wrn})/s
-  },
-  ["errorContentText" /* ERROR_CONTENT_TEXT */]: {
-    src: /(\${src})/s,
-    err: /(\${err})/s
+// src/editor/range.ts
+var vscode2 = __toESM(require("vscode"));
+var createRangeNNNN = (startLine, startChar, endLine, endChar) => new vscode2.Range(
+  new vscode2.Position(startLine, startChar),
+  new vscode2.Position(endLine, endChar)
+);
+var createRangeSPEP = (start, end) => new vscode2.Range(start, end);
+var createRangeNNEP = (line, startChar, end) => new vscode2.Range(
+  new vscode2.Position(line, startChar),
+  end
+);
+var createCursorRange = (editor2, lineDelta = 0) => new vscode2.Range(
+  new vscode2.Position(editor2.selection.end.line + lineDelta, editor2.selection.end.character),
+  new vscode2.Position(editor2.selection.end.line + lineDelta, editor2.selection.end.character)
+);
+var createActiveRange = (editor2) => createRangeSPEP(editor2.selection.active, editor2.selection.active);
+var createAnchorRange = (editor2) => createRangeSPEP(editor2.selection.anchor, editor2.selection.anchor);
+var createStartEndRangeOfSelection = (selection) => createRangeSPEP(selection.start, selection.end);
+var getSelectionType = (editor2) => {
+  if (editor2.selections.length === 1) {
+    if (editor2.selections[0].isEmpty) {
+      return DECORATION_INFO.CURSOR_ONLY;
+    } else {
+      if (editor2.selections[0].isSingleLine) {
+        return DECORATION_INFO.SINGLE_LINE;
+      } else {
+        return DECORATION_INFO.MULTI_LINE;
+      }
+    }
+  } else if (editor2.selections.length > 1) {
+    return DECORATION_INFO.MULTI_CURSOR;
   }
 };
-var statusTextRegex = {
+
+// src/editor/decoration/highlight/highlight.ts
+var cursorOnlyHighlightRange = (context) => {
+  const { editor: editor2, borderConfig, textEditorHighlight } = context;
+  if (borderConfig.isWholeLine) {
+    return [{
+      decoration: textEditorHighlight[0],
+      range: [createRangeSPEP(editor2.selection.active, editor2.selection.active)]
+    }];
+  }
+  if (borderConfig.beforeCursor) {
+    return [{
+      decoration: textEditorHighlight[0],
+      range: [createRangeNNNN(editor2.selection.active.line, 0, editor2.selection.active.line, editor2.selection.active.character)]
+    }];
+  }
+  if (borderConfig.afterCursor) {
+    return [
+      {
+        decoration: textEditorHighlight[0],
+        range: [createRangeNNEP(
+          editor2.selection.active.line,
+          editor2.selection.active.character,
+          editor2.document.lineAt(editor2.selection.active.line).range.end
+        )]
+      },
+      {
+        decoration: textEditorHighlight[1],
+        range: [createRangeNNNN(editor2.selection.active.line, 0, editor2.selection.active.line, editor2.selection.active.character)]
+      }
+    ];
+  }
+  return [];
+};
+var singelLineHighlightRange = ({ editor: editor2, textEditorHighlight }) => {
+  return [{
+    decoration: textEditorHighlight[0],
+    range: [createRangeSPEP(editor2.selection.start, editor2.selection.end)]
+  }];
+};
+var multiLineHighlightRange = ({ editor: editor2, borderConfig, textEditorHighlight }) => {
+  if (borderConfig.borderPosition === "left") {
+    return [{
+      decoration: textEditorHighlight[2],
+      range: [createRangeNNNN(editor2.selection.start.line, editor2.selection.start.character, editor2.selection.end.line, editor2.selection.end.character)]
+    }];
+  } else {
+    const highlightRange = [];
+    highlightRange.push(
+      {
+        decoration: textEditorHighlight[0],
+        range: [createRangeSPEP(editor2.selection.start, editor2.selection.start)]
+      },
+      {
+        decoration: textEditorHighlight[1],
+        range: [createRangeSPEP(editor2.selection.end, editor2.selection.end)]
+      }
+    );
+    if (Math.abs(editor2.selection.start.line - editor2.selection.end.line) > 1) {
+      highlightRange.push({
+        decoration: textEditorHighlight[2],
+        range: [createRangeNNNN(editor2.selection.start.line + 1, editor2.selection.start.character, editor2.selection.end.line - 1, editor2.selection.end.character)]
+      });
+    } else {
+      applyDecoration(editor2, textEditorHighlight[2], []);
+    }
+    return highlightRange;
+  }
+};
+var multiCursorHighlightRange = ({ editor: editor2, textEditorHighlight }) => {
+  return [
+    {
+      decoration: textEditorHighlight[0],
+      range: editor2.selections.reduce((acc, selection) => {
+        acc.push(createRangeSPEP(selection.start, selection.active));
+        return acc;
+      }, [])
+    },
+    {
+      decoration: textEditorHighlight[1],
+      range: editor2.selections.reduce((acc, selection) => {
+        acc.push(createRangeNNNN(selection.active.line, 0, selection.active.line, selection.active.character));
+        return acc;
+      }, [])
+    }
+  ];
+};
+var coordinatorSplit = {
+  ["CURSOR_ONLY" /* CURSOR_ONLY */]: (context) => cursorOnlyHighlightRange(context),
+  ["SINGLE_LINE" /* SINGLE_LINE */]: (context) => singelLineHighlightRange(context),
+  ["MULTI_LINE" /* MULTI_LINE */]: (context) => multiLineHighlightRange(context),
+  ["MULTI_CURSOR" /* MULTI_CURSOR */]: (context) => multiCursorHighlightRange(context)
+};
+var hightlightCoordinator = ({ editor: editor2, configInfo: configInfo2, decorationInfo, decorationState: decorationState2 }) => {
+  const textEditorHighlight = decorationState2.highlightStyleList[decorationInfo.KEY];
+  const borderConfig = configInfo2.borderPositionInfo[decorationInfo.KEY];
+  return coordinatorSplit[decorationInfo.KEY]({
+    editor: editor2,
+    borderConfig,
+    textEditorHighlight
+  });
+};
+
+// src/editor/decoration/status/selection.ts
+var selectionContentText = { ...STATUS_CONTENT_TEXT };
+var selectionOf = {
   ["cursorOnlyText" /* CURSOR_ONLY_TEXT */]: {
-    col: /(\${col})/s,
-    zCol: /(\${zCol})/s,
-    ln: /(\${ln})/s
+    ln: ({ editor: editor2 }) => editor2.selection.active.line + 1,
+    col: ({ editor: editor2 }) => {
+      const col = editor2.selection.active.character + 1;
+      const end = editor2.document.lineAt(editor2.selection.active.line).text.length + 1;
+      return col === end ? col : col + "/" + end;
+    },
+    zCol: ({ editor: editor2 }) => {
+      const col = editor2.selection.active.character;
+      const end = editor2.document.lineAt(editor2.selection.active.line).text.length;
+      return col === end ? col : col + "/" + end;
+    }
   },
   ["singleLineText" /* SINGLE_LINE_TEXT */]: {
-    char: /(\${char})/s,
-    ln: /(\${ln})/s
+    ln: ({ editor: editor2 }) => editor2.selection.active.line + 1,
+    char: ({ editor: editor2 }) => Math.abs(editor2.selection.end.character - editor2.selection.start.character)
   },
   ["multiLineCursorText" /* MULTI_LINE_CURSOR_TEXT */]: {
-    lc: /(\${lc})/s,
-    ln: /(\${ln})/s,
-    char: /(\${char})/s
+    ln: ({ editor: editor2 }) => editor2.selection.active.line + 1,
+    lc: ({ editor: editor2 }) => Math.abs(editor2.selection.end.line - editor2.selection.start.line) + 1,
+    char: ({ editor: editor2, indent }) => editor2.document.getText(editor2.selection).replace(indent.regex, "").length
   },
   ["multiLineAnchorText" /* MULTI_LINE_ANCHOR_TEXT */]: {
-    lc: /(\${lc})/s,
-    ln: /(\${ln})/s,
-    char: /(\${char})/s
+    ln: ({ editor: editor2 }) => editor2.selection.anchor.line + 1,
+    lc: ({ editor: editor2 }) => Math.abs(editor2.selection.end.line - editor2.selection.start.line) + 1,
+    char: ({ editor: editor2, indent }) => editor2.document.getText(editor2.selection).replace(indent.regex, "").length
   },
   ["multiCursorText" /* MULTI_CURSOR_TEXT */]: {
-    nth: /(\${nth})/s,
-    count: /(\${count})/s,
-    lc: /(\${lc})/s,
-    ln: /(\${ln})/s,
-    char: /(\${char})/s
+    nth: ({ idx }) => idx,
+    count: ({ editor: editor2 }) => editor2.selections.length,
+    ln: ({ idx, editor: editor2 }) => editor2.selections[idx].end.line + 1,
+    lc: ({ editor: editor2 }) => {
+      let idx = 0;
+      let lineCount2 = 0;
+      const length = editor2.selections.length;
+      const isSingleLine = editor2.selections[0].start.line === editor2.selections[0].end.line;
+      const lineDiff = isSingleLine ? 1 : Math.abs(editor2.selections[0].end.line - editor2.selections[0].start.line) + 1;
+      while (idx < length) {
+        if (isSingleLine) {
+          lineCount2 = lineCount2 + lineDiff;
+        } else {
+          lineCount2 = lineCount2 + lineDiff;
+        }
+        idx++;
+      }
+      return lineCount2;
+    },
+    char: ({ editor: editor2, indent }) => {
+      let idx = 0;
+      let charCount = 0;
+      const length = editor2.selections.length;
+      const isSingleLine = editor2.selections[0].start.line === editor2.selections[0].end.line;
+      while (idx < length) {
+        if (isSingleLine) {
+          charCount = charCount + (editor2.selections[idx].end.character - editor2.selections[idx].start.character);
+        } else {
+          const text = editor2.document.getText(editor2.selections[idx]);
+          charCount = charCount + text.replace(indent.regex, "").length;
+        }
+        idx++;
+      }
+      return charCount;
+    }
   }
+};
+var contentTextFunc = (context, contentText) => {
+  return contentText.map((decorationOption) => {
+    if (typeof decorationOption.after.contentText !== "string") {
+      const decorationOptionFunc = Object.assign({}, decorationOption);
+      decorationOptionFunc.after.contentText = String(decorationOption.after.contentText(context));
+      return decorationOptionFunc;
+    }
+    return decorationOption;
+  });
+};
+var cursorOnlySelection = (context) => {
+  return [{
+    contentText: contentTextFunc(context, selectionContentText["cursorOnlyText" /* CURSOR_ONLY_TEXT */]),
+    range: createActiveRange(context.editor)
+  }];
+};
+var singleLineSelection = (context) => {
+  return [{
+    contentText: contentTextFunc(context, selectionContentText["singleLineText" /* SINGLE_LINE_TEXT */]),
+    range: createActiveRange(context.editor)
+  }];
+};
+var multilineSelection = (context) => {
+  return [{
+    contentText: contentTextFunc(context, selectionContentText["multiLineAnchorText" /* MULTI_LINE_ANCHOR_TEXT */]),
+    range: createAnchorRange(context.editor)
+  }, {
+    contentText: contentTextFunc(context, selectionContentText["multiLineCursorText" /* MULTI_LINE_CURSOR_TEXT */]),
+    range: createActiveRange(context.editor)
+  }];
+};
+var multiCursorSelection = (context) => {
+  const statusTextInfo = [];
+  const statusLine = [];
+  let idx = context.editor.selections.length;
+  while (idx--) {
+    const lineSet = new Set(statusLine);
+    if (lineSet.has(context.editor.selections[idx].end.line)) {
+      continue;
+    }
+    context.idx = idx + 1;
+    statusTextInfo.push({
+      contentText: contentTextFunc(context, selectionContentText["multiCursorText" /* MULTI_CURSOR_TEXT */]),
+      range: createStartEndRangeOfSelection(context.editor.selections[idx])
+    });
+    statusLine.push(context.editor.selections[idx].end.line);
+  }
+  return statusTextInfo;
+};
+var selectionTextInfoSplit = (editor2, indent) => {
+  const context = {
+    idx: 0,
+    editor: editor2,
+    indent
+  };
+  return {
+    ["CURSOR_ONLY" /* CURSOR_ONLY */]: () => cursorOnlySelection(context),
+    ["SINGLE_LINE" /* SINGLE_LINE */]: () => singleLineSelection(context),
+    ["MULTI_LINE" /* MULTI_LINE */]: () => multilineSelection(context),
+    ["MULTI_CURSOR" /* MULTI_CURSOR */]: () => multiCursorSelection(context)
+  };
+};
+var selectionInfo = (editor2, indentInfo, type) => {
+  return selectionTextInfoSplit(editor2, indentInfo)[type.KEY]();
+};
+var bindStatusContentTextState = () => {
+  return {
+    functionOf: selectionOf,
+    textOf: selectionContentText
+  };
+};
+
+// src/editor/decoration/status/diagnostic.ts
+var diagnosticContentText = { ...DIAGNOSTIC_CONTENT_TEXT };
+var diagnosticVisibility = { ...DIAGNOSTIC_VISIBILITY_CONFIG };
+var editorSym = Symbol("editor");
+var workspaceSym = Symbol("workspace");
+var allOkSym = Symbol("allOk");
+var allOkDiagnosticOf = {
+  allok: allOkSym
+};
+var problemDiagnosticOf = {
+  editor: editorSym,
+  workspace: workspaceSym
+};
+var notationDiagnosticOf = {
+  pre: ({ placeholder }) => placeholder.prefix,
+  post: ({ placeholder }) => placeholder.postfix
+};
+var warningSourceDiagnosticOf = {
+  src: ({ state }) => String(state.warning.source)
+};
+var warningCountDiagnosticOf = {
+  wrn: ({ state }) => String(state.warning.total)
+};
+var errorSourceDiagnosticOf = {
+  src: ({ state }) => String(state.error.source)
+};
+var errorCountDiagnosticOf = {
+  err: ({ state }) => String(state.error.total)
+};
+var diagnosticOf = {
+  ["problemPlaceholderContentText" /* PLACEHOLDER_PROBLEM_CONTENT_TEXT */]: problemDiagnosticOf,
+  ["allOkPlaceholderContentText" /* PLACEHOLDER_ALL_OK_CONTENT_TEXT */]: allOkDiagnosticOf,
+  ["okAllContentText" /* OK_ALL_CONTENT_TEXT */]: notationDiagnosticOf,
+  ["okWorkspaceContentText" /* OK_WORKSPACE_CONTENT_TEXT */]: notationDiagnosticOf,
+  ["okEditorContentText" /* OK_EDITOR_CONTENT_TEXT */]: notationDiagnosticOf,
+  ["warningWorkspaceContentText" /* WARNING_WORKSPACE_CONTENT_TEXT */]: {
+    ...notationDiagnosticOf,
+    ...warningSourceDiagnosticOf,
+    ...warningCountDiagnosticOf
+  },
+  ["warningEditorContentText" /* WARNING_EDITOR_CONTENT_TEXT */]: {
+    ...notationDiagnosticOf,
+    ...warningCountDiagnosticOf
+  },
+  ["errorWorkspaceContentText" /* ERROR_WORKSPACE_CONTENT_TEXT */]: {
+    ...notationDiagnosticOf,
+    ...errorSourceDiagnosticOf,
+    ...errorCountDiagnosticOf
+  },
+  ["errorEditorContentText" /* ERROR_EDITOR_CONTENT_TEXT */]: {
+    ...notationDiagnosticOf,
+    ...errorCountDiagnosticOf
+  }
+};
+var diagonosticMultiStyleDecoration = (diagnosticState2, diagnosticContentTextIs) => {
+  if (diagnosticContentTextIs) {
+    const context = {
+      state: diagnosticState2,
+      placeholder: diagnosticContentTextIs.placeholder
+    };
+    return diagnosticContentTextIs.contentText.map((decorationOption) => {
+      if (typeof decorationOption.after.contentText !== "string") {
+        const decorationOptionFunc = { ...decorationOption };
+        decorationOptionFunc.after = { ...decorationOption.after };
+        decorationOptionFunc.after.contentText = decorationOption.after.contentText(context);
+        return decorationOptionFunc;
+      }
+      return decorationOption;
+    });
+  }
+  return [];
+};
+var diagnosticKind = ({ state, contentText, keySet }) => {
+  return {
+    "ok": () => diagonosticMultiStyleDecoration(state, contentText[keySet["okContentText" /* OK_CONTENT_TEXT */]]),
+    "warning": () => diagonosticMultiStyleDecoration(state, contentText[keySet["warningContentText" /* WARNING_CONTENT_TEXT */]]),
+    "error": () => diagonosticMultiStyleDecoration(state, contentText[keySet["errorContentText" /* ERROR_CONTENT_TEXT */]])
+  };
+};
+var diagnosticCounter = (context) => {
+  if (context.state.warning.total + context.state.error.total === 0) {
+    return diagnosticKind(context).ok();
+  }
+  const diagnosticText = [];
+  if (context.state.warning.total > 0) {
+    diagnosticText.push(...diagnosticKind(context).warning());
+  }
+  if (context.state.error.total > 0) {
+    diagnosticText.push(...diagnosticKind(context).error());
+  }
+  return diagnosticText;
+};
+var diagnosticBiomeSplit = (state, contentText) => {
+  const context = {
+    state,
+    contentText,
+    keySet: {}
+  };
+  return {
+    "workspace": () => diagnosticCounter({
+      ...context,
+      keySet: { ...DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET }
+    }),
+    "editor": () => diagnosticCounter({
+      ...context,
+      keySet: { ...DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET }
+    }),
+    "all": () => []
+  };
+};
+var buildDiagonosticDecorationLayout = (context) => {
+  const { state, textState } = context;
+  const highlightStyleList = [];
+  if (state.workspace.warning.total + state.workspace.error.total + state.editor.error.total + state.editor.warning.total === 0) {
+    textState.layout.allOkPlaceholderContentText.contentText.forEach((decoration) => {
+      if (decoration.after.contentText === allOkSym) {
+        highlightStyleList.push(...diagonosticMultiStyleDecoration(state, textState.all.okAllContentText));
+      }
+      const overrideColor = textState.layout.allOkPlaceholderContentText?.override;
+      decoration.after.color = overrideColor ? overrideColor[1 /* OK */].color : decoration.after.color;
+      highlightStyleList.push(decoration);
+    });
+    return highlightStyleList;
+  }
+  textState.layout.problemPlaceholderContentText.contentText.forEach((decoration) => {
+    if (decoration.after.contentText === workspaceSym) {
+      highlightStyleList.push(...diagnosticBiomeSplit(state.workspace, textState.workspace)["workspace"]());
+      return;
+    }
+    if (decoration.after.contentText === editorSym) {
+      highlightStyleList.push(...diagnosticBiomeSplit(state.editor, textState.editor)["editor"]());
+      return;
+    }
+    const overrideColor = textState.layout.problemPlaceholderContentText?.override;
+    decoration.after.color = overrideColor ? overrideColor[state.severity].color : decoration.after.color;
+    highlightStyleList.push(decoration);
+  });
+  return highlightStyleList;
+};
+var diagnosticInfo = (editor2, diagnosticState2) => {
+  const context = {
+    state: diagnosticState2,
+    textState: diagnosticContentText,
+    diagnosticVisibility
+  };
+  return [{
+    contentText: buildDiagonosticDecorationLayout(context),
+    range: createCursorRange(editor2)
+  }];
+};
+var bindDiagnosticContentTextState = () => {
+  return {
+    functionOf: diagnosticOf,
+    textOf: diagnosticContentText,
+    configOf: diagnosticVisibility
+  };
+};
+
+// src/diagnostic/diagnostic.ts
+var vscode3 = __toESM(require("vscode"));
+var diagnosticState = { ...DIAGNOSTIC_STATE };
+var diagnosticSource = {};
+var resetEditorDiagnosticStatistics = () => {
+  diagnosticState.editor.warning.total = 0;
+  diagnosticState.editor.error.total = 0;
+};
+var resetWorkspaceDiagnosticStatistics = () => {
+  diagnosticState.workspace.warning.source = 0;
+  diagnosticState.workspace.warning.total = 0;
+  diagnosticState.workspace.error.source = 0;
+  diagnosticState.workspace.error.total = 0;
+};
+var parseDiagnostic = (diagnosticState2, severity, fsPath, activeEditorfsPath = void 0) => {
+  Object.keys(severity).forEach((severityType) => {
+    if (severity[severityType].length > 0) {
+      diagnosticState2.workspace[severityType].source += 1;
+      diagnosticState2.workspace[severityType].total += severity[severityType].length;
+    }
+    if (fsPath === activeEditorfsPath) {
+      diagnosticState2.editor[severityType].total = 0;
+      diagnosticState2.editor[severityType].total = severity[severityType].length;
+    }
+  });
+};
+var buildDiagnostic = (source2, diagnosticList, uri) => {
+  for (const diagnostic of diagnosticList) {
+    if (diagnostic.severity <= vscode3.DiagnosticSeverity.Warning) {
+      if (typeof source2[uri.fsPath] !== "object") {
+        source2[uri.fsPath] = {};
+      }
+      const sevKey = DIAGNOSTIC_SEVERITY_TO_KEY[diagnostic.severity];
+      if (!Array.isArray(source2[uri.fsPath][sevKey])) {
+        source2[uri.fsPath][sevKey] = [];
+      }
+      source2[uri.fsPath][sevKey].push(diagnostic);
+    }
+  }
+};
+var maxSeverity = (state) => {
+  const ifEditorProblem = state.editor.error.total !== 0 || state.editor.warning.total !== 0;
+  const ifWorkspaceProblem = state.workspace.error.total !== 0 || state.workspace.warning.total !== 0;
+  if (!ifEditorProblem && !ifWorkspaceProblem) {
+    return 1 /* OK */;
+  }
+  const editorSeverity = state.editor.warning.total <= state.editor.error.total ? 4 /* ERR */ : 2 /* WARN */;
+  const workspaceSeverity = state.workspace.warning.total <= state.workspace.error.total ? 4 /* ERR */ : 2 /* WARN */;
+  return Math.max(editorSeverity, workspaceSeverity);
+};
+var updateDiagnostic = (activeEditorUri = void 0) => {
+  for (let fs in diagnosticSource) {
+    delete diagnosticSource[fs];
+  }
+  resetWorkspaceDiagnosticStatistics();
+  const diagnostics = vscode3.languages.getDiagnostics();
+  for (const [uri, diagnosticList] of diagnostics) {
+    buildDiagnostic(diagnosticSource, diagnosticList, uri);
+  }
+  for (const [fsPath, severity] of Object.entries(diagnosticSource)) {
+    parseDiagnostic(diagnosticState, severity, fsPath, activeEditorUri?.fsPath);
+  }
+  ;
+  if (activeEditorUri && !Object.hasOwn(diagnosticSource, activeEditorUri.fsPath)) {
+    resetEditorDiagnosticStatistics();
+  }
+  diagnosticState.severity = maxSeverity(diagnosticState);
+  return diagnosticState;
+};
+
+// src/editor/decoration/decoration.ts
+var decorationState = { ...DECORATION_STATE };
+var applyDecoration = (editor2, decoraiton, range) => {
+  editor2.setDecorations(decoraiton, range);
+};
+var createEditorDecorationType = (styleAppliedConfig) => {
+  return vscode4.window.createTextEditorDecorationType(styleAppliedConfig);
+};
+var disposeDecoration = (highlightStyleList = []) => highlightStyleList.forEach((decorationType) => {
+  decorationType.dispose();
+});
+var resetDecorationRange = (editor2, decorationType) => {
+  decorationType?.forEach((decoration) => applyDecoration(editor2, decoration, []));
+};
+var resetAndDisposeDecoration = (editor2, decorationType) => {
+  decorationType?.forEach((decoration) => {
+    applyDecoration(editor2, decoration, []);
+    decoration.dispose();
+  });
+};
+var resetAllDecoration = (decorationState2) => {
+  vscode4.window.visibleTextEditors.forEach((editor2) => {
+    if (decorationState2.appliedHighlight.ofDecorationType !== void 0) {
+      decorationState2.appliedHighlight.ofDecorationType.forEach((decoration) => {
+        applyDecoration(editor2, decoration, []);
+      });
+    }
+  });
+  if (decorationState2.selectionText) {
+    decorationState2.selectionText.forEach((decorationType) => decorationType.dispose());
+  }
+  if (decorationState2.diagnosticText) {
+    decorationState2.diagnosticText.forEach((decorationType) => decorationType.dispose());
+  }
+  ;
+};
+var isDecorationChanged = (editor2, decorationState2, decorationInfo) => {
+  if (decorationState2.appliedHighlight.applied && decorationState2.appliedHighlight.applied.MASK !== decorationInfo.MASK) {
+    resetDecorationRange(editor2, decorationState2.highlightStyleList[decorationState2.appliedHighlight.applied.KEY]);
+    decorationState2.appliedHighlight.applied = decorationInfo;
+  }
+  decorationState2.appliedHighlight.applied = decorationInfo;
+};
+var renderStatusInfo = async ({ editor: editor2, configInfo: configInfo2, indentInfo, decorationInfo, decorationState: decorationState2 }) => {
+  if (!decorationState2.statusInfo) {
+    decorationState2.statusInfo = {
+      selectionText: [],
+      diagnosticText: []
+    };
+  }
+  if (configInfo2.generalConfigInfo.statusTextEnabled) {
+    decorationState2.statusInfo.selectionText = await selectionInfo(editor2, indentInfo, decorationInfo);
+  }
+  if (configInfo2.generalConfigInfo.diagnosticTextEnabled) {
+    decorationState2.statusInfo.diagnosticText = await diagnosticInfo(editor2, updateDiagnostic());
+  }
+  for (const [key, statusInfo] of Object.entries(decorationState2.statusInfo)) {
+    resetAndDisposeDecoration(editor2, decorationState2[key]);
+    const statusInfoList = [];
+    let length = statusInfo.length;
+    while (length--) {
+      const status = statusInfo[length];
+      statusInfoList.push(...status.contentText.map((decorationOption) => {
+        const decoration = createEditorDecorationType(decorationOption);
+        applyDecoration(editor2, decoration, [status.range]);
+        return decoration;
+      }));
+    }
+    decorationState2[key] = statusInfoList;
+  }
+};
+var setDecorationOnEditor = (context) => {
+  const { editor: editor2, decorationInfo, decorationState: decorationState2 } = context;
+  const textEditorDecoration = decorationState2.highlightStyleList[decorationInfo.KEY];
+  if (textEditorDecoration) {
+    decorationState2.appliedHighlight.ofDecorationType = textEditorDecoration;
+    const highlight = hightlightCoordinator(context);
+    if (!highlight) {
+      return;
+    }
+    highlight.forEach(({ decoration, range }) => {
+      applyDecoration(editor2, decoration, range);
+    });
+    renderStatusInfo(context);
+  }
+};
+var bindEditorDecoration = () => {
+  return {
+    stateOf: decorationState
+  };
 };
 
 // src/util/util.ts
-var getWorkspaceConfiguration = (section) => vscode.workspace.getConfiguration(section);
+var vscode5 = __toESM(require("vscode"));
+var getWorkspaceConfiguration = (section) => vscode5.workspace.getConfiguration(section);
 var sendAutoDismissMessage = (text, dismiss) => {
-  const message = vscode.window.showInformationMessage(text);
+  const message = vscode5.window.showInformationMessage(text);
   setTimeout(() => {
     message?.then(() => {
     });
   }, dismiss);
-};
-var regex = {
-  indentAndEOLRegex,
-  tagtAndEOLRegex,
-  isValidHexColor,
-  isValidWidth,
-  ifContentTextHasPlaceholder,
-  contentTextKeysOnly,
-  statusContentText: statusTextRegex,
-  diagnosticTextRegex
 };
 var readBits = (value, trueValue, falseValue, bitLength) => {
   let idx = bitLength ? bitLength : 4;
   const array = [];
   while (idx--) {
     if (value >> idx & 1) {
-      array.push(trueValue);
+      array.push(Array.isArray(trueValue) ? trueValue[idx] : trueValue);
     } else {
       array.push(falseValue);
     }
@@ -417,11 +1026,11 @@ var fnv1aHash = (str) => {
   }
   return hash.toString(16);
 };
-var splitAndPosition = (str, regex2) => {
-  const match = str.match(regex2);
+var splitAndPosition = (str, regex) => {
+  const match = str.match(regex);
   let split = [];
   if (match && match.index !== void 0) {
-    split = str.split(regex2);
+    split = str.split(regex);
     if (split[0].length === 0) {
       delete split[0];
       return {
@@ -448,8 +1057,8 @@ var hexToRgbaStringLiteral = (hex, opacity = 0.6, defaultValue, opacityDefault) 
   if (hex.length === 3) {
     hex = hex.split("").map((x) => x + x).join("");
   }
-  const regex2 = /^[0-9A-Fa-f]{6}$/;
-  if (!regex2.test(hex)) {
+  const regex = /^[0-9A-Fa-f]{6}$/;
+  if (!regex.test(hex)) {
     hex = defaultValue.replace(/^#/, "");
     opacity = opacityDefault;
   }
@@ -459,53 +1068,163 @@ var hexToRgbaStringLiteral = (hex, opacity = 0.6, defaultValue, opacityDefault) 
   return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 };
 
-// src/config/common.ts
-var castToFuncSignature = (result) => {
-  if (result) {
-    return {
-      ...result,
-      array: result.array.filter((entry) => entry !== void 0)
-    };
+// src/util/regex.collection.ts
+var indentAndEOLRegex = (indentSize) => new RegExp(`^( {${indentSize}}|[\r
+]+)*$`, "gm");
+var ifStringIsResourceScope = /^[%\.].*[%\.]$/s;
+var tagtAndEOLRegex = /(\t|[\r\n]+)*$/gm;
+var isValidHexColor = /^#[A-Fa-f0-9]{6}$/;
+var isValidWidth = /^[0-9]px$|^[0-9]em$/;
+var ifContentTextHasPlaceholder = /(\${[A-z]*})/g;
+var contentTextKeysOnly = /\${([^{}]+)}/s;
+var column = /(\${col})/s;
+var zeroColumn = /(\${zCol})/s;
+var lineCount = /(\${lc})/s;
+var lineNumber = /(\${ln})/s;
+var character = /(\${char})/s;
+var nth = /(\${nth})/s;
+var selectionCount = /(\${count})/s;
+var prefix = /(\${pre})/s;
+var postfix = /(\${post})/s;
+var source = /(\${src})/s;
+var warning = /(\${wrn})/s;
+var error = /(\${err})/s;
+var editor = /(\${editor})/s;
+var workspace2 = /(\${workspace})/s;
+var allok = /(\${allok})/s;
+var okRegex = {
+  allok
+};
+var problemRegex = {
+  editor,
+  workspace: workspace2
+};
+var notationRegex = {
+  pre: prefix,
+  post: postfix
+};
+var warningTotalRegex = {
+  wrn: warning
+};
+var sourceRegex = {
+  src: source
+};
+var errorTotalRegex = {
+  err: error
+};
+var diagnosticTextRegex = {
+  ["problemPlaceholderContentText" /* PLACEHOLDER_PROBLEM_CONTENT_TEXT */]: problemRegex,
+  ["allOkPlaceholderContentText" /* PLACEHOLDER_ALL_OK_CONTENT_TEXT */]: okRegex,
+  ["okAllContentText" /* OK_ALL_CONTENT_TEXT */]: notationRegex,
+  ["okWorkspaceContentText" /* OK_WORKSPACE_CONTENT_TEXT */]: notationRegex,
+  ["okEditorContentText" /* OK_EDITOR_CONTENT_TEXT */]: notationRegex,
+  ["warningWorkspaceContentText" /* WARNING_WORKSPACE_CONTENT_TEXT */]: {
+    ...notationRegex,
+    ...sourceRegex,
+    ...warningTotalRegex
+  },
+  ["warningEditorContentText" /* WARNING_EDITOR_CONTENT_TEXT */]: {
+    ...notationRegex,
+    ...warningTotalRegex
+  },
+  ["errorWorkspaceContentText" /* ERROR_WORKSPACE_CONTENT_TEXT */]: {
+    ...notationRegex,
+    ...sourceRegex,
+    ...errorTotalRegex
+  },
+  ["errorEditorContentText" /* ERROR_EDITOR_CONTENT_TEXT */]: {
+    ...notationRegex,
+    ...errorTotalRegex
   }
 };
-var searchPlaceholder = (targetObj, key, regex2, searchObject, lastIndex, bindTo) => {
-  const split = castToFuncSignature(splitAndPosition(searchObject.nextSearchString, regex2));
-  if (split) {
-    if (Object.hasOwn(bindTo, key)) {
-      split.array[split.position] = bindTo[key];
-    }
-    if (lastIndex) {
-      targetObj.contentText?.push(...split.array);
-      targetObj[key] = searchObject.lastPosition + split.position;
-    } else {
-      if (split.position === 0) {
-        targetObj.contentText?.push(split.array[0]);
-        targetObj[key] = searchObject.lastPosition + split.position;
-        searchObject.nextSearchString = split.array[1];
-        searchObject.lastPosition = searchObject.lastPosition + split.position + 1;
-      } else if (split.position === 1 && split.array.length === 2) {
-        targetObj[key] = searchObject.lastPosition + split.position;
-        targetObj.contentText?.push(...split.array);
-      } else if (split.position === 1 && split.array.length === 3) {
-        targetObj.contentText?.push(split.array[0], split.array[1]);
-        targetObj[key] = searchObject.lastPosition + split.position;
-        searchObject.nextSearchString = split.array[2];
-        searchObject.lastPosition = searchObject.lastPosition + split.position + 1;
+var statusTextRegex = {
+  ["cursorOnlyText" /* CURSOR_ONLY_TEXT */]: {
+    col: column,
+    zCol: zeroColumn,
+    ln: lineNumber
+  },
+  ["singleLineText" /* SINGLE_LINE_TEXT */]: {
+    char: character,
+    ln: lineNumber
+  },
+  ["multiLineCursorText" /* MULTI_LINE_CURSOR_TEXT */]: {
+    lc: lineCount,
+    ln: lineNumber,
+    char: character
+  },
+  ["multiLineAnchorText" /* MULTI_LINE_ANCHOR_TEXT */]: {
+    lc: lineCount,
+    ln: lineNumber,
+    char: character
+  },
+  ["multiCursorText" /* MULTI_CURSOR_TEXT */]: {
+    nth,
+    count: selectionCount,
+    lc: lineCount,
+    ln: lineNumber,
+    char: character
+  }
+};
+var Regex = {
+  indentAndEOLRegex,
+  resourceScope: ifStringIsResourceScope,
+  tagtAndEOLRegex,
+  isValidHexColor,
+  isValidWidth,
+  ifContentTextHasPlaceholder,
+  contentTextKeysOnly,
+  statusContentText: statusTextRegex,
+  diagnosticText: diagnosticTextRegex
+};
+var regex_collection_default = Regex;
+
+// src/configuration/shared/editor.ts
+var vscode6 = __toESM(require("vscode"));
+var writeEditorConfiguration = () => {
+  const editorConfig = getWorkspaceConfiguration("editor");
+  editorConfig.update("renderLineHighlight", "gutter", vscode6.ConfigurationTarget.Global);
+  editorConfig.update("roundedSelection", false, vscode6.ConfigurationTarget.Global);
+};
+
+// src/configuration/shared/validation.ts
+var sanitizeConfigValue = (value) => {
+  if (!value || value === "null" || value.length === 0 || regex_collection_default.resourceScope.test(value)) {
+    return void 0;
+  }
+  return value;
+};
+var sanitizeContentText = (contentText) => {
+  return contentText.filter((text) => text !== void 0 && text.length > 0 || typeof text !== "string");
+};
+var convertNullStringToNull = (value) => {
+  if (value === "null" || value.length === 0) {
+    return null;
+  }
+  return value;
+};
+
+// src/configuration/shared/configuration.ts
+var setConfigHashKey = (configReady) => {
+  configReady.configHashKey = fnv1aHash(getConfigString(configReady));
+};
+var getConfigHash = (configReady) => {
+  const configString = getConfigString(configReady);
+  return fnv1aHash(configString);
+};
+var getConfigString = (configReady) => {
+  return Object.values(CONFIG_SECTION).reduce((sectionConfing, section) => {
+    const extensionConfig = getWorkspaceConfiguration(configReady.name + "." + section);
+    const sectionConfingString = Object.entries(extensionConfig).reduce((configValue, [key, infoProp]) => {
+      if (typeof infoProp === "string" || typeof infoProp === "number" || typeof infoProp === "boolean") {
+        configValue.push(infoProp);
+      } else if (typeof infoProp === "object" && Object.hasOwn(extensionConfig, key)) {
+        Object.entries(extensionConfig).forEach(([key2, value]) => configValue.push(value));
       }
-    }
-  }
-};
-var getConfigValue = (configSection, configName, defaultValue) => {
-  try {
-    const value = configSection.get(configName, defaultValue);
-    if (value === void 0) {
-      console.warn(`Config value for ${configName} is undefined or caused an error. Using default value.`);
-    }
-    return value;
-  } catch (err) {
-    console.error(`Failed to get config value for ${configSection + "." + configName}:`, err);
-    return defaultValue;
-  }
+      return configValue;
+    }, []).join("");
+    sectionConfing.push(sectionConfingString);
+    return sectionConfing;
+  }, []).join("");
 };
 var colorConfigTransform = {
   borderColor: {
@@ -517,480 +1236,41 @@ var colorConfigTransform = {
     fn: (v, n, d) => hexToRgbaStringLiteral(v, n, d)
   }
 };
-
-// src/editor/decoration/decoration.ts
-var vscode4 = __toESM(require("vscode"));
-
-// src/editor/range.ts
-var vscode2 = __toESM(require("vscode"));
-var createRangeNNNN = (startLine, startChar, endLine, endChar) => {
-  return new vscode2.Range(new vscode2.Position(startLine, startChar), new vscode2.Position(endLine, endChar));
-};
-var createRangeSPEP = (start, end) => {
-  return new vscode2.Range(start, end);
-};
-var createRangeNNEP = (line, startChar, end) => {
-  return new vscode2.Range(new vscode2.Position(line, startChar), end);
-};
-
-// src/editor/decoration/range.ts
-var cursorOnlyDecorationWithRange = (context) => {
-  const { editor, borderConfig, textEditorDecoration } = context;
-  if (borderConfig.isWholeLine) {
-    return [{
-      decoration: textEditorDecoration[0],
-      range: [createRangeSPEP(editor.selection.active, editor.selection.active)]
-    }];
+var getConfigValue = (configSection, configName, defaultValue) => {
+  try {
+    const value = configSection.get(configName, defaultValue);
+    if (value === void 0) {
+      console.warn(`Config value for ${configName} is undefined or caused an error. Using default value.`);
+    }
+    if (typeof value === "string") {
+      return convertNullStringToNull(value);
+    }
+    return value;
+  } catch (err) {
+    console.error(`Failed to get config value for ${configSection + "." + configName}:`, err);
+    return defaultValue;
   }
-  if (borderConfig.beforeCursor) {
-    return [{
-      decoration: textEditorDecoration[0],
-      range: [createRangeNNNN(editor.selection.active.line, 0, editor.selection.active.line, editor.selection.active.character)]
-    }];
-  }
-  if (borderConfig.afterCursor) {
-    return [
-      {
-        decoration: textEditorDecoration[0],
-        range: [createRangeNNEP(
-          editor.selection.active.line,
-          editor.selection.active.character,
-          editor.document.lineAt(editor.selection.active.line).range.end
-        )]
-      },
-      {
-        decoration: textEditorDecoration[1],
-        range: [createRangeNNNN(editor.selection.active.line, 0, editor.selection.active.line, editor.selection.active.character)]
-      }
-    ];
-  }
-  return [];
 };
-var singelLineDecorationWithRange = ({ editor, borderConfig, textEditorDecoration }) => {
-  return [{
-    decoration: textEditorDecoration[0],
-    range: [createRangeSPEP(editor.selection.start, editor.selection.end)]
-  }];
-};
-var multiLineDecorationWithRange = ({ editor, borderConfig, textEditorDecoration }) => {
-  if (borderConfig.borderPosition === "left") {
-    return [{
-      decoration: textEditorDecoration[2],
-      range: [createRangeNNNN(editor.selection.start.line, editor.selection.start.character, editor.selection.end.line, editor.selection.end.character)]
-    }];
+var ifConfigurationChanged = (configReady, decorationState2) => {
+  const configHash = getConfigHash(configReady);
+  if (configReady.configHashKey === configHash) {
+    return false;
   } else {
-    const decorationWithRange = [];
-    decorationWithRange.push(
-      {
-        decoration: textEditorDecoration[0],
-        range: [createRangeSPEP(editor.selection.start, editor.selection.start)]
-      },
-      {
-        decoration: textEditorDecoration[1],
-        range: [createRangeSPEP(editor.selection.end, editor.selection.end)]
-      }
-    );
-    if (Math.abs(editor.selection.start.line - editor.selection.end.line) > 1) {
-      decorationWithRange.push({
-        decoration: textEditorDecoration[2],
-        range: [createRangeNNNN(editor.selection.start.line + 1, editor.selection.start.character, editor.selection.end.line - 1, editor.selection.end.character)]
-      });
-    } else {
-      applyDecoration(editor, textEditorDecoration[2], []);
+    if (decorationState2.appliedHighlight.ofDecorationType) {
+      decorationState2.appliedHighlight.applied = void 0;
+      disposeDecoration(decorationState2.appliedHighlight.ofDecorationType);
     }
-    return decorationWithRange;
-  }
-};
-var multiCursorDecorationWithRange = ({ editor, borderConfig, textEditorDecoration }) => {
-  return [
-    {
-      decoration: textEditorDecoration[0],
-      range: editor.selections.reduce((acc, selection) => {
-        acc.push(createRangeSPEP(selection.start, selection.active));
-        return acc;
-      }, [])
-    },
-    {
-      decoration: textEditorDecoration[1],
-      range: editor.selections.reduce((acc, selection) => {
-        acc.push(createRangeNNNN(selection.active.line, 0, selection.active.line, selection.active.character));
-        return acc;
-      }, [])
+    configReady.configError = [];
+    configReady.configHashKey = configHash;
+    if (configReady.configError.length === 0) {
+      sendAutoDismissMessage("Config has been changed. Reloading configuration. (Messaage Dismiss in 2 second.)" /* RELOADING_CONFIG */, 1500);
     }
-  ];
-};
-
-// src/editor/decoration/status.ts
-var cursorOnlyContentTextState = [];
-var singleLineContentTextState = [];
-var multiLineCursorContentTextState = [];
-var multiLineAnchorContentTextState = [];
-var multiCursorContentTextState = [];
-var contentTextState = {
-  ["cursorOnlyText" /* CURSOR_ONLY_TEXT */]: (statusContentText2) => {
-    if (statusContentText2["cursorOnlyText" /* CURSOR_ONLY_TEXT */].contentText) {
-      cursorOnlyContentTextState.splice(0);
-      cursorOnlyContentTextState.push(...statusContentText2["cursorOnlyText" /* CURSOR_ONLY_TEXT */].contentText);
-    }
-  },
-  ["singleLineText" /* SINGLE_LINE_TEXT */]: (statusContentText2) => {
-    if (statusContentText2["singleLineText" /* SINGLE_LINE_TEXT */].contentText) {
-      singleLineContentTextState.splice(0);
-      singleLineContentTextState.push(...statusContentText2["singleLineText" /* SINGLE_LINE_TEXT */].contentText);
-    }
-  },
-  ["multiLineCursorText" /* MULTI_LINE_CURSOR_TEXT */]: (statusContentText2) => {
-    if (statusContentText2["multiLineCursorText" /* MULTI_LINE_CURSOR_TEXT */].contentText) {
-      multiLineCursorContentTextState.splice(0);
-      multiLineCursorContentTextState.push(...statusContentText2["multiLineCursorText" /* MULTI_LINE_CURSOR_TEXT */].contentText);
-    }
-  },
-  ["multiLineAnchorText" /* MULTI_LINE_ANCHOR_TEXT */]: (statusContentText2) => {
-    if (statusContentText2["multiLineAnchorText" /* MULTI_LINE_ANCHOR_TEXT */].contentText) {
-      multiLineAnchorContentTextState.splice(0);
-      multiLineAnchorContentTextState.push(...statusContentText2["multiLineAnchorText" /* MULTI_LINE_ANCHOR_TEXT */].contentText);
-    }
-  },
-  ["multiCursorText" /* MULTI_CURSOR_TEXT */]: (statusContentText2) => {
-    if (statusContentText2["multiCursorText" /* MULTI_CURSOR_TEXT */].contentText) {
-      multiCursorContentTextState.splice(0);
-      multiCursorContentTextState.push(...statusContentText2["multiCursorText" /* MULTI_CURSOR_TEXT */].contentText);
-    }
-  }
-};
-var statusOf = {
-  ["cursorOnlyText" /* CURSOR_ONLY_TEXT */]: {
-    ln: ({ editor }) => editor.selection.active.line + 1,
-    col: ({ editor }) => {
-      const col = editor.selection.active.character + 1;
-      const end = editor.document.lineAt(editor.selection.active.line).text.length + 1;
-      return col === end ? col : col + "/" + end;
-    },
-    zCol: ({ editor }) => {
-      const col = editor.selection.active.character;
-      const end = editor.document.lineAt(editor.selection.active.line).text.length;
-      return col === end ? col : col + "/" + end;
-    }
-  },
-  ["singleLineText" /* SINGLE_LINE_TEXT */]: {
-    ln: ({ editor }) => editor.selection.active.line + 1,
-    char: ({ editor }) => Math.abs(editor.selection.end.character - editor.selection.start.character)
-  },
-  ["multiLineCursorText" /* MULTI_LINE_CURSOR_TEXT */]: {
-    ln: ({ editor }) => editor.selection.active.line + 1,
-    lc: ({ editor }) => Math.abs(editor.selection.end.line - editor.selection.start.line) + 1,
-    char: ({ editor, indent }) => editor.document.getText(editor.selection).replace(indent.regex, "").length
-  },
-  ["multiLineAnchorText" /* MULTI_LINE_ANCHOR_TEXT */]: {
-    ln: ({ editor }) => editor.selection.anchor.line + 1,
-    lc: ({ editor }) => Math.abs(editor.selection.end.line - editor.selection.start.line) + 1,
-    char: ({ editor, indent }) => editor.document.getText(editor.selection).replace(indent.regex, "").length
-  },
-  ["multiCursorText" /* MULTI_CURSOR_TEXT */]: {
-    nth: ({ idx }) => idx,
-    count: ({ editor }) => editor.selections.length,
-    ln: ({ idx, editor }) => editor.selections[idx].end.line + 1,
-    lc: ({ editor }) => {
-      let idx = 0;
-      let lineCount = 0;
-      const length = editor.selections.length;
-      const isSingleLine = editor.selections[0].start.line === editor.selections[0].end.line;
-      const lineDiff = isSingleLine ? 1 : Math.abs(editor.selections[0].end.line - editor.selections[0].start.line) + 1;
-      while (idx < length) {
-        if (isSingleLine) {
-          lineCount = lineCount + lineDiff;
-        } else {
-          lineCount = lineCount + lineDiff;
-        }
-        idx++;
-      }
-      return lineCount;
-    },
-    char: ({ editor, indent }) => {
-      let idx = 0;
-      let charCount = 0;
-      const length = editor.selections.length;
-      const isSingleLine = editor.selections[0].start.line === editor.selections[0].end.line;
-      while (idx < length) {
-        if (isSingleLine) {
-          charCount = charCount + (editor.selections[idx].end.character - editor.selections[idx].start.character);
-        } else {
-          const text = editor.document.getText(editor.selections[idx]);
-          charCount = charCount + text.replace(indent.regex, "").length;
-        }
-        idx++;
-      }
-      return charCount;
-    }
-  }
-};
-var cursorOnlyStatus = (editor) => {
-  const context = {
-    editor
-  };
-  return [{
-    contentText: cursorOnlyContentTextState.map((entry) => typeof entry === "string" ? entry : entry(context)).join(""),
-    range: createRangeSPEP(editor.selection.active, editor.selection.active),
-    isWholeLine: true
-  }];
-};
-var singleLineStatus = (editor) => {
-  const context = {
-    editor
-  };
-  return [{
-    contentText: singleLineContentTextState.map((entry) => typeof entry === "string" ? entry : entry(context)).join(""),
-    range: createRangeSPEP(editor.selection.active, editor.selection.active),
-    isWholeLine: true
-  }];
-};
-var multilineStatus = (editor, indent) => {
-  const context = {
-    editor,
-    indent
-  };
-  return [{
-    contentText: multiLineCursorContentTextState.map((entry) => typeof entry === "string" ? entry : entry(context)).join(""),
-    range: createRangeSPEP(editor.selection.anchor, editor.selection.anchor),
-    isWholeLine: true
-  }, {
-    contentText: multiLineAnchorContentTextState.map((entry) => typeof entry === "string" ? entry : entry(context)).join(""),
-    range: createRangeSPEP(editor.selection.active, editor.selection.active),
-    isWholeLine: true
-  }];
-};
-var multiCursorStatus = (editor, indent) => {
-  const statusTextInfo = [];
-  const statusLine = [];
-  let idx = editor.selections.length;
-  while (idx--) {
-    const lineSet = new Set(statusLine);
-    if (lineSet.has(editor.selections[idx].end.line)) {
-      continue;
-    }
-    const context = {
-      idx,
-      editor,
-      indent
-    };
-    statusTextInfo.push({
-      contentText: multiCursorContentTextState.map((entry) => typeof entry === "string" ? entry : entry(context)).join(""),
-      range: createRangeSPEP(editor.selections[idx].start, editor.selections[idx].end),
-      isWholeLine: true
-    });
-    statusLine.push(editor.selections[idx].end.line);
-    idx++;
-  }
-  return statusTextInfo;
-};
-var statusDecorationType = (statusTextInfo, statusDecorationType2) => {
-  statusDecorationType2.isWholeLine = statusTextInfo.isWholeLine;
-  statusDecorationType2.after.contentText = statusTextInfo.contentText;
-  return statusDecorationType2;
-};
-var statusTextInfoSplit = (editor, indent) => {
-  return {
-    ["CURSOR_ONLY" /* CURSOR_ONLY */]: () => cursorOnlyStatus(editor),
-    ["SINGLE_LINE" /* SINGLE_LINE */]: () => singleLineStatus(editor),
-    ["MULTI_LINE" /* MULTI_LINE */]: () => multilineStatus(editor, indent),
-    ["MULTI_CURSOR" /* MULTI_CURSOR */]: () => multiCursorStatus(editor, indent)
-  };
-};
-var statusText = (editor, decorationState2, statusInfo, type) => {
-  const statusTextInfo = statusTextInfoSplit(editor, statusInfo.indent)[type.KEY]();
-  const statusInfoList = [];
-  let length = statusTextInfo.length;
-  while (length--) {
-    const editorDecoration = createEditorDecorationType(statusDecorationType(statusTextInfo[length], statusInfo.statusDecoration));
-    applyDecoration(editor, editorDecoration, [statusTextInfo[length].range]);
-    statusInfoList.push(editorDecoration);
-  }
-  disposeDecoration(decorationState2.statusText);
-  decorationState2.statusText = statusInfoList;
-};
-var bindStatusContentTextState = (type) => {
-  return {
-    statusOf: statusOf[type],
-    contentTextState: contentTextState[type]
-  };
-};
-
-// src/editor/decoration/diagnostic.ts
-var vscode3 = __toESM(require("vscode"));
-var diagnosticState = { ...DIAGONOSTIC_STATE };
-var okContentTextState = [];
-var warnContentTextState = [];
-var errContentTextState = [];
-var diagnosticTextState = {
-  ["okContentText" /* OK_CONTENT_TEXT */]: (diagnosticContentText) => {
-    okContentTextState.splice(0);
-    okContentTextState.push(diagnosticContentText["okContentText" /* OK_CONTENT_TEXT */].contentText);
-  },
-  ["warningContentText" /* WARNING_CONTENT_TEXT */]: (diagnosticContentText) => {
-    warnContentTextState.splice(0);
-    warnContentTextState.push(...diagnosticContentText["warningContentText" /* WARNING_CONTENT_TEXT */].contentText);
-  },
-  ["errorContentText" /* ERROR_CONTENT_TEXT */]: (diagnosticContentText) => {
-    errContentTextState.splice(0);
-    errContentTextState.push(...diagnosticContentText["errorContentText" /* ERROR_CONTENT_TEXT */].contentText);
-  }
-};
-var diagnosticOf = {
-  ["okContentText" /* OK_CONTENT_TEXT */]: {},
-  ["warningContentText" /* WARNING_CONTENT_TEXT */]: {
-    src: () => diagnosticState.source,
-    wrn: () => diagnosticState.severity.warning
-  },
-  ["errorContentText" /* ERROR_CONTENT_TEXT */]: {
-    src: () => diagnosticState.source,
-    err: () => diagnosticState.severity.error
-  }
-};
-var updateDiagonosticStateSplit = {
-  [vscode3.DiagnosticSeverity.Hint]: () => {
-    diagnosticState.severity.hint += 1;
-  },
-  [vscode3.DiagnosticSeverity.Information]: () => {
-    diagnosticState.severity.info += 1;
-  },
-  [vscode3.DiagnosticSeverity.Warning]: () => {
-    diagnosticState.severity.warning += 1;
-  },
-  [vscode3.DiagnosticSeverity.Error]: () => {
-    diagnosticState.severity.error += 1;
-  }
-};
-var resetDiagonosticState = () => {
-  diagnosticState.total = 0;
-  diagnosticState.source = 0;
-  diagnosticState.severity.hint = 0;
-  diagnosticState.severity.info = 0;
-  diagnosticState.severity.warning = 0;
-  diagnosticState.severity.error = 0;
-};
-var updateDiagonosticState = () => {
-  resetDiagonosticState();
-  const diagnostics = vscode3.languages.getDiagnostics();
-  for (const [uri, diagnosticList] of diagnostics) {
-    diagnosticState.source += 1;
-    for (const diagnostic of diagnosticList) {
-      console.log(uri);
-      diagnosticState.total += 1;
-      updateDiagonosticStateSplit[diagnostic.severity]();
-    }
-  }
-};
-var updateDiagonosticDecoration = (editor, decorationState2) => {
-  const diagonosticInfoList = [];
-  const warnContentText = warnContentTextState.map((e) => typeof e === "string" ? e : e()).join("");
-  const errContentText = errContentTextState.map((e) => typeof e === "string" ? e : e()).join("");
-  const deco = vscode3.window.createTextEditorDecorationType({
-    outline: "dashed red",
-    color: "#ff0000",
-    backgroundColor: "#ffffff",
-    opacity: "0.7",
-    isWholeLine: false,
-    rangeBehavior: vscode3.DecorationRangeBehavior.OpenOpen,
-    before: {
-      contentText: `${warnContentText}/${errContentText}
-
-`,
-      color: "#ff0000",
-      backgroundColor: "#ffffff",
-      fontWeight: "normal",
-      fontStyle: "normal",
-      textDecoration: "none",
-      margin: "0 0 0 20px"
-    }
-  });
-  disposeDecoration(decorationState2.diagnosticText);
-  applyDecoration(editor, deco, [new vscode3.Range(new vscode3.Position(editor.selection.active.line + 1, 0), new vscode3.Position(editor.selection.active.line + 1, 0))]);
-  console.log(deco);
-  decorationState2.diagnosticText = [deco];
-};
-var bindDiagnosticContentTextState = (type) => {
-  return {
-    diagnosticOf: diagnosticOf[type],
-    diagnosticTextState: diagnosticTextState[type]
-  };
-};
-
-// src/editor/decoration/decoration.ts
-var applyDecoration = (editor, decoraiton, range) => editor.setDecorations(decoraiton, range);
-var createEditorDecorationType = (styleAppliedConfig) => vscode4.window.createTextEditorDecorationType(styleAppliedConfig);
-var disposeDecoration = (decorationList = []) => decorationList.forEach((decorationType) => {
-  decorationType.dispose();
-});
-var resetLastAppliedDecoration = (editor, decorationType) => decorationType.forEach((decoration) => applyDecoration(editor, decoration, []));
-var resetDecoration = (decorationState2, editor, dispose) => (decorationInfo) => {
-  if (editor) {
-    decorationState2.statusText?.forEach((decorationType) => {
-      decorationType.dispose();
-    });
-    decorationState2.decorationList[decorationInfo.KEY]?.forEach((decorationType) => {
-      if (Array.isArray(decorationType)) {
-        decorationType.forEach((decorationType2) => {
-          applyDecoration(editor, decorationType2, []);
-        });
-      } else {
-        applyDecoration(editor, decorationType, []);
-      }
-    });
-  }
-};
-var resetOtherDecoration = (currentDecoration, reset) => {
-  Object.values(DECORATION_INFO).filter((info) => currentDecoration.MASK & info.MASK).map((info) => reset(info)).every(Boolean);
-};
-var resetDecorationWrapper = (decorationState2, editor, dispose) => resetOtherDecoration(DECORATION_INFO.RESET, (decorationInfo) => resetDecoration(decorationState2, editor, dispose)(decorationInfo));
-var isDecorationChanged = (editor, decorationState2, decorationInfo) => {
-  if (decorationState2.appliedDecoration.applied) {
-    if (decorationState2.appliedDecoration.applied.MASK !== decorationInfo.MASK) {
-      resetLastAppliedDecoration(editor, decorationState2.decorationList[decorationState2.appliedDecoration.applied.KEY]);
-      decorationState2.appliedDecoration.applied = decorationInfo;
-    }
-  }
-  decorationState2.appliedDecoration.applied = decorationInfo;
-};
-var coordinatorSplit = {
-  ["CURSOR_ONLY" /* CURSOR_ONLY */]: (context) => cursorOnlyDecorationWithRange(context),
-  ["SINGLE_LINE" /* SINGLE_LINE */]: (context) => singelLineDecorationWithRange(context),
-  ["MULTI_LINE" /* MULTI_LINE */]: (context) => multiLineDecorationWithRange(context),
-  ["MULTI_CURSOR" /* MULTI_CURSOR */]: (context) => multiCursorDecorationWithRange(context)
-};
-var decorationCoordinator = ({ editor, configInfo: configInfo2, decorationInfo, decorationState: decorationState2 }) => {
-  const textEditorDecoration = decorationState2.decorationList[decorationInfo.KEY];
-  if (textEditorDecoration) {
-    const borderConfig = configInfo2.borderPositionInfo[decorationInfo.KEY];
-    return coordinatorSplit[decorationInfo.KEY]({
-      editor,
-      borderConfig,
-      textEditorDecoration
-    });
-  }
-  return;
-};
-var setDecorationOnEditor = ({ editor, configInfo: configInfo2, statusInfo, decorationInfo, decorationState: decorationState2 }) => {
-  const textEditorDecoration = decorationState2.decorationList[decorationInfo.KEY];
-  if (textEditorDecoration) {
-    decorationState2.appliedDecoration.editorDecoration = textEditorDecoration;
-    const decorationWithRange = decorationCoordinator({ editor, configInfo: configInfo2, decorationInfo, decorationState: decorationState2 });
-    if (!decorationWithRange) {
-      return;
-    }
-    if (configInfo2.generalConfigInfo.statusTextEnabled) {
-      statusText(editor, decorationState2, statusInfo, decorationInfo);
-    }
-    if (configInfo2.generalConfigInfo.diagnosticTextEnabled) {
-      updateDiagonosticDecoration(editor, decorationState2);
-    }
-    decorationWithRange.forEach(({ decoration, range }) => {
-      applyDecoration(editor, decoration, range);
-    });
+    return true;
   }
 };
 
-// src/config/decoration.ts
-var checkConfigKeyAndCast = (key, config) => {
+// src/configuration/highlight/highlight.ts
+var checkConfigKeyAndCast = (key) => {
   return key;
 };
 var getConfigSet = (configReady, decorationKey) => {
@@ -998,7 +1278,7 @@ var getConfigSet = (configReady, decorationKey) => {
   const defaultConfigDefinition = NO_CONFIGURATION_DEOCORATION_DEFAULT[decorationKey];
   const configSection = getWorkspaceConfiguration(configReady.name + "." + configSectionName);
   return Object.entries(defaultConfigDefinition).reduce((config, [configName, defaultValue]) => {
-    const configValue = getConfigValue(configSection, checkConfigKeyAndCast(configName, defaultConfigDefinition), defaultValue);
+    const configValue = getConfigValue(configSection, checkConfigKeyAndCast(configName), defaultValue);
     if (configValue !== void 0 && configValue !== null) {
       if (Object.hasOwn(colorConfigTransform, configName)) {
         const colorTransform = colorConfigTransform[configName];
@@ -1077,7 +1357,7 @@ var borderPositionParser = (selectionType, borderPosition2) => {
     selectionOnly
   };
 };
-var createDecorationTypeBuilder = (configReady, statusConfigInfo2, decorationState2) => {
+var generateHighlightDecoration = (configReady, decorationState2) => {
   for (const key in configReady.generalConfigInfo) {
     if (configReady.generalConfigInfo[key]) {
       const sectionLinker = configReady.generalConfigInfo[key].split(".");
@@ -1089,10 +1369,10 @@ var createDecorationTypeBuilder = (configReady, statusConfigInfo2, decorationSta
       configReady.generalConfigInfo[key] = getConfigValue(configSection, key, NO_CONFIGURATION_GENERAL_DEFAULT[key]);
     }
   }
-  for (const key in decorationState2.decorationList) {
+  for (const key in decorationState2.highlightStyleList) {
     const selectionType = key;
-    if (decorationState2.decorationList[selectionType]) {
-      disposeDecoration(decorationState2.decorationList[selectionType]);
+    if (decorationState2.highlightStyleList[selectionType]) {
+      disposeDecoration(decorationState2.highlightStyleList[selectionType]);
     }
     const configSet = getConfigSet(configReady, selectionType);
     const parsed = borderPositionParser(selectionType, String(configSet.borderPosition));
@@ -1103,13 +1383,13 @@ var createDecorationTypeBuilder = (configReady, statusConfigInfo2, decorationSta
     if (!decorationTypeList) {
       return false;
     }
-    decorationState2.decorationList[selectionType] = decorationTypeList;
+    decorationState2.highlightStyleList[selectionType] = decorationTypeList;
   }
   return true;
 };
 
-// src/config/patch.ts
-var vscode5 = __toESM(require("vscode"));
+// src/configuration/collection/patch.ts
+var vscode7 = __toESM(require("vscode"));
 var legacyConfig = {
   borderOpacity: "general.borderOpacity",
   backgroundOpacity: "general.backgroundOpacity",
@@ -1143,12 +1423,12 @@ var legacyConfig = {
   multiCursorBorderStyle: "multiCursor.borderStyle"
 };
 var updateUserSetting = (extensionConfig, newKey, value) => {
-  return extensionConfig.update(newKey, value, vscode5.ConfigurationTarget.Global);
+  return extensionConfig.update(newKey, value, vscode7.ConfigurationTarget.Global);
 };
 var removeUserSetting = (extensionConfig, key) => {
-  return extensionConfig.update(key, void 0, vscode5.ConfigurationTarget.Global);
+  return extensionConfig.update(key, void 0, vscode7.ConfigurationTarget.Global);
 };
-var patchConfig = async (configReady) => {
+var updateLegacyConfig = async (configReady) => {
   const extensionConfig = getWorkspaceConfiguration(configReady.name);
   Object.entries(extensionConfig).forEach(async ([key, value]) => {
     if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
@@ -1161,176 +1441,389 @@ var patchConfig = async (configReady) => {
   });
 };
 
-// src/config/status.ts
-var vscode6 = __toESM(require("vscode"));
-var statusContentText = { ...STATUS_CONTENT_TEXT };
-var setStatusConfig = (configReady, statusConfigInfo2) => {
-  const editorConfig = vscode6.workspace.getConfiguration("editor");
-  const tabSize = editorConfig.get("tabSize");
-  const insertSpaces = editorConfig.get("insertSpaces");
-  statusConfigInfo2.indent.size = Number(tabSize ? tabSize : 4);
-  statusConfigInfo2.indent.type = insertSpaces ? "\n" : "	";
-  statusConfigInfo2.indent.regex = insertSpaces ? regex.indentAndEOLRegex(statusConfigInfo2.indent.size) : regex.tagtAndEOLRegex;
-  if (configReady.statusTextConfig) {
-    const textColor = configReady.statusTextConfig.color;
-    const textOpacity = configReady.statusTextConfig.opacity;
-    const defaultColor = NO_CONFIGURATION_STATUS_DEFAULT.statusTextColor;
-    const defaultOpacity = NO_CONFIGURATION_STATUS_DEFAULT.statusTextOpacity;
-    statusConfigInfo2.statusDecoration.rangeBehavior = vscode6.DecorationRangeBehavior.ClosedClosed;
-    statusConfigInfo2.statusDecoration.after.color = hexToRgbaStringLiteral(textColor, textOpacity, defaultColor, defaultOpacity);
-    statusConfigInfo2.statusDecoration.after.backgroundColor = configReady.statusTextConfig.backgroundColor;
-    statusConfigInfo2.statusDecoration.after.fontWeight = configReady.statusTextConfig.fontWeight;
-    statusConfigInfo2.statusDecoration.after.fontStyle = configReady.statusTextConfig.fontStyle;
+// src/configuration/shared/decoration.ts
+var vscode8 = __toESM(require("vscode"));
+var leftMarginToMarginString = (leftMargin) => `0 0 0 ${leftMargin}`;
+var castToFuncSignature = (result) => {
+  if (result) {
+    return {
+      ...result,
+      array: result.array.filter((entry) => entry !== void 0)
+    };
   }
 };
-var updateStatusContentText = (configReady) => {
-  Object.entries(statusContentText).forEach(([type, contentTextInfo]) => {
-    const statusText2 = configReady.statusTextConfig;
-    const regexObject = regex.statusContentText[type];
-    const bind = bindStatusContentTextState(type);
-    statusContentText[type].contentText = [];
-    const match = statusText2[type].match(regex.ifContentTextHasPlaceholder);
-    if (match) {
-      if (match > Object.keys(regexObject).length) {
-        configReady.configError.push("statusText." + type);
-      }
-      let searchObject = {
-        nextSearchString: statusText2[type],
-        lastPosition: 0
-      };
-      match.forEach((search, index) => {
-        const regexKey = search.match(regex.contentTextKeysOnly);
-        if (Object.hasOwn(regexObject, regexKey[1])) {
-          searchPlaceholder(statusContentText[type], regexKey[1], regexObject[regexKey[1]], searchObject, index === match.length - 1, bind.statusOf);
-        } else {
-          configReady.configError.push("statusText." + type);
-        }
-      });
-    } else {
-      statusContentText[type].contentText.push(statusText2[type]);
+var setContentTextOnDecorationRenderOption = (source2, contentText) => {
+  const target = { ...source2 };
+  target.after = { ...source2.after };
+  target.after.contentText = contentText;
+  return target;
+};
+var searchPlaceholderPosition = (textOf, functionOf, functionKey, regex, search, lastIndex) => {
+  const split = castToFuncSignature(splitAndPosition(search.nextSearchString, regex));
+  if (split) {
+    if (Object.hasOwn(functionOf, functionKey)) {
+      split.array[split.position] = functionOf[functionKey];
     }
-    bind.contentTextState(statusContentText);
-  });
+    if (lastIndex) {
+      textOf.contentText?.push(...split.array);
+      textOf.position[search.lastPosition + split.position] = functionKey;
+    } else {
+      if (split.position === 0) {
+        textOf.contentText?.push(split.array[0]);
+        textOf.position[search.lastPosition + split.position] = functionKey;
+        search.nextSearchString = split.array[1];
+        search.lastPosition = search.lastPosition + split.position + 1;
+      } else if (split.position === 1 && split.array.length === 2) {
+        textOf.position[search.lastPosition + split.position] = functionKey;
+        textOf.contentText?.push(...split.array);
+      } else if (split.position === 1 && split.array.length === 3) {
+        textOf.contentText?.push(split.array[0], split.array[1]);
+        textOf.position[search.lastPosition + split.position] = functionKey;
+        search.nextSearchString = split.array[2];
+        search.lastPosition = search.lastPosition + split.position + 1;
+      }
+    }
+  }
 };
-var updateStatusTextConfig = (configReady, statusConfigInfo2, decorationState2) => {
-  if (decorationState2.statusText) {
-    disposeStatusInfo(decorationState2);
+var parseContentText = (contentText, key, bindTo, regexObject) => {
+  const match = contentText.match(regex_collection_default.ifContentTextHasPlaceholder);
+  if (match !== null && Object.hasOwn(regexObject, key)) {
+    if (match.length > Object.keys(regexObject[key]).length) {
+    }
+    let searchObject = {
+      nextSearchString: contentText,
+      lastPosition: 0
+    };
+    bindTo.textOf[key].contentText = [];
+    match.forEach((search, index) => {
+      const regexKey = search.match(regex_collection_default.contentTextKeysOnly);
+      if (regexKey) {
+        if (Object.hasOwn(regexObject[key], regexKey[1])) {
+          searchPlaceholderPosition(bindTo.textOf[key], bindTo.functionOf[key], regexKey[1], regexObject[key][regexKey[1]], searchObject, index === match.length - 1);
+        }
+      }
+    });
+    bindTo.textOf[key].contentText = sanitizeContentText(bindTo.textOf[key].contentText);
+  } else {
+    bindTo.textOf[key].contentText = [contentText];
   }
-  const statusTextConfig = getWorkspaceConfiguration(configReady.name + "." + CONFIG_SECTION.statusText);
-  for (const key in configReady.statusTextConfig) {
-    configReady.statusTextConfig[key] = getConfigValue(statusTextConfig, key, NO_CONFIGURATION_STATUS_DEFAULT[key]);
+};
+var convertToDecorationRenderOption = (config, isWholeLine = true, contentText = void 0) => {
+  const decorationOption = { ...DECORATION_OPTION_CONFIG };
+  decorationOption.isWholeLine = isWholeLine;
+  decorationOption.rangeBehavior = vscode8.DecorationRangeBehavior.ClosedOpen;
+  decorationOption.after = { ...DECORATION_OPTION_AFTER_CONFIG };
+  if (contentText) {
+    decorationOption.after.contentText = contentText;
   }
-  setStatusConfig(configReady, statusConfigInfo2);
-  updateStatusContentText(configReady);
+  if (!config.color) {
+    return;
+  }
+  decorationOption.after.color = hexToRgbaStringLiteral(config.color, config.colorOpacity, "#333333", 0.7);
+  if (config.backgroundColor && config.backgroundColor !== "null" && config.backgroundColor.length > 0) {
+    decorationOption.after.backgroundColor = hexToRgbaStringLiteral(config.backgroundColor, config.backgroundOpacity, "#333333", 0.7);
+    ;
+  } else {
+    delete decorationOption.after.backgroundColor;
+  }
+  if (config.fontWeight !== "normal") {
+    decorationOption.after.fontWeight = config.fontWeight;
+  } else {
+    delete decorationOption.after.fontWeight;
+  }
+  if (config.fontStyle !== "normal") {
+    decorationOption.after.fontStyle = config.fontStyle;
+  } else {
+    delete decorationOption.after.fontStyle;
+  }
+  delete decorationOption.after.margin;
+  delete decorationOption.after.textDecoration;
+  return decorationOption;
 };
 
-// src/config/diagonostic.ts
-var diagnosticContentTextInfo = { ...DIAGNOSTIC_CONTENT_TEXT };
-var updateDiagnosticContentText = (configReady, text, key, bind) => {
-  if (text) {
-    const match = text.match(regex.ifContentTextHasPlaceholder);
-    if (match !== null && Object.hasOwn(regex.diagnosticTextRegex, key)) {
-      const regexObject = regex.diagnosticTextRegex[key];
-      if (match.length > Object.keys(regexObject).length) {
-        configReady.configError.push("statusText." + key);
-      }
-      let searchObject = {
-        nextSearchString: text,
-        lastPosition: 0
-      };
-      diagnosticContentTextInfo[key].contentText = [];
-      match.forEach((search, index) => {
-        const regexKey = search.match(regex.contentTextKeysOnly);
-        if (regexKey) {
-          if (Object.hasOwn(regexObject, regexKey[1])) {
-            searchPlaceholder(diagnosticContentTextInfo[key], regexKey[1], regexObject[regexKey[1]], searchObject, index === match.length - 1, bind.diagnosticOf);
-          } else {
-            configReady.configError.push("statusText." + key);
-          }
-        }
-      });
-    } else {
-      diagnosticContentTextInfo[key].contentText = [text];
-    }
-  } else {
-    diagnosticContentTextInfo[key].contentText = [];
-  }
+// src/configuration/status/selection.ts
+var SelectionDecorationConfig = { ...SELECTION_DECORAITON_CONFIG };
+var SelectionDecorationStyle = { ...SELECTION_DECORATION_STYLE };
+var convertPositionToDecorationRenderOption = (textPosition) => {
+  return textPosition.contentText.map((text, idx) => {
+    const option = typeof text === "string" ? SelectionDecorationStyle.placeholderDecorationOption : SelectionDecorationStyle.selectionDecorationOption[textPosition.position[idx]];
+    const contentTextRenderOption = setContentTextOnDecorationRenderOption(option, text);
+    return contentTextRenderOption;
+  }).filter((decorationOption) => decorationOption !== void 0);
 };
+var buildStatusTextState = (textOftarget, textOfSource, leftMargin) => {
+  Object.entries(textOfSource).forEach(([key, textPosition], idx) => {
+    textOftarget[key] = convertPositionToDecorationRenderOption(textPosition);
+    if (leftMargin && leftMargin !== "0px" || leftMargin !== "0em") {
+      console.log(leftMargin);
+      textOftarget[key][0].after["margin"] = leftMarginToMarginString(leftMargin);
+    }
+  });
+};
+var buildSelectionTextDecorationRenderOption = (config, style) => {
+  style.placeholderDecorationOption = convertToDecorationRenderOption(config, true);
+  Object.keys(style.selectionDecorationOption).forEach((key, idx) => {
+    const styleConfig = {
+      color: config.selectionCountTextStyle[key],
+      colorOpacity: config.selectionCountTextStyle.opacity,
+      fontStyle: config.selectionCountTextStyle.fontStyle,
+      fontWeight: config.selectionCountTextStyle.fontWeight
+    };
+    style.selectionDecorationOption[key] = convertToDecorationRenderOption(styleConfig, true);
+  });
+};
+var updateSelectionTextConfig = (configReady) => {
+  const bindTo = bindStatusContentTextState();
+  const bindToBuffer = {
+    functionOf: bindTo.functionOf,
+    textOf: {}
+  };
+  workspaceProxyConfiguration(
+    SelectionDecorationConfig,
+    configReady.name + "." + CONFIG_SECTION.statusText,
+    SELECTION_CONTENT_TEXT_LIST,
+    bindToBuffer,
+    regex_collection_default.statusContentText
+  );
+  buildSelectionTextDecorationRenderOption(SelectionDecorationConfig, SelectionDecorationStyle);
+  buildStatusTextState(bindTo.textOf, bindToBuffer.textOf, SelectionDecorationConfig.leftMargin);
+};
+
+// src/configuration/status/diagonostic.ts
 var diagnosticConfig = { ...DIAGNOSTIC_CONFIG };
-var flushDiagnosticConfig = () => {
-  Object.assign(diagnosticContentTextInfo, DIAGNOSTIC_CONTENT_TEXT);
-  Object.assign(diagnosticConfig, DIAGNOSTIC_CONFIG);
+var diagnosticDecorationStyle = { ...DIAGNOSTIC_DECORATION_STYLE };
+var positionKeyToPlaceholderName = {
+  pre: "prefix",
+  post: "postfix"
 };
-var updateDiagnosticConfig = (configReady, decorationState2) => {
-  flushDiagnosticConfig();
-  const sectionName = configReady.name + "." + "diagnosticText" /* DIAGNOSTIC_TEXT */;
-  const diagnosticConfigSection = getWorkspaceConfiguration(sectionName);
-  Object.entries(diagnosticConfig).forEach(([key, section]) => {
-    if (section === void 0) {
-      const configValue = getConfigValue(diagnosticConfigSection, key, "test");
-      if (key.toLowerCase().includes("contenttext")) {
-        const bind = bindDiagnosticContentTextState(key);
-        updateDiagnosticContentText(configReady, configValue, key, bind);
-        bind.diagnosticTextState(diagnosticContentTextInfo);
+var positionKeyList = ["pre", "post"];
+var applyLeftMargin = (textOf, visibility, leftMargin) => {
+  if (!leftMargin || leftMargin === "0px" || leftMargin === "0em") {
+    return;
+  }
+  if (typeof textOf.layout.allOkPlaceholderContentText.contentText[0].contentText === "symbol") {
+    const marginDecoration = { ...textOf.layout.allOkPlaceholderContentText.contentText[0].contentText };
+    marginDecoration.after = { ...textOf.layout.allOkPlaceholderContentText.contentText[0].contentText.after };
+    marginDecoration.contentText = "";
+    marginDecoration.margin = leftMarginToMarginString(leftMargin);
+    textOf.layout.allOkPlaceholderContentText.contentText[0].unshift(marginDecoration);
+  } else {
+    textOf.layout.allOkPlaceholderContentText.contentText[0].after["margin"] = leftMarginToMarginString(leftMargin);
+  }
+  if (typeof textOf.layout.problemPlaceholderContentText.contentText[0].contentText === "symbol") {
+    const marginDecoration = { ...textOf.layout.problemPlaceholderContentText.contentText[0].contentText };
+    marginDecoration.after = { ...textOf.layout.problemPlaceholderContentText.contentText[0].contentText.after };
+    marginDecoration.contentText = "";
+    marginDecoration.margin = leftMarginToMarginString(leftMargin);
+    textOf.layout.problemPlaceholderContentText.contentText[0].unshift(marginDecoration);
+  } else {
+    textOf.layout.problemPlaceholderContentText.contentText[0].after["margin"] = leftMarginToMarginString(leftMargin);
+  }
+};
+var convertPositionDecorationRenderOption = ({ textPosition, primaryStyle, secondaryStyle, placeholder, leftMargin }) => {
+  return textPosition.contentText.map((text, idx) => {
+    const key = textPosition.position[idx];
+    let decorationStyle = primaryStyle;
+    if (positionKeyList.includes(key)) {
+      if (!Object.hasOwn(placeholder, positionKeyToPlaceholderName[key])) {
+        return;
       }
-      diagnosticConfig[key] = configValue;
-    } else {
-      const nestedSectionName = configReady.name + "." + "diagnosticText" /* DIAGNOSTIC_TEXT */ + "." + key;
-      const diagnosticConfigNestedSection = getWorkspaceConfiguration(nestedSectionName);
-      Object.entries(section).forEach(([sKey, value]) => {
-        diagnosticConfig[key][sKey] = getConfigValue(diagnosticConfigNestedSection, sKey, "test");
-      });
+      decorationStyle = secondaryStyle;
+    }
+    return setContentTextOnDecorationRenderOption(decorationStyle, text);
+  }).filter((decorationOption) => decorationOption !== void 0);
+};
+var buildDiagnosticTextState = (textOftarget, textOfSource, style, leftMargin = "") => {
+  Object.entries(textOfSource).forEach(([contentTextName, textPosition]) => {
+    const linker = DECORATION_OPTION_LINKER[contentTextName];
+    const context = {
+      textPosition,
+      primaryStyle: style.diagonosticDecorationOption[linker[0]],
+      secondaryStyle: linker[1] ? style.diagonosticDecorationOption[linker[1]] : null,
+      placeholder: [],
+      leftMargin
+    };
+    if (Object.hasOwn(textOftarget.workspace, contentTextName)) {
+      context.placeholder = textOftarget.workspace[contentTextName].placeholder;
+      textOftarget.workspace[contentTextName].contentText = convertPositionDecorationRenderOption(context);
+    }
+    if (Object.hasOwn(textOftarget.editor, contentTextName)) {
+      context.placeholder = textOftarget.editor[contentTextName].placeholder;
+      textOftarget.editor[contentTextName].contentText = convertPositionDecorationRenderOption(context);
+    }
+    if (Object.hasOwn(textOftarget.all, contentTextName)) {
+      context.placeholder = textOftarget.all[contentTextName].placeholder;
+      textOftarget.all[contentTextName].contentText = convertPositionDecorationRenderOption(context);
+    }
+    if (Object.hasOwn(textOftarget.layout, contentTextName)) {
+      textOftarget.layout[contentTextName].contentText = convertPositionDecorationRenderOption(context);
     }
   });
 };
-
-// src/config/config.ts
-var configInfo = { ...CONFIG_INFO };
-var statusConfigInfo = { ...STATUS_INFO };
-var decorationState = { ...DECORATION_STATE };
-var getConfigString = (configReady) => {
-  return Object.values(CONFIG_SECTION).reduce((sectionConfing, section) => {
-    const extensionConfig = getWorkspaceConfiguration(configReady.name + "." + section);
-    const sectionConfingString = Object.entries(extensionConfig).reduce((configValue, [key, infoProp]) => {
-      if (typeof infoProp === "string" || typeof infoProp === "number" || typeof infoProp === "boolean") {
-        configValue.push(infoProp);
+var ifNoationNotNull = (property, str) => {
+  if (str !== "null" && str.length > 0 && !regex_collection_default.resourceScope.test(str)) {
+    return {
+      [property]: str
+    };
+  }
+  return {};
+};
+var createNotation = (biome, prefix2, postfix2) => {
+  return {
+    [biome]: {
+      ...DIAGNOSTIC_DECORATION_TEXT_KIND,
+      placeholder: {
+        ...ifNoationNotNull("prefix", prefix2),
+        ...ifNoationNotNull("postfix", postfix2)
       }
-      return configValue;
-    }, []).join("");
-    sectionConfing.push(sectionConfingString);
-    return sectionConfing;
-  }, []).join("");
-};
-var getConfigHash = (configReady) => {
-  const configString = getConfigString(configReady);
-  return fnv1aHash(configString);
-};
-var setConfigHashKey = (configReady) => {
-  configReady.configHashKey = fnv1aHash(getConfigString(configReady));
-};
-var ifConfigChanged = (configReady) => {
-  const configHash = getConfigHash(configReady);
-  if (configReady.configHashKey === configHash) {
-    return false;
-  } else {
-    if (decorationState.appliedDecoration.editorDecoration) {
-      decorationState.appliedDecoration.applied = void 0;
-      disposeDecoration(decorationState.appliedDecoration.editorDecoration);
     }
-    configReady.configError = [];
-    configReady.configHashKey = configHash;
-    if (configReady.configError.length === 0) {
-      sendAutoDismissMessage("Config has been changed. Reloading configuration. (Messaage Dismiss in 2 second.)" /* RELOADING_CONFIG */, 1500);
-    }
-    return true;
+  };
+};
+var ifNoation = (config, key, biome, linker) => {
+  const prefix2 = biome + "Prefix";
+  const postfix2 = biome + "Postfix";
+  if (config[key][prefix2] !== void 0 && config[key][postfix2] !== void 0) {
+    return createNotation(linker[key], config[key][prefix2], config[key][postfix2]);
   }
 };
-var updateEditorConfiguration = () => {
-  const editorConfig = getWorkspaceConfiguration("editor");
-  editorConfig.update("renderLineHighlight", "gutter", vscode7.ConfigurationTarget.Global);
-  editorConfig.update("roundedSelection", false, vscode7.ConfigurationTarget.Global);
+var buildDiagnosticStyle = (config, style, diagnosticStyleList, visibility, diagnosticBiome) => {
+  const ifOverrride = visibility.overrideLayoutPlaceholderColorToHighestSeverity ? {} : void 0;
+  const result = {
+    workspace: {},
+    editor: {},
+    all: {},
+    layout: {
+      ["problemPlaceholderContentText" /* PLACEHOLDER_PROBLEM_CONTENT_TEXT */]: {},
+      ["allOkPlaceholderContentText" /* PLACEHOLDER_ALL_OK_CONTENT_TEXT */]: {}
+    }
+  };
+  if (config.leftMargin) {
+    style.leftMargin = config.leftMargin;
+  }
+  diagnosticStyleList.forEach((styleName) => {
+    const styleConfig = {
+      color: sanitizeConfigValue(config[styleName].color),
+      colorOpacity: config[styleName].colorOpacity,
+      backgroundColor: sanitizeConfigValue(config[styleName].backgroundColor),
+      backgroundOpacity: config[styleName].backgroundOpacity,
+      fontStyle: sanitizeConfigValue(config[styleName].fontStyle),
+      fontWeight: sanitizeConfigValue(config[styleName].fontWeight)
+    };
+    style.diagonosticDecorationOption[styleName] = convertToDecorationRenderOption(styleConfig, true);
+    result.workspace = {
+      ...result.workspace,
+      ...ifNoation(config, styleName, "workspace", DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER)
+    };
+    result.editor = {
+      ...result.editor,
+      ...ifNoation(config, styleName, "editor", DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER)
+    };
+    result.all = {
+      ...result.all,
+      ...ifNoation(config, styleName, "all", DIAGNOSTIC_ALL_PLACEHOLDER_LINKER)
+    };
+  });
+  if (ifOverrride) {
+    const requiredColor = diagnosticBiome.workspace | diagnosticBiome.editor;
+    const allOkOverrideColor = {};
+    const problemOverrideColor = {};
+    const okStyleName = "okNotationTextStyle" /* OK_NOTATION_TEXT_STYLE */;
+    if (requiredColor & 1 /* OK */ && config[okStyleName]) {
+      problemOverrideColor[1 /* OK */] = {};
+      problemOverrideColor[1 /* OK */]["color"] = hexToRgbaStringLiteral(config[okStyleName].color, config[okStyleName].colorOpacity, "#333333", 0.7);
+      allOkOverrideColor[1 /* OK */] = {};
+      allOkOverrideColor[1 /* OK */]["color"] = hexToRgbaStringLiteral(config[okStyleName].color, config[okStyleName].colorOpacity, "#333333", 0.7);
+      if (sanitizeConfigValue(config[okStyleName].backgroundColor)) {
+        problemOverrideColor[1 /* OK */]["backgroundColor"] = hexToRgbaStringLiteral(config[okStyleName].backgroundColor, config[okStyleName].backgroundOpacity, "#333333", 0.7);
+        allOkOverrideColor[1 /* OK */]["backgroundColor"] = hexToRgbaStringLiteral(config[okStyleName].backgroundColor, config[okStyleName].backgroundOpacity, "#333333", 0.7);
+      }
+    }
+    const warnStyleName = "warningNotationTextStyle" /* WARNING_NOTATION_TEXT_STYLE */;
+    if (requiredColor & 2 /* WARN */ && config[warnStyleName]) {
+      problemOverrideColor[2 /* WARN */] = {};
+      problemOverrideColor[2 /* WARN */]["color"] = hexToRgbaStringLiteral(config[warnStyleName].color, config[warnStyleName].colorOpacity, "#333333", 0.7);
+      if (sanitizeConfigValue(config[warnStyleName].backgroundColor)) {
+        problemOverrideColor[2 /* WARN */]["backgroundColor"] = hexToRgbaStringLiteral(config[warnStyleName].backgroundColor, config[warnStyleName].backgroundOpacity, "#333333", 0.7);
+      }
+    }
+    const errStyleName = "errorNotationTextStyle" /* ERROR_NOTATION_TEXT_STYLE */;
+    if (requiredColor & 4 /* ERR */ && config[errStyleName]) {
+      problemOverrideColor[4 /* ERR */] = {};
+      problemOverrideColor[4 /* ERR */]["color"] = hexToRgbaStringLiteral(config[errStyleName].color, config[errStyleName].colorOpacity, "#333333", 0.7);
+      if (sanitizeConfigValue(config[errStyleName].backgroundColor)) {
+        problemOverrideColor[4 /* ERR */]["backgroundColor"] = hexToRgbaStringLiteral(config[errStyleName].backgroundColor, config[errStyleName].backgroundOpacity, "#333333", 0.7);
+      }
+    }
+    ifOverrride["problemPlaceholderContentText" /* PLACEHOLDER_PROBLEM_CONTENT_TEXT */] = {
+      override: Object.keys(problemOverrideColor).length > 0 ? problemOverrideColor : void 0
+    };
+    ifOverrride["allOkPlaceholderContentText" /* PLACEHOLDER_ALL_OK_CONTENT_TEXT */] = {
+      override: Object.keys(allOkOverrideColor).length > 0 ? allOkOverrideColor : void 0
+    };
+  }
+  return {
+    ...result,
+    layout: {
+      ["problemPlaceholderContentText" /* PLACEHOLDER_PROBLEM_CONTENT_TEXT */]: {},
+      ["allOkPlaceholderContentText" /* PLACEHOLDER_ALL_OK_CONTENT_TEXT */]: {},
+      ...ifOverrride
+    }
+  };
 };
-var initializeConfig = (context) => {
+var hideMkask = (hideOk = false, hideWarning = false) => {
+  let mask = 7 /* ALL */;
+  mask ^= hideOk ? 1 /* OK */ : 0;
+  mask ^= hideWarning ? 2 /* WARN */ : 0;
+  return mask;
+};
+var diagnosticVisibilityBiome = (visibility) => {
+  let workspacMask = 7 /* ALL */;
+  let editorMask = 7 /* ALL */;
+  if (visibility.DiagnosticKind === "workspace Only") {
+    editorMask = 0 /* NONE */;
+    workspacMask &= hideMkask(visibility.hideOk, visibility.hideWarning);
+  }
+  if (visibility.DiagnosticKind === "editor Only") {
+    workspacMask = 0 /* NONE */;
+    editorMask &= hideMkask(visibility.hideOk, visibility.hideWarning);
+  }
+  return {
+    workspace: workspacMask,
+    editor: editorMask
+  };
+};
+var reversedStyleList = () => {
+  const styleList = [...DIAGNOSTIC_STYLE_LIST];
+  styleList.reverse().push(["0", "0"]);
+  return styleList;
+};
+var decorationStyleFromBiome = (diagnosticBiome) => readBits(diagnosticBiome, reversedStyleList(), 0, 4).filter((styles) => styles !== 0).flat();
+var updateDiagnosticTextConfig = (configReady) => {
+  const bindTo = bindDiagnosticContentTextState();
+  const bindToBuffer = {
+    functionOf: bindTo.functionOf,
+    textOf: {}
+  };
+  workspaceProxyConfiguration(
+    diagnosticConfig,
+    configReady.name + "." + CONFIG_SECTION.diagnosticText,
+    DIAGNOSTIC_CONTENT_TEXT_LIST,
+    bindToBuffer,
+    regex_collection_default.diagnosticText
+  );
+  const diagnosticBiome = diagnosticVisibilityBiome(diagnosticConfig.visibility);
+  const decorationStyleList = decorationStyleFromBiome(diagnosticBiome.workspace | diagnosticBiome.editor);
+  decorationStyleList.push("diagnosticPlaceholderTextStyle" /* DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE */);
+  Object.assign(bindTo.textOf, buildDiagnosticStyle(diagnosticConfig, diagnosticDecorationStyle, decorationStyleList, diagnosticConfig.visibility, diagnosticBiome));
+  Object.assign(bindTo.configOf, diagnosticConfig.visibility);
+  buildDiagnosticTextState(bindTo.textOf, bindToBuffer.textOf, diagnosticDecorationStyle, diagnosticConfig.leftMargin);
+  console.log(bindTo.textOf);
+  applyLeftMargin(bindTo.textOf, diagnosticConfig.visibility, diagnosticConfig.leftMargin);
+};
+
+// src/configuration/load.ts
+var configInfo = { ...CONFIG_INFO };
+var loaConfiguration = (context) => {
   const name = context.extension.packageJSON.name;
   if (!name) {
     return;
@@ -1340,203 +1833,220 @@ var initializeConfig = (context) => {
     return;
   }
   const configReady = configInfo;
+  const decorationState2 = bindEditorDecoration().stateOf;
   if (!configReady.configError) {
     configReady.configError = [];
-    patchConfig(configReady);
+    updateLegacyConfig(configReady);
   }
   if (!configReady.configHashKey) {
     setConfigHashKey(configReady);
-    updateEditorConfiguration();
   } else {
-    if (!ifConfigChanged(configReady)) {
+    if (!ifConfigurationChanged(configReady, decorationState2)) {
       return {
         config: configReady,
-        decoration: decorationState,
-        status: statusConfigInfo
+        decoration: decorationState2
       };
     }
   }
-  if (createDecorationTypeBuilder(configReady, statusConfigInfo, decorationState)) {
+  writeEditorConfiguration();
+  if (generateHighlightDecoration(configReady, decorationState2)) {
     if (configReady.generalConfigInfo.statusTextEnabled) {
-      updateStatusTextConfig(configReady, statusConfigInfo, decorationState);
+      updateSelectionTextConfig(configReady);
     }
     if (configReady.generalConfigInfo.diagnosticTextEnabled) {
-      updateDiagnosticConfig(configReady, decorationState);
+      updateDiagnosticTextConfig(configReady);
     }
     return {
       config: configReady,
-      decoration: decorationState,
-      status: statusConfigInfo
+      decoration: decorationState2
     };
   }
   return;
 };
-
-// src/event.ts
-var vscode9 = __toESM(require("vscode"));
-
-// src/error.ts
-var vscode8 = __toESM(require("vscode"));
-var fixConfiguration = (confingError) => {
-  vscode8.window.showErrorMessage(
-    "Invalid Value(s) in Configuration.",
-    ...["Fix Configuration", "Ignore"]
-  ).then((selection) => {
-    if (selection === "Fix Configuration") {
-      vscode8.commands.executeCommand("workbench.action.openSettings", confingError.join(" "));
+var workspaceProxyConfiguration = (config, workspaceConfigSectionName, ifContentTextArray, bindTo, regexObject) => {
+  Object.entries(config).forEach(([sectionKey, section]) => {
+    if (section === void 0) {
+      const configValue = getConfigValue(getWorkspaceConfiguration(workspaceConfigSectionName), sectionKey, "not found");
+      if (configValue && regexObject && bindTo && ifContentTextArray && ifContentTextArray.includes(sectionKey)) {
+        const contextTextPosition = {
+          contentText: [],
+          position: {}
+        };
+        bindTo.textOf[sectionKey] = { ...contextTextPosition };
+        parseContentText(configValue, sectionKey, bindTo, regexObject);
+      }
+      if (Object.hasOwn(config, sectionKey) && configValue) {
+        config[sectionKey] = configValue;
+      }
+    } else if (section && typeof section === "object") {
+      workspaceProxyConfiguration(config[sectionKey], workspaceConfigSectionName + "." + sectionKey, ifContentTextArray, bindTo);
     }
   });
 };
 
+// src/event/window.ts
+var vscode10 = __toESM(require("vscode"));
+
 // src/editor/editor.ts
-var editorIndentOption = (statusInfo, editor) => {
-  statusInfo.indent.size = Number(editor.options.tabSize ?? editor.options.indentSize ?? 4);
-  statusInfo.indent.type = editor.options.insertSpaces ? "\n" : "	";
-  statusInfo.indent.regex = editor.options.insertSpaces ? regex.indentAndEOLRegex(statusInfo.indent.size) : regex.tagtAndEOLRegex;
+var editorIndentOption = (editor2) => {
+  const indentSize = Number(editor2?.options.tabSize ?? editor2?.options.indentSize ?? 4);
+  const indentType = editor2?.options.insertSpaces ? "\n" : "	";
+  const editorRegex = editor2?.options.insertSpaces ? regex_collection_default.indentAndEOLRegex(indentSize) : regex_collection_default.tagtAndEOLRegex;
+  return {
+    size: indentSize ? indentSize : void 0,
+    type: indentType ? indentType : void 0,
+    regex: editorRegex ? editorRegex : void 0
+  };
 };
-var getSelectionType = (editor) => {
-  if (editor.selections.length === 1) {
-    if (editor.selections[0].isEmpty) {
-      return DECORATION_INFO.CURSOR_ONLY;
-    } else {
-      if (editor.selections[0].isSingleLine) {
-        return DECORATION_INFO.SINGLE_LINE;
-      } else {
-        return DECORATION_INFO.MULTI_LINE;
-      }
-    }
-  } else if (editor.selections.length > 1) {
-    return DECORATION_INFO.MULTI_CURSOR;
-  }
+var updateIndentOption = (editor2, indent) => {
+  indent.size = Number(editor2.options.tabSize ?? editor2.options.indentSize ?? 4);
+  indent.type = editor2.options.insertSpaces ? "\n" : "	";
+  indent.regex = editor2.options.insertSpaces ? regex_collection_default.indentAndEOLRegex(indent.size) : regex_collection_default.tagtAndEOLRegex;
 };
 
-// src/event.ts
-var onActiveWindowChange = (configInfo2, statusInfo, decorationState2) => {
-  return vscode9.window.onDidChangeWindowState((event) => {
+// src/util/error.ts
+var vscode9 = __toESM(require("vscode"));
+var fixConfiguration = (confingError) => {
+  vscode9.window.showErrorMessage(
+    "Invalid Value(s) in Configuration.",
+    ...["Fix Configuration", "Ignore"]
+  ).then((selection) => {
+    if (selection === "Fix Configuration") {
+      vscode9.commands.executeCommand("workbench.action.openSettings", confingError.join(" "));
+    }
+  });
+};
+
+// src/event/window.ts
+var windowStateChanged = ({ configInfo: configInfo2, indentInfo, decorationState: decorationState2 }) => {
+  return vscode10.window.onDidChangeWindowState((event) => {
     if (event.focused) {
-      if (vscode9.window.activeTextEditor) {
+      if (vscode10.window.activeTextEditor) {
         setDecorationOnEditor({
-          editor: vscode9.window.activeTextEditor,
+          editor: vscode10.window.activeTextEditor,
           configInfo: configInfo2,
-          statusInfo,
+          indentInfo,
           decorationState: decorationState2,
           decorationInfo: DECORATION_INFO.CURSOR_ONLY
         });
       }
     } else {
-      vscode9.window.visibleTextEditors.forEach((editor) => {
-        resetDecorationWrapper(decorationState2, editor, true);
-      });
+      resetAllDecoration(decorationState2);
+    }
+    if (!event.focused && !event.active) {
+      console.log("idling");
     }
   });
 };
-var activeEditorChanged = (configInfo2, statusInfo, decorationState2) => {
-  return vscode9.window.onDidChangeActiveTextEditor((editor) => {
-    if (editor) {
+var activeEditorChanged = ({ configInfo: configInfo2, indentInfo, decorationState: decorationState2 }) => {
+  return vscode10.window.onDidChangeActiveTextEditor((editor2) => {
+    if (editor2) {
       if (configInfo2.configError.length > 0) {
         fixConfiguration(configInfo2.configError);
       }
-      editorIndentOption(statusInfo, editor);
-      vscode9.window.visibleTextEditors.forEach((editor2) => {
-        if (decorationState2.appliedDecoration.editorDecoration !== void 0) {
-          decorationState2.appliedDecoration.editorDecoration.forEach((decoration) => {
-            applyDecoration(editor2, decoration, []);
-          });
-        }
-      });
+      updateIndentOption(editor2, indentInfo);
+      resetAllDecoration(decorationState2);
+      resetEditorDiagnosticStatistics();
       setDecorationOnEditor({
-        editor,
+        editor: editor2,
         configInfo: configInfo2,
-        statusInfo,
+        indentInfo,
         decorationState: decorationState2,
         decorationInfo: DECORATION_INFO.CURSOR_ONLY
       });
     }
   });
 };
-var editorOptionChange = (statusInfo) => {
-  return vscode9.window.onDidChangeTextEditorOptions((event) => {
-    editorIndentOption(statusInfo, event.textEditor);
+var editorOptionChanged = ({ indentInfo }) => {
+  return vscode10.window.onDidChangeTextEditorOptions((event) => {
+    if (event.textEditor) {
+      updateIndentOption(event.textEditor, indentInfo);
+    }
   });
 };
-var selectionChanged = (configInfo2, statusInfo, decorationState2) => {
-  return vscode9.window.onDidChangeTextEditorSelection((event) => {
+var selectionChanged = ({ configInfo: configInfo2, indentInfo, decorationState: decorationState2 }) => {
+  return vscode10.window.onDidChangeTextEditorSelection((event) => {
     if (event.selections) {
       const decorationInfo = getSelectionType(event.textEditor);
       if (!decorationInfo) {
         return;
       }
       isDecorationChanged(event.textEditor, decorationState2, decorationInfo);
-      if (!decorationState2.decorationList[decorationInfo.KEY]) {
-        return;
-      }
       setDecorationOnEditor({
         editor: event.textEditor,
         configInfo: configInfo2,
-        statusInfo,
+        indentInfo,
         decorationState: decorationState2,
         decorationInfo
       });
     }
   });
 };
-var diagnosticChanged = (editor) => {
-  return vscode9.languages.onDidChangeDiagnostics((event) => {
-    if (editor) {
-      updateDiagonosticState();
-    }
-  });
-};
+
+// src/event/workspace.ts
+var vscode11 = __toESM(require("vscode"));
 var configChanged = (context) => {
-  return vscode9.workspace.onDidChangeConfiguration((event) => {
+  return vscode11.workspace.onDidChangeConfiguration((event) => {
     if (event) {
-      const loadConfig = initializeConfig(context);
+      const loadConfig = loaConfiguration(context);
     }
   });
 };
 
-// src/activate.ts
-var initialize = async (context) => {
+// src/event/language.ts
+var vscode12 = __toESM(require("vscode"));
+var diagnosticChanged = (context) => {
+  return vscode12.languages.onDidChangeDiagnostics(async (event) => {
+    const editor2 = vscode12.window.activeTextEditor;
+    if (editor2 && event) {
+      context.editor = editor2;
+      await updateDiagnostic(editor2.document.uri);
+      await renderStatusInfo(context);
+    }
+  });
+};
+
+// src/initialize.ts
+var initialize = async (extensionContext) => {
   try {
-    await context.extension.activate();
-    const loadConfig = initializeConfig(context);
+    await extensionContext.extension.activate();
+    const loadConfig = loaConfiguration(extensionContext);
     if (!loadConfig) {
       console.error("Failed to initialize config.");
       return;
     }
     const configInfo2 = loadConfig.config;
-    const statusInfo = loadConfig.status;
     const decorationState2 = loadConfig.decoration;
-    if (!decorationState2.decorationList) {
-      console.error("Failed to initialize decorationList.");
+    if (!decorationState2.highlightStyleList) {
+      console.error("Failed to initialize highlightStyleList.");
       return;
     }
-    const activeEditor = vscode10.window.activeTextEditor;
+    const activeEditor = vscode13.window.activeTextEditor;
     if (configInfo2.configError.length > 0) {
       fixConfiguration(configInfo2.configError);
     }
+    const editorContext = {
+      editor: activeEditor,
+      configInfo: configInfo2,
+      indentInfo: editorIndentOption(activeEditor),
+      decorationState: decorationState2
+    };
     if (activeEditor) {
-      updateDiagonosticState();
-      setDecorationOnEditor({
-        editor: activeEditor,
-        configInfo: configInfo2,
-        statusInfo,
-        decorationInfo: DECORATION_INFO.CURSOR_ONLY,
-        decorationState: decorationState2
-      });
+      editorContext.decorationInfo = DECORATION_INFO.CURSOR_ONLY;
+      updateDiagnostic();
+      setDecorationOnEditor(editorContext);
     }
     return [
-      onActiveWindowChange(configInfo2, statusInfo, decorationState2),
-      activeEditorChanged(configInfo2, statusInfo, decorationState2),
-      selectionChanged(configInfo2, statusInfo, decorationState2),
-      // event.visibleRangeChanged(),
-      diagnosticChanged(activeEditor),
-      editorOptionChange(statusInfo),
-      configChanged(context)
+      windowStateChanged(editorContext),
+      activeEditorChanged(editorContext),
+      selectionChanged(editorContext),
+      editorOptionChanged(editorContext),
+      diagnosticChanged(editorContext),
+      configChanged(extensionContext)
     ];
   } catch (err) {
-    console.error("Error during extension activation: ", err);
-    vscode10.window.showErrorMessage("Extension activation failed!", err);
+    console.error("Error during extension initialization: ", err);
+    vscode13.window.showErrorMessage("Extension initialization failed!", err);
   }
 };
 

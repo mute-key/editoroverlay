@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import * as StatusType from './status.d';
-import * as DecorationType from './decoration.d';
-import * as DiagnosticType from './diagnostic.d';
+import * as StatusType from './status';
+import * as DecorationType from './decoration';
+import * as DiagnosticType from './diagnostic';
 
 import {
     DECORATION_STYLE_CONFIG_KEY,
@@ -60,7 +60,7 @@ type DecorationConfigGetFunctionType = <T extends DecorationStyleConfigValueType
     configName: string,
     defaultValue: T,
     configNameChange?: StringTransformFunc
-) => T | null
+) => T | string | null
 
 type ConfigCondition = <T extends string | number | boolean | null>(configReady: ConfigInfoReadyType, configKeyWithScope: string, value: T, defaultValue: T) => {
     bordercolor: () => T | null
@@ -87,13 +87,14 @@ type configErrorType = {
 
 type RegexType = {
     indentAndEOLRegex: (args: string | number) => RegExp
+    resourceScope: RegExp,
     tagtAndEOLRegex: RegExp,
     isValidHexColor: RegExp,
     isValidWidth: RegExp,
     ifContentTextHasPlaceholder: RegExp,
     contentTextKeysOnly: RegExp,
     statusContentText: StatusType.RegexStatusContentTextType
-    diagnosticTextRegex: DiagnosticType.RegexDiagnosticContentTextType
+    diagnosticText: DiagnosticType.RegexDiagnosticContentTextType
 }
 
 type nextSearchStringType = {
@@ -117,6 +118,12 @@ type ConfigInfoReadyType = {
 
 type InitialisedConfigType = {
     config: ConfigInfoReadyType,
-    decoration: DecorationType.DecorationStateType,
-    status: StatusType.StatusInfoType
+    decoration: DecorationType.DecorationStateType
+}
+
+type ContentTextPositionBufferType = {
+    contentText?: any[],
+    position: {
+        [key: number]: string
+    }
 }

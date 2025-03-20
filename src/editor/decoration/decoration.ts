@@ -1,56 +1,47 @@
 import * as vscode from 'vscode';
 import * as Type from '../../type/type';
-import {
-    DECORATION_STYLE_KEY
-} from '../../constant/enum';
-import {
-    DECORATION_INFO
-} from '../../constant/object';
-import {
-    cursorOnlyDecorationWithRange,
-    singelLineDecorationWithRange,
-    multiLineDecorationWithRange,
-    multiCursorDecorationWithRange
-} from './range';
-import {
-    statusText
-} from './status';
-import { updateDiagonosticDecoration } from './diagnostic';
+import { DECORATION_INFO, DECORATION_STATE } from '../../constant/object';
+import { hightlightCoordinator } from './highlight/highlight';
+import { selectionInfo } from './status/selection';
+import { diagnosticInfo } from './status/diagnostic';
+import { updateDiagnostic } from '../../diagnostic/diagnostic';
 
-const applyDecoration = (
-    editor: vscode.TextEditor,
-    decoraiton: vscode.TextEditorDecorationType,
-    range: vscode.Range[]
-) => editor.setDecorations(decoraiton, range);
+const decorationState = { ...DECORATION_STATE } as Type.DecorationStateType;
 
-const createEditorDecorationType = (
-    styleAppliedConfig: Type.DecorationStyleConfigType | Type.StatusDecorationReadyType
-) => vscode.window.createTextEditorDecorationType(styleAppliedConfig as vscode.DecorationRenderOptions);
+const applyDecoration = (editor: vscode.TextEditor, decoraiton: vscode.TextEditorDecorationType, range: vscode.Range[]): void => {
+    editor.setDecorations(decoraiton, range);
+};
 
-const disposeDecoration = (
-    decorationList: vscode.TextEditorDecorationType[] = []
-) => decorationList.forEach((decorationType) => {
+const createEditorDecorationType = (styleAppliedConfig: any): vscode.TextEditorDecorationType => {
+    return vscode.window.createTextEditorDecorationType(styleAppliedConfig as vscode.DecorationRenderOptions);
+};
+
+const disposeDecoration = (highlightStyleList: vscode.TextEditorDecorationType[] = []) => highlightStyleList.forEach((decorationType): void => {
     decorationType.dispose();
 });
 
-const resetLastAppliedDecoration = (
-    editor: vscode.TextEditor,
-    decorationType: vscode.TextEditorDecorationType[]
-) => decorationType.forEach(decoration => applyDecoration(editor, decoration, []));
+const resetDecorationRange = (editor: vscode.TextEditor, decorationType: vscode.TextEditorDecorationType[] | undefined): void => {
+    decorationType?.forEach(decoration => applyDecoration(editor, decoration, []));
+};
 
-const resetDecoration: Type.UnsetDecorationFunctionType = (
-    decorationState: Type.DecorationStateType,
-    editor: vscode.TextEditor | undefined,
-    dispose?: boolean
-) => (
-    decorationInfo: Type.DecorationInfoPropType
-): void => {
+const resetAndDisposeDecoration = (editor: vscode.TextEditor, decorationType: vscode.TextEditorDecorationType[] | undefined): void => {
+    decorationType?.forEach(decoration => {
+        applyDecoration(editor, decoration, []);
+        decoration.dispose();
+    });
+};
+
+const resetDecoration: Type.UnsetDecorationFunctionType = (decorationState: Type.DecorationStateType, editor: vscode.TextEditor | undefined) => (decorationInfo: Type.DecorationInfoPropType): void => {
     if (editor) {
-        decorationState.statusText?.forEach((decorationType) => {
+        decorationState.selectionText?.forEach((decorationType) => {
             decorationType.dispose();
         });
 
-        decorationState.decorationList[decorationInfo.KEY]?.forEach(decorationType => {
+        decorationState.diagnosticText?.forEach((decorationType) => {
+            decorationType.dispose();
+        });
+
+        decorationState.highlightStyleList[decorationInfo.KEY]?.forEach(decorationType => {
             if (Array.isArray(decorationType)) {
                 decorationType.forEach((decorationType: vscode.TextEditorDecorationType) => {
                     applyDecoration(editor, decorationType, []);
@@ -62,96 +53,123 @@ const resetDecoration: Type.UnsetDecorationFunctionType = (
     }
 };
 
-const resetOtherDecoration = (
-    currentDecoration: Type.DecorationInfoPropType,
-    reset: Type.UnsetFunctionType
-): void => {
+const resetOtherDecoration = (currentDecoration: Type.DecorationInfoPropType, reset: Type.UnsetFunctionType): void => {
     Object.values(DECORATION_INFO)
         .filter(info => currentDecoration.MASK & info.MASK)
         .map(info => reset(info))
         .every(Boolean);
 };
 
-const resetDecorationWrapper = (
-    decorationState: Type.DecorationStateType,
-    editor: vscode.TextEditor,
-    dispose?: boolean
-): void =>
+const resetDecorationWrapper = (decorationState: Type.DecorationStateType, editor: vscode.TextEditor,): void =>
     resetOtherDecoration(DECORATION_INFO.RESET, (decorationInfo: Type.DecorationInfoPropType): void =>
-        resetDecoration(decorationState, editor, dispose)(decorationInfo));
+        resetDecoration(decorationState, editor)(decorationInfo));
 
-const isDecorationChanged = (
-    editor: vscode.TextEditor,
-    decorationState: Type.DecorationStateType,
-    decorationInfo: Type.DecorationInfoPropType): void => {
-    if (decorationState.appliedDecoration.applied) {
-        if (decorationState.appliedDecoration.applied.MASK !== decorationInfo.MASK) {
-            resetLastAppliedDecoration(editor, decorationState.decorationList[decorationState.appliedDecoration.applied.KEY] as vscode.TextEditorDecorationType[]);
-            decorationState.appliedDecoration.applied = decorationInfo;
+const resetAllDecoration = (decorationState: Type.DecorationStateType) => {
+    vscode.window.visibleTextEditors.forEach(editor => {
+        if (decorationState.appliedHighlight.ofDecorationType !== undefined) {
+            decorationState.appliedHighlight.ofDecorationType.forEach(decoration => {
+                applyDecoration(editor, decoration, []);
+            });
         }
+    });
+
+    if (decorationState.selectionText) {
+        decorationState.selectionText.forEach((decorationType) => decorationType.dispose());
     }
-    decorationState.appliedDecoration.applied = decorationInfo;
+
+    if (decorationState.diagnosticText) {
+        decorationState.diagnosticText.forEach((decorationType) => decorationType.dispose());
+    };
+
 };
 
-const coordinatorSplit: Type.CoordinatorSplitType = {
-    [DECORATION_STYLE_KEY.CURSOR_ONLY]: (context: Type.SelectionTypeToDecorationContext) => cursorOnlyDecorationWithRange(context),
-    [DECORATION_STYLE_KEY.SINGLE_LINE]: (context: Type.SelectionTypeToDecorationContext) => singelLineDecorationWithRange(context),
-    [DECORATION_STYLE_KEY.MULTI_LINE]: (context: Type.SelectionTypeToDecorationContext) => multiLineDecorationWithRange(context),
-    [DECORATION_STYLE_KEY.MULTI_CURSOR]: (context: Type.SelectionTypeToDecorationContext) => multiCursorDecorationWithRange(context),
-};
-
-/**
- * decoraiton range should be depends of the border position, current setup is with default border styles.
- * 
- * @param
- * @returns
- * 
- */
-const decorationCoordinator: Type.DecorationCoordinatorFunc = ({ editor, configInfo, decorationInfo, decorationState }): Type.DecorationWithRangeType[] | undefined => {
-    const textEditorDecoration: vscode.TextEditorDecorationType[] | undefined = decorationState.decorationList[decorationInfo.KEY];
-    if (textEditorDecoration) {
-        const borderConfig: Type.BorderPositionParserType = configInfo.borderPositionInfo[decorationInfo.KEY] as Type.BorderPositionParserType;
-
-        return coordinatorSplit[decorationInfo.KEY]({
-            editor,
-            borderConfig,
-            textEditorDecoration
-        });
+const isDecorationChanged = (editor: vscode.TextEditor, decorationState: Type.DecorationStateType, decorationInfo: Type.DecorationInfoPropType): void => {
+    if (decorationState.appliedHighlight.applied && (decorationState.appliedHighlight.applied.MASK !== decorationInfo.MASK)) {
+        resetDecorationRange(editor, decorationState.highlightStyleList[decorationState.appliedHighlight.applied.KEY] as vscode.TextEditorDecorationType[]);
+        decorationState.appliedHighlight.applied = decorationInfo;
     }
-    return;
+
+    decorationState.appliedHighlight.applied = decorationInfo;
 };
 
-const setDecorationOnEditor: Type.SetDecorationOnEditorFunc = ({ editor, configInfo, statusInfo, decorationInfo, decorationState }): void => {
-    const textEditorDecoration: vscode.TextEditorDecorationType[] | undefined = decorationState.decorationList[decorationInfo.KEY];
+
+const renderStatusInfo: Type.SetDecorationOnEditorFunc = async ({ editor, configInfo, indentInfo, decorationInfo, decorationState }): Promise<void> => {
+
+    if (!decorationState.statusInfo) {
+        decorationState.statusInfo = {
+            selectionText: [],
+            diagnosticText: [],
+        };
+    }
+
+    if (configInfo.generalConfigInfo.statusTextEnabled) {
+        decorationState.statusInfo.selectionText = await selectionInfo(editor, indentInfo as Type.IndentReadyType, decorationInfo);
+    }
+
+    if (configInfo.generalConfigInfo.diagnosticTextEnabled) {
+        decorationState.statusInfo.diagnosticText = await diagnosticInfo(editor, updateDiagnostic());
+    }
+
+    for (const [key, statusInfo] of Object.entries(decorationState.statusInfo)) {
+
+        resetAndDisposeDecoration(editor, decorationState[key]);
+
+        const statusInfoList: vscode.TextEditorDecorationType[] = [];
+        let length: number = statusInfo.length;
+
+        while (length--) {
+            const status = statusInfo[length];
+            statusInfoList.push(...status.contentText.map(decorationOption => {
+                const decoration = createEditorDecorationType(decorationOption as vscode.DecorationRenderOptions);
+                applyDecoration(editor, decoration, [status.range]);
+                return decoration;
+            }));
+        }
+
+        decorationState[key] = statusInfoList;
+    }
+};
+
+const setDecorationOnEditor: Type.SetDecorationOnEditorFunc = (context): void => {
+
+    const { editor, decorationInfo, decorationState } = context;
+
+    const textEditorDecoration: vscode.TextEditorDecorationType[] | undefined = decorationState.highlightStyleList[decorationInfo.KEY];
+
     if (textEditorDecoration) {
 
-        decorationState.appliedDecoration.editorDecoration = textEditorDecoration;
+        decorationState.appliedHighlight.ofDecorationType = textEditorDecoration;
 
-        const decorationWithRange = decorationCoordinator({ editor, configInfo, decorationInfo, decorationState });
+        const highlight = hightlightCoordinator(context);
 
-        if (!decorationWithRange) {
+        if (!highlight) {
             return;
         }
 
-        if (configInfo.generalConfigInfo.statusTextEnabled) {
-            statusText(editor, decorationState, statusInfo as Type.StatusInfoType, decorationInfo);
-        }
-
-        if (configInfo.generalConfigInfo.diagnosticTextEnabled) {
-            updateDiagonosticDecoration(editor, decorationState);
-        }
-
-        decorationWithRange.forEach(({ decoration, range }) => {
+        highlight.forEach(({ decoration, range }) => {
             applyDecoration(editor, decoration, range);
         });
+
+        renderStatusInfo(context);
     }
 };
 
+const bindEditorDecoration = () => {
+    return {
+        stateOf: decorationState
+    };
+};
+
 export {
+    bindEditorDecoration,
     applyDecoration,
     disposeDecoration,
+    resetDecorationRange,
+    resetDecorationWrapper,
+    resetAndDisposeDecoration,
+    isDecorationChanged,
     createEditorDecorationType,
     setDecorationOnEditor,
-    resetDecorationWrapper,
-    isDecorationChanged
+    renderStatusInfo,
+    resetAllDecoration
 };

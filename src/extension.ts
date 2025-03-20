@@ -1,9 +1,5 @@
-/**
- * [extension activate function]
- * 
- */
 import * as vscode from 'vscode';
-import { initialize } from './activate';
+import { initialize } from './initialize';
 
 export function activate(context: vscode.ExtensionContext) {
     initialize(context).then((event: void | vscode.Disposable[]) => {
@@ -13,4 +9,6 @@ export function activate(context: vscode.ExtensionContext) {
     });
 }
 
-export function deactivate() {}
+export function deactivate() {
+    
+}

@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as Type from '../type/type.d';
-import * as regexCollection from './regex';
+import * as regexCollection from './regex.collection';
 
 const getWorkspaceConfiguration = (section: string): vscode.WorkspaceConfiguration => vscode.workspace.getConfiguration(section);
 
@@ -11,17 +11,6 @@ const sendAutoDismissMessage = (text: string, dismiss: number) => {
     }, dismiss);
 };
 
-const regex: Type.RegexType = {
-    indentAndEOLRegex: regexCollection.indentAndEOLRegex,
-    tagtAndEOLRegex: regexCollection.tagtAndEOLRegex,
-    isValidHexColor: regexCollection.isValidHexColor,
-    isValidWidth: regexCollection.isValidWidth,
-    ifContentTextHasPlaceholder: regexCollection.ifContentTextHasPlaceholder,
-    contentTextKeysOnly: regexCollection.contentTextKeysOnly,
-    statusContentText: regexCollection.statusTextRegex,
-    diagnosticTextRegex: regexCollection.diagnosticTextRegex
-};
-
 /**
  * 
  * @param value 
@@ -30,12 +19,12 @@ const regex: Type.RegexType = {
  * @param bitLength zero-based bit lengting. default is set to 4 as 4 bit.
  * @returns 
  */
-const readBits = (value: number, trueValue: string, falseValue: string, bitLength?: number): string[] => {
+const readBits = (value: number, trueValue: any | any[], falseValue: any, bitLength?: number): any[] => {
     let idx = bitLength ? bitLength : 4;
-    const array: string[] = [];
+    const array: any[] = [];
     while (idx--) {
         if ((value >> idx) & 1) {
-            array.push(trueValue);
+            array.push(Array.isArray(trueValue) ? trueValue[idx] : trueValue);
         } else {
             array.push(falseValue);
         }
@@ -121,7 +110,6 @@ const hexToRgbaStringLiteral = (hex: string, opacity: number = 0.6, defaultValue
 };
 
 export {
-    regex,
     fnv1aHash,
     readBits,
     splitAndPosition,

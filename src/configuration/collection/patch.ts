@@ -1,8 +1,7 @@
 import * as vscode from 'vscode';
-import * as Type from '../type/type.d';
-import {
-    getWorkspaceConfiguration
-} from '../util/util';
+import * as Type from '../../type/type';
+import { getWorkspaceConfiguration } from '../../util/util';
+
 const legacyConfig = {
     borderOpacity: 'general.borderOpacity',
     backgroundOpacity: 'general.backgroundOpacity',
@@ -44,7 +43,7 @@ const removeUserSetting = (extensionConfig: vscode.WorkspaceConfiguration, key: 
     return extensionConfig.update(key, undefined, vscode.ConfigurationTarget.Global);
 };
 
-const patchConfig = async (configReady: Type.ConfigInfoReadyType) => {
+const updateLegacyConfig = async (configReady: Type.ConfigInfoReadyType) => {
     const extensionConfig = getWorkspaceConfiguration(configReady.name);
     Object.entries(extensionConfig).forEach(async ([key, value]) => {
         if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
@@ -58,6 +57,6 @@ const patchConfig = async (configReady: Type.ConfigInfoReadyType) => {
 };
 
 export {
-    patchConfig
+    updateLegacyConfig
 };
 
