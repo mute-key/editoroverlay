@@ -1,71 +1,78 @@
 import * as vscode from 'vscode';
 import * as Type from '../../../type/type';
+import Range from '../../range';
 import { DIAGNOSTIC_CONTENT_TEXT, DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET, DIAGNOSTIC_VISIBILITY_CONFIG, DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET } from '../../../constant/object';
 import { DIAGNOSTIC_BIOME, DIAGNOSTIC_CONTENT_TEXT_KEY, DIAGNOSTIC_CONTENT_TEXT_KIND } from '../../../constant/enum';
-import { createCursorRange } from '../../range';
 
 const diagnosticContentText = { ...DIAGNOSTIC_CONTENT_TEXT } as Type.DiagnosticContentTextType;
 
 const diagnosticVisibility = { ...DIAGNOSTIC_VISIBILITY_CONFIG } as Type.DiagnosticVisibilityType;
 
-const editorSym = Symbol('editor');
-const workspaceSym = Symbol('workspace');
-const allOkSym = Symbol('allOk');
+namespace Placeholder {
+    export const editorSym = Symbol('editor');
 
-const allOkDiagnosticOf = {
-    allok: allOkSym,
-};
+    export const workspaceSym = Symbol('workspace');
 
-const problemDiagnosticOf = {
-    editor: editorSym,
-    workspace: workspaceSym,
-};
+    export const allOkSym = Symbol('allOk');
 
-const notationDiagnosticOf = {
-    pre: ({ placeholder }) => placeholder.prefix,
-    post: ({ placeholder }) => placeholder.postfix,
-};
+    export const allOkDiagnosticOf = {
+        allok: allOkSym,
+    };
 
-const warningSourceDiagnosticOf = {
-    src: ({ state }) => String(state.warning.source),
-};
+    export const problemDiagnosticOf = {
+        editor: editorSym,
+        workspace: workspaceSym,
+    };
+}
 
-const warningCountDiagnosticOf = {
-    wrn: ({ state }) => String(state.warning.total),
-};
+namespace Notation {
+    export const diagnosticOf = {
+        pre: ({ notation }) => notation.prefix,
+        post: ({ notation }) => notation.postfix,
+    };
+}
 
-const errorSourceDiagnosticOf = {
-    src: ({ state }) => String(state.error.source),
-};
-
-const errorCountDiagnosticOf = {
-    err: ({ state }) => String(state.error.total)
-};
-
+namespace Problem {
+    export const warningSourceDiagnosticOf = {
+        src: ({ state }) => String(state.warning.source),
+    };
+    
+    export const warningCountDiagnosticOf = {
+        wrn: ({ state }) => String(state.warning.total),
+    };
+    
+    export const errorSourceDiagnosticOf = {
+        src: ({ state }) => String(state.error.source),
+    };
+    
+    export const errorCountDiagnosticOf = {
+        err: ({ state }) => String(state.error.total)
+    };
+}
 
 const diagnosticOf: Type.DiagnosticOfType = {
-    [DIAGNOSTIC_CONTENT_TEXT_KEY.PLACEHOLDER_PROBLEM_CONTENT_TEXT]: problemDiagnosticOf,
-    [DIAGNOSTIC_CONTENT_TEXT_KEY.PLACEHOLDER_ALL_OK_CONTENT_TEXT]: allOkDiagnosticOf,
-    [DIAGNOSTIC_CONTENT_TEXT_KEY.OK_ALL_CONTENT_TEXT]: notationDiagnosticOf,
-    [DIAGNOSTIC_CONTENT_TEXT_KEY.OK_WORKSPACE_CONTENT_TEXT]: notationDiagnosticOf,
-    [DIAGNOSTIC_CONTENT_TEXT_KEY.OK_EDITOR_CONTENT_TEXT]: notationDiagnosticOf,
+    [DIAGNOSTIC_CONTENT_TEXT_KEY.PLACEHOLDER_PROBLEM_CONTENT_TEXT]: Placeholder.problemDiagnosticOf,
+    [DIAGNOSTIC_CONTENT_TEXT_KEY.PLACEHOLDER_ALL_OK_CONTENT_TEXT]: Placeholder.allOkDiagnosticOf,
+    [DIAGNOSTIC_CONTENT_TEXT_KEY.OK_ALL_CONTENT_TEXT]: Notation.diagnosticOf,
+    [DIAGNOSTIC_CONTENT_TEXT_KEY.OK_WORKSPACE_CONTENT_TEXT]: Notation.diagnosticOf,
+    [DIAGNOSTIC_CONTENT_TEXT_KEY.OK_EDITOR_CONTENT_TEXT]: Notation.diagnosticOf,
     [DIAGNOSTIC_CONTENT_TEXT_KEY.WARNING_WORKSPACE_CONTENT_TEXT]: {
-        ...notationDiagnosticOf,
-        ...warningSourceDiagnosticOf,
-        ...warningCountDiagnosticOf,
+        ...Notation.diagnosticOf,
+        ...Problem.warningSourceDiagnosticOf,
+        ...Problem.warningCountDiagnosticOf,
     },
     [DIAGNOSTIC_CONTENT_TEXT_KEY.WARNING_EDITOR_CONTENT_TEXT]: {
-        ...notationDiagnosticOf,
-        ...warningCountDiagnosticOf,
+        ...Notation.diagnosticOf,
+        ...Problem.warningCountDiagnosticOf,
     },
     [DIAGNOSTIC_CONTENT_TEXT_KEY.ERROR_WORKSPACE_CONTENT_TEXT]: {
-        ...notationDiagnosticOf,
-        ...errorSourceDiagnosticOf,
-        ...errorCountDiagnosticOf
+        ...Notation.diagnosticOf,
+        ...Problem.errorSourceDiagnosticOf,
+        ...Problem.errorCountDiagnosticOf
     },
     [DIAGNOSTIC_CONTENT_TEXT_KEY.ERROR_EDITOR_CONTENT_TEXT]: {
-        ...notationDiagnosticOf,
-        ...errorCountDiagnosticOf,
+        ...Notation.diagnosticOf,
+        ...Problem.errorCountDiagnosticOf,
     },
 };
 
@@ -74,13 +81,12 @@ const diagonosticMultiStyleDecoration = (diagnosticState, diagnosticContentTextI
 
         const context = {
             state: diagnosticState,
-            placeholder: diagnosticContentTextIs.placeholder
+            notation: diagnosticContentTextIs.notation
         };
 
         return diagnosticContentTextIs.contentText.map(decorationOption => {
             if (typeof decorationOption.after.contentText !== 'string') {
-                // const decorationOptionFunc = Object.assign({}, decorationOption);
-                const decorationOptionFunc = {...decorationOption};
+                const decorationOptionFunc = { ...decorationOption };
                 decorationOptionFunc.after = { ...decorationOption.after };
                 decorationOptionFunc.after.contentText = decorationOption.after.contentText(context);
                 return decorationOptionFunc;
@@ -138,41 +144,41 @@ const diagnosticBiomeSplit = (state: Type.DiagnosticStateType['editor'] | Type.D
         'all': () => []
     };
 };
-
-const buildDiagonosticDecorationLayout: Type.BuildDiagonosticDecorationType = (context): any[] => {
-
-    const { state, textState } = context;
-    const highlightStyleList: vscode.DecorationRenderOptions[] = [];
-
-    // all ok
-    if ((state.workspace.warning.total + state.workspace.error.total + state.editor.error.total + state.editor.warning.total) === 0) {
-        textState.layout.allOkPlaceholderContentText.contentText.forEach(decoration => {
-            if (decoration.after.contentText === allOkSym) {
-                highlightStyleList.push(...diagonosticMultiStyleDecoration(state, textState.all.okAllContentText));
-            } 
-            const overrideColor = textState.layout.allOkPlaceholderContentText?.override;
-            decoration.after.color = overrideColor ? overrideColor[DIAGNOSTIC_BIOME.OK].color : decoration.after.color;
-            highlightStyleList.push(decoration);
-        });
-        return highlightStyleList;
-    }
-
-    textState.layout.problemPlaceholderContentText.contentText.forEach(decoration => {
-        if (decoration.after.contentText === workspaceSym) {
-            highlightStyleList.push(...diagnosticBiomeSplit(state.workspace, textState.workspace)['workspace']());
-            return;
+const diagnosticLayoutAllOkOverride = (state, textState) => {
+    return textState.layout.allOkPlaceholderContentText.contentText.map(decoration => {
+        if (decoration.after.contentText === Placeholder.allOkSym) {
+            return diagonosticMultiStyleDecoration(state, textState.all.okAllContentText);
         }
 
-        if (decoration.after.contentText === editorSym) {
-            highlightStyleList.push(...diagnosticBiomeSplit(state.editor, textState.editor)['editor']());
-            return;
+        const overrideColor = textState.layout.allOkPlaceholderContentText?.override;
+        decoration.after.color = overrideColor ? overrideColor[DIAGNOSTIC_BIOME.OK].color : decoration.after.color;
+        return decoration;
+    }).flat();
+};
+
+const diagnosticLayoutDivided = (state, textState) => {
+    return textState.layout.problemPlaceholderContentText.contentText.map(decoration => {
+        if (decoration.after.contentText === Placeholder.workspaceSym) {
+            return diagnosticBiomeSplit(state.workspace, textState.workspace).workspace();
         }
+
+        if (decoration.after.contentText === Placeholder.editorSym) {
+            return diagnosticBiomeSplit(state.editor, textState.editor).editor();
+        }
+
         const overrideColor = textState.layout.problemPlaceholderContentText?.override;
         decoration.after.color = overrideColor ? overrideColor[state.severity].color : decoration.after.color;
-        highlightStyleList.push(decoration);
-    });
-    return highlightStyleList;
+        return decoration;
+    }).flat();
 };
+
+
+const buildDiagonosticDecorationLayout: Type.BuildDiagonosticDecorationType = (context): any[] => {
+    const { state, textState } = context;
+    const diagnosticLayout = state.severity === DIAGNOSTIC_BIOME.OK ? diagnosticLayoutAllOkOverride : diagnosticLayoutDivided;
+    return diagnosticLayout(state, textState);
+};
+
 
 const diagnosticInfo = (editor: vscode.TextEditor, diagnosticState: Type.DiagnosticStateType): Type.StatusTextInfoType[] => {
     const context: Type.DiagnosticContext = {
@@ -183,7 +189,7 @@ const diagnosticInfo = (editor: vscode.TextEditor, diagnosticState: Type.Diagnos
 
     return [{
         contentText: buildDiagonosticDecorationLayout(context) as Type.DecorationRenderOptionType[],
-        range: createCursorRange(editor)
+        range: Range.createCursorRange(editor)
     }];
 };
 

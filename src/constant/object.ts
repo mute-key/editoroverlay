@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as Type from '../type/type.d';
-import { BORDER_POSITION_MASK, BORDER_POSITION_VARIATION, DECORATION_STYLE_CONFIG_KEY, DECORATION_GENERAL_STYLE_CONFIG_KEY, DECORATION_STATUS_STYLE_CONFIG_KEY, DECORATION_STYLE_KEY, DECORATION_TYPE_MASK, SELECTION_TYPE, CONFIG_SECTION_KEY, STATUS_CONTENT_TEXT_CONFIG_KEY, CONFIG_KEY_LINKER, DIAGNOSTIC_SEVERITY_KEY, DIAGNOSTIC_CONTENT_TEXT_KIND, DIAGNOSTIC_CONTENT_TEXT_KEY, DIAGNOSTIC_TEXT_STYLE_KEY } from './enum';
+import { BORDER_POSITION_MASK, BORDER_POSITION_VARIATION, DECORATION_STYLE_CONFIG_KEY, DECORATION_GENERAL_STYLE_CONFIG_KEY, DECORATION_SELECTION_STYLE_CONFIG_KEY, DECORATION_STYLE_KEY, DECORATION_TYPE_MASK, SELECTION_TYPE, CONFIG_SECTION_KEY, SELECTION_CONTENT_TEXT_CONFIG_KEY, CONFIG_KEY_LINKER, DIAGNOSTIC_SEVERITY_KEY, DIAGNOSTIC_CONTENT_TEXT_KIND, DIAGNOSTIC_CONTENT_TEXT_KEY, DIAGNOSTIC_TEXT_STYLE_KEY } from './enum';
+import { posix } from 'path';
 
 // ==============================================================================
 // [ RUNTIME READONLY CONSTANT/ENUM ]
@@ -19,28 +20,21 @@ import { BORDER_POSITION_MASK, BORDER_POSITION_VARIATION, DECORATION_STYLE_CONFI
  */
 export const CONFIG_SECTION = {
     [CONFIG_SECTION_KEY.GENERAL]: CONFIG_SECTION_KEY.GENERAL,
-    [CONFIG_SECTION_KEY.STATUS_TEXT]: CONFIG_SECTION_KEY.STATUS_TEXT,
     [CONFIG_SECTION_KEY.CURSOR_ONLY]: CONFIG_SECTION_KEY.CURSOR_ONLY,
     [CONFIG_SECTION_KEY.SINGLE_LINE]: CONFIG_SECTION_KEY.SINGLE_LINE,
     [CONFIG_SECTION_KEY.MULTI_LINE]: CONFIG_SECTION_KEY.MULTI_LINE,
     [CONFIG_SECTION_KEY.MULTI_CURSOR]: CONFIG_SECTION_KEY.MULTI_CURSOR,
+    [CONFIG_SECTION_KEY.SELECTION_TEXT]: CONFIG_SECTION_KEY.SELECTION_TEXT,
     [CONFIG_SECTION_KEY.DIAGNOSTIC_TEXT]: CONFIG_SECTION_KEY.DIAGNOSTIC_TEXT
 } as const;
 
 export const CONFIG_INFO = {
     name: undefined,
-    configHashKey: undefined,
     generalConfigInfo: {
         borderOpacity: undefined,
         backgroundOpacity: undefined,
-        statusTextEnabled: CONFIG_KEY_LINKER.STATUS_TEXT_ENABLED,
+        selectionTextEnabled: CONFIG_KEY_LINKER.SELECTION_TEXT_ENABLED,
         diagnosticTextEnabled: CONFIG_KEY_LINKER.DIAGNOSTIC_TEXT_ENABLED,
-    } as const,
-    borderPositionInfo: {
-        CURSOR_ONLY: undefined,
-        SINGLE_LINE: undefined,
-        MULTI_LINE: undefined,
-        MULTI_CURSOR: undefined,
     } as const,
     configError: undefined,
 } as const;
@@ -94,30 +88,66 @@ export const SELECTION_DECORATION_STYLE = {
     }
 } as const;
 
+export const INDENT_INFO = {
+    size: undefined,
+    type: undefined,
+    regex: undefined
+} as const;
+
+export const RENDER_GROUP_SET_PROPERTY = {
+    type: undefined,
+    selectionCount: undefined,
+    diagnostic: undefined
+} as const;
+
+export const RENDER_GROUP_SET = {
+    [SELECTION_TYPE.CURSOR_ONLY]: RENDER_GROUP_SET_PROPERTY,
+    [SELECTION_TYPE.SINGLE_LINE]: RENDER_GROUP_SET_PROPERTY,
+    [SELECTION_TYPE.MULTI_LINE]: RENDER_GROUP_SET_PROPERTY,
+    [SELECTION_TYPE.MULTI_CURSOR]: RENDER_GROUP_SET_PROPERTY,
+};
+
 /**
  * decoration state object to set or unset decorations on editor.
  * to be used as shallow copied object.
  * 
  */
 export const DECORATION_STATE = {
-    highlightStyleList: {
-        CURSOR_ONLY: undefined,
-        SINGLE_LINE: undefined,
-        MULTI_LINE: undefined,
-        MULTI_CURSOR: undefined,
-    } as const,
     appliedHighlight: {
         applied: undefined,
         ofDecorationType: undefined
     } as const,
     selectionText: [],
     diagnosticText: [],
-    statusInfo: undefined
+    statusInfo: {
+        selectionText: undefined,
+        diagnosticText: undefined,
+    }
+} as const;
+
+export const DECORATION_INFO = {
+    selectionType: undefined,
+    selectionCount: undefined,
+    diagnostic: undefined
 } as const;
 
 export const CONTENT_TEXT_POSITIION = {
     contentText: undefined,
     position: undefined
+} as const;
+
+export const HIGHLIGHT_STYLE_LIST = {
+    CURSOR_ONLY: undefined,
+    SINGLE_LINE: undefined,
+    MULTI_LINE: undefined,
+    MULTI_CURSOR: undefined,
+} as const;
+
+export const HIGHLIGHT_BORDER_POSITION_INFO = {
+    CURSOR_ONLY: undefined,
+    SINGLE_LINE: undefined,
+    MULTI_LINE: undefined,
+    MULTI_CURSOR: undefined,
 } as const;
 
 /**
@@ -196,6 +226,10 @@ export const DIAGNOSTIC_STYLE_LIST: Type.TextList[] = [
 ] as const;
 
 export const DIAGNOSTIC_VISIBILITY_CONFIG = {
+    displayWhenCursorOnly: undefined,
+    displayWhenSingleLine: undefined,
+    displayWhenMultiLine: undefined,
+    displayWhenMultiCursor: undefined,
     DiagnosticKind: undefined,
     placeTextOnPreviousOrNextLine: undefined,
     overrideLayoutPlaceholderColorToHighestSeverity: undefined,
@@ -266,13 +300,18 @@ export const DIAGNOSTIC_SEVERITY_TO_KEY = {
 };
 
 
-export const STATUS_CONTENT_TEXT = {
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: undefined,
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: undefined,
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: undefined,
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: undefined,
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: undefined,
+export const SELECTION_CONTENT_TEXT = {
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: undefined,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: undefined,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: undefined,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: undefined,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: undefined,
 } as const;
+
+export const SELECTION_CONTENT_TEXT_ENTRY = {
+    contentText: [],
+    position: []
+};
 
 
 export const DIAGNOSTIC_CONTENT_TEXT = {
@@ -284,7 +323,7 @@ export const DIAGNOSTIC_CONTENT_TEXT = {
 
 export const DIAGNOSTIC_DECORATION_TEXT_KIND = {
     contentText: undefined,
-    placeholder: undefined,
+    notation: undefined,
 };
 
 export const DIAGNOSTIC_CONTENT_TEXT_LIST: Type.TextList = [
@@ -352,7 +391,7 @@ export const BORDER_WIDTH_DEFINITION = {
     [DECORATION_STYLE_KEY.MULTI_CURSOR]: SINGLE_BORDER_SELECTION,
 } as const;
 
-export const DECORATION_INFO: Type.DecorationInfoType = {
+export const SELECTION_KIND: Type.DecorationInfoType = {
     [SELECTION_TYPE.RESET]: {
         KEY: SELECTION_TYPE.RESET,
         MASK: DECORATION_TYPE_MASK.RESET
@@ -379,18 +418,18 @@ export const DECORATION_INFO: Type.DecorationInfoType = {
  * to protect runtime as well as notify user that malformed configuration value in setting.json.
  * 
  */
-export const NO_CONFIGURATION_GENERAL_DEFAULT: Type.NoConfigurationGeneraType = {
+export const NO_CONFIGURATION_GENERAL_DEFAULT = {
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.OPACITY]: 1,
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.BACKGROUND_OPACITY]: 0.5,
-    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_ENABLED]: false,
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.SELECTION_TEXT_ENABLED]: false,
 } as const;
 
-export const NO_CONFIGURATION_STATUS_DEFAULT: Type.NoConfigurationStatusType = {
-    [DECORATION_STATUS_STYLE_CONFIG_KEY.STATUS_TEXT_COLOR]: '#FF0000',
-    [DECORATION_STATUS_STYLE_CONFIG_KEY.STATUS_TEXT_OPACITY]: 1,
-    [DECORATION_STATUS_STYLE_CONFIG_KEY.STATUS_TEXT_BACKGROUND_COLOR]: null,
-    [DECORATION_STATUS_STYLE_CONFIG_KEY.STATUS_TEXT_FONT_STYLE]: 'normal',
-    [DECORATION_STATUS_STYLE_CONFIG_KEY.STATUS_TEXT_FONT_WEIGHT]: 'bold',
+export const SELECTION_DEFAULT = {
+    [DECORATION_SELECTION_STYLE_CONFIG_KEY.SELECTION_TEXT_COLOR]: '#FF0000',
+    [DECORATION_SELECTION_STYLE_CONFIG_KEY.SELECTION_TEXT_OPACITY]: 1,
+    [DECORATION_SELECTION_STYLE_CONFIG_KEY.SELECTION_TEXT_BACKGROUND_COLOR]: null,
+    [DECORATION_SELECTION_STYLE_CONFIG_KEY.SELECTION_TEXT_FONT_STYLE]: 'normal',
+    [DECORATION_SELECTION_STYLE_CONFIG_KEY.SELECTION_TEXT_FONT_WEIGHT]: 'bold',
 } as const;
 
 export const NO_CONFIGURATION_DEOCORATION_DEFAULT: Type.NoConfigurationDecorationType = {

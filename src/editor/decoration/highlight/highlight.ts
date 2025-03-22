@@ -1,8 +1,13 @@
 import * as vscode from 'vscode';
 import * as Type from '../../../type/type';
-import { applyDecoration } from '../decoration';
-import { createRangeNNNN, createRangeSPEP, createRangeNNEP } from '../../range';
+import Range from '../../range';
+import { HIGHLIGHT_BORDER_POSITION_INFO, HIGHLIGHT_STYLE_LIST } from '../../../constant/object';
 import { DECORATION_STYLE_KEY } from '../../../constant/enum';
+import { applyDecoration, resetDecorationRange } from '../decoration';
+
+const highlightStyleList = { ...HIGHLIGHT_STYLE_LIST } as Type.HighlightStyleListType;
+
+const borderPositionInfo = { ...HIGHLIGHT_BORDER_POSITION_INFO } as Type.BorderPositionInfoType;
 
 const cursorOnlyHighlightRange: Type.SelectionTypeToDecorationFunc = (context): Type.DecorationWithRangeType[] => {
     const { editor, borderConfig, textEditorHighlight } = context;
@@ -12,26 +17,26 @@ const cursorOnlyHighlightRange: Type.SelectionTypeToDecorationFunc = (context): 
     if (borderConfig.isWholeLine) {
         return [{
             decoration: textEditorHighlight[0],
-            range: [createRangeSPEP(editor.selection.active, editor.selection.active)]
+            range: [Range.createRangeSPEP(editor.selection.active, editor.selection.active)]
         }];
     }
 
     if (borderConfig.beforeCursor) {
         return [{
             decoration: textEditorHighlight[0],
-            range: [createRangeNNNN(editor.selection.active.line, 0, editor.selection.active.line, editor.selection.active.character)]
+            range: [Range.createRangeNNNN(editor.selection.active.line, 0, editor.selection.active.line, editor.selection.active.character)]
         }];
     }
 
     if (borderConfig.afterCursor) {
         return [{
             decoration: textEditorHighlight[0],
-            range: [createRangeNNEP(editor.selection.active.line, editor.selection.active.character, editor.document.lineAt(editor.selection.active.line).range.end
+            range: [Range.createRangeNNEP(editor.selection.active.line, editor.selection.active.character, editor.document.lineAt(editor.selection.active.line).range.end
             )]
         },
         {
             decoration: textEditorHighlight[1],
-            range: [createRangeNNNN(editor.selection.active.line, 0, editor.selection.active.line, editor.selection.active.character)]
+            range: [Range.createRangeNNNN(editor.selection.active.line, 0, editor.selection.active.line, editor.selection.active.character)]
         }];
     }
     return [];
@@ -45,7 +50,7 @@ const singelLineHighlightRange: Type.SelectionTypeToDecorationFunc = ({ editor, 
 
     return [{
         decoration: textEditorHighlight[0],
-        range: [createRangeSPEP(editor.selection.start, editor.selection.end)]
+        range: [Range.createRangeSPEP(editor.selection.start, editor.selection.end)]
     }];
 };
 
@@ -57,7 +62,7 @@ const multiLineHighlightRange: Type.SelectionTypeToDecorationFunc = ({ editor, b
 
         return [{
             decoration: textEditorHighlight[2],
-            range: [createRangeNNNN(editor.selection.start.line, editor.selection.start.character, editor.selection.end.line, editor.selection.end.character)]
+            range: [Range.createRangeNNNN(editor.selection.start.line, editor.selection.start.character, editor.selection.end.line, editor.selection.end.character)]
         },];
     } else {
 
@@ -70,17 +75,17 @@ const multiLineHighlightRange: Type.SelectionTypeToDecorationFunc = ({ editor, b
 
         highlightRange.push({
             decoration: textEditorHighlight[0],
-            range: [createRangeSPEP(editor.selection.start, editor.selection.start)]
+            range: [Range.createRangeSPEP(editor.selection.start, editor.selection.start)]
         },
             {
                 decoration: textEditorHighlight[1],
-                range: [createRangeSPEP(editor.selection.end, editor.selection.end)]
+                range: [Range.createRangeSPEP(editor.selection.end, editor.selection.end)]
             });
 
         if (Math.abs(editor.selection.start.line - editor.selection.end.line) > 1) {
             highlightRange.push({
                 decoration: textEditorHighlight[2],
-                range: [createRangeNNNN(editor.selection.start.line + 1, editor.selection.start.character, editor.selection.end.line - 1, editor.selection.end.character)]
+                range: [Range.createRangeNNNN(editor.selection.start.line + 1, editor.selection.start.character, editor.selection.end.line - 1, editor.selection.end.character)]
             });
         } else {
 
@@ -107,17 +112,23 @@ const multiCursorHighlightRange: Type.SelectionTypeToDecorationFunc = ({ editor,
     return [{
         decoration: textEditorHighlight[0],
         range: editor.selections.reduce((acc: vscode.Range[], selection: vscode.Selection) => {
-            acc.push(createRangeSPEP(selection.start, selection.active));
+            acc.push(Range.createRangeSPEP(selection.start, selection.active));
             return acc;
         }, [] as vscode.Range[])
     },
     {
         decoration: textEditorHighlight[1],
         range: editor.selections.reduce((acc: vscode.Range[], selection: vscode.Selection) => {
-            acc.push(createRangeNNNN(selection.active.line, 0, selection.active.line, selection.active.character));
+            acc.push(Range.createRangeNNNN(selection.active.line, 0, selection.active.line, selection.active.character));
             return acc;
         }, [] as vscode.Range[])
     }];
+};
+
+const unsetRangeOfHighlightStyle = (editor: vscode.TextEditor) => {
+    for (const [key, highlight] of Object.entries(highlightStyleList)) {
+        resetDecorationRange(editor, highlight);
+    }
 };
 
 const coordinatorSplit: Type.CoordinatorSplitType = {
@@ -134,18 +145,27 @@ const coordinatorSplit: Type.CoordinatorSplitType = {
  * @returns
  * 
  */
-const hightlightCoordinator: Type.DecorationCoordinatorFunc = ({ editor, configInfo, decorationInfo, decorationState }): Type.DecorationWithRangeType[] => {
-    
-    const textEditorHighlight = decorationState.highlightStyleList[decorationInfo.KEY] as vscode.TextEditorDecorationType[];
-    const borderConfig: Type.BorderPositionParserType = configInfo.borderPositionInfo[decorationInfo.KEY] as Type.BorderPositionParserType;
+const hightlightCoordinator: Type.DecorationCoordinatorFunc = ({ editor, renderGroup }): Type.DecorationWithRangeType[] => {
 
-    return coordinatorSplit[decorationInfo.KEY]({
+    const textEditorHighlight = highlightStyleList[renderGroup.type.KEY] as vscode.TextEditorDecorationType[];
+    const borderConfig: Type.BorderPositionParserType = borderPositionInfo[renderGroup.type.KEY] as Type.BorderPositionParserType;
+
+    return coordinatorSplit[renderGroup.type.KEY]({
         editor,
         borderConfig,
         textEditorHighlight
     });
 };
 
+const bindHighlightStyleState = () => {
+    return {
+        styleOf: highlightStyleList,
+        infoOf: borderPositionInfo
+    };
+};
+
 export {
     hightlightCoordinator,
+    bindHighlightStyleState,
+    unsetRangeOfHighlightStyle
 };

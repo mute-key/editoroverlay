@@ -1,19 +1,17 @@
 import * as vscode from 'vscode';
 import * as Type from '../type/type';
 import { CONFIG_INFO } from '../constant/object';
-import {  generateHighlightDecoration } from './highlight/highlight';
+import { generateHighlightDecoration } from './highlight/highlight';
 import { updateLegacyConfig } from './collection/patch';
 import { updateSelectionTextConfig } from './status/selection';
 import { updateDiagnosticTextConfig } from './status/diagonostic';
-import { getConfigValue, ifConfigurationChanged, setConfigHashKey } from './shared/configuration';
 import { writeEditorConfiguration } from './shared/editor';
-import { getWorkspaceConfiguration } from '../util/util';
-import { parseContentText } from './shared/decoration';
 import { bindEditorDecoration } from '../editor/decoration/decoration';
+import { update } from './shared/configuration';
 
 const configInfo = { ...CONFIG_INFO } as Type.ConfigInfoType;
 
-const loaConfiguration = (context: vscode.ExtensionContext): Type.InitialisedConfigType | undefined => {
+const loadConfiguration = (context: vscode.ExtensionContext): Type.InitialisedConfigType | undefined => {
     const name = context.extension.packageJSON.name;
 
     if (!name) {
@@ -33,25 +31,13 @@ const loaConfiguration = (context: vscode.ExtensionContext): Type.InitialisedCon
     if (!configReady.configError) {
         configReady.configError = [];
         updateLegacyConfig(configReady);
-        
-    }
-
-    if (!configReady.configHashKey) {
-        setConfigHashKey(configReady);
-    } else {
-        if (!ifConfigurationChanged(configReady, decorationState)) {
-            return {
-                config: configReady,
-                decoration: decorationState
-            };
-        }
     }
 
     writeEditorConfiguration();
 
-    if (generateHighlightDecoration(configReady, decorationState)) {
+    if (generateHighlightDecoration(configReady)) {
 
-        if (configReady.generalConfigInfo.statusTextEnabled) {
+        if (configReady.generalConfigInfo.selectionTextEnabled) {
             updateSelectionTextConfig(configReady);
         }
 
@@ -67,31 +53,7 @@ const loaConfiguration = (context: vscode.ExtensionContext): Type.InitialisedCon
     return;
 };
 
-const workspaceProxyConfiguration = (config: any, workspaceConfigSectionName: string, ifContentTextArray?: string[], bindTo?: any, regexObject?) => {
-    Object.entries(config).forEach(([sectionKey, section]) => {
-        if (section === undefined) {
-            const configValue = getConfigValue(getWorkspaceConfiguration(workspaceConfigSectionName), sectionKey, 'not found');
-            if (configValue && regexObject && bindTo && ifContentTextArray && ifContentTextArray.includes(sectionKey)) {
-
-                const contextTextPosition = {
-                    contentText: [],
-                    position: {}
-                };
-
-                bindTo.textOf[sectionKey] = { ...contextTextPosition };
-                parseContentText(configValue, sectionKey, bindTo, regexObject);
-            }
-
-            if (Object.hasOwn(config, sectionKey) && configValue) {
-                config[sectionKey] = configValue;
-            }
-        } else if (section && typeof section === 'object') {
-            workspaceProxyConfiguration(config[sectionKey], workspaceConfigSectionName + '.' + sectionKey, ifContentTextArray, bindTo);
-        }
-    });
-};
-
 export {
-    loaConfiguration,
-    workspaceProxyConfiguration
+    loadConfiguration,
+    update
 };

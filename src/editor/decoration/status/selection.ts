@@ -1,40 +1,54 @@
 import * as vscode from 'vscode';
 import * as Type from '../../../type/type';
-import { DECORATION_STYLE_KEY, STATUS_CONTENT_TEXT_CONFIG_KEY } from '../../../constant/enum';
-import { STATUS_CONTENT_TEXT } from '../../../constant/object';
-import { createActiveRange, createAnchorRange, createStartEndRangeOfSelection } from '../../range';
+import Range from '../../range';
+import { DECORATION_STYLE_KEY, SELECTION_CONTENT_TEXT_CONFIG_KEY } from '../../../constant/enum';
+import { INDENT_INFO, SELECTION_CONTENT_TEXT } from '../../../constant/object';
 
-const selectionContentText = { ...STATUS_CONTENT_TEXT } as Type.StatusContentTextType;
+const selectionContentText = { ...SELECTION_CONTENT_TEXT } as unknown as Type.StatusContentTextType;
 
-const selectionOf: Type.ContentTextStateType = {
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: {
+const indentInfo = { ...INDENT_INFO } as Type.IndentInfoType;
+
+namespace CursorOnly {
+    export const selectionOfcolDelta = (editor, delta = 0) => {
+        const col = editor.selection.active.character + delta;
+        const end = editor.document.lineAt(editor.selection.active.line).text.length + delta;
+        return (col === end ? col : col + '/' + end);
+    };
+
+    export const selectionOfCol = {
+        col: ({ editor }) => selectionOfcolDelta(editor, 1),
+        zCol: ({ editor }) => selectionOfcolDelta(editor),
+    };
+}
+
+namespace SingleLine {
+    export const selectionOfSingleLineChar = {
+        char: ({ editor }) => Math.abs(editor.selection.end.character - editor.selection.start.character)
+    };
+
+    export const selectionOfLn = {
         ln: ({ editor }) => editor.selection.active.line + 1,
-        col: ({ editor }) => {
-            const col = editor.selection.active.character + 1;
-            const end = editor.document.lineAt(editor.selection.active.line).text.length + 1;
-            return (col === end ? col : col + '/' + end);
-        },
-        zCol: ({ editor }) => {
-            const col = editor.selection.active.character;
-            const end = editor.document.lineAt(editor.selection.active.line).text.length;
-            return (col === end ? col : col + '/' + end);
-        }
-    },
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: {
-        ln: ({ editor }) => editor.selection.active.line + 1,
-        char: ({ editor }) => Math.abs(editor.selection.end.character - editor.selection.start.character),
-    },
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: {
-        ln: ({ editor }) => editor.selection.active.line + 1,
-        lc: ({ editor }) => (Math.abs(editor.selection.end.line - editor.selection.start.line) + 1),
-        char: ({ editor, indent }) => editor.document.getText(editor.selection).replace(indent.regex, "").length
-    },
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: {
-        ln: ({ editor }) => editor.selection.anchor.line + 1,
-        lc: ({ editor }) => (Math.abs(editor.selection.end.line - editor.selection.start.line) + 1),
-        char: ({ editor, indent }) => editor.document.getText(editor.selection).replace(indent.regex, "").length,
-    },
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: {
+    };
+}
+
+namespace MultiLine {
+    export const multiLineLcSym = Symbol('multiLineLcSym');
+
+    export const multiLineCharSym = Symbol('multiLineCharSym');
+
+    export const multilineFunctionSymLink = {
+        [multiLineLcSym]: ({ editor }) => (Math.abs(editor.selection.end.line - editor.selection.start.line) + 1),
+        [multiLineCharSym]: ({ editor, indent }) => String(editor.document.getText(editor.selection).replace(indent.regex, "").length)
+    };
+
+    export const selectionOfLcChar = {
+        lc: multiLineLcSym,
+        char: multiLineCharSym,
+    };
+}
+
+namespace MultiCursor {
+    export const selectionOf = {
         nth: ({ idx }) => idx,
         count: ({ editor }) => editor.selections.length,
         ln: ({ idx, editor }) => editor.selections[idx].end.line + 1,
@@ -72,49 +86,87 @@ const selectionOf: Type.ContentTextStateType = {
             }
             return charCount;
         }
+    };
+}
+
+const selectionOf: Type.ContentTextStateType = {
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: {
+        ...CursorOnly.selectionOfCol,
+        ...SingleLine.selectionOfLn,
     },
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: {
+        ...SingleLine.selectionOfLn,
+        ...SingleLine.selectionOfSingleLineChar
+    },
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: {
+        ...SingleLine.selectionOfLn,
+        ...MultiLine.selectionOfLcChar
+    },
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: {
+        ...SingleLine.selectionOfLn,
+        ...MultiLine.selectionOfLcChar
+    },
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: MultiCursor.selectionOf,
 };
 
-const contentTextFunc = (context: Type.ContentTextFuncContext, contentText: any[]): Type.DecorationRenderOptionType[] => {
-    return contentText.map(decorationOption => {
-        if (typeof decorationOption.after.contentText !== 'string') {
-            const decorationOptionFunc = Object.assign({}, decorationOption);
-            decorationOptionFunc.after.contentText = String(decorationOption.after.contentText(context));
-            return decorationOptionFunc;
+const contentTextFunctionSymlink = (context: Type.ContentTextFuncContext, contentTextSate: Type.ContentTextSymlinkKind, buffer: any): Type.DecorationRenderOptionType[] => {
+    Object.entries(contentTextSate.position).forEach(([pos, sym]) => {
+        if (!buffer[sym]) {
+            buffer[sym] = MultiLine.multilineFunctionSymLink[sym](context);
         }
-        return decorationOption;
+        contentTextSate.contentText[pos].after.contentText = String(buffer[sym]);
+    });
+    return contentTextSate.contentText;
+};
+
+const contentTextFunc = (context: Type.ContentTextFuncContext, contentText: any): Type.DecorationRenderOptionType[] => {
+    return contentText.map(decorationOption => {
+        if (typeof decorationOption.after.contentText === 'string') {
+            return decorationOption;
+        }
+
+        const decorationOptionFunc = { ...decorationOption };
+        decorationOptionFunc.after = { ...decorationOption.after };
+        decorationOptionFunc.after.contentText = String(decorationOption.after.contentText(context));
+        return decorationOptionFunc;
     });
 };
 
-const cursorOnlySelection: Type.ContentTextFuncSignature = (context): Type.StatusTextInfoType[] => {
-
+const cursorOnlySelection: Type.ContentTextFuncSignature = (context: Type.ContentTextFuncContext): Type.StatusTextInfoType[] => {
     return [{
-        contentText: contentTextFunc(context, selectionContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT] as any[]),
-        range: createActiveRange(context.editor)
+        contentText: contentTextFunc(context, selectionContentText[SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT].contentText as any[]),
+        range: Range.createActiveRange(context.editor)
     }];
 };
 
-const singleLineSelection: Type.ContentTextFuncSignature = (context): Type.StatusTextInfoType[] => {
+const singleLineSelection: Type.ContentTextFuncSignature = (context: Type.ContentTextFuncContext): Type.StatusTextInfoType[] => {
     return [{
-        contentText: contentTextFunc(context, selectionContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT] as any[]),
-        range: createActiveRange(context.editor)
+        contentText: contentTextFunc(context, selectionContentText[SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT].contentText as any[]),
+        range: Range.createActiveRange(context.editor)
     }];
 };
 
-const multilineSelection: Type.ContentTextFuncSignature = (context): Type.StatusTextInfoType[] => {
+const multilineSelection: Type.ContentTextFuncSignature = (context: Type.ContentTextFuncContext): Type.StatusTextInfoType[] => {
 
-    return [{
-        contentText: contentTextFunc(context, selectionContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT] as any[]),
-        range: createAnchorRange(context.editor)
+    const buffer = {
+        [MultiLine.multiLineLcSym]: undefined,
+        [MultiLine.multiLineCharSym]: undefined
+    };
+
+    const statusList = [{
+        contentText: contentTextFunctionSymlink(context, selectionContentText[SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT] as Type.ContentTextSymlinkKind, buffer),
+        range: Range.createAnchorRange(context.editor)
     }, {
-        contentText: contentTextFunc(context, selectionContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT] as any[]),
-        range: createActiveRange(context.editor)
+        contentText: contentTextFunctionSymlink(context, selectionContentText[SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT] as Type.ContentTextSymlinkKind, buffer),
+        range: Range.createActiveRange(context.editor)
     }];
+
+    return statusList;
 };
 
-const multiCursorSelection: Type.ContentTextFuncSignature = (context): Type.StatusTextInfoType[] => {
+const multiCursorSelection: Type.ContentTextFuncSignature = (context: Type.ContentTextFuncContext): Type.StatusTextInfoType[] => {
 
-    const statusTextInfo: Type.StatusTextInfoType[] = [];
+    const selectionTextInfo: Type.StatusTextInfoType[] = [];
     const statusLine: number[] = [];
 
     let idx = context.editor.selections.length;
@@ -127,22 +179,21 @@ const multiCursorSelection: Type.ContentTextFuncSignature = (context): Type.Stat
 
         context.idx = idx + 1;
 
-        statusTextInfo.push({
-            contentText: contentTextFunc(context, selectionContentText[STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT] as any[]),
-            range: createStartEndRangeOfSelection(context.editor.selections[idx])
+        selectionTextInfo.push({
+            contentText: contentTextFunc(context, selectionContentText[SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT].contentText as any[]),
+            range: Range.createStartEndRangeOfSelection(context.editor.selections[idx])
         });
 
         statusLine.push(context.editor.selections[idx].end.line);
     }
-    return statusTextInfo;
+    return selectionTextInfo;
 };
 
-const selectionTextInfoSplit = (editor: vscode.TextEditor, indent: Type.IndentReadyType): Type.statusTextInfoSplitType => {
-
+const selectionTextInfoSplit = (editor: vscode.TextEditor): Type.SelectionTextInfoSplitType => {
     const context: Type.ContentTextFuncContext = {
         idx: 0,
         editor: editor,
-        indent: indent
+        indent: indentInfo as Type.IndentReadyType
     };
 
     return {
@@ -153,14 +204,15 @@ const selectionTextInfoSplit = (editor: vscode.TextEditor, indent: Type.IndentRe
     };
 };
 
-const selectionInfo = (editor: vscode.TextEditor, indentInfo: Type.IndentReadyType, type: Type.DecorationInfoPropType): Type.StatusTextInfoType[] => {
-    return selectionTextInfoSplit(editor, indentInfo)[type.KEY]();
+const selectionInfo = (editor: vscode.TextEditor, type: Type.DecorationInfoPropType): Type.StatusTextInfoType[] => {
+    return selectionTextInfoSplit(editor)[type.KEY]();
 };
 
 const bindStatusContentTextState = (): Type.BindContentTextStateType => {
     return {
         functionOf: selectionOf,
-        textOf: selectionContentText
+        textOf: selectionContentText,
+        infoOf: indentInfo
     };
 };
 

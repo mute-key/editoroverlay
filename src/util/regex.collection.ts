@@ -1,33 +1,5 @@
 import * as Type from '../type/type';
-import { DIAGNOSTIC_CONTENT_TEXT_KEY, STATUS_CONTENT_TEXT_CONFIG_KEY } from '../constant/enum';
-
-const indentAndEOLRegex = (indentSize: string | number) => new RegExp(`^( {${indentSize}}|[\r\n]+)*$`, 'gm');
-
-const ifStringIsResourceScope = /^[%\.].*[%\.]$/s;
-
-const tagtAndEOLRegex = /(\t|[\r\n]+)*$/gm;
-
-const isValidHexColor = /^#[A-Fa-f0-9]{6}$/;
-
-const isValidWidth = /^[0-9]px$|^[0-9]em$/;
-
-const ifContentTextHasPlaceholder = /(\${[A-z]*})/g;
-
-const contentTextKeysOnly = /\${([^{}]+)}/s;
-
-const column = /(\${col})/s;
-
-const zeroColumn = /(\${zCol})/s;
-
-const lineCount = /(\${lc})/s;
-
-const lineNumber = /(\${ln})/s;
-
-const character = /(\${char})/s;
-
-const nth = /(\${nth})/s;
-
-const selectionCount = /(\${count})/s;
+import { DIAGNOSTIC_CONTENT_TEXT_KEY, SELECTION_CONTENT_TEXT_CONFIG_KEY } from '../constant/enum';
 
 const prefix = /(\${pre})/s;
 
@@ -67,7 +39,7 @@ const sourceRegex = {
     src: source,
 };
 
-const errorTotalRegex ={
+const errorTotalRegex = {
     err: error,
 };
 
@@ -97,27 +69,41 @@ const diagnosticTextRegex: Record<string, Type.RegexDiagnosticContentTextUnion> 
     }
 };
 
-const statusTextRegex: Record<string, Type.RegexStatusContentTextUnion> = {
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: {
+const column = /(\${col})/s;
+
+const zeroColumn = /(\${zCol})/s;
+
+const lineCount = /(\${lc})/s;
+
+const lineNumber = /(\${ln})/s;
+
+const character = /(\${char})/s;
+
+const nth = /(\${nth})/s;
+
+const selectionCount = /(\${count})/s;
+
+const SelectionTextRegex: Record<string, Type.RegexStatusContentTextUnion> = {
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: {
         col: column,
         zCol: zeroColumn,
         ln: lineNumber
     },
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: {
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: {
         char: character,
         ln: lineNumber
     },
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: {
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: {
         lc: lineCount,
         ln: lineNumber,
         char: character
     },
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: {
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: {
         lc: lineCount,
         ln: lineNumber,
         char: character
     },
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: {
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: {
         nth: nth,
         count: selectionCount,
         lc: lineCount,
@@ -125,6 +111,20 @@ const statusTextRegex: Record<string, Type.RegexStatusContentTextUnion> = {
         char: character
     },
 };
+
+const indentAndEOLRegex = (indentSize: string | number) => new RegExp(`^( {${indentSize}}|[\r\n]+)*$`, 'gm');
+
+const ifStringIsResourceScope = /^[%\.].*[%\.]$/s;
+
+const tagtAndEOLRegex = /(\t|[\r\n]+)*$/gm;
+
+const isValidHexColor = /^#[A-Fa-f0-9]{6}$/;
+
+const isValidWidth = /^[0-9]px$|^[0-9]em$/;
+
+const ifContentTextHasPlaceholder = /(\${[A-z]*})/g;
+
+const contentTextKeysOnly = /\${([^{}]+)}/s;
 
 const Regex: Type.RegexType = {
     indentAndEOLRegex: indentAndEOLRegex,
@@ -134,7 +134,7 @@ const Regex: Type.RegexType = {
     isValidWidth: isValidWidth,
     ifContentTextHasPlaceholder: ifContentTextHasPlaceholder,
     contentTextKeysOnly: contentTextKeysOnly,
-    statusContentText: statusTextRegex,
+    statusContentText: SelectionTextRegex,
     diagnosticText: diagnosticTextRegex
 };
 

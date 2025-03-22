@@ -6,7 +6,7 @@ import * as DiagnosticType from './diagnostic';
 import {
     DECORATION_STYLE_CONFIG_KEY,
     DECORATION_GENERAL_STYLE_CONFIG_KEY,
-    DECORATION_STATUS_STYLE_CONFIG_KEY,
+    DECORATION_SELECTION_STYLE_CONFIG_KEY,
     BORDER_POSITION_VARIATION,
 } from '../constant/enum';
 import {
@@ -16,15 +16,15 @@ import {
 type NoConfigurationGeneraType = {
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.OPACITY]: number
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.BACKGROUND_OPACITY]: number
-    [DECORATION_GENERAL_STYLE_CONFIG_KEY.STATUS_TEXT_ENABLED]: boolean
+    [DECORATION_GENERAL_STYLE_CONFIG_KEY.SELECTION_TEXT_ENABLED]: boolean
 }
 
 type NoConfigurationStatusType = {
-    [DECORATION_STATUS_STYLE_CONFIG_KEY.STATUS_TEXT_OPACITY]: number
-    [DECORATION_STATUS_STYLE_CONFIG_KEY.STATUS_TEXT_COLOR]: string
-    [DECORATION_STATUS_STYLE_CONFIG_KEY.STATUS_TEXT_BACKGROUND_COLOR]: string | null
-    [DECORATION_STATUS_STYLE_CONFIG_KEY.STATUS_TEXT_FONT_STYLE]: string,
-    [DECORATION_STATUS_STYLE_CONFIG_KEY.STATUS_TEXT_FONT_WEIGHT]: string,
+    [DECORATION_SELECTION_STYLE_CONFIG_KEY.SELECTION_TEXT_OPACITY]: number
+    [DECORATION_SELECTION_STYLE_CONFIG_KEY.SELECTION_TEXT_COLOR]: string
+    [DECORATION_SELECTION_STYLE_CONFIG_KEY.SELECTION_TEXT_BACKGROUND_COLOR]: string | null
+    [DECORATION_SELECTION_STYLE_CONFIG_KEY.SELECTION_TEXT_FONT_STYLE]: string,
+    [DECORATION_SELECTION_STYLE_CONFIG_KEY.SELECTION_TEXT_FONT_WEIGHT]: string,
 }
 
 type NoConfigurationDeocorationPropType = {
@@ -47,7 +47,7 @@ type DecorationStyleConfigNameType = `${DECORATION_STYLE_CONFIG_KEY}`
 
 type GeneralConfigNameOnlyType = `${DECORATION_GENERAL_STYLE_CONFIG_KEY}`
 
-type StatusTextConfigNameOnlyType = `${DECORATION_STATUS_STYLE_CONFIG_KEY}`
+type StatusTextConfigNameOnlyType = `${DECORATION_SELECTION_STYLE_CONFIG_KEY}`
 
 
 
@@ -59,7 +59,7 @@ type DecorationConfigGetFunctionType = <T extends DecorationStyleConfigValueType
     configSection: vscode.WorkspaceConfiguration,
     configName: string,
     defaultValue: T,
-    configNameChange?: StringTransformFunc
+    configSectionName?: string,
 ) => T | string | null
 
 type ConfigCondition = <T extends string | number | boolean | null>(configReady: ConfigInfoReadyType, configKeyWithScope: string, value: T, defaultValue: T) => {
@@ -76,7 +76,7 @@ type GeneralConfigInfoType = {
     borderWidth?: string
     borderColor?: string
     backgroundColor?: string
-    statusTextEnabled: boolean
+    selectionTextEnabled: boolean
     diagnosticTextEnabled: boolean
 }
 
@@ -112,7 +112,7 @@ type ConfigInfoReadyType = {
     configHashKey: string,
     borderPositionInfo: DecorationType.BorderPositionInfoType
     generalConfigInfo: GeneralConfigInfoType
-    statusTextConfig: StatusType.StatusTextInfo,
+    selectionTextConfig: StatusType.StatusTextInfo,
     configError: string[],
 } & StatusType.ConfigInfoType
 

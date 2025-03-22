@@ -5,10 +5,9 @@ import * as DecorationType from './decoration.d';
 
 type EventContext = {
     editor?: vscode.TextEditor
-    indentInfo: StatusType.IndentType
     configInfo: ConfigType.ConfigInfoReadyType
     decorationState: DecorationType.DecorationStateType,
-    decorationInfo?: DecorationType.DecorationInfoPropType;
+    renderGroup: DecorationType.RenderGroupSetProperty
 }
 
 type DecorationEventFunc = (context: EventContext) => vscode.Disposable

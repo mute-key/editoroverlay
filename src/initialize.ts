@@ -4,22 +4,15 @@ import * as config from './configuration/load';
 import * as windowEvent from './event/window';
 import * as workspaceEvent from './event/workspace';
 import * as languagesEvent from './event/language';
-import { DECORATION_INFO } from './constant/object';
-import { setDecorationOnEditor } from './editor/decoration/decoration';
-import { fixConfiguration } from './util/error';
-import { editorIndentOption } from './editor/editor';
-import { updateDiagnostic } from './diagnostic/diagnostic';
+import { renderDecorationOnEditor } from './editor/decoration/decoration';
+// import { fixConfiguration } from './util/error';
+import { prepareRenderGroup } from './editor/editor';
 
-/**
- * @param editor
- * @param decorationInfo
- * 
- */
 const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vscode.Disposable[] | void> => {
     try {
         await extensionContext.extension.activate();
 
-        const loadConfig = config.loaConfiguration(extensionContext);
+        const loadConfig = config.loadConfiguration(extensionContext);
 
         if (!loadConfig) {
             console.error('Failed to initialize config.');
@@ -28,40 +21,32 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
 
         const configInfo: Type.ConfigInfoReadyType = loadConfig.config;
         const decorationState: Type.DecorationStateType = loadConfig.decoration;
-
-        if (!decorationState.highlightStyleList) {
-            console.error('Failed to initialize highlightStyleList.');
-            return;
-        }
-
         const activeEditor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
 
         if (configInfo.configError.length > 0) {
-            fixConfiguration(configInfo.configError);
+            // fixConfiguration(configInfo.configError);
         }
 
-        const editorContext: Type.EventContext = {
+        const renderGroup = prepareRenderGroup(configInfo);
+
+        const eventContext: Type.EventContext = {
             editor: activeEditor,
             configInfo: configInfo,
-            indentInfo: editorIndentOption(activeEditor),
-            decorationState: decorationState
+            decorationState: decorationState,
+            renderGroup: renderGroup
         };
 
         if (activeEditor) {
-            editorContext.decorationInfo = DECORATION_INFO.CURSOR_ONLY;
-
-            updateDiagnostic();
-
-            setDecorationOnEditor(editorContext as Type.DecorationContext);
+            renderDecorationOnEditor(eventContext as Type.DecorationContext);
         }
 
         return [
-            windowEvent.windowStateChanged(editorContext),
-            windowEvent.activeEditorChanged(editorContext),
-            windowEvent.selectionChanged(editorContext),
-            windowEvent.editorOptionChanged(editorContext),
-            languagesEvent.diagnosticChanged(editorContext),
-            workspaceEvent.configChanged(extensionContext),
+            windowEvent.windowStateChanged(eventContext),
+            windowEvent.activeEditorChanged(eventContext),
+            windowEvent.selectionChanged(eventContext),
+            windowEvent.editorOptionChanged(eventContext),
+            languagesEvent.diagnosticChanged(eventContext),
+            workspaceEvent.configChanged(eventContext),
         ]; // event functions
     } catch (err) {
         console.error('Error during extension initialization: ', err);

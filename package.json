@@ -268,67 +268,67 @@
                 }
             },
             {
-                "title": "%title.status%",
+                "title": "%title.selection%",
                 "properties": {
-                    "cursorlinehighlight.statusText.enabled": {
+                    "cursorlinehighlight.selectionText.enabled": {
                         "type": "boolean",
                         "default": true,
-                        "description": "%description.statusText.enabled%",
+                        "description": "%description.selectionText.enabled%",
                         "order": 1
                     },
-                    "cursorlinehighlight.statusText.iconEnabled": {
+                    "cursorlinehighlight.selectionText.iconEnabled": {
                         "type": "boolean",
                         "default": false,
-                        "description": "%description.statusText.iconEnabled%",
+                        "description": "%description.selectionText.iconEnabled%",
                         "order": 2
                     },
-                    "cursorlinehighlight.statusText.leftMargin": {
+                    "cursorlinehighlight.selectionText.leftMargin": {
                         "type": "string",
                         "default": "20px",
                         "markdownDescription": "%placeholder%",
                         "order": 3
                     },
-                    "cursorlinehighlight.statusText.color": {
+                    "cursorlinehighlight.selectionText.color": {
                         "type": "string",
                         "default": "%color.highlight.border.default%",
                         "pattern": "%regex.pattern.color%",
                         "patternErrorMessage": "Invalid Format",
-                        "markdownDescription": "%description.statusText.color%",
+                        "markdownDescription": "%description.selectionText.color%",
                         "order": 4
                     },
-                    "cursorlinehighlight.statusText.colorOpacity": {
+                    "cursorlinehighlight.selectionText.colorOpacity": {
                         "type": "number",
                         "default": 0.5,
                         "minimum": 0,
                         "maximum": 1,
-                        "markdownDescription": "%description.statusText.opacity%",
+                        "markdownDescription": "%description.selectionText.opacity%",
                         "order": 5
                     },
-                    "cursorlinehighlight.statusText.backgroundColor": {
+                    "cursorlinehighlight.selectionText.backgroundColor": {
                         "type": "string",
                         "default": null,
-                        "markdownDescription": "%description.statusText.backgroundColor%",
+                        "markdownDescription": "%description.selectionText.backgroundColor%",
                         "order": 6
                     },
-                    "cursorlinehighlight.statusText.backgroundOpacity": {
+                    "cursorlinehighlight.selectionText.backgroundOpacity": {
                         "type": "number",
                         "default": 0.5,
                         "minimum": 0,
                         "maximum": 1,
-                        "markdownDescription": "%description.statusText.opacity%",
+                        "markdownDescription": "%description.selectionText.opacity%",
                         "order": 7
                     },
-                    "cursorlinehighlight.statusText.fontStyle": {
+                    "cursorlinehighlight.selectionText.fontStyle": {
                         "type": "string",
                         "enum": [
                             "italic",
                             "normal"
                         ],
                         "default": "italic",
-                        "description": "%description.statusText.fontStyle%",
+                        "description": "%description.selectionText.fontStyle%",
                         "order": 8
                     },
-                    "cursorlinehighlight.statusText.fontWeight": {
+                    "cursorlinehighlight.selectionText.fontWeight": {
                         "type": "string",
                         "enum": [
                             "lighter",
@@ -337,66 +337,66 @@
                             "bold"
                         ],
                         "default": "lighter",
-                        "description": "%description.statusText.fontWeight%",
+                        "description": "%description.selectionText.fontWeight%",
                         "order": 9
                     },
-                    "cursorlinehighlight.statusText.cursorOnlyText": {
+                    "cursorlinehighlight.selectionText.cursorOnlyText": {
                         "type": "string",
-                        "default": "%placeholder.selection.cursorOnlyText.default%",
+                        "default": "%placeholder.selectionText.cursorOnlyText.default%",
                         "pattern": "(\t|[\r\n]+)*$",
                         "patternErrorMessage": "Must be a single line text",
-                        "markdownDescription": "%description.statusText.cursorOnlyText%",
+                        "markdownDescription": "%description.selectionText.cursorOnlyText%",
                         "editPresentation": "singlelineText",
                         "order": 10
                     },
-                    "cursorlinehighlight.statusText.singleLineText": {
+                    "cursorlinehighlight.selectionText.singleLineText": {
                         "type": "string",
-                        "default": "%placeholder.selection.singleLineText.default%",
+                        "default": "%placeholder.selectionText.singleLineText.default%",
                         "pattern": "(\t|[\r\n]+)*$",
                         "patternErrorMessage": "Must be a single line text",
-                        "markdownDescription": "%description.statusText.singleLineText%",
+                        "markdownDescription": "%description.selectionText.singleLineText%",
                         "editPresentation": "singlelineText",
                         "order": 11
                     },
-                    "cursorlinehighlight.statusText.multiLineCursorText": {
+                    "cursorlinehighlight.selectionText.multiLineCursorText": {
                         "type": "string",
-                        "default": "%placeholder.selection.multiLineCursorText.default%",
+                        "default": "%placeholder.selectionText.multiLineCursorText.default%",
                         "pattern": "(\t|[\r\n]+)*$",
                         "patternErrorMessage": "Must be a single line text",
-                        "markdownDescription": "%description.statusText.multiLineCursorText%",
+                        "markdownDescription": "%description.selectionText.multiLineCursorText%",
                         "editPresentation": "singlelineText",
                         "order": 12
                     },
-                    "cursorlinehighlight.statusText.multiLineAnchorText": {
+                    "cursorlinehighlight.selectionText.multiLineAnchorText": {
                         "type": "string",
-                        "default": "%placeholder.selection.multiLineAnchorText.default%",
+                        "default": "%placeholder.selectionText.multiLineAnchorText.default%",
                         "pattern": "(\t|[\r\n]+)*$",
                         "patternErrorMessage": "Must be a single line text",
-                        "markdownDescription": "%description.statusText.multiLineAnchorText%",
+                        "markdownDescription": "%description.selectionText.multiLineAnchorText%",
                         "editPresentation": "singlelineText",
                         "order": 13
                     },
-                    "cursorlinehighlight.statusText.multiCursorText": {
+                    "cursorlinehighlight.selectionText.multiCursorText": {
                         "type": "string",
-                        "default": "%placeholder.selection.multiCursorText.default%",
+                        "default": "%placeholder.selectionText.multiCursorText.default%",
                         "pattern": "(\t|[\r\n]+)*$",
                         "patternErrorMessage": "Must be a single line text",
-                        "markdownDescription": "%description.statusText.multiCursorText%",
+                        "markdownDescription": "%description.selectionText.multiCursorText%",
                         "editPresentation": "singlelineText",
                         "order": 14
                     },
-                    "cursorlinehighlight.statusText.selectionCountTextStyle": {
+                    "cursorlinehighlight.selectionText.selectionCountTextStyle": {
                         "order": 15,
                         "type": "object",
                         "scope": "resource",
                         "default": {
-                            "ln": "%color.selection.placeholder.text.ln%",
-                            "col": "%color.selection.placeholder.text.col%",
-                            "zCol": "%color.selection.placeholder.text.zCol%",
-                            "char": "%color.selection.placeholder.text.char%",
-                            "lc": "%color.selection.placeholder.text.lc%",
-                            "nth": "%color.selection.placeholder.text.nth%",
-                            "count": "%color.selection.placeholder.text.count%",
+                            "ln": "%color.selectionText.placeholder.text.ln%",
+                            "col": "%color.selectionText.placeholder.text.col%",
+                            "zCol": "%color.selectionText.placeholder.text.zCol%",
+                            "char": "%color.selectionText.placeholder.text.char%",
+                            "lc": "%color.selectionText.placeholder.text.lc%",
+                            "nth": "%color.selectionText.placeholder.text.nth%",
+                            "count": "%color.selectionText.placeholder.text.count%",
                             "opacity": 0.9,
                             "fontStyle": "normal",
                             "fontWeight": "bold"
@@ -495,6 +495,10 @@
                         "type": "object",
                         "scope": "resource",
                         "default": {
+                            "displayWhenCursorOnly": true,
+                            "displayWhenSingleLine": true,
+                            "displayWhenMultiLine": true,
+                            "displayWhenMultiCursor": true,
                             "DiagnosticKind": "editor | workspace",
                             "placeTextOnPreviousOrNextLine": "IfOutOfVisibleRange",
                             "overrideLayoutPlaceholderColorToHighestSeverity": false,
@@ -505,6 +509,22 @@
                         "markdownDescription": "%placeholder",
                         "additionalProperties": false,
                         "properties": {
+                            "displayWhenCursorOnly": {
+                                "type": "boolean",
+                                "default": true
+                            },
+                            "displayWhenSingleLine": {
+                                "type": "boolean",
+                                "default": true
+                            },
+                            "displayWhenMultiLine": {
+                                "type": "boolean",
+                                "default": true
+                            },
+                            "displayWhenMultiCursor": {
+                                "type": "boolean",
+                                "default": true
+                            },
                             "DiagnosticKind": {
                                 "type": "string",
                                 "enum": [
@@ -663,7 +683,7 @@
                             "allPrefix": "%text.ok.all.prefix.default%",
                             "allPostfix": "%text.ok.all.postfix.default%",
                             "color": "%color.ok.fix.text.default%",
-                            "colorOpacity": 0.5,
+                            "colorOpacity": 0.4,
                             "backgroundColor": "%color.ok.fix.background.default%",
                             "backgroundOpacity": 1,
                             "fontStyle": "normal",

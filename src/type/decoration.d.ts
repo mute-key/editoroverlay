@@ -1,7 +1,5 @@
 import * as vscode from 'vscode';
 import * as StatusType from './status.d';
-import * as ConfigType from './configuration';
-import * as DiagnosticType from './diagnostic.d';
 import { DECORATION_STYLE_CONFIG_KEY, DECORATION_TYPE_MASK, SELECTION_TYPE } from "src/constant/enum";
 import { DECORATION_STYLE_PREFIX } from "src/constant/object";
 
@@ -15,28 +13,40 @@ type AppliedHighlightType = {
 };
 
 type DecorationStateType = {
-    highlightStyleList: HighlightType
     appliedHighlight: AppliedHighlightType
     selectionText: vscode.TextEditorDecorationType[] | readonly[]
     diagnosticText: vscode.TextEditorDecorationType[] | readonly[],
-    statusInfo?: {
-        [key: string] : StatusType.StatusTextInfoType[]
+    statusInfo: {
+        [key: string]: StatusType.StatusTextInfoType[] | []
     }
 }
 
 type DecorationStyleKeyOnlyType = keyof typeof DECORATION_STYLE_PREFIX
 
-type HighlightType = Record<DecorationStyleKeyOnlyType, vscode.TextEditorDecorationType[] | undefined>;
+type HighlightStyleListType = Record<DecorationStyleKeyOnlyType, vscode.TextEditorDecorationType[] | undefined>;
 
-type UnsetDecorationFunctionType = (decorationStatus: DecorationStateType, editor?: vscode.TextEditor) => (decorationInfo: DecorationInfoPropType) => void;
+type UnsetDecorationFunctionType = (editor: vscode.TextEditor, decorationStatus: DecorationStateType) => (selectionKind: DecorationInfoPropType) => void;
+
+type RenderGroupSetProperty = {
+    type: DecorationInfoPropType,
+    selection?: any,
+    diagnostic?: any
+}
+
+type RenderGroupSet = {
+    [k in SELECTION_TYPE]: RenderGroupSetProperty
+}
 
 type DecorationContext = {
     editor: vscode.TextEditor
-    configInfo: ConfigType.ConfigInfoReadyType
-    indentInfo: StatusType.IndentType
-    decorationInfo: DecorationInfoPropType
     decorationState: DecorationStateType
+    renderGroup: RenderGroupSetProperty
 };
+
+type SelectionInfoType = {
+    KEY: string,
+    MASK: DECORATION_TYPE_MASK
+}
 
 type DecorationInfoPropType = {
     KEY: string,
@@ -47,7 +57,7 @@ type SetDecorationOnEditorFunc = (context: DecorationContext) => void;
 
 type DecorationCoordinatorFunc = (context: DecorationContext) => DecorationWithRangeType[];
 
-type UnsetFunctionType = (decorationInfo: DecorationInfoPropType) => void
+type UnsetFunctionType = (selectionKind: DecorationInfoPropType) => void
 
 type DecorationInfoType = {
     [k in keyof typeof SELECTION_TYPE]: DecorationInfoPropType;

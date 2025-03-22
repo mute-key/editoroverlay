@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as DecorationType from './decoration.d';
-import { DECORATION_STYLE_KEY, STATUS_CONTENT_TEXT_CONFIG_KEY } from 'src/constant/enum';
+import { DECORATION_STYLE_KEY, SELECTION_CONTENT_TEXT_CONFIG_KEY } from 'src/constant/enum';
 
 type SelectionDecorationStyleType = {
     leftMargin?: string
@@ -16,47 +16,8 @@ type SelectionDecorationStyleType = {
     }
 }
 
-// type CursorOnlyContentTextType = {
-//     contentText?: (string | (ContentTextFuncSignature | ContentTextWithIndexFuncSignature))[],
-//     position: {
-//         col?: number,
-//         zCol?: number,
-//         ln?: number,
-//     }
-// }
-
-// type SingleLineContentTextType = {
-//     contentText?: (string | (ContentTextFuncSignature | ContentTextWithIndexFuncSignature))[],
-//     position: {
-//         char?: number,
-//         ln?: number,
-//     }
-// }
-
-// type MultiLineContentTextType = {
-//     contentText?: (string | (ContentTextFuncSignature | ContentTextWithIndexFuncSignature))[],
-//     position: {
-//         ln?: number,
-//         lc?: number,
-//         char?: number,
-//     }
-// }
-
-// type MultiCursorContentTextType = {
-//     contentText?: (string | (ContentTextFuncSignature | ContentTextWithIndexFuncSignature))[],
-//     position: {
-//         nth?: number,
-//         count?: number,
-//         ln?: number,
-//         lc?: number,
-//         char?: number
-//     }
-// }
-
-// type StatusContentTextUnion = CursorOnlyContentTextType | SingleLineContentTextType | MultiLineContentTextType | MultiCursorContentTextType;
-
 type StatusContentTextPositionType = {
-    contentText?: (string | (ContentTextFuncSignature))[],
+    contentText?: (string | symbol | ContentTextFuncSignature)[],
     position: {
         [key: number]: string
     }
@@ -67,7 +28,15 @@ type StatusContentTextPositionReadyType = {
 } & StatusContentTextPositionType
 
 type StatusContentTextType = {
-    [k in STATUS_CONTENT_TEXT_CONFIG_KEY]?: any[]
+    [k in SELECTION_CONTENT_TEXT_CONFIG_KEY]: {
+        contentText: any[]
+        position: number[]
+    } | ContentTextSymlinkKind
+}
+
+type ContentTextSymlinkKind = {
+    contentText: any[],
+    position: symbol[]
 }
 
 type ContentTextPositionFunc = {
@@ -77,7 +46,7 @@ type ContentTextPositionFunc = {
     }
 }
 
-type statusTextInfoSplitType = {
+type SelectionTextInfoSplitType = {
     [k in keyof typeof DECORATION_STYLE_KEY]: () => StatusTextInfoType[]
 };
 
@@ -115,11 +84,11 @@ type MultiCursorStatusTextRegExp = {
 type RegexStatusContentTextUnion = CursorOnlyStatusTextRegExp | SingleLineStatusTextRegExp | MultiLineCursorStatusTextRegExp | MultiLineAnchorStatusTextRegExp | MultiCursorStatusTextRegExp
 
 type RegexStatusContentTextType = {
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: CursorOnlyStatusTextRegExp
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: SingleLineStatusTextRegExp
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: MultiLineCursorStatusTextRegExp
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: MultiLineAnchorStatusTextRegExp
-    [STATUS_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: MultiCursorStatusTextRegExp
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: CursorOnlyStatusTextRegExp
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: SingleLineStatusTextRegExp
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: MultiLineCursorStatusTextRegExp
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: MultiLineAnchorStatusTextRegExp
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: MultiCursorStatusTextRegExp
 }
 
 type SelectionDecorationConfigType = {
@@ -164,10 +133,9 @@ type StatusTextInfo = {
 
 type ConfigInfoType = {
     name?: string
-    configHashKey?: string
 }
 
-type IndentType = {
+type IndentInfoType = {
     size?: number,
     type?: string,
     regex?: RegExp,
@@ -180,7 +148,7 @@ type IndentReadyType = {
 }
 
 type StatusInfoType = {
-    indent: IndentType
+    indent: IndentInfoType
     statusDecoration?: DecorationType.DecorationRenderOptionType
 }
 
@@ -206,31 +174,32 @@ type ContentTextFuncSignature = (context: ContentTextFuncContext) => any
 
 // type ContentTextWithIndexFuncSignature = (context: ContentTextWithIndexFuncContext) => string | number
 
-type ContentTextFunc = Record<string, ContentTextFuncSignature>;
+type ContentTextFunc = Record<string, (symbol | string | ContentTextFuncSignature)>;
 
 type ContentTextStateFuncSignature = (statusContentText: StatusContentTextType) => void
 
 type StatusOfType = {
-    [k in STATUS_CONTENT_TEXT_CONFIG_KEY]: ContentTextFunc;
+    [k in SELECTION_CONTENT_TEXT_CONFIG_KEY]: ContentTextFunc;
 }
 
 type ContentTextStateType = {
-    [k in STATUS_CONTENT_TEXT_CONFIG_KEY]: ContentTextFunc;
+    [k in SELECTION_CONTENT_TEXT_CONFIG_KEY]: ContentTextFunc;
 }
 
 type SplitFuncType = {
     position: number,
-    array: (string | (ContentTextFuncSignature))[]
+    array: (string | symbol | ContentTextFuncSignature)[]
 }
 
 type SearchObjectType = {
-    nextSearchString: string | (ContentTextFuncSignature),
+    nextSearchString: string | symbol | (ContentTextFuncSignature),
     lastPosition: number
 }
 
 type BindContentTextStateType = {
     functionOf: ContentTextStateType,
     textOf: StatusContentTextType,
+    infoOf: IndentInfoType
     // styleOf: StatusDecorationStyleType
     // contentTextState: ContentTextStateFuncSignature
 }

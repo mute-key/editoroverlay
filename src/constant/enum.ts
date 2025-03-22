@@ -85,19 +85,19 @@ export const enum DECORATION_STYLE_KEY {
 export const enum DECORATION_GENERAL_STYLE_CONFIG_KEY {
     OPACITY = 'borderOpacity',
     BACKGROUND_OPACITY = 'backgroundOpacity',
-    STATUS_TEXT_ENABLED = 'statusTextEnabled',
+    SELECTION_TEXT_ENABLED = 'selectionTextEnabled',
 }
 
-export const enum DECORATION_STATUS_STYLE_CONFIG_KEY {
-    STATUS_TEXT_OPACITY = 'statusTextOpacity',
-    STATUS_TEXT_COLOR = 'statusTextColor',
-    STATUS_TEXT_BACKGROUND_COLOR = 'statusTextBackgroundColor',
-    STATUS_TEXT_FONT_STYLE = 'statusTextFontStyle',
-    STATUS_TEXT_FONT_WEIGHT = 'statusTextFontWeight'
+export const enum DECORATION_SELECTION_STYLE_CONFIG_KEY {
+    SELECTION_TEXT_OPACITY = 'selectionTextOpacity',
+    SELECTION_TEXT_COLOR = 'selectionTextColor',
+    SELECTION_TEXT_BACKGROUND_COLOR = 'selectionTextBackgroundColor',
+    SELECTION_TEXT_FONT_STYLE = 'selectionTextFontStyle',
+    SELECTION_TEXT_FONT_WEIGHT = 'selectionTextFontWeight'
 }
 
 export const enum CONFIG_KEY_LINKER {
-    STATUS_TEXT_ENABLED = 'statusText.enabled',
+    SELECTION_TEXT_ENABLED = 'selectionText.enabled',
     DIAGNOSTIC_TEXT_ENABLED = 'diagnosticText.enabled',
 }
 
@@ -107,11 +107,11 @@ export const enum CONFIG_SECTION_KEY {
     SINGLE_LINE = 'singleLine',
     MULTI_LINE = 'multiLine',
     MULTI_CURSOR = 'multiCursor',
-    STATUS_TEXT = 'statusText',
+    SELECTION_TEXT = 'selectionText',
     DIAGNOSTIC_TEXT = 'diagnosticText'
 }
 
-export const enum STATUS_CONTENT_TEXT_CONFIG_KEY {
+export const enum SELECTION_CONTENT_TEXT_CONFIG_KEY {
     CURSOR_ONLY_TEXT = 'cursorOnlyText',
     SINGLE_LINE_TEXT = 'singleLineText',
     MULTI_LINE_CURSOR_TEXT = 'multiLineCursorText',
@@ -159,5 +159,3 @@ export const enum DIAGNOSTIC_BIOME {
     WARN = 1 << 1,
     ERR = 1 << 2,
 }
-
-

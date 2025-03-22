@@ -42,25 +42,25 @@ this extension will also display status text where the selection is.
 
 ## 2. Status (Selection)
 
-`statusText -> enabled`
+`selectionText -> enabled`
 > Enable inline status text.
 
-`statusText -> color`
+`selectionText -> color`
 > Change the Inline Status Text color. <br>Must be in format of hex color representation as __```#RRGGBB```__.
 
-`statusText -> backgroundColor`
+`selectionText -> backgroundColor`
 > Change the Inline Status Text background color. <br>Must be in format of hex color representation as __```#RRGGBB```__, __```null```__ or __```""```__ (No background).
 
-`statusText -> opacity`
+`selectionText -> opacity`
 > Opacity of background color of selection in __```%```__. __```1```__ is no opacity.
 
-`statusText -> fontStyle`
+`selectionText -> fontStyle`
 > Font style of status text.
 
-`statusText -> fontWeight`
+`selectionText -> fontWeight`
 > Font weight of status text.
 
-`statusText -> cursorOnlyText`
+`selectionText -> cursorOnlyText`
 > Status Text for Cursor Only Selection.<br>Example: `< Editing ... At (idx ${zCol}, zero-based)`
 
 | Placeholder       | Description                                   |
@@ -69,7 +69,7 @@ this extension will also display status text where the selection is.
 | __```${zCol}```__ | count of characters in line (Zero based)      |
 | __```${ln}```__   | current line number                           |
 
-`statusText -> singleLineText`
+`selectionText -> singleLineText`
 > Status Text for Single Line Selection.<br>Example: `< Selection ... Of (${char} Characters)`
 
 | Placeholder       | Description                  |
@@ -77,7 +77,7 @@ this extension will also display status text where the selection is.
 | __```${char}```__ | character count of selection |
 | __```${ln}```__   | current line number          |
 
-`statusText -> multiLineCursorText`
+`selectionText -> multiLineCursorText`
 > Status Text for _'Multi Line Selection (Active Cursor)'_.<br>Example: `< Selection Cursor ... Of (${lc} Lines, ${char} Characters, Indent/EOL Ignored)`
 
 | Placeholder       | Description                  |
@@ -86,7 +86,7 @@ this extension will also display status text where the selection is.
 | __```${lc}```__   | line count of selection      |
 | __```${char}```__ | character count of selection |
 
-`statusText -> multiLineAnchorText`
+`selectionText -> multiLineAnchorText`
 > Status Text for _'Multi Line Selection (Anchor)'_.<br>Example: `< Selection Anchor ... Of (${lc} Lines, ${char} Characters, Indent/EOL Ignored)`
 
 | Placeholder       | Description                  |
@@ -95,7 +95,7 @@ this extension will also display status text where the selection is.
 | __```${lc}```__   | line count of selection      |
 | __```${char}```__ | character count of selection |
 
-`statusText -> multiCursorText`
+`selectionText -> multiCursorText`
 > Status Text for _'Multi Cursor Selection'_.<br>Example: `< Multi Selection ... Of (${nth} of ${count}, with Total ${lc} Lines ${char} Characters)`
 
 | Placeholder        | Description                        |
@@ -211,11 +211,12 @@ this extension will also display status text where the selection is.
 
 #a3d900 -->
 
-#ffd200
+#8ae71d
 #c49600
-
-#52b100
+#909CB5
 null
 #8ae71d
 null
+#52b100
+#5aaf10
 

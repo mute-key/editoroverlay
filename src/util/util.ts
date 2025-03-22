@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import * as Type from '../type/type.d';
-import * as regexCollection from './regex.collection';
 
 const getWorkspaceConfiguration = (section: string): vscode.WorkspaceConfiguration => vscode.workspace.getConfiguration(section);
 

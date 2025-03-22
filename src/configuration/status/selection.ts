@@ -1,8 +1,8 @@
 import * as Type from '../../type/type';
 import Regex from '../../util/regex.collection';
 import { CONFIG_SECTION, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE, SELECTION_CONTENT_TEXT_LIST } from '../../constant/object';
+import { workspaceProxyConfiguration } from '../shared/configuration';
 import { bindStatusContentTextState } from '../../editor/decoration/status/selection';
-import { workspaceProxyConfiguration } from '../load';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 
 const SelectionDecorationConfig = { ...SELECTION_DECORAITON_CONFIG } as Type.SelectionDecorationConfigType;
@@ -16,16 +16,24 @@ const convertPositionToDecorationRenderOption = (textPosition): void => {
             : SelectionDecorationStyle.selectionDecorationOption[textPosition.position[idx]];
 
         const contentTextRenderOption = setContentTextOnDecorationRenderOption(option as Type.DecorationRenderOptionType, text);
+        if (typeof text === 'symbol') {
+            textPosition.position[idx] = contentTextRenderOption.after.contentText;
+        }
         return contentTextRenderOption;
     }).filter(decorationOption => decorationOption !== undefined);
 };
 
-const buildStatusTextState = (textOftarget, textOfSource, leftMargin): void => {
+const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentTextType, leftMargin): void => {
     Object.entries(textOfSource).forEach(([key, textPosition], idx) => {
-        textOftarget[key] = convertPositionToDecorationRenderOption(textPosition);
+        const contentTextStyled = convertPositionToDecorationRenderOption(textPosition);;
+        textOftarget[key] = {
+            contentText: contentTextStyled,
+            position: textPosition.position,
+        };
         if (leftMargin && leftMargin !== '0px' || leftMargin !== '0em') {
-            console.log(leftMargin);
-            textOftarget[key][0].after['margin'] = leftMarginToMarginString(leftMargin);
+            if (textOftarget[key].contentText[0]) {
+                textOftarget[key].contentText[0].after['margin'] = leftMarginToMarginString(leftMargin);
+            }
         }
     });
 };
@@ -46,9 +54,9 @@ const buildSelectionTextDecorationRenderOption = (config: Type.SelectionDecorati
 };
 
 const updateSelectionTextConfig = (configReady: Type.ConfigInfoReadyType) => {
+    const bindTo: any = bindStatusContentTextState();
 
-    const bindTo = bindStatusContentTextState();
-    const bindToBuffer = {
+    const bindToBuffer: any = {
         functionOf: bindTo.functionOf,
         textOf: {}
     };
@@ -56,13 +64,20 @@ const updateSelectionTextConfig = (configReady: Type.ConfigInfoReadyType) => {
     // hm ...
     workspaceProxyConfiguration(
         SelectionDecorationConfig,
-        configReady.name + '.' + CONFIG_SECTION.statusText,
+        configReady.name + '.' + CONFIG_SECTION.selectionText,
         SELECTION_CONTENT_TEXT_LIST,
         bindToBuffer,
         Regex.statusContentText);
-
+    
     buildSelectionTextDecorationRenderOption(SelectionDecorationConfig, SelectionDecorationStyle);
     buildStatusTextState(bindTo.textOf, bindToBuffer.textOf, SelectionDecorationConfig.leftMargin);
+
+    // // release refernce 
+    delete bindTo.functionOf;
+    delete bindTo.infoOf;
+    delete bindTo.textOf;
+    delete bindToBuffer.textOf;
+    delete bindToBuffer.functionOf;
 };
 
 export {

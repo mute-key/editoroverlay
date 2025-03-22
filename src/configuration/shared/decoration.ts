@@ -2,8 +2,9 @@ import * as vscode from 'vscode';
 import * as Type from '../../type/type';
 import Regex from '../../util/regex.collection';
 import { DECORATION_OPTION_AFTER_CONFIG, DECORATION_OPTION_CONFIG } from '../../constant/object';
-import { hexToRgbaStringLiteral, splitAndPosition } from '../../util/util';
 import { sanitizeContentText } from './validation';
+import { hexToRgbaStringLiteral, splitAndPosition } from '../../util/util';
+import Error from '../../util/error';
 
 const leftMarginToMarginString = (leftMargin: string | undefined) => `0 0 0 ${leftMargin}`;
 
@@ -24,9 +25,7 @@ const setContentTextOnDecorationRenderOption = (source: Type.DecorationRenderOpt
 };
 
 const searchPlaceholderPosition = (textOf: Type.ContentTextWithPositionType, functionOf: Type.ContentTextFunc, functionKey: string, regex: RegExp, search: Type.SearchObjectType, lastIndex: boolean): void => {
-
     const split = castToFuncSignature(splitAndPosition(search.nextSearchString as string, regex));
-
     if (split) {
         if (Object.hasOwn(functionOf, functionKey)) {
             split.array[split.position] = functionOf[functionKey];
@@ -36,7 +35,6 @@ const searchPlaceholderPosition = (textOf: Type.ContentTextWithPositionType, fun
             textOf.contentText?.push(...split.array);
             textOf.position[search.lastPosition + split.position] = functionKey;
         } else {
-
             if (split.position === 0) {
                 // placeholder is at index 0
                 textOf.contentText?.push(split.array[0]);
@@ -61,13 +59,13 @@ const searchPlaceholderPosition = (textOf: Type.ContentTextWithPositionType, fun
     }
 };
 
-const parseContentText = (contentText: string, key: string, bindTo: any, regexObject): void => {
+const parseContentText = (contentText: string, sectionKey: string, bindTo: any, regexObject, sectionName: string): void => {
 
     const match = contentText.match(Regex.ifContentTextHasPlaceholder);
 
-    if (match !== null && Object.hasOwn(regexObject, key)) {
-        if (match.length > Object.keys(regexObject[key]).length) {
-            // configError.push('statusText.' + key);
+    if (match !== null && Object.hasOwn(regexObject, sectionKey)) {
+        if (match.length > Object.keys(regexObject[sectionKey]).length) {
+            Error.register(sectionName + '.' +  sectionKey, "numbers of placeholder exceed availability");
         }
 
         let searchObject: Type.SearchObjectType | undefined = {
@@ -75,22 +73,23 @@ const parseContentText = (contentText: string, key: string, bindTo: any, regexOb
             lastPosition: 0
         };
 
-        bindTo.textOf[key].contentText = [];
+        bindTo.textOf[sectionKey].contentText = [];
 
         match.forEach((search, index) => {
             const regexKey = search.match(Regex.contentTextKeysOnly);
             if (regexKey) {
-                if (Object.hasOwn(regexObject[key], regexKey[1] as string)) {
-                    searchPlaceholderPosition(bindTo.textOf[key], bindTo.functionOf[key], regexKey[1], regexObject[key][regexKey[1]], searchObject, index === match.length - 1);
+                if (Object.hasOwn(regexObject[sectionKey], regexKey[1] as string)) {
+                    searchPlaceholderPosition(bindTo.textOf[sectionKey], bindTo.functionOf[sectionKey], regexKey[1], regexObject[sectionKey][regexKey[1]], searchObject, index === match.length - 1);
+                } else {
+                    Error.register(sectionName + '.' +  sectionKey, `Invalid placeholder '${regexKey[1]}' is set in user configration. Load default value instead for now. Please revise the value entered.`);
                 }
-            }
+            } 
         });
-        bindTo.textOf[key].contentText = sanitizeContentText(bindTo.textOf[key].contentText);
+        bindTo.textOf[sectionKey].contentText = sanitizeContentText(bindTo.textOf[sectionKey].contentText);
     } else {
-        bindTo.textOf[key].contentText = [contentText];
+        bindTo.textOf[sectionKey].contentText = [contentText];
     }
 };
-
 
 const convertToDecorationRenderOption = (config: Type.DecorationTextStyleConfig | Type.DecorationTextPrePostFixStyleConfig, isWholeLine: boolean = true, contentText: string | undefined = undefined) => {
 

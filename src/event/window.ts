@@ -1,25 +1,21 @@
 import * as vscode from 'vscode';
 import * as Type from '../type/type.d';
-import { DECORATION_INFO } from '../constant/object';
 import { isDecorationChanged, resetAllDecoration } from '../editor/decoration/decoration';
-import { setDecorationOnEditor } from '../editor/decoration/decoration';
-import { updateIndentOption } from '../editor/editor';
-import { getSelectionType } from '../editor/range';
-import { fixConfiguration } from '../util/error';
-import { resetEditorDiagnosticStatistics } from '../diagnostic/diagnostic';
+import { renderDecorationOnEditor } from '../editor/decoration/decoration';
+import { renderGroupIs, updateIndentOption } from '../editor/editor';
+import Error from '../util/error';
+import { resetEditorDiagnosticStatistics, updateDiagnostic } from '../diagnostic/diagnostic';
 
-const windowStateChanged: Type.DecorationEventFunc = ({ configInfo, indentInfo, decorationState }): vscode.Disposable => {
+const windowStateChanged: Type.DecorationEventFunc = ({  decorationState, renderGroup }): vscode.Disposable => {
     return vscode.window.onDidChangeWindowState((event: vscode.WindowState) => {
         if (event.focused) {
 
             // apply decoration to active editor.
             if (vscode.window.activeTextEditor) {
-                setDecorationOnEditor({
+                renderDecorationOnEditor({
                     editor: vscode.window.activeTextEditor,
-                    configInfo: configInfo,
-                    indentInfo: indentInfo,
                     decorationState: decorationState,
-                    decorationInfo: DECORATION_INFO.CURSOR_ONLY
+                    renderGroup: renderGroup
                 });
             }
         } else {
@@ -33,59 +29,58 @@ const windowStateChanged: Type.DecorationEventFunc = ({ configInfo, indentInfo, 
     });
 };
 
-const activeEditorChanged: Type.DecorationEventFunc = ({ configInfo, indentInfo, decorationState }): vscode.Disposable => {
+const activeEditorChanged: Type.DecorationEventFunc = ({ configInfo, decorationState, renderGroup }): vscode.Disposable => {
     return vscode.window.onDidChangeActiveTextEditor((editor: vscode.TextEditor | undefined) => {
-        // console.log('onDidChangeActiveTextEditor');
         if (editor) {
-
             if (configInfo.configError.length > 0) {
-                fixConfiguration(configInfo.configError);
+                // fixConfiguration(configInfo.configError);
             }
 
-            updateIndentOption(editor, indentInfo as Type.IndentReadyType);
-
             resetAllDecoration(decorationState);
+            
+            if (configInfo.generalConfigInfo.diagnosticTextEnabled) {
+                resetEditorDiagnosticStatistics();
+                updateDiagnostic();
+            }
+            
+            updateIndentOption(editor);
 
-            resetEditorDiagnosticStatistics();
-
-            setDecorationOnEditor({
+            renderDecorationOnEditor({
                 editor: editor,
-                configInfo: configInfo,
-                indentInfo: indentInfo,
                 decorationState: decorationState,
-                decorationInfo: DECORATION_INFO.CURSOR_ONLY
+                renderGroup: renderGroup
             });
+
+            Error.printError();
         }
     });
 };
 
 
-const editorOptionChanged = ({ indentInfo }): vscode.Disposable => {
+const editorOptionChanged = (context): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorOptions((event: vscode.TextEditorOptionsChangeEvent) => {
         if (event.textEditor) {
-            updateIndentOption(event.textEditor, indentInfo);
+            updateIndentOption(event.textEditor);
         }
     });
 };
 
-const selectionChanged: Type.DecorationEventFunc = ({ configInfo, indentInfo, decorationState }): vscode.Disposable => {
+const selectionChanged: Type.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) => {
         if (event.selections) {
 
-            const decorationInfo: Type.DecorationInfoPropType | undefined = getSelectionType(event.textEditor);
+            const renderGroup: Type.RenderGroupSetProperty | undefined = renderGroupIs(event.textEditor);
 
-            if (!decorationInfo) {
+            if (!renderGroup) {
                 return;
             }
 
-            isDecorationChanged(event.textEditor, decorationState, decorationInfo);
+            isDecorationChanged(event.textEditor, decorationState, renderGroup.type as Type.DecorationInfoPropType);
 
-            setDecorationOnEditor({
+            renderDecorationOnEditor({
                 editor: event.textEditor,
-                configInfo: configInfo,
-                indentInfo: indentInfo,
                 decorationState: decorationState,
-                decorationInfo: decorationInfo
+                renderGroup: renderGroup
             });
         }
     });

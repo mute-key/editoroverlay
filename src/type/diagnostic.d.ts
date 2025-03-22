@@ -119,7 +119,7 @@ type DiagnosticErrorTextType = {
 
 type DiagnosticContentTextStateType = {
     contentText: (string | any)[]
-    placeholder: {
+    notation: {
         prefix: string,
         postfix: string
     }
@@ -158,6 +158,10 @@ type DiagnosticContentTextType = {
 }
 
 type DiagnosticVisibilityType = {
+    displayWhenCursorOnly?: boolean,
+    displayWhenSingleLine?: boolean,
+    displayWhenMultiLine?: boolean,
+    displayWhenMultiCursor?: boolean,
     DiagnosticKind?: string,
     placeTextOnPreviousOrNextLine?: string,
     overrideLayoutPlaceholderColorToHighestSeverity?: boolean,
@@ -195,7 +199,7 @@ type DiagonosticTextContext = {
     allok: any, 
     editor: any, 
     workspace: any
-    placeholder: DiagonosticTextStateTextEntryType,
+    notation: DiagonosticTextStateTextEntryType,
     state: DiagnosticStateType['workspace']
 }
 
@@ -207,9 +211,9 @@ type BindDiagnosticContentTextStateType = {
 }
 
 type DiagonosticTextStateTextType = {
-    okPrefixPostfixText?: DiagonosticTextStateTextEntryType;
-    warningPrefixPostfixText?: DiagonosticTextStateTextEntryType;
-    errorPrefixPostfixText?: DiagonosticTextStateTextEntryType;
+    okNotationText?: DiagonosticTextStateTextEntryType;
+    warningNotationText?: DiagonosticTextStateTextEntryType;
+    errorNotationText?: DiagonosticTextStateTextEntryType;
 }
 
 type DiagonosticTextStateTextEntryType = {
@@ -224,7 +228,7 @@ type DiagonosticStateDecorationType = {
 }
 
 type ContentTextWithPositionType = {
-    contentText?: (string | StatusType.ContentTextFuncSignature)[],
+    contentText?: (string | symbol | StatusType.ContentTextFuncSignature)[],
     position: {}
 }
 

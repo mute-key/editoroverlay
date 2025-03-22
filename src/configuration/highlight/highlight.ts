@@ -1,9 +1,10 @@
 import * as vscode from 'vscode';
 import * as Type from '../../type/type';
-import { CONFIG_SECTION, BORDER_WIDTH_DEFINITION, DECORATION_STYLE_PREFIX, NO_CONFIGURATION_DEOCORATION_DEFAULT, NO_CONFIGURATION_GENERAL_DEFAULT } from '../../constant/object';
-import { createEditorDecorationType, disposeDecoration } from '../../editor/decoration/decoration';
-import { getWorkspaceConfiguration, readBits } from '../../util/util';
+import { CONFIG_SECTION, BORDER_WIDTH_DEFINITION, DECORATION_STYLE_PREFIX, NO_CONFIGURATION_DEOCORATION_DEFAULT, NO_CONFIGURATION_GENERAL_DEFAULT, HIGHLIGHT_STYLE_LIST } from '../../constant/object';
 import { colorConfigTransform, getConfigValue } from '../shared/configuration';
+import { createEditorDecorationType, disposeDecoration } from '../../editor/decoration/decoration';
+import { bindHighlightStyleState } from '../../editor/decoration/highlight/highlight';
+import { getWorkspaceConfiguration, readBits } from '../../util/util';
 
 const checkConfigKeyAndCast = <T extends Type.DecorationStyleConfigNameType | Type.GeneralConfigNameOnlyType>(key: string): T => {
     return key as T;
@@ -21,7 +22,7 @@ const getConfigSet = (configReady: Type.ConfigInfoReadyType, decorationKey: Type
     const configSection = getWorkspaceConfiguration(configReady.name + '.' + configSectionName);
 
     return Object.entries(defaultConfigDefinition).reduce((config, [configName, defaultValue]) => {
-        const configValue: string | boolean | number | null = getConfigValue(configSection, checkConfigKeyAndCast(configName), defaultValue as Type.DecorationStyleConfigValueType);
+        const configValue: string | boolean | number | null = getConfigValue(configSection, checkConfigKeyAndCast(configName), defaultValue as Type.DecorationStyleConfigValueType, configReady.name + '.' + configSectionName);
         // configValue can be boolean.
         if (configValue !== undefined && configValue !== null) {
             if (Object.hasOwn(colorConfigTransform, configName)) {
@@ -123,40 +124,56 @@ const borderPositionParser = (selectionType: Type.DecorationStyleKeyOnlyType, bo
     };
 };
 
-const generateHighlightDecoration = (configReady: Type.ConfigInfoReadyType, decorationState: Type.DecorationStateType): boolean => {
+const updateGeneralConfig = (configReady: Type.ConfigInfoReadyType) => {
+    console.log('updateGeneralConfig');
     for (const key in configReady.generalConfigInfo) {
         if (configReady.generalConfigInfo[key]) {
             const sectionLinker = configReady.generalConfigInfo[key].split('.');
             const configSection = getWorkspaceConfiguration(configReady.name + '.' + sectionLinker[0]);
-            const configValue = getConfigValue(configSection, sectionLinker[1], NO_CONFIGURATION_GENERAL_DEFAULT[key]);
+            const configValue = getConfigValue(configSection, sectionLinker[1], NO_CONFIGURATION_GENERAL_DEFAULT[key], configReady.name + '.' + sectionLinker[0]);
             configReady.generalConfigInfo[key] = configValue;
         } else {
             const configSection = getWorkspaceConfiguration(configReady.name + '.' + CONFIG_SECTION.general);
-            configReady.generalConfigInfo[key] = getConfigValue(configSection, key, NO_CONFIGURATION_GENERAL_DEFAULT[key]);
+            configReady.generalConfigInfo[key] = getConfigValue(configSection, key, NO_CONFIGURATION_GENERAL_DEFAULT[key], configReady.name + '.' + CONFIG_SECTION.general);
         }
     }
+};
 
-    for (const key in decorationState.highlightStyleList) {
+const updateHighlightStyleConfiguration = (configReady: Type.ConfigInfoReadyType, selectionType: Type.DecorationStyleKeyOnlyType | string | symbol) => {
+
+    let bindTo: any = bindHighlightStyleState();
+
+    if (bindTo.styleOf[selectionType]) {
+        disposeDecoration(bindTo.styleOf[selectionType]);
+    }
+
+    const configSet: Type.DecorationStyleConfigType = getConfigSet(configReady, selectionType);
+    const parsed = borderPositionParser(selectionType, String(configSet.borderPosition));
+
+    bindTo.infoOf[selectionType] = parsed;
+
+    configSet.borderPosition = parsed.borderPosition;
+    configSet.isWholeLine = parsed.isWholeLine;
+
+    const decorationTypeList = createDecorationType(configSet, selectionType, decorationTypeSplit);
+
+    if (!decorationTypeList) {
+        return false;
+    }
+
+    bindTo.styleOf[selectionType] = decorationTypeList;
+
+    delete bindTo.styleOf;
+    delete bindTo.infoOf;
+};
+
+const generateHighlightDecoration = (configReady: Type.ConfigInfoReadyType): boolean => {
+
+    updateGeneralConfig(configReady);
+
+    for (const key of Object.keys(HIGHLIGHT_STYLE_LIST)) {
         const selectionType = key as Type.DecorationStyleKeyOnlyType;
-
-        if (decorationState.highlightStyleList[selectionType]) {
-            disposeDecoration(decorationState.highlightStyleList[selectionType]);
-        }
-
-        const configSet: Type.DecorationStyleConfigType = getConfigSet(configReady, selectionType);
-        const parsed = borderPositionParser(selectionType, String(configSet.borderPosition));
-
-        configReady.borderPositionInfo[selectionType] = parsed;
-        configSet.borderPosition = parsed.borderPosition;
-        configSet.isWholeLine = parsed.isWholeLine;
-
-        const decorationTypeList = createDecorationType(configSet, selectionType, decorationTypeSplit);
-
-        if (!decorationTypeList) {
-            return false;
-        }
-
-        decorationState.highlightStyleList[selectionType] = decorationTypeList;
+        updateHighlightStyleConfiguration(configReady, selectionType);
     }
 
     return true;
@@ -164,6 +181,8 @@ const generateHighlightDecoration = (configReady: Type.ConfigInfoReadyType, deco
 
 
 export {
+    updateGeneralConfig, 
+    updateHighlightStyleConfiguration,
     generateHighlightDecoration
 };
 

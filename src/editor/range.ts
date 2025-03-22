@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import * as Type from '../type/type';
-import { DECORATION_INFO } from '../constant/object';
 
 // "disabled",
 // "IfOutOfVisibleRange",
@@ -34,30 +33,14 @@ const createAnchorRange = (editor: vscode.TextEditor): vscode.Range =>
 const createStartEndRangeOfSelection = (selection: vscode.Selection): vscode.Range =>
     createRangeSPEP(selection.start, selection.end);
 
-const getSelectionType = (editor: vscode.TextEditor): Type.DecorationInfoPropType | undefined => {
-
-    if (editor.selections.length === 1) {
-        if (editor.selections[0].isEmpty) {
-            return DECORATION_INFO.CURSOR_ONLY;
-        } else {
-            if (editor.selections[0].isSingleLine) {
-                return DECORATION_INFO.SINGLE_LINE;
-            } else {
-                return DECORATION_INFO.MULTI_LINE;
-            }
-        }
-    } else if (editor.selections.length > 1) {
-        return DECORATION_INFO.MULTI_CURSOR;
-    }
+const Range = {
+    createRangeNNNN: createRangeNNNN,
+    createRangeSPEP: createRangeSPEP,
+    createRangeNNEP: createRangeNNEP,
+    createCursorRange: createCursorRange,
+    createActiveRange: createActiveRange,
+    createAnchorRange: createAnchorRange,
+    createStartEndRangeOfSelection: createStartEndRangeOfSelection,
 };
 
-export {
-    createRangeNNNN,
-    createRangeSPEP,
-    createRangeNNEP,
-    createCursorRange,
-    createActiveRange,
-    createAnchorRange,
-    createStartEndRangeOfSelection,
-    getSelectionType,
-};
+export default Range ;
