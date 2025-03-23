@@ -5,7 +5,7 @@ I advice you to check the increment of cpu usage before installing it.
 
 just in case, right click on statusbar and hide editor selection. 
 
-that feature alone took 10% of my cpu usage when i did same action without this extension on. (i will add more detail what is going on and what has been improvement, etc before update)
+that feature alone took 10% of my cpu usage when i did same action without this extension on. (i will add more detail what is going on and what has been improved, etc before update)
 
 
 
