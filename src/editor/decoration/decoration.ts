@@ -43,17 +43,6 @@ const resetDecoration: Type.UnsetDecorationFunctionType = (editor: vscode.TextEd
     }
 };
 
-const resetOtherDecoration = (currentDecoration: Type.DecorationInfoPropType, reset: Type.UnsetFunctionType): void => {
-    Object.values(SELECTION_KIND)
-        .filter(info => currentDecoration.MASK & info.MASK)
-        .map(info => reset(info))
-        .every(Boolean);
-};
-
-const resetDecorationWrapper = (decorationState: Type.DecorationStateType, editor: vscode.TextEditor,): void =>
-    resetOtherDecoration(SELECTION_KIND.RESET, (selectionKind: Type.DecorationInfoPropType): void =>
-        resetDecoration(editor, decorationState)(selectionKind));
-
 const resetAllDecoration = (decorationState: Type.DecorationStateType) => {
     vscode.window.visibleTextEditors.forEach(editor => {
         if (decorationState.appliedHighlight.ofDecorationType !== undefined) {
@@ -148,7 +137,6 @@ export {
     applyDecoration,
     disposeDecoration,
     resetDecorationRange,
-    resetDecorationWrapper,
     unsetAndDisposeDecoration,
     isDecorationChanged,
     createEditorDecorationType,

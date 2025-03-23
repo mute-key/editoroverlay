@@ -1,11 +1,12 @@
 import * as vscode from 'vscode';
 import * as Type from '../../type/type';
-import { CONFIG_SECTION, BORDER_WIDTH_DEFINITION, DECORATION_STYLE_PREFIX, NO_CONFIGURATION_DEOCORATION_DEFAULT, NO_CONFIGURATION_GENERAL_DEFAULT, HIGHLIGHT_STYLE_LIST } from '../../constant/object';
+import { CONFIG_SECTION, BORDER_WIDTH_DEFINITION, DECORATION_STYLE_PREFIX, NO_CONFIGURATION_DEOCORATION_DEFAULT, NO_CONFIGURATION_GENERAL_DEFAULT, HIGHLIGHT_STYLE_LIST, HIGHLIGHT_STYLE_SYMBOL_LIST } from '../../constant/object';
 import { colorConfigTransform, getConfigValue } from '../shared/configuration';
 import { createEditorDecorationType, disposeDecoration } from '../../editor/decoration/decoration';
 import { bindHighlightStyleState } from '../../editor/decoration/highlight/highlight';
 import { getWorkspaceConfiguration, readBits } from '../../util/util';
 import { SELECTION_TYPE } from '../../constant/enum';
+import * as $ from '../../constant/symbol';
 
 const checkConfigKeyAndCast = <T extends Type.DecorationStyleConfigNameType | Type.GeneralConfigNameOnlyType>(key: string): T => {
     return key as T;
@@ -58,7 +59,7 @@ const createDecorationType: Type.CreateDecorationFunctionType = (config: Type.De
             styledConfig.push(conf);
             return styledConfig;
         }, [] as Type.DecorationStyleConfigType[]).reduce((textEditorDecoration, styleAppliedConfig, idx) => {
-            if (decorationKey === SELECTION_TYPE.MULTI_LINE && idx !== 2) {
+            if (decorationKey === $.multiLine && idx !== 2) {
                 delete styleAppliedConfig.backgroundColor;
             }
             textEditorDecoration.push(createEditorDecorationType(combineBorderStyle(styleAppliedConfig)));
@@ -173,7 +174,7 @@ const generateHighlightDecoration = (configReady: Type.ConfigInfoReadyType): boo
 
     updateGeneralConfig(configReady);
 
-    for (const key of Object.keys(HIGHLIGHT_STYLE_LIST)) {
+    for (const key of HIGHLIGHT_STYLE_SYMBOL_LIST) {
         const selectionType = key as Type.DecorationStyleKeyOnlyType;
         updateHighlightStyleConfiguration(configReady, selectionType);
     }

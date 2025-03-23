@@ -12,6 +12,7 @@ import {
 import {
     DECORATION_STYLE_PREFIX,
 } from '../constant/object';
+import { symlink } from 'fs';
 
 type NoConfigurationGeneraType = {
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.OPACITY]: number
@@ -38,7 +39,7 @@ type NoConfigurationDeocorationPropType = {
 }
 
 type NoConfigurationDecorationType = {
-    [K in keyof typeof DECORATION_STYLE_PREFIX]: NoConfigurationDeocorationPropType
+    [key: symbol]: NoConfigurationDeocorationPropType | any
 }
 
 type DecorationStyleConfigPrefixType = typeof DECORATION_STYLE_PREFIX[keyof typeof DECORATION_STYLE_PREFIX] | "";

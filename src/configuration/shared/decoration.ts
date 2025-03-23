@@ -94,10 +94,9 @@ const parseContentText = (contentText: string, sectionKey: string, bindTo: any, 
 const convertToDecorationRenderOption = (config: Type.DecorationTextStyleConfig | Type.DecorationTextPrePostFixStyleConfig, isWholeLine: boolean = true, contentText: string | undefined = undefined) => {
 
     const decorationOption = { ...DECORATION_OPTION_CONFIG } as Type.DecorationRenderOptionType;
-
+    
     decorationOption.isWholeLine = isWholeLine;
     decorationOption.rangeBehavior = vscode.DecorationRangeBehavior.ClosedOpen;
-
     decorationOption.after = { ...DECORATION_OPTION_AFTER_CONFIG } as Type.DecorationRenderAfterOptionType;
 
     if (contentText) {

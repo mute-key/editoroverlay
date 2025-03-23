@@ -1,8 +1,9 @@
 import * as vscode from 'vscode';
 import * as Type from '../type/type';
+import * as $ from '../constant/symbol';
 import Regex from '../util/regex.collection';
 import { SELECTION_TYPE } from '../constant/enum';
-import { RENDER_GROUP_SET, SELECTION_KIND } from '../constant/object';
+import { HIGHLIGHT_STYLE_SYMBOL_LIST, RENDER_GROUP_SET, SELECTION_KIND } from '../constant/object';
 import { bindStatusContentTextState } from './decoration/status/selection';
 import { selectionInfo } from './decoration/status/selection';
 import { bindDiagnosticContentTextState, diagnosticInfo } from './decoration/status/diagnostic';
@@ -23,13 +24,19 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): Type.RenderGroupS
     const diagnostic = config.generalConfigInfo.diagnosticTextEnabled ? diagnosticInfo : undefined;
     const bindDiagnostic = bindDiagnosticContentTextState();
     const diagonosticAvaliabity = {
-        [SELECTION_TYPE.CURSOR_ONLY]: bindDiagnostic.configOf.displayWhenCursorOnly,
-        [SELECTION_TYPE.SINGLE_LINE]: bindDiagnostic.configOf.displayWhenSingleLine,
-        [SELECTION_TYPE.MULTI_LINE]: bindDiagnostic.configOf.displayWhenMultiLine,
-        [SELECTION_TYPE.MULTI_CURSOR]: bindDiagnostic.configOf.displayWhenMultiCursor,
+        [$.cursorOnly]: bindDiagnostic.configOf.displayWhenCursorOnly,
+        [$.singleLine]: bindDiagnostic.configOf.displayWhenSingleLine,
+        [$.multiLine]: bindDiagnostic.configOf.displayWhenMultiLine,
+        [$.multiCursor]: bindDiagnostic.configOf.displayWhenMultiCursor,
+        // [Symbol.iterator]: function* () {
+        //     yield diagonosticAvaliabity[$.cursorOnly];
+        //     yield diagonosticAvaliabity[$.singleLine];
+        //     yield diagonosticAvaliabity[$.multiLine];
+        //     yield diagonosticAvaliabity[$.multiCursor];
+        // }
     };
 
-    Object.keys(renderGroupSet).forEach(selectionKey => {
+    HIGHLIGHT_STYLE_SYMBOL_LIST.forEach(selectionKey => {
         if (SELECTION_KIND[selectionKey]) {
             renderGroupSet[selectionKey] = {
                 type: SELECTION_KIND[selectionKey],
@@ -39,24 +46,25 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): Type.RenderGroupS
         }
     });
 
-    return renderGroupSet[SELECTION_TYPE.CURSOR_ONLY] as Type.RenderGroupSetProperty;
+    return renderGroupSet[$.cursorOnly] as Type.RenderGroupSetProperty;
 };
 
 const renderGroupIs = (editor: vscode.TextEditor): Type.RenderGroupSetProperty | undefined => {
+    // console.log(renderGroupSet);
     if (editor.selections.length === 1) {
         if (editor.selections[0].isEmpty) {
-            return renderGroupSet[SELECTION_TYPE.CURSOR_ONLY];
+            return renderGroupSet[$.cursorOnly];
         }
 
         if (editor.selections[0].isSingleLine) {
-            return renderGroupSet[SELECTION_TYPE.SINGLE_LINE];
+            return renderGroupSet[$.singleLine];
         } else {
-            return renderGroupSet[SELECTION_TYPE.MULTI_LINE];
+            return renderGroupSet[$.multiLine];
         }
     }
 
     if (editor.selections.length > 1) {
-        return renderGroupSet[SELECTION_TYPE.MULTI_CURSOR];;
+        return renderGroupSet[$.multiCursor];;
     }
 };
 

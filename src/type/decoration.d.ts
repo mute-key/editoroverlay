@@ -34,7 +34,7 @@ type RenderGroupSetProperty = {
 }
 
 type RenderGroupSet = {
-    [k in SELECTION_TYPE]: RenderGroupSetProperty
+    [key: symbol]: RenderGroupSetProperty
 }
 
 type DecorationContext = {
@@ -49,7 +49,7 @@ type SelectionInfoType = {
 }
 
 type DecorationInfoPropType = {
-    KEY: string,
+    KEY: symbol,
     MASK: DECORATION_TYPE_MASK
 }
 
@@ -60,7 +60,7 @@ type DecorationCoordinatorFunc = (context: DecorationContext) => DecorationWithR
 type UnsetFunctionType = (selectionKind: DecorationInfoPropType) => void
 
 type DecorationInfoType = {
-    [k in keyof typeof SELECTION_TYPE]: DecorationInfoPropType;
+    [k in keyof typeof SELECTION_TYPE as symbol]: DecorationInfoPropType | any;
 }
 
 type AppliedDecorationType = {
@@ -86,7 +86,7 @@ type createRange = {
     endPosition: number[] | vscode.Position
 }
 
-type CoordinatorSplitType = Record<string, (context: SelectionHighlightKindContext) => DecorationWithRangeType[]>
+type CoordinatorSplitType = Record<symbol, (context: SelectionHighlightKindContext) => DecorationWithRangeType[] | any>
 
 type BorderPositionParserType = {
     isWholeLine: boolean,

@@ -40,6 +40,15 @@ var vscode13 = __toESM(require("vscode"));
 
 // src/constant/object.ts
 var vscode = __toESM(require("vscode"));
+
+// src/constant/symbol.ts
+var reset = Symbol("RESET" /* RESET */);
+var cursorOnly = Symbol("CURSOR_ONLY" /* CURSOR_ONLY */);
+var singleLine = Symbol("SINGLE_LINE" /* SINGLE_LINE */);
+var multiLine = Symbol("MULTI_LINE" /* MULTI_LINE */);
+var multiCursor = Symbol("MULTI_CURSOR" /* MULTI_CURSOR */);
+
+// src/constant/object.ts
 var CONFIG_SECTION = {
   ["general" /* GENERAL */]: "general" /* GENERAL */,
   ["cursorOnly" /* CURSOR_ONLY */]: "cursorOnly" /* CURSOR_ONLY */,
@@ -116,10 +125,16 @@ var RENDER_GROUP_SET_PROPERTY = {
   diagnostic: void 0
 };
 var RENDER_GROUP_SET = {
-  ["CURSOR_ONLY" /* CURSOR_ONLY */]: RENDER_GROUP_SET_PROPERTY,
-  ["SINGLE_LINE" /* SINGLE_LINE */]: RENDER_GROUP_SET_PROPERTY,
-  ["MULTI_LINE" /* MULTI_LINE */]: RENDER_GROUP_SET_PROPERTY,
-  ["MULTI_CURSOR" /* MULTI_CURSOR */]: RENDER_GROUP_SET_PROPERTY
+  [cursorOnly]: RENDER_GROUP_SET_PROPERTY,
+  [singleLine]: RENDER_GROUP_SET_PROPERTY,
+  [multiLine]: RENDER_GROUP_SET_PROPERTY,
+  [multiCursor]: RENDER_GROUP_SET_PROPERTY
+  // [Symbol.iterator]: function* () {
+  //     yield RENDER_GROUP_SET[$.cursorOnly];
+  //     yield RENDER_GROUP_SET[$.singleLine];
+  //     yield RENDER_GROUP_SET[$.multiLine];
+  //     yield RENDER_GROUP_SET[$.multiCursor];
+  // }
 };
 var DECORATION_STATE = {
   appliedHighlight: {
@@ -133,23 +148,47 @@ var DECORATION_STATE = {
     diagnosticText: void 0
   }
 };
+var HIGHLIGHT_STYLE_SYMBOL_LIST = [
+  cursorOnly,
+  singleLine,
+  multiLine,
+  multiCursor
+];
 var HIGHLIGHT_STYLE_LIST = {
-  CURSOR_ONLY: void 0,
-  SINGLE_LINE: void 0,
-  MULTI_LINE: void 0,
-  MULTI_CURSOR: void 0
+  [cursorOnly]: void 0,
+  [singleLine]: void 0,
+  [multiLine]: void 0,
+  [multiCursor]: void 0
+  // [Symbol.iterator]: function* () {
+  //     yield HIGHLIGHT_STYLE_LIST[$.cursorOnly];
+  //     yield HIGHLIGHT_STYLE_LIST[$.singleLine];
+  //     yield HIGHLIGHT_STYLE_LIST[$.multiLine];
+  //     yield HIGHLIGHT_STYLE_LIST[$.multiCursor];
+  // }
 };
 var HIGHLIGHT_BORDER_POSITION_INFO = {
-  CURSOR_ONLY: void 0,
-  SINGLE_LINE: void 0,
-  MULTI_LINE: void 0,
-  MULTI_CURSOR: void 0
+  [cursorOnly]: void 0,
+  [singleLine]: void 0,
+  [multiLine]: void 0,
+  [multiCursor]: void 0
+  // [Symbol.iterator]: function* () {
+  //     yield HIGHLIGHT_BORDER_POSITION_INFO[$.cursorOnly];
+  //     yield HIGHLIGHT_BORDER_POSITION_INFO[$.singleLine];
+  //     yield HIGHLIGHT_BORDER_POSITION_INFO[$.multiLine];
+  //     yield HIGHLIGHT_BORDER_POSITION_INFO[$.multiCursor];
+  // }
 };
 var DECORATION_STYLE_PREFIX = {
-  CURSOR_ONLY: "cursorOnly",
-  SINGLE_LINE: "singleLine",
-  MULTI_LINE: "multiLine",
-  MULTI_CURSOR: "multiCursor"
+  [cursorOnly]: "cursorOnly",
+  [singleLine]: "singleLine",
+  [multiLine]: "multiLine",
+  [multiCursor]: "multiCursor"
+  // [Symbol.iterator]: function* () {
+  //     yield DECORATION_STYLE_PREFIX[$.cursorOnly];
+  //     yield DECORATION_STYLE_PREFIX[$.singleLine];
+  //     yield DECORATION_STYLE_PREFIX[$.multiLine];
+  //     yield DECORATION_STYLE_PREFIX[$.multiCursor];
+  // }
 };
 var DECORATION_OPTION_CONFIG = {
   isWholeLine: void 0,
@@ -344,32 +383,44 @@ var MULTILINE_BORDER_SELECTION = {
   ]
 };
 var BORDER_WIDTH_DEFINITION = {
-  ["CURSOR_ONLY" /* CURSOR_ONLY */]: SINGLE_BORDER_SELECTION,
-  ["SINGLE_LINE" /* SINGLE_LINE */]: SINGLE_BORDER_SELECTION,
-  ["MULTI_LINE" /* MULTI_LINE */]: MULTILINE_BORDER_SELECTION,
-  ["MULTI_CURSOR" /* MULTI_CURSOR */]: SINGLE_BORDER_SELECTION
+  [cursorOnly]: SINGLE_BORDER_SELECTION,
+  [singleLine]: SINGLE_BORDER_SELECTION,
+  [multiLine]: MULTILINE_BORDER_SELECTION,
+  [multiCursor]: SINGLE_BORDER_SELECTION
+  // [Symbol.iterator]: function* () {
+  //     yield BORDER_WIDTH_DEFINITION[$.cursorOnly];
+  //     yield BORDER_WIDTH_DEFINITION[$.singleLine];
+  //     yield BORDER_WIDTH_DEFINITION[$.multiLine];
+  //     yield BORDER_WIDTH_DEFINITION[$.multiCursor];
+  // }
 };
 var SELECTION_KIND = {
-  ["RESET" /* RESET */]: {
-    KEY: "RESET" /* RESET */,
+  [reset]: {
+    KEY: reset,
     MASK: 15 /* RESET */
   },
-  ["CURSOR_ONLY" /* CURSOR_ONLY */]: {
-    KEY: "CURSOR_ONLY" /* CURSOR_ONLY */,
+  [cursorOnly]: {
+    KEY: cursorOnly,
     MASK: 1 /* CURSOR_ONLY */
   },
-  ["SINGLE_LINE" /* SINGLE_LINE */]: {
-    KEY: "SINGLE_LINE" /* SINGLE_LINE */,
+  [singleLine]: {
+    KEY: singleLine,
     MASK: 2 /* SINGLE_LINE */
   },
-  ["MULTI_LINE" /* MULTI_LINE */]: {
-    KEY: "MULTI_LINE" /* MULTI_LINE */,
+  [multiLine]: {
+    KEY: multiLine,
     MASK: 4 /* MULTI_LINE */
   },
-  ["MULTI_CURSOR" /* MULTI_CURSOR */]: {
-    KEY: "MULTI_CURSOR" /* MULTI_CURSOR */,
+  [multiCursor]: {
+    KEY: multiCursor,
     MASK: 8 /* MULTI_CURSOR */
   }
+  // [Symbol.iterator]: function* () {
+  //     yield SELECTION_KIND[$.cursorOnly];
+  //     yield SELECTION_KIND[$.singleLine];
+  //     yield SELECTION_KIND[$.multiLine];
+  //     yield SELECTION_KIND[$.multiCursor];
+  // }
 };
 var NO_CONFIGURATION_GENERAL_DEFAULT = {
   ["borderOpacity" /* OPACITY */]: 1,
@@ -384,7 +435,7 @@ var SELECTION_DEFAULT = {
   ["selectionTextFontWeight" /* SELECTION_TEXT_FONT_WEIGHT */]: "bold"
 };
 var NO_CONFIGURATION_DEOCORATION_DEFAULT = {
-  ["CURSOR_ONLY" /* CURSOR_ONLY */]: {
+  [cursorOnly]: {
     ["isWholeLine" /* IS_WHOLE_LINE */]: true,
     ["borderWidth" /* BORDER_WIDTH */]: "2px",
     ["borderStyle" /* BORDER_STYLE */]: "dotted",
@@ -392,7 +443,7 @@ var NO_CONFIGURATION_DEOCORATION_DEFAULT = {
     ["borderPosition" /* BORDER_POSITION */]: "bottom",
     ["backgroundColor" /* BACKGROUND_COLOR */]: "#ff0000"
   },
-  ["SINGLE_LINE" /* SINGLE_LINE */]: {
+  [singleLine]: {
     ["isWholeLine" /* IS_WHOLE_LINE */]: false,
     ["borderWidth" /* BORDER_WIDTH */]: "2px",
     ["borderStyle" /* BORDER_STYLE */]: "dotted",
@@ -400,7 +451,7 @@ var NO_CONFIGURATION_DEOCORATION_DEFAULT = {
     ["borderPosition" /* BORDER_POSITION */]: "bottom",
     ["backgroundColor" /* BACKGROUND_COLOR */]: "#ff0000"
   },
-  ["MULTI_LINE" /* MULTI_LINE */]: {
+  [multiLine]: {
     ["isWholeLine" /* IS_WHOLE_LINE */]: true,
     ["borderWidth" /* BORDER_WIDTH */]: "2px",
     ["borderStyle" /* BORDER_STYLE */]: "dotted",
@@ -408,7 +459,7 @@ var NO_CONFIGURATION_DEOCORATION_DEFAULT = {
     ["borderPosition" /* BORDER_POSITION */]: "bottom",
     ["backgroundColor" /* BACKGROUND_COLOR */]: "#ff0000"
   },
-  ["MULTI_CURSOR" /* MULTI_CURSOR */]: {
+  [multiCursor]: {
     ["isWholeLine" /* IS_WHOLE_LINE */]: false,
     ["borderWidth" /* BORDER_WIDTH */]: "2px",
     ["borderStyle" /* BORDER_STYLE */]: "dotted",
@@ -416,6 +467,12 @@ var NO_CONFIGURATION_DEOCORATION_DEFAULT = {
     ["borderPosition" /* BORDER_POSITION */]: "bottom",
     ["backgroundColor" /* BACKGROUND_COLOR */]: "#ff0000"
   }
+  // [Symbol.iterator]: function* () {
+  //     yield NO_CONFIGURATION_DEOCORATION_DEFAULT[$.cursorOnly];
+  //     yield NO_CONFIGURATION_DEOCORATION_DEFAULT[$.singleLine];
+  //     yield NO_CONFIGURATION_DEOCORATION_DEFAULT[$.multiLine];
+  //     yield NO_CONFIGURATION_DEOCORATION_DEFAULT[$.multiCursor];
+  // }
 };
 
 // src/util/error.ts
@@ -945,15 +1002,21 @@ var multiCursorHighlightRange = ({ editor: editor2, textEditorHighlight }) => {
   ];
 };
 var unsetRangeOfHighlightStyle = (editor2) => {
-  Object.values(highlightStyleList).forEach((highlight) => {
-    resetDecorationRange(editor2, highlight);
+  HIGHLIGHT_STYLE_SYMBOL_LIST.forEach((highlight) => {
+    resetDecorationRange(editor2, highlightStyleList[highlight]);
   });
 };
 var coordinatorSplit = {
-  ["CURSOR_ONLY" /* CURSOR_ONLY */]: (context) => cursorOnlyHighlightRange(context),
-  ["SINGLE_LINE" /* SINGLE_LINE */]: (context) => singelLineHighlightRange(context),
-  ["MULTI_LINE" /* MULTI_LINE */]: (context) => multiLineHighlightRange(context),
-  ["MULTI_CURSOR" /* MULTI_CURSOR */]: (context) => multiCursorHighlightRange(context)
+  [cursorOnly]: (context) => cursorOnlyHighlightRange(context),
+  [singleLine]: (context) => singelLineHighlightRange(context),
+  [multiLine]: (context) => multiLineHighlightRange(context),
+  [multiCursor]: (context) => multiCursorHighlightRange(context)
+  // [Symbol.iterator]: function* () {
+  //     yield coordinatorSplit[$.cursorOnly];
+  //     yield coordinatorSplit[$.singleLine];
+  //     yield coordinatorSplit[$.multiLine];
+  //     yield coordinatorSplit[$.multiCursor];
+  // }
 };
 var hightlightCoordinator = ({ editor: editor2, renderGroup, decorationState: decorationState2 }) => {
   const textEditorHighlight = highlightStyleList[renderGroup.type.KEY];
@@ -1044,7 +1107,7 @@ var updateDiagnostic = (activeEditorUri = void 0) => {
 
 // src/editor/decoration/decoration.ts
 var decorationState = { ...DECORATION_STATE };
-var applyDecoration2 = (editor2, decoraiton, range) => {
+var applyDecoration = (editor2, decoraiton, range) => {
   editor2.setDecorations(decoraiton, range);
 };
 var createEditorDecorationType = (styleAppliedConfig) => {
@@ -1054,11 +1117,11 @@ var disposeDecoration = (highlightStyleList2 = []) => highlightStyleList2.forEac
   decorationType.dispose();
 });
 var resetDecorationRange = (editor2, decorationType) => {
-  decorationType?.forEach((decoration) => applyDecoration2(editor2, decoration, []));
+  decorationType?.forEach((decoration) => applyDecoration(editor2, decoration, []));
 };
 var unsetAndDisposeDecoration = (editor2, decorationType) => {
   decorationType?.forEach((decoration) => {
-    applyDecoration2(editor2, decoration, []);
+    applyDecoration(editor2, decoration, []);
     decoration.dispose();
   });
 };
@@ -1066,7 +1129,7 @@ var resetAllDecoration = (decorationState2) => {
   vscode8.window.visibleTextEditors.forEach((editor2) => {
     if (decorationState2.appliedHighlight.ofDecorationType !== void 0) {
       decorationState2.appliedHighlight.ofDecorationType.forEach((decoration) => {
-        applyDecoration2(editor2, decoration, []);
+        applyDecoration(editor2, decoration, []);
       });
     }
   });
@@ -1099,7 +1162,7 @@ var renderStatusInfo = ({ editor: editor2, renderGroup, decorationState: decorat
       const status = statusInfo[length];
       statusInfoList.push(...status.contentText.map((decorationOption) => {
         const decoration = createEditorDecorationType(decorationOption);
-        applyDecoration2(editor2, decoration, [status.range]);
+        applyDecoration(editor2, decoration, [status.range]);
         return decoration;
       }));
     }
@@ -1118,7 +1181,7 @@ var renderDecorationOnEditor = (context) => {
       return;
     }
     highlight.forEach(({ decoration, range }) => {
-      applyDecoration2(editor2, decoration, range);
+      applyDecoration(editor2, decoration, range);
     });
     renderStatusInfo(context);
   }
@@ -1168,7 +1231,7 @@ var createDecorationType = (config, decorationKey, decorationTypeSplit2) => {
       styledConfig.push(conf);
       return styledConfig;
     }, []).reduce((textEditorDecoration, styleAppliedConfig, idx) => {
-      if (decorationKey === "MULTI_LINE" /* MULTI_LINE */ && idx !== 2) {
+      if (decorationKey === multiLine && idx !== 2) {
         delete styleAppliedConfig.backgroundColor;
       }
       textEditorDecoration.push(createEditorDecorationType(combineBorderStyle(styleAppliedConfig)));
@@ -1260,7 +1323,7 @@ var updateHighlightStyleConfiguration = (configReady, selectionType) => {
 };
 var generateHighlightDecoration = (configReady) => {
   updateGeneralConfig(configReady);
-  for (const key of Object.keys(HIGHLIGHT_STYLE_LIST)) {
+  for (const key of HIGHLIGHT_STYLE_SYMBOL_LIST) {
     const selectionType = key;
     updateHighlightStyleConfiguration(configReady, selectionType);
   }
@@ -1487,10 +1550,10 @@ var selectionTextInfoSplit = (editor2) => {
     indent: indentInfo
   };
   return {
-    ["CURSOR_ONLY" /* CURSOR_ONLY */]: () => cursorOnlySelection(context),
-    ["SINGLE_LINE" /* SINGLE_LINE */]: () => singleLineSelection(context),
-    ["MULTI_LINE" /* MULTI_LINE */]: () => multilineSelection(context),
-    ["MULTI_CURSOR" /* MULTI_CURSOR */]: () => multiCursorSelection(context)
+    [cursorOnly]: () => cursorOnlySelection(context),
+    [singleLine]: () => singleLineSelection(context),
+    [multiLine]: () => multilineSelection(context),
+    [multiCursor]: () => multiCursorSelection(context)
   };
 };
 var selectionInfo = (editor2, type) => {
@@ -2002,12 +2065,18 @@ var prepareRenderGroup = (config) => {
   const diagnostic = config.generalConfigInfo.diagnosticTextEnabled ? diagnosticInfo : void 0;
   const bindDiagnostic = bindDiagnosticContentTextState();
   const diagonosticAvaliabity = {
-    ["CURSOR_ONLY" /* CURSOR_ONLY */]: bindDiagnostic.configOf.displayWhenCursorOnly,
-    ["SINGLE_LINE" /* SINGLE_LINE */]: bindDiagnostic.configOf.displayWhenSingleLine,
-    ["MULTI_LINE" /* MULTI_LINE */]: bindDiagnostic.configOf.displayWhenMultiLine,
-    ["MULTI_CURSOR" /* MULTI_CURSOR */]: bindDiagnostic.configOf.displayWhenMultiCursor
+    [cursorOnly]: bindDiagnostic.configOf.displayWhenCursorOnly,
+    [singleLine]: bindDiagnostic.configOf.displayWhenSingleLine,
+    [multiLine]: bindDiagnostic.configOf.displayWhenMultiLine,
+    [multiCursor]: bindDiagnostic.configOf.displayWhenMultiCursor
+    // [Symbol.iterator]: function* () {
+    //     yield diagonosticAvaliabity[$.cursorOnly];
+    //     yield diagonosticAvaliabity[$.singleLine];
+    //     yield diagonosticAvaliabity[$.multiLine];
+    //     yield diagonosticAvaliabity[$.multiCursor];
+    // }
   };
-  Object.keys(renderGroupSet).forEach((selectionKey) => {
+  HIGHLIGHT_STYLE_SYMBOL_LIST.forEach((selectionKey) => {
     if (SELECTION_KIND[selectionKey]) {
       renderGroupSet[selectionKey] = {
         type: SELECTION_KIND[selectionKey],
@@ -2016,21 +2085,21 @@ var prepareRenderGroup = (config) => {
       };
     }
   });
-  return renderGroupSet["CURSOR_ONLY" /* CURSOR_ONLY */];
+  return renderGroupSet[cursorOnly];
 };
 var renderGroupIs = (editor2) => {
   if (editor2.selections.length === 1) {
     if (editor2.selections[0].isEmpty) {
-      return renderGroupSet["CURSOR_ONLY" /* CURSOR_ONLY */];
+      return renderGroupSet[cursorOnly];
     }
     if (editor2.selections[0].isSingleLine) {
-      return renderGroupSet["SINGLE_LINE" /* SINGLE_LINE */];
+      return renderGroupSet[singleLine];
     } else {
-      return renderGroupSet["MULTI_LINE" /* MULTI_LINE */];
+      return renderGroupSet[multiLine];
     }
   }
   if (editor2.selections.length > 1) {
-    return renderGroupSet["MULTI_CURSOR" /* MULTI_CURSOR */];
+    return renderGroupSet[multiCursor];
     ;
   }
 };

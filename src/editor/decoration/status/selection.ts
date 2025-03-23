@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as Type from '../../../type/type';
+import * as $ from '../../../constant/symbol';
 import Range from '../../range';
 import { DECORATION_STYLE_KEY, SELECTION_CONTENT_TEXT_CONFIG_KEY } from '../../../constant/enum';
 import { INDENT_INFO, SELECTION_CONTENT_TEXT } from '../../../constant/object';
@@ -197,10 +198,10 @@ const selectionTextInfoSplit = (editor: vscode.TextEditor): Type.SelectionTextIn
     };
 
     return {
-        [DECORATION_STYLE_KEY.CURSOR_ONLY]: () => cursorOnlySelection(context),
-        [DECORATION_STYLE_KEY.SINGLE_LINE]: () => singleLineSelection(context),
-        [DECORATION_STYLE_KEY.MULTI_LINE]: () => multilineSelection(context),
-        [DECORATION_STYLE_KEY.MULTI_CURSOR]: () => multiCursorSelection(context),
+        [$.cursorOnly]: () => cursorOnlySelection(context),
+        [$.singleLine]: () => singleLineSelection(context),
+        [$.multiLine]: () => multilineSelection(context),
+        [$.multiCursor]: () => multiCursorSelection(context),
     };
 };
 
