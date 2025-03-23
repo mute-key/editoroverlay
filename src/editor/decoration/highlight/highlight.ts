@@ -96,7 +96,6 @@ const multiCursorHighlightRange: Type.SelectionTypeToDecorationFunc = ({ editor,
 const unsetRangeOfHighlightStyle = (editor: vscode.TextEditor) => {
     Object.values(highlightStyleList).forEach(highlight => {
         resetDecorationRange(editor, highlight);
-
     });
     // for (const [key, highlight] of ) {
     // if (key === SELECTION_TYPE.MULTI_LINE) {

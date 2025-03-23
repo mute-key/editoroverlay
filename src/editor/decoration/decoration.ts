@@ -95,25 +95,20 @@ const renderStatusInfo: Type.SetDecorationOnEditorFunc = ({ editor, renderGroup,
 
     for (const [statusGroup, statusInfo] of Object.entries(decorationState.statusInfo)) {
 
-        unsetAndDisposeDecoration(editor, decorationState[statusGroup]);
-
-        // if (statusInfo) {
-
-        decorationState[statusGroup] = [];
-        
-        let length: number = statusInfo.length;
+        const statusInfoList: vscode.TextEditorDecorationType[] = [];        
+        let length: number = statusInfo?.length | 0;
 
         while (length--) {
             const status = statusInfo[length];
-            decorationState[statusGroup].push(...status.contentText.map(decorationOption => {
+            statusInfoList.push(...status.contentText.map(decorationOption => {
                 const decoration = createEditorDecorationType(decorationOption as vscode.DecorationRenderOptions);
                 applyDecoration(editor, decoration, [status.range]);
                 return decoration;
             }));
         }
-        // }
 
-        // decorationState[key] = statusInfoList;
+        unsetAndDisposeDecoration(editor, decorationState[statusGroup]);
+        decorationState[statusGroup] = statusInfoList;
     }
 };
 

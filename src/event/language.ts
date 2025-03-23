@@ -9,7 +9,7 @@ const diagnosticChanged: Type.DecorationEventFunc = (context): vscode.Disposable
         if (editor && event) {
             context.editor = editor;
             await updateDiagnostic(editor.document.uri);
-            await renderStatusInfo(context as Type.DecorationContext);
+            // await renderStatusInfo(context as Type.DecorationContext);
         }
     });
 };

@@ -47,7 +47,7 @@ type ContentTextPositionFunc = {
 }
 
 type SelectionTextInfoSplitType = {
-    [k in keyof typeof DECORATION_STYLE_KEY]: () => StatusTextInfoType[]
+    [k in keyof typeof DECORATION_STYLE_KEY as symbol]: () => StatusTextInfoType[]
 };
 
 type CursorOnlyStatusTextRegExp = {

@@ -1093,17 +1093,18 @@ var renderStatusInfo = ({ editor: editor2, renderGroup, decorationState: decorat
     decorationState2.statusInfo.diagnosticText = renderGroup.diagnostic(editor2, updateDiagnostic());
   }
   for (const [statusGroup, statusInfo] of Object.entries(decorationState2.statusInfo)) {
-    unsetAndDisposeDecoration(editor2, decorationState2[statusGroup]);
-    decorationState2[statusGroup] = [];
-    let length = statusInfo.length;
+    const statusInfoList = [];
+    let length = statusInfo?.length | 0;
     while (length--) {
       const status = statusInfo[length];
-      decorationState2[statusGroup].push(...status.contentText.map((decorationOption) => {
+      statusInfoList.push(...status.contentText.map((decorationOption) => {
         const decoration = createEditorDecorationType(decorationOption);
         applyDecoration2(editor2, decoration, [status.range]);
         return decoration;
       }));
     }
+    unsetAndDisposeDecoration(editor2, decorationState2[statusGroup]);
+    decorationState2[statusGroup] = statusInfoList;
   }
 };
 var renderDecorationOnEditor = (context) => {
@@ -1149,6 +1150,12 @@ var getConfigSet = (configReady, decorationKey) => {
     return config;
   }, {});
 };
+var combineBorderStyle = (style) => {
+  style.border = `${style.borderStyle} ${style.borderColor};`;
+  delete style.borderStyle;
+  delete style.borderColor;
+  return style;
+};
 var createDecorationType = (config, decorationKey, decorationTypeSplit2) => {
   try {
     const split = decorationTypeSplit2(config, decorationKey);
@@ -1164,7 +1171,7 @@ var createDecorationType = (config, decorationKey, decorationTypeSplit2) => {
       if (decorationKey === "MULTI_LINE" /* MULTI_LINE */ && idx !== 2) {
         delete styleAppliedConfig.backgroundColor;
       }
-      textEditorDecoration.push(createEditorDecorationType(styleAppliedConfig));
+      textEditorDecoration.push(createEditorDecorationType(combineBorderStyle(styleAppliedConfig)));
       return textEditorDecoration;
     }, []);
     if (decorationTypeStack.length === 0) {
@@ -2144,7 +2151,6 @@ var diagnosticChanged = (context) => {
     if (editor2 && event) {
       context.editor = editor2;
       await updateDiagnostic(editor2.document.uri);
-      await renderStatusInfo(context);
     }
   });
 };

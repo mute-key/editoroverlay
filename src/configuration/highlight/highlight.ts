@@ -37,17 +37,15 @@ const getConfigSet = (configReady: Type.ConfigInfoReadyType, decorationKey: Type
     }, {} as Type.DecorationStyleConfigType);
 };
 
-/**
- * @param config
- * @param decorationKey
- * @returns
- * 
- */
-const createDecorationType: Type.CreateDecorationFunctionType = (
-    config: Type.DecorationStyleConfigType,
-    decorationKey: Type.DecorationStyleKeyOnlyType,
-    decorationTypeSplit: Type.SelectionConfigFunctionType
-) => {
+const combineBorderStyle = (style: vscode.DecorationRenderOptions) => {
+    style.border = `${style.borderStyle} ${style.borderColor};`;
+    delete style.borderStyle;
+    delete style.borderColor;
+    return style;
+
+};
+
+const createDecorationType: Type.CreateDecorationFunctionType = (config: Type.DecorationStyleConfigType, decorationKey: Type.DecorationStyleKeyOnlyType, decorationTypeSplit: Type.SelectionConfigFunctionType) => {
     try {
         const split = decorationTypeSplit(config, decorationKey);
         if (!split || split.length === 0) {
@@ -63,7 +61,7 @@ const createDecorationType: Type.CreateDecorationFunctionType = (
             if (decorationKey === SELECTION_TYPE.MULTI_LINE && idx !== 2) {
                 delete styleAppliedConfig.backgroundColor;
             }
-            textEditorDecoration.push(createEditorDecorationType(styleAppliedConfig));
+            textEditorDecoration.push(createEditorDecorationType(combineBorderStyle(styleAppliedConfig)));
             return textEditorDecoration;
         }, [] as vscode.TextEditorDecorationType[]);
 
@@ -185,7 +183,7 @@ const generateHighlightDecoration = (configReady: Type.ConfigInfoReadyType): boo
 
 
 export {
-    updateGeneralConfig, 
+    updateGeneralConfig,
     updateHighlightStyleConfiguration,
     generateHighlightDecoration
 };
