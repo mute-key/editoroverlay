@@ -129,12 +129,6 @@ var RENDER_GROUP_SET = {
   [singleLine]: RENDER_GROUP_SET_PROPERTY,
   [multiLine]: RENDER_GROUP_SET_PROPERTY,
   [multiCursor]: RENDER_GROUP_SET_PROPERTY
-  // [Symbol.iterator]: function* () {
-  //     yield RENDER_GROUP_SET[$.cursorOnly];
-  //     yield RENDER_GROUP_SET[$.singleLine];
-  //     yield RENDER_GROUP_SET[$.multiLine];
-  //     yield RENDER_GROUP_SET[$.multiCursor];
-  // }
 };
 var DECORATION_STATE = {
   appliedHighlight: {
@@ -159,36 +153,18 @@ var HIGHLIGHT_STYLE_LIST = {
   [singleLine]: void 0,
   [multiLine]: void 0,
   [multiCursor]: void 0
-  // [Symbol.iterator]: function* () {
-  //     yield HIGHLIGHT_STYLE_LIST[$.cursorOnly];
-  //     yield HIGHLIGHT_STYLE_LIST[$.singleLine];
-  //     yield HIGHLIGHT_STYLE_LIST[$.multiLine];
-  //     yield HIGHLIGHT_STYLE_LIST[$.multiCursor];
-  // }
 };
 var HIGHLIGHT_BORDER_POSITION_INFO = {
   [cursorOnly]: void 0,
   [singleLine]: void 0,
   [multiLine]: void 0,
   [multiCursor]: void 0
-  // [Symbol.iterator]: function* () {
-  //     yield HIGHLIGHT_BORDER_POSITION_INFO[$.cursorOnly];
-  //     yield HIGHLIGHT_BORDER_POSITION_INFO[$.singleLine];
-  //     yield HIGHLIGHT_BORDER_POSITION_INFO[$.multiLine];
-  //     yield HIGHLIGHT_BORDER_POSITION_INFO[$.multiCursor];
-  // }
 };
 var DECORATION_STYLE_PREFIX = {
   [cursorOnly]: "cursorOnly",
   [singleLine]: "singleLine",
   [multiLine]: "multiLine",
   [multiCursor]: "multiCursor"
-  // [Symbol.iterator]: function* () {
-  //     yield DECORATION_STYLE_PREFIX[$.cursorOnly];
-  //     yield DECORATION_STYLE_PREFIX[$.singleLine];
-  //     yield DECORATION_STYLE_PREFIX[$.multiLine];
-  //     yield DECORATION_STYLE_PREFIX[$.multiCursor];
-  // }
 };
 var DECORATION_OPTION_CONFIG = {
   isWholeLine: void 0,
@@ -387,12 +363,6 @@ var BORDER_WIDTH_DEFINITION = {
   [singleLine]: SINGLE_BORDER_SELECTION,
   [multiLine]: MULTILINE_BORDER_SELECTION,
   [multiCursor]: SINGLE_BORDER_SELECTION
-  // [Symbol.iterator]: function* () {
-  //     yield BORDER_WIDTH_DEFINITION[$.cursorOnly];
-  //     yield BORDER_WIDTH_DEFINITION[$.singleLine];
-  //     yield BORDER_WIDTH_DEFINITION[$.multiLine];
-  //     yield BORDER_WIDTH_DEFINITION[$.multiCursor];
-  // }
 };
 var SELECTION_KIND = {
   [reset]: {
@@ -415,12 +385,6 @@ var SELECTION_KIND = {
     KEY: multiCursor,
     MASK: 8 /* MULTI_CURSOR */
   }
-  // [Symbol.iterator]: function* () {
-  //     yield SELECTION_KIND[$.cursorOnly];
-  //     yield SELECTION_KIND[$.singleLine];
-  //     yield SELECTION_KIND[$.multiLine];
-  //     yield SELECTION_KIND[$.multiCursor];
-  // }
 };
 var NO_CONFIGURATION_GENERAL_DEFAULT = {
   ["borderOpacity" /* OPACITY */]: 1,
@@ -467,12 +431,6 @@ var NO_CONFIGURATION_DEOCORATION_DEFAULT = {
     ["borderPosition" /* BORDER_POSITION */]: "bottom",
     ["backgroundColor" /* BACKGROUND_COLOR */]: "#ff0000"
   }
-  // [Symbol.iterator]: function* () {
-  //     yield NO_CONFIGURATION_DEOCORATION_DEFAULT[$.cursorOnly];
-  //     yield NO_CONFIGURATION_DEOCORATION_DEFAULT[$.singleLine];
-  //     yield NO_CONFIGURATION_DEOCORATION_DEFAULT[$.multiLine];
-  //     yield NO_CONFIGURATION_DEOCORATION_DEFAULT[$.multiCursor];
-  // }
 };
 
 // src/util/error.ts
@@ -1011,12 +969,6 @@ var coordinatorSplit = {
   [singleLine]: (context) => singelLineHighlightRange(context),
   [multiLine]: (context) => multiLineHighlightRange(context),
   [multiCursor]: (context) => multiCursorHighlightRange(context)
-  // [Symbol.iterator]: function* () {
-  //     yield coordinatorSplit[$.cursorOnly];
-  //     yield coordinatorSplit[$.singleLine];
-  //     yield coordinatorSplit[$.multiLine];
-  //     yield coordinatorSplit[$.multiCursor];
-  // }
 };
 var hightlightCoordinator = ({ editor: editor2, renderGroup, decorationState: decorationState2 }) => {
   const textEditorHighlight = highlightStyleList[renderGroup.type.KEY];
@@ -2069,12 +2021,6 @@ var prepareRenderGroup = (config) => {
     [singleLine]: bindDiagnostic.configOf.displayWhenSingleLine,
     [multiLine]: bindDiagnostic.configOf.displayWhenMultiLine,
     [multiCursor]: bindDiagnostic.configOf.displayWhenMultiCursor
-    // [Symbol.iterator]: function* () {
-    //     yield diagonosticAvaliabity[$.cursorOnly];
-    //     yield diagonosticAvaliabity[$.singleLine];
-    //     yield diagonosticAvaliabity[$.multiLine];
-    //     yield diagonosticAvaliabity[$.multiCursor];
-    // }
   };
   HIGHLIGHT_STYLE_SYMBOL_LIST.forEach((selectionKey) => {
     if (SELECTION_KIND[selectionKey]) {

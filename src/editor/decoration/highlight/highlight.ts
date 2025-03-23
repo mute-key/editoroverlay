@@ -114,12 +114,7 @@ const coordinatorSplit: Type.CoordinatorSplitType = {
     [$.singleLine]: (context: Type.SelectionHighlightKindContext) => singelLineHighlightRange(context),
     [$.multiLine]: (context: Type.SelectionHighlightKindContext) => multiLineHighlightRange(context),
     [$.multiCursor]: (context: Type.SelectionHighlightKindContext) => multiCursorHighlightRange(context),
-    // [Symbol.iterator]: function* () {
-    //     yield coordinatorSplit[$.cursorOnly];
-    //     yield coordinatorSplit[$.singleLine];
-    //     yield coordinatorSplit[$.multiLine];
-    //     yield coordinatorSplit[$.multiCursor];
-    // }
+
 };
 
 /**

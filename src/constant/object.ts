@@ -106,12 +106,6 @@ export const RENDER_GROUP_SET = {
     [$.singleLine]: RENDER_GROUP_SET_PROPERTY,
     [$.multiLine]: RENDER_GROUP_SET_PROPERTY,
     [$.multiCursor]: RENDER_GROUP_SET_PROPERTY,
-    // [Symbol.iterator]: function* () {
-    //     yield RENDER_GROUP_SET[$.cursorOnly];
-    //     yield RENDER_GROUP_SET[$.singleLine];
-    //     yield RENDER_GROUP_SET[$.multiLine];
-    //     yield RENDER_GROUP_SET[$.multiCursor];
-    // }
 };
 
 /**
@@ -155,12 +149,6 @@ export const HIGHLIGHT_STYLE_LIST = {
     [$.singleLine]: undefined,
     [$.multiLine]: undefined,
     [$.multiCursor]: undefined,
-    // [Symbol.iterator]: function* () {
-    //     yield HIGHLIGHT_STYLE_LIST[$.cursorOnly];
-    //     yield HIGHLIGHT_STYLE_LIST[$.singleLine];
-    //     yield HIGHLIGHT_STYLE_LIST[$.multiLine];
-    //     yield HIGHLIGHT_STYLE_LIST[$.multiCursor];
-    // }
 } as const;
 
 export const HIGHLIGHT_BORDER_POSITION_INFO = {
@@ -168,12 +156,6 @@ export const HIGHLIGHT_BORDER_POSITION_INFO = {
     [$.singleLine]: undefined,
     [$.multiLine]: undefined,
     [$.multiCursor]: undefined,
-    // [Symbol.iterator]: function* () {
-    //     yield HIGHLIGHT_BORDER_POSITION_INFO[$.cursorOnly];
-    //     yield HIGHLIGHT_BORDER_POSITION_INFO[$.singleLine];
-    //     yield HIGHLIGHT_BORDER_POSITION_INFO[$.multiLine];
-    //     yield HIGHLIGHT_BORDER_POSITION_INFO[$.multiCursor];
-    // }
 } as const;
 
 /**
@@ -186,12 +168,6 @@ export const DECORATION_STYLE_PREFIX = {
     [$.singleLine]: 'singleLine',
     [$.multiLine]: 'multiLine',
     [$.multiCursor]: 'multiCursor',
-    // [Symbol.iterator]: function* () {
-    //     yield DECORATION_STYLE_PREFIX[$.cursorOnly];
-    //     yield DECORATION_STYLE_PREFIX[$.singleLine];
-    //     yield DECORATION_STYLE_PREFIX[$.multiLine];
-    //     yield DECORATION_STYLE_PREFIX[$.multiCursor];
-    // }
 } as const;
 
 export const DECORATION_OPTION_CONFIG = {
@@ -421,12 +397,6 @@ export const BORDER_WIDTH_DEFINITION = {
     [$.singleLine]: SINGLE_BORDER_SELECTION,
     [$.multiLine]: MULTILINE_BORDER_SELECTION,
     [$.multiCursor]: SINGLE_BORDER_SELECTION,
-    // [Symbol.iterator]: function* () {
-    //     yield BORDER_WIDTH_DEFINITION[$.cursorOnly];
-    //     yield BORDER_WIDTH_DEFINITION[$.singleLine];
-    //     yield BORDER_WIDTH_DEFINITION[$.multiLine];
-    //     yield BORDER_WIDTH_DEFINITION[$.multiCursor];
-    // }
 } as const;
 
 export const SELECTION_KIND: Type.DecorationInfoType = {
@@ -450,12 +420,6 @@ export const SELECTION_KIND: Type.DecorationInfoType = {
         KEY: $.multiCursor,
         MASK: DECORATION_TYPE_MASK.MULTI_CURSOR
     } as const,
-    // [Symbol.iterator]: function* () {
-    //     yield SELECTION_KIND[$.cursorOnly];
-    //     yield SELECTION_KIND[$.singleLine];
-    //     yield SELECTION_KIND[$.multiLine];
-    //     yield SELECTION_KIND[$.multiCursor];
-    // }
 } as const;
 
 /**
@@ -509,10 +473,4 @@ export const NO_CONFIGURATION_DEOCORATION_DEFAULT: Type.NoConfigurationDecoratio
         [DECORATION_STYLE_CONFIG_KEY.BORDER_POSITION]: 'bottom',
         [DECORATION_STYLE_CONFIG_KEY.BACKGROUND_COLOR]: '#ff0000',
     } as const,
-    // [Symbol.iterator]: function* () {
-    //     yield NO_CONFIGURATION_DEOCORATION_DEFAULT[$.cursorOnly];
-    //     yield NO_CONFIGURATION_DEOCORATION_DEFAULT[$.singleLine];
-    //     yield NO_CONFIGURATION_DEOCORATION_DEFAULT[$.multiLine];
-    //     yield NO_CONFIGURATION_DEOCORATION_DEFAULT[$.multiCursor];
-    // }
 } as const;

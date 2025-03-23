@@ -28,12 +28,6 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): Type.RenderGroupS
         [$.singleLine]: bindDiagnostic.configOf.displayWhenSingleLine,
         [$.multiLine]: bindDiagnostic.configOf.displayWhenMultiLine,
         [$.multiCursor]: bindDiagnostic.configOf.displayWhenMultiCursor,
-        // [Symbol.iterator]: function* () {
-        //     yield diagonosticAvaliabity[$.cursorOnly];
-        //     yield diagonosticAvaliabity[$.singleLine];
-        //     yield diagonosticAvaliabity[$.multiLine];
-        //     yield diagonosticAvaliabity[$.multiCursor];
-        // }
     };
 
     HIGHLIGHT_STYLE_SYMBOL_LIST.forEach(selectionKey => {

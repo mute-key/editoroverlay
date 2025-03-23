@@ -97,6 +97,7 @@ const renderStatusInfo: Type.SetDecorationOnEditorFunc = ({ editor, renderGroup,
         }
 
         unsetAndDisposeDecoration(editor, decorationState[statusGroup]);
+        
         decorationState[statusGroup] = statusInfoList;
     }
 };
