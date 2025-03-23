@@ -4,7 +4,6 @@ import Regex from '../util/regex.collection';
 import { SELECTION_TYPE } from '../constant/enum';
 import { RENDER_GROUP_SET, SELECTION_KIND } from '../constant/object';
 import { bindStatusContentTextState } from './decoration/status/selection';
-import { bindEditorDecoration } from './decoration/decoration';
 import { selectionInfo } from './decoration/status/selection';
 import { bindDiagnosticContentTextState, diagnosticInfo } from './decoration/status/diagnostic';
 
@@ -61,35 +60,8 @@ const renderGroupIs = (editor: vscode.TextEditor): Type.RenderGroupSetProperty |
     }
 };
 
-const eventContext = (config: Type.ConfigInfoReadyType, editor: vscode.TextEditor) => {
-
-};
-
-
-
-const editorContext = (config: Type.ConfigInfoReadyType, editor: vscode.TextEditor) => {
-
-    const bindEditor = bindEditorDecoration();
-    const bindDiagnostic = bindDiagnosticContentTextState();
-
-    // bindDiagnostic.configOf.
-
-
-
-    return {
-        editor: editor,
-        selectionKind: SELECTION_KIND.CURSOR_ONLY,
-        statusKind: {
-            selection: config.generalConfigInfo.selectionTextEnabled ? selectionInfo : undefined,
-            diagnostic: config.generalConfigInfo.diagnosticTextEnabled ? diagnosticInfo : undefined
-        }
-
-    };
-};
-
 export {
     updateIndentOption,
-    editorContext,
     renderGroupIs,
     prepareRenderGroup
 

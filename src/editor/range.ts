@@ -43,4 +43,4 @@ const Range = {
     createStartEndRangeOfSelection: createStartEndRangeOfSelection,
 };
 
-export default Range ;
+export default Range;

@@ -61,8 +61,8 @@ const maxSeverity = (state: Type.DiagnosticStateType): number => {
         return DIAGNOSTIC_BIOME.OK;
     }
 
-    const editorSeverity = state.editor.warning.total <= state.editor.error.total ? DIAGNOSTIC_BIOME.ERR : DIAGNOSTIC_BIOME.WARN;
-    const workspaceSeverity = state.workspace.warning.total <= state.workspace.error.total ? DIAGNOSTIC_BIOME.ERR : DIAGNOSTIC_BIOME.WARN;
+    const editorSeverity = (state.editor.warning.total <= state.editor.error.total) && ifEditorProblem ? DIAGNOSTIC_BIOME.ERR : DIAGNOSTIC_BIOME.WARN;
+    const workspaceSeverity = (state.workspace.warning.total <= state.workspace.error.total) && ifWorkspaceProblem ? DIAGNOSTIC_BIOME.ERR : DIAGNOSTIC_BIOME.WARN;
 
     return Math.max(editorSeverity, workspaceSeverity);
 };

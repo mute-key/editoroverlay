@@ -100,6 +100,7 @@ type BorderPositionParserType = {
 type BorderPositionInfoType = Record<DecorationStyleKeyOnlyType, BorderPositionParserType | undefined>;
 
 type SelectionHighlightKindContext = {
+    decorationState: DecorationStateType
     editor: vscode.TextEditor,
     borderConfig: BorderPositionParserType
     textEditorHighlight: vscode.TextEditorDecorationType[]

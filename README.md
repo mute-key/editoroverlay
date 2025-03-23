@@ -1,3 +1,14 @@
+## MUST READ
+
+If you install this extension and drag mouse updown rapidly, you will see the spikes in CPU usage.
+I advice you to check the increment of cpu usage before installing it 
+
+
+
+
+
+
+
 # Introduction
 
 cursor/selection range highlight extension.

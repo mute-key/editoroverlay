@@ -7,12 +7,11 @@ import { updateSelectionTextConfig } from './status/selection';
 import { updateDiagnosticTextConfig } from './status/diagonostic';
 import { writeEditorConfiguration } from './shared/editor';
 import { bindEditorDecoration } from '../editor/decoration/decoration';
-import { update } from './shared/configuration';
 
 const configInfo = { ...CONFIG_INFO } as Type.ConfigInfoType;
 
-const loadConfiguration = (context: vscode.ExtensionContext): Type.InitialisedConfigType | undefined => {
-    const name = context.extension.packageJSON.name;
+const loadConfiguration = (context?: vscode.ExtensionContext): Type.InitialisedConfigType | undefined => {
+    const name = context?.extension.packageJSON.name;
 
     if (!name) {
         return;
@@ -53,7 +52,6 @@ const loadConfiguration = (context: vscode.ExtensionContext): Type.InitialisedCo
     return;
 };
 
-export {
-    loadConfiguration,
-    update
+export { 
+    loadConfiguration 
 };

@@ -83,33 +83,35 @@ const isDecorationChanged = (editor: vscode.TextEditor, decorationState: Type.De
 };
 
 
-const renderStatusInfo: Type.SetDecorationOnEditorFunc = async ({ editor, renderGroup, decorationState }) => {
+const renderStatusInfo: Type.SetDecorationOnEditorFunc = ({ editor, renderGroup, decorationState }) => {
 
     if (renderGroup.selection) {
-        decorationState.statusInfo.selectionText = await renderGroup.selection(editor, renderGroup.type);
+        decorationState.statusInfo.selectionText = renderGroup.selection(editor, renderGroup.type);
     }
 
     if (renderGroup.diagnostic) {
-        decorationState.statusInfo.diagnosticText = await renderGroup.diagnostic(editor, updateDiagnostic());
+        decorationState.statusInfo.diagnosticText = renderGroup.diagnostic(editor, updateDiagnostic());
     }
 
     for (const [statusGroup, statusInfo] of Object.entries(decorationState.statusInfo)) {
 
         unsetAndDisposeDecoration(editor, decorationState[statusGroup]);
-        if (statusInfo) {
 
-            decorationState[statusGroup] = [];
-            let length: number = statusInfo.length;
-    
-            while (length--) {
-                const status = statusInfo[length];
-                decorationState[statusGroup].push(...status.contentText.map(decorationOption => {
-                    const decoration = createEditorDecorationType(decorationOption as vscode.DecorationRenderOptions);
-                    applyDecoration(editor, decoration, [status.range]);
-                    return decoration;
-                }));
-            }
+        // if (statusInfo) {
+
+        decorationState[statusGroup] = [];
+        
+        let length: number = statusInfo.length;
+
+        while (length--) {
+            const status = statusInfo[length];
+            decorationState[statusGroup].push(...status.contentText.map(decorationOption => {
+                const decoration = createEditorDecorationType(decorationOption as vscode.DecorationRenderOptions);
+                applyDecoration(editor, decoration, [status.range]);
+                return decoration;
+            }));
         }
+        // }
 
         // decorationState[key] = statusInfoList;
     }

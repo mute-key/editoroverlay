@@ -3,10 +3,13 @@ import * as vscode from 'vscode';
 class ErrorDecription {
     #configurationSection: string;
     #errorMessage: string;
+    // #betterConfigurationSectionName: string;
 
     constructor(configurationSection: string, errorMessage: string) {
         this.#configurationSection = configurationSection;
         this.#errorMessage = errorMessage;
+        // this.#betterSectionName(configurationSection);
+        console.log(this.#configurationSection);
     }
 
     get = () => {
@@ -19,39 +22,56 @@ class ErrorDecription {
 
 class ErrorHelper {
     protected static errorList: ErrorDecription[] = [];
+    protected static packageName: string;
 
-    protected static configurationSectionList = ((): string[] => {
+    protected static configurationSectionList = (): string[] => {
+        console.log('configurationSectionList', this.errorList);
         return this.errorList.map(error => error.get().section);
-    })();
+    };
 
-    protected static configurationMessageList = ((): string[] => {
-        return this.errorList.map(error => error.get().message);
-    })();
+    // protected static configurationMessageList = (): string[] => {
+    //     return this.errorList.map(error => error.get().message);
+    // };
 
-    protected static resetConfiguration = () => {
-        // vscode.workspace.getConfiguration()
-        // update to undefined with every config has been set by the user.
+    protected static ifExtensionName = (section: string): string => {
+        console.log('ifExtensionName', this.packageName)
+        if (section.indexOf(this.packageName) && section.split('.').length > 2) {
+            console.log(section.replace(this.packageName + '.', ''));
+            return section.replace(this.packageName + '.', '');
+        } else {
+            return section;
+        }
     };
 }
 
-abstract class Error extends ErrorHelper {
-    static #fixConfiguration = (): boolean => {
+export default abstract class Error extends ErrorHelper {
+    static #ignored: boolean = false;
+    static #notified: boolean = false;
+
+    static #fixConfiguration = (): void => {
         vscode.window.showErrorMessage(
-            "Invalid Value(s) in Configuration." + '\n' + this.configurationMessageList.join('\n'),
-            ...['Fix Configuration', 'Ignore']
-        ).then(selection => {
-            if (selection === "Fix Configuration") {
-                vscode.commands.executeCommand("workbench.action.openSettings", this.configurationSectionList.join(' '));
-            }
-        });
-        return false;  
+            "Please fix invalid values in configuration.", ...['Fix Configuration', 'Ignore']
+        ).then(this.userSelect);
+    };
+    static userSelect = (selected) => {
+        if (selected === "Fix Configuration") {
+            vscode.commands.executeCommand("workbench.action.openSettings", this.configurationSectionList().join(' '));
+        } else if (selected === "Ignore") {
+            this.#ignored = true;
+        }
+    };
+
+    public static setPackageName = (packageName: string): void => {
+        this.packageName = packageName;
+        console.log(this.packageName);
     };
 
     public static check = (): boolean => {
+        console.log(this.errorList.length);
         return this.errorList.length > 0;
     };
 
-    public static register = (configurationSection: string, errorMessage: string): number => {
+    public static register = (configurationSection: string, errorMessage: string) => {
         return this.errorList.push(new ErrorDecription(configurationSection, errorMessage));
     };
 
@@ -59,18 +79,10 @@ abstract class Error extends ErrorHelper {
         this.errorList.splice(0);
     };
 
-    public static printError = () => {
-        console.log('error print', this.errorList.length);
-        this.errorList.forEach(el => {
-            console.log(el.get());
-        });
-    };
-
     public static notify = (timer: number = 0): void => {
-        if (this.check()) {
-            setInterval(this.#fixConfiguration, timer);
+        if (this.check() && !this.#ignored && !this.#notified) {
+            this.#notified = true;
+            this.#fixConfiguration();
         }
     };
 }
-
-export default Error;

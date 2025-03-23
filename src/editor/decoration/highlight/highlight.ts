@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as Type from '../../../type/type';
 import Range from '../../range';
 import { HIGHLIGHT_BORDER_POSITION_INFO, HIGHLIGHT_STYLE_LIST } from '../../../constant/object';
-import { DECORATION_STYLE_KEY } from '../../../constant/enum';
+import { DECORATION_STYLE_KEY, DECORATION_TYPE_MASK, SELECTION_TYPE } from '../../../constant/enum';
 import { applyDecoration, resetDecorationRange } from '../decoration';
 
 const highlightStyleList = { ...HIGHLIGHT_STYLE_LIST } as Type.HighlightStyleListType;
@@ -54,54 +54,22 @@ const singelLineHighlightRange: Type.SelectionTypeToDecorationFunc = ({ editor, 
     }];
 };
 
-const multiLineHighlightRange: Type.SelectionTypeToDecorationFunc = ({ editor, borderConfig, textEditorHighlight }): Type.DecorationWithRangeType[] => {
-    if (borderConfig.borderPosition === 'left') {
+const multiLineHighlightRange: Type.SelectionTypeToDecorationFunc = ({ editor, textEditorHighlight }): Type.DecorationWithRangeType[] => {
+    
+    // index 0 - top border
+    // index 1 - bottom border
+    // index 2 - background color only for the range inbetween 0 and 1.
 
-        // index 0, 1, 2 are the same left only decoration.
-        // they had to be wholeLine but it was anomaly.
-
-        return [{
-            decoration: textEditorHighlight[2],
-            range: [Range.createRangeNNNN(editor.selection.start.line, editor.selection.start.character, editor.selection.end.line, editor.selection.end.character)]
-        },];
-    } else {
-
-        // index 0 - top border
-        // index 1 - bottom border
-        // index 2 - background color only for the range inbetween 0 and 1.
-        // [!] review to differentiate zero border decoraiton for wholeLine background and not-wholeLine background.
-
-        const highlightRange: Type.DecorationWithRangeType[] = [];
-
-        highlightRange.push({
-            decoration: textEditorHighlight[0],
-            range: [Range.createRangeSPEP(editor.selection.start, editor.selection.start)]
-        },
-            {
-                decoration: textEditorHighlight[1],
-                range: [Range.createRangeSPEP(editor.selection.end, editor.selection.end)]
-            });
-
-        if (Math.abs(editor.selection.start.line - editor.selection.end.line) > 1) {
-            highlightRange.push({
-                decoration: textEditorHighlight[2],
-                range: [Range.createRangeNNNN(editor.selection.start.line + 1, editor.selection.start.character, editor.selection.end.line - 1, editor.selection.end.character)]
-            });
-        } else {
-
-            // found this another exception where this background decoration not being reset when range shrink.
-            // this background decoraiton being applied on selection range expand as it should, but does not reset
-            // when abs(cursor - ancher) is than 1.
-            // the background decoration overlaps with cursor/anchor line on shrink when abs() is 1,
-            // making it backgound applied twice.
-            // if the abs(cursor - ancher) is less than 1, meaning it goes into single-line, decoration type changes
-            // and this decoration is automatically reset at that point.
-            // so this is a way to reset this decoration without changing the decoration type as well as with minimum steps.
-
-            applyDecoration(editor, textEditorHighlight[2], []);
-        }
-        return highlightRange;
-    }
+    return [{
+        decoration: textEditorHighlight[0],
+        range: [Range.createRangeSPEP(editor.selection.start, editor.selection.start)]
+    }, {
+        decoration: textEditorHighlight[1],
+        range: [Range.createRangeSPEP(editor.selection.end, editor.selection.end)]
+    }, {
+        decoration: textEditorHighlight[2],
+        range: [editor.selection]
+    }];
 };
 
 const multiCursorHighlightRange: Type.SelectionTypeToDecorationFunc = ({ editor, textEditorHighlight }): Type.DecorationWithRangeType[] => {
@@ -126,9 +94,15 @@ const multiCursorHighlightRange: Type.SelectionTypeToDecorationFunc = ({ editor,
 };
 
 const unsetRangeOfHighlightStyle = (editor: vscode.TextEditor) => {
-    for (const [key, highlight] of Object.entries(highlightStyleList)) {
+    Object.values(highlightStyleList).forEach(highlight => {
         resetDecorationRange(editor, highlight);
-    }
+
+    });
+    // for (const [key, highlight] of ) {
+    // if (key === SELECTION_TYPE.MULTI_LINE) {
+    //     break;
+    // }
+    // }
 };
 
 const coordinatorSplit: Type.CoordinatorSplitType = {
@@ -145,13 +119,14 @@ const coordinatorSplit: Type.CoordinatorSplitType = {
  * @returns
  * 
  */
-const hightlightCoordinator: Type.DecorationCoordinatorFunc = ({ editor, renderGroup }): Type.DecorationWithRangeType[] => {
+const hightlightCoordinator: Type.DecorationCoordinatorFunc = ({ editor, renderGroup, decorationState }): Type.DecorationWithRangeType[] => {
 
     const textEditorHighlight = highlightStyleList[renderGroup.type.KEY] as vscode.TextEditorDecorationType[];
     const borderConfig: Type.BorderPositionParserType = borderPositionInfo[renderGroup.type.KEY] as Type.BorderPositionParserType;
 
     return coordinatorSplit[renderGroup.type.KEY]({
         editor,
+        decorationState,
         borderConfig,
         textEditorHighlight
     });

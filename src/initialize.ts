@@ -4,13 +4,15 @@ import * as config from './configuration/load';
 import * as windowEvent from './event/window';
 import * as workspaceEvent from './event/workspace';
 import * as languagesEvent from './event/language';
+import Error from './util/error';
 import { renderDecorationOnEditor } from './editor/decoration/decoration';
-// import { fixConfiguration } from './util/error';
 import { prepareRenderGroup } from './editor/editor';
 
 const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vscode.Disposable[] | void> => {
     try {
         await extensionContext.extension.activate();
+
+        Error.setPackageName(extensionContext.extension.packageJSON.name);
 
         const loadConfig = config.loadConfiguration(extensionContext);
 
@@ -22,10 +24,6 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
         const configInfo: Type.ConfigInfoReadyType = loadConfig.config;
         const decorationState: Type.DecorationStateType = loadConfig.decoration;
         const activeEditor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
-
-        if (configInfo.configError.length > 0) {
-            // fixConfiguration(configInfo.configError);
-        }
 
         const renderGroup = prepareRenderGroup(configInfo);
 

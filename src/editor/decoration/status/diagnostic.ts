@@ -166,7 +166,8 @@ const diagnosticLayoutDivided = (state, textState) => {
             return diagnosticBiomeSplit(state.editor, textState.editor).editor();
         }
 
-        const overrideColor = textState.layout.problemPlaceholderContentText?.override;
+        const overrideColor = textState.layout.problemPlaceholderContentText.override;
+        console.log(state);
         decoration.after.color = overrideColor ? overrideColor[state.severity].color : decoration.after.color;
         return decoration;
     }).flat();

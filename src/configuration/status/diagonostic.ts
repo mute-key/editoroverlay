@@ -8,9 +8,7 @@ import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTe
 import { bindDiagnosticContentTextState } from '../../editor/decoration/status/diagnostic';
 import { hexToRgbaStringLiteral, readBits } from '../../util/util';
 
-const diagnosticConfig = { ...DIAGNOSTIC_CONFIG } as Type.DiagnosticConfigType;
 
-const diagnosticDecorationStyle = { ...DIAGNOSTIC_DECORATION_STYLE } as unknown as Type.DiagonosticDecorationStyle;
 
 const positionKeyList = ['pre', 'post'] as const;
 
@@ -257,6 +255,11 @@ const clearOverrideState = (stateOf) => {
 };
 
 const updateDiagnosticTextConfig = (configReady: Type.ConfigInfoReadyType, configuratioChange: boolean = false) => {
+    
+    const diagnosticConfig = { ...DIAGNOSTIC_CONFIG } as Type.DiagnosticConfigType;
+
+    const diagnosticDecorationStyle = { ...DIAGNOSTIC_DECORATION_STYLE } as unknown as Type.DiagonosticDecorationStyle;
+
     const bindTo: any = bindDiagnosticContentTextState();
     let bindToBuffer: any = {
         functionOf: bindTo.functionOf,

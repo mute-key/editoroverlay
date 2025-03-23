@@ -5,11 +5,11 @@ import { workspaceProxyConfiguration } from '../shared/configuration';
 import { bindStatusContentTextState } from '../../editor/decoration/status/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 
-const SelectionDecorationConfig = { ...SELECTION_DECORAITON_CONFIG } as Type.SelectionDecorationConfigType;
 
-const SelectionDecorationStyle = { ...SELECTION_DECORATION_STYLE } as Type.SelectionDecorationStyleType;
 
-const convertPositionToDecorationRenderOption = (textPosition): void => {
+
+
+const convertPositionToDecorationRenderOption = (textPosition, SelectionDecorationStyle): void => {
     return textPosition.contentText.map((text, idx) => {
         const option = typeof text === 'string'
             ? SelectionDecorationStyle.placeholderDecorationOption
@@ -23,9 +23,9 @@ const convertPositionToDecorationRenderOption = (textPosition): void => {
     }).filter(decorationOption => decorationOption !== undefined);
 };
 
-const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentTextType, leftMargin): void => {
+const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentTextType,SelectionDecorationStyle,  leftMargin): void => {
     Object.entries(textOfSource).forEach(([key, textPosition], idx) => {
-        const contentTextStyled = convertPositionToDecorationRenderOption(textPosition);;
+        const contentTextStyled = convertPositionToDecorationRenderOption(textPosition, SelectionDecorationStyle);;
         textOftarget[key] = {
             contentText: contentTextStyled,
             position: textPosition.position,
@@ -54,24 +54,22 @@ const buildSelectionTextDecorationRenderOption = (config: Type.SelectionDecorati
 };
 
 const updateSelectionTextConfig = (configReady: Type.ConfigInfoReadyType) => {
-    const bindTo: any = bindStatusContentTextState();
 
+    const SelectionDecorationStyle = { ...SELECTION_DECORATION_STYLE } as Type.SelectionDecorationStyleType;
+    const SelectionDecorationConfig = { ...SELECTION_DECORAITON_CONFIG } as Type.SelectionDecorationConfigType;
+    
+    const bindTo: any = bindStatusContentTextState();
     const bindToBuffer: any = {
         functionOf: bindTo.functionOf,
         textOf: {}
     };
-
+    
     // hm ...
-    workspaceProxyConfiguration(
-        SelectionDecorationConfig,
-        configReady.name + '.' + CONFIG_SECTION.selectionText,
-        SELECTION_CONTENT_TEXT_LIST,
-        bindToBuffer,
-        Regex.statusContentText);
+    workspaceProxyConfiguration(SelectionDecorationConfig, configReady.name + '.' + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST, bindToBuffer, Regex.statusContentText);
     
     buildSelectionTextDecorationRenderOption(SelectionDecorationConfig, SelectionDecorationStyle);
-    buildStatusTextState(bindTo.textOf, bindToBuffer.textOf, SelectionDecorationConfig.leftMargin);
-
+    buildStatusTextState(bindTo.textOf, bindToBuffer.textOf, SelectionDecorationStyle, SelectionDecorationConfig.leftMargin);
+    
     // // release refernce 
     delete bindTo.functionOf;
     delete bindTo.infoOf;

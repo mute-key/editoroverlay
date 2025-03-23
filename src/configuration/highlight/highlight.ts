@@ -5,6 +5,7 @@ import { colorConfigTransform, getConfigValue } from '../shared/configuration';
 import { createEditorDecorationType, disposeDecoration } from '../../editor/decoration/decoration';
 import { bindHighlightStyleState } from '../../editor/decoration/highlight/highlight';
 import { getWorkspaceConfiguration, readBits } from '../../util/util';
+import { SELECTION_TYPE } from '../../constant/enum';
 
 const checkConfigKeyAndCast = <T extends Type.DecorationStyleConfigNameType | Type.GeneralConfigNameOnlyType>(key: string): T => {
     return key as T;
@@ -58,7 +59,10 @@ const createDecorationType: Type.CreateDecorationFunctionType = (
             conf.borderWidth = str;
             styledConfig.push(conf);
             return styledConfig;
-        }, [] as Type.DecorationStyleConfigType[]).reduce((textEditorDecoration, styleAppliedConfig) => {
+        }, [] as Type.DecorationStyleConfigType[]).reduce((textEditorDecoration, styleAppliedConfig, idx) => {
+            if (decorationKey === SELECTION_TYPE.MULTI_LINE && idx !== 2) {
+                delete styleAppliedConfig.backgroundColor;
+            }
             textEditorDecoration.push(createEditorDecorationType(styleAppliedConfig));
             return textEditorDecoration;
         }, [] as vscode.TextEditorDecorationType[]);
