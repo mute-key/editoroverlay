@@ -135,14 +135,14 @@ const contentTextFunc = (context: Type.ContentTextFuncContext, contentText: any)
 
 const cursorOnlySelection: Type.ContentTextFuncSignature = (context: Type.ContentTextFuncContext): Type.StatusTextInfoType[] => {
     return [{
-        contentText: contentTextFunc(context, selectionContentText[SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT].contentText as any[]),
+        contentText: contentTextFunc(context, selectionContentText[$.cursorOnlyText].contentText as any[]),
         range: Range.createActiveRange(context.editor)
     }];
 };
 
 const singleLineSelection: Type.ContentTextFuncSignature = (context: Type.ContentTextFuncContext): Type.StatusTextInfoType[] => {
     return [{
-        contentText: contentTextFunc(context, selectionContentText[SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT].contentText as any[]),
+        contentText: contentTextFunc(context, selectionContentText[$.singleLineText].contentText as any[]),
         range: Range.createActiveRange(context.editor)
     }];
 };
@@ -155,10 +155,10 @@ const multilineSelection: Type.ContentTextFuncSignature = (context: Type.Content
     };
 
     const statusList = [{
-        contentText: contentTextFunctionSymlink(context, selectionContentText[SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT] as Type.ContentTextSymlinkKind, buffer),
+        contentText: contentTextFunctionSymlink(context, selectionContentText[$.multiLineCursorText] as Type.ContentTextSymlinkKind, buffer),
         range: Range.createAnchorRange(context.editor)
     }, {
-        contentText: contentTextFunctionSymlink(context, selectionContentText[SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT] as Type.ContentTextSymlinkKind, buffer),
+        contentText: contentTextFunctionSymlink(context, selectionContentText[$.multiLineAnchorText] as Type.ContentTextSymlinkKind, buffer),
         range: Range.createActiveRange(context.editor)
     }];
 
@@ -181,7 +181,7 @@ const multiCursorSelection: Type.ContentTextFuncSignature = (context: Type.Conte
         context.idx = idx + 1;
 
         selectionTextInfo.push({
-            contentText: contentTextFunc(context, selectionContentText[SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT].contentText as any[]),
+            contentText: contentTextFunc(context, selectionContentText[$.multiCursorText].contentText as any[]),
             range: Range.createStartEndRangeOfSelection(context.editor.selections[idx])
         });
 

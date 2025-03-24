@@ -27,11 +27,14 @@ type StatusContentTextPositionReadyType = {
     contentText: any[],
 } & StatusContentTextPositionType
 
+
 type StatusContentTextType = {
-    [k in SELECTION_CONTENT_TEXT_CONFIG_KEY]: {
-        contentText: any[]
-        position: number[]
-    } | ContentTextSymlinkKind
+    [key: symbol]: ContentTextBuffer | ContentTextSymlinkKind
+}
+
+type ContentTextBuffer = {
+    contentText: any[]
+    position: number[]
 }
 
 type ContentTextSymlinkKind = {

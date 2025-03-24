@@ -1,13 +1,9 @@
 import * as Type from '../../type/type';
 import Regex from '../../util/regex.collection';
-import { CONFIG_SECTION, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE, SELECTION_CONTENT_TEXT_LIST } from '../../constant/object';
+import { CONFIG_SECTION, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_SYMLINK } from '../../constant/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { bindStatusContentTextState } from '../../editor/decoration/status/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
-
-
-
-
 
 const convertPositionToDecorationRenderOption = (textPosition, SelectionDecorationStyle): void => {
     return textPosition.contentText.map((text, idx) => {
@@ -25,14 +21,19 @@ const convertPositionToDecorationRenderOption = (textPosition, SelectionDecorati
 
 const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentTextType,SelectionDecorationStyle,  leftMargin): void => {
     Object.entries(textOfSource).forEach(([key, textPosition], idx) => {
+        const position = textPosition as Type.ContentTextBuffer;
         const contentTextStyled = convertPositionToDecorationRenderOption(textPosition, SelectionDecorationStyle);;
-        textOftarget[key] = {
-            contentText: contentTextStyled,
-            position: textPosition.position,
-        };
-        if (leftMargin && leftMargin !== '0px' || leftMargin !== '0em') {
-            if (textOftarget[key].contentText[0]) {
-                textOftarget[key].contentText[0].after['margin'] = leftMarginToMarginString(leftMargin);
+        const sym = SELECTION_CONTENT_TEXT_SYMLINK[key];
+        if (sym) {
+            textOftarget[sym] = {
+                contentText: contentTextStyled,
+                position: position,
+            };
+    
+            if (leftMargin && leftMargin !== '0px' || leftMargin !== '0em') {
+                if (textOftarget[sym].contentText[0]) {
+                    textOftarget[sym].contentText[0].after['margin'] = leftMarginToMarginString(leftMargin);
+                }
             }
         }
     });
@@ -70,7 +71,6 @@ const updateSelectionTextConfig = (configReady: Type.ConfigInfoReadyType) => {
     buildSelectionTextDecorationRenderOption(SelectionDecorationConfig, SelectionDecorationStyle);
     buildStatusTextState(bindTo.textOf, bindToBuffer.textOf, SelectionDecorationStyle, SelectionDecorationConfig.leftMargin);
     
-    // // release refernce 
     delete bindTo.functionOf;
     delete bindTo.infoOf;
     delete bindTo.textOf;

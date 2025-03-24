@@ -309,12 +309,20 @@ export const DIAGNOSTIC_SEVERITY_TO_KEY = {
 
 
 export const SELECTION_CONTENT_TEXT = {
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: undefined,
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: undefined,
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: undefined,
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: undefined,
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: undefined,
+    [$.cursorOnlyText]: undefined,
+    [$.singleLineText]: undefined,
+    [$.multiLineCursorText]: undefined,
+    [$.multiLineAnchorText]: undefined,
+    [$.multiCursorText]: undefined,
 } as const;
+
+export const SELECTION_CONTENT_TEXT_SYMLINK = {
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: $.cursorOnlyText,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: $.singleLineText,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: $.multiLineCursorText,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: $.multiLineAnchorText,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: $.multiCursorText,
+ } as const;
 
 export const SELECTION_CONTENT_TEXT_ENTRY = {
     contentText: [],
