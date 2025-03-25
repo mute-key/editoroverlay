@@ -8,7 +8,10 @@ import { updateDiagnosticTextConfig } from './status/diagonostic';
 import { writeEditorConfiguration } from './shared/editor';
 import { bindEditorDecoration } from '../editor/decoration/decoration';
 
-const configInfo = { ...CONFIG_INFO } as Type.ConfigInfoType;
+const configInfo = { 
+    ...CONFIG_INFO,
+    __proto__: null
+} as Type.ConfigInfoType;
 
 const loadConfiguration = (context?: vscode.ExtensionContext): Type.InitialisedConfigType | undefined => {
     const name = context?.extension.packageJSON.name;
@@ -35,7 +38,7 @@ const loadConfiguration = (context?: vscode.ExtensionContext): Type.InitialisedC
     writeEditorConfiguration();
 
     if (generateHighlightDecoration(configReady)) {
-
+        
         if (configReady.generalConfigInfo.selectionTextEnabled) {
             updateSelectionTextConfig(configReady);
         }
@@ -44,6 +47,7 @@ const loadConfiguration = (context?: vscode.ExtensionContext): Type.InitialisedC
             updateDiagnosticTextConfig(configReady);
         }
 
+        
         return {
             config: configReady,
             decoration: decorationState

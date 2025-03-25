@@ -19,21 +19,18 @@ const convertPositionToDecorationRenderOption = (textPosition, SelectionDecorati
     }).filter(decorationOption => decorationOption !== undefined);
 };
 
-const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentTextType,SelectionDecorationStyle,  leftMargin): void => {
+const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentTextBufferType,SelectionDecorationStyle,  leftMargin): void => {
     Object.entries(textOfSource).forEach(([key, textPosition], idx) => {
-        const position = textPosition as Type.ContentTextBuffer;
         const contentTextStyled = convertPositionToDecorationRenderOption(textPosition, SelectionDecorationStyle);;
         const sym = SELECTION_CONTENT_TEXT_SYMLINK[key];
-        if (sym) {
-            textOftarget[sym] = {
-                contentText: contentTextStyled,
-                position: position,
-            };
-    
-            if (leftMargin && leftMargin !== '0px' || leftMargin !== '0em') {
-                if (textOftarget[sym].contentText[0]) {
-                    textOftarget[sym].contentText[0].after['margin'] = leftMarginToMarginString(leftMargin);
-                }
+        textOftarget[sym] = {
+            contentText: contentTextStyled,
+            position: Object.entries(textPosition.position),
+        };
+
+        if (leftMargin && leftMargin !== '0px' || leftMargin !== '0em') {
+            if (textOftarget[sym].contentText[0]) {
+                textOftarget[sym].contentText[0].after['margin'] = leftMarginToMarginString(leftMargin);
             }
         }
     });
@@ -56,18 +53,17 @@ const buildSelectionTextDecorationRenderOption = (config: Type.SelectionDecorati
 
 const updateSelectionTextConfig = (configReady: Type.ConfigInfoReadyType) => {
 
-    const SelectionDecorationStyle = { ...SELECTION_DECORATION_STYLE } as Type.SelectionDecorationStyleType;
     const SelectionDecorationConfig = { ...SELECTION_DECORAITON_CONFIG } as Type.SelectionDecorationConfigType;
+    const SelectionDecorationStyle = { ...SELECTION_DECORATION_STYLE } as Type.SelectionDecorationStyleType;
     
     const bindTo: any = bindStatusContentTextState();
     const bindToBuffer: any = {
         functionOf: bindTo.functionOf,
         textOf: {}
     };
-    
+
     // hm ...
     workspaceProxyConfiguration(SelectionDecorationConfig, configReady.name + '.' + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST, bindToBuffer, Regex.statusContentText);
-    
     buildSelectionTextDecorationRenderOption(SelectionDecorationConfig, SelectionDecorationStyle);
     buildStatusTextState(bindTo.textOf, bindToBuffer.textOf, SelectionDecorationStyle, SelectionDecorationConfig.leftMargin);
     

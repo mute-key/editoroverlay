@@ -28,18 +28,20 @@ type StatusContentTextPositionReadyType = {
 } & StatusContentTextPositionType
 
 
-type StatusContentTextType = {
-    [key: symbol]: ContentTextBuffer | ContentTextSymlinkKind
+type StatusContentTextBufferType = {
+    [key: string]: {
+        contentText: any[]
+        position: number[]
+    }
 }
 
-type ContentTextBuffer = {
-    contentText: any[]
-    position: number[]
+type StatusContentTextType = {
+    [key: symbol]: ContentTextSymlinkKind
 }
 
 type ContentTextSymlinkKind = {
     contentText: any[],
-    position: symbol[]
+    position: [number, symbol][]
 }
 
 type ContentTextPositionFunc = {
@@ -95,6 +97,7 @@ type RegexStatusContentTextType = {
 }
 
 type SelectionDecorationConfigType = {
+    enabled?: boolean
     color?: string,
     colorOpacity?: number,
     backgroundColor?: string,
@@ -164,18 +167,12 @@ type StatusTextInfoType = {
 type ContentTextFuncContext = {
     idx: number,
     editor: vscode.TextEditor,
-    indent: IndentReadyType,
+    // indent: IndentReadyType,
 }
 
 type ContentTextFuncSignature = (context: ContentTextFuncContext) => any
 
-// type ContentTextWithIndexFuncContext = {
-//     idx: number,
-//     editor: vscode.TextEditor,
-//     indent: IndentType,
-// }
-
-// type ContentTextWithIndexFuncSignature = (context: ContentTextWithIndexFuncContext) => string | number
+type ContentTextFuncNoContextSignature = (editor: vscode.TextEditor) => any
 
 type ContentTextFunc = Record<string, (symbol | string | ContentTextFuncSignature)>;
 

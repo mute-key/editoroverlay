@@ -1,14 +1,13 @@
 import * as Type from '../../type/type';
+import * as $ from '../../constant/symbol';
 import Regex from '../../util/regex.collection';
-import { DIAGNOSTIC_CONFIG, CONFIG_SECTION, DIAGNOSTIC_CONTENT_TEXT_LIST, DIAGNOSTIC_DECORATION_STYLE, DIAGNOSTIC_STYLE_LIST, DIAGNOSTIC_DECORATION_TEXT_KIND, DECORATION_OPTION_LINKER, DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER, DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER, DIAGNOSTIC_ALL_PLACEHOLDER_LINKER } from '../../constant/object';
-import { DIAGNOSTIC_BIOME, DIAGNOSTIC_CONTENT_TEXT_KEY, DIAGNOSTIC_TEXT_STYLE_KEY } from '../../constant/enum';
+import { DIAGNOSTIC_CONFIG, CONFIG_SECTION, DIAGNOSTIC_CONTENT_TEXT_LIST, DIAGNOSTIC_DECORATION_STYLE, DIAGNOSTIC_STYLE_LIST, DIAGNOSTIC_DECORATION_TEXT_KIND, DECORATION_OPTION_LINKER, DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER, DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER, DIAGNOSTIC_ALL_PLACEHOLDER_LINKER, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_SYM } from '../../constant/object';
+import { DIAGNOSTIC_BIOME, DIAGNOSTIC_TEXT_STYLE_KEY } from '../../constant/enum';
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { sanitizeConfigValue } from '../shared/validation';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 import { bindDiagnosticContentTextState } from '../../editor/decoration/status/diagnostic';
 import { hexToRgbaStringLiteral, readBits } from '../../util/util';
-
-
 
 const positionKeyList = ['pre', 'post'] as const;
 
@@ -20,7 +19,7 @@ const applyLeftMargin = (textOf: Type.DiagnosticContentTextType, visibility: Typ
         return;
     }
 
-    ['allOkPlaceholderContentText', 'problemPlaceholderContentText'].forEach(placeholderKind => {
+    [$.allOkPlaceholderContentText, $.problemPlaceholderContentText].forEach(placeholderKind => {
         if (typeof textOf.layout[placeholderKind].contentText[0].contentText === 'symbol') {
             const marginDecoration = { ...textOf.layout[placeholderKind].contentText[0].contentText };
             marginDecoration.after = { ...textOf.layout[placeholderKind].contentText[0].contentText.after };
@@ -55,6 +54,8 @@ const buildDiagnosticTextState = (textOftarget, textOfSource, style: Type.Diagon
             if (target[propertyName][contentTextName].notation) {
                 context.notation = target[propertyName][contentTextName].notation;
             }
+            // console.log(contentTextName)
+            // console.log(DIAGNOSTIC_CONTENT_TEXT_NAME_TO_SYM[contentTextName])
             target[propertyName][contentTextName].contentText = convertPositionDecorationRenderOption(context);
         }
     };
@@ -70,7 +71,7 @@ const buildDiagnosticTextState = (textOftarget, textOfSource, style: Type.Diagon
         };
 
         ['workspace', 'editor', 'all', 'layout'].forEach(biome => {
-            convertPositionWrapper(context, textOftarget, biome, contentTextName);
+            convertPositionWrapper(context, textOftarget, biome, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_SYM[contentTextName]);
         });
     });
 };
@@ -81,10 +82,11 @@ const ifNoationNotNull = (property: string, str: string) => {
             [property]: str
         };
     }
+    // Object.create(null)
     return {};
 };
 
-const createNotation = (biome: string, prefix: string, postfix: string) => {
+const createNotation = (biome: symbol, prefix: string, postfix: string) => {
     return {
         [biome]: {
             ...DIAGNOSTIC_DECORATION_TEXT_KIND,
@@ -133,10 +135,10 @@ const overrideStyle = (config, overrideBiome) => {
     });
 
     return {
-        [DIAGNOSTIC_CONTENT_TEXT_KEY.PLACEHOLDER_PROBLEM_CONTENT_TEXT]: {
+        [$.problemPlaceholderContentText]: {
             override: Object.keys(problemOverrideColor).length > 0 ? problemOverrideColor : undefined
         },
-        [DIAGNOSTIC_CONTENT_TEXT_KEY.PLACEHOLDER_ALL_OK_CONTENT_TEXT]: {
+        [$.allOkPlaceholderContentText]: {
             override: Object.keys(allOkOverrideColor).length > 0 ? allOkOverrideColor : undefined
         },
     };
@@ -149,8 +151,8 @@ const buildDiagnosticStyle = (config: Type.DiagnosticConfigType, style: Type.Dia
         editor: {},
         all: {},
         layout: {
-            [DIAGNOSTIC_CONTENT_TEXT_KEY.PLACEHOLDER_PROBLEM_CONTENT_TEXT]: {},
-            [DIAGNOSTIC_CONTENT_TEXT_KEY.PLACEHOLDER_ALL_OK_CONTENT_TEXT]: {}
+            [$.problemPlaceholderContentText]: {},
+            [$.allOkPlaceholderContentText]: {}
         }
     };
 
@@ -194,8 +196,8 @@ const buildDiagnosticStyle = (config: Type.DiagnosticConfigType, style: Type.Dia
     return {
         ...result,
         layout: {
-            [DIAGNOSTIC_CONTENT_TEXT_KEY.PLACEHOLDER_PROBLEM_CONTENT_TEXT]: {},
-            [DIAGNOSTIC_CONTENT_TEXT_KEY.PLACEHOLDER_ALL_OK_CONTENT_TEXT]: {},
+            [$.problemPlaceholderContentText]: {},
+            [$.allOkPlaceholderContentText]: {},
             ...ifOverrride
         }
     };

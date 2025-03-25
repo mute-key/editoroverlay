@@ -171,21 +171,22 @@ type DiagnosticVisibilityType = {
 }
 
 type DiagnosticConfigType = {
-    leftMargin?: string,
+    enabled?: boolean
+    leftMargin?: string
     visibility: DiagnosticVisibilityType
-    okNotationTextStyle?: DecorationType.DecorationTextPrePostFixStyleConfig,
+    okNotationTextStyle?: DecorationType.DecorationTextPrePostFixStyleConfig
     okTextStyle?: DecorationType.DecorationTextStyleConfig
-    problemPlaceholderContentText?: string,
-    allOkPlaceholderContentText?: string,
-    okEditorContentText?: string,
-    okAllContentText?: string,
-    warningNotationTextStyle?: DecorationType.DecorationTextPrePostFixStyleConfig,
+    problemPlaceholderContentText?: string
+    allOkPlaceholderContentText?: string
+    okEditorContentText?: string
+    okAllContentText?: string
+    warningNotationTextStyle?: DecorationType.DecorationTextPrePostFixStyleConfig
     warningTextStyle?: DecorationType.DecorationTextStyleConfig
-    warningWorkspaceContentText?: string,
-    warningEditorContentText?: string,
-    errorNotationTextStyle?: DecorationType.DecorationTextPrePostFixStyleConfig,
+    warningWorkspaceContentText?: string
+    warningEditorContentText?: string
+    errorNotationTextStyle?: DecorationType.DecorationTextPrePostFixStyleConfig
     errorTextStyle?: DecorationType.DecorationTextStyleConfig
-    errorWorkspaceContentText?: string,
+    errorWorkspaceContentText?: string
     errorEditorContentText?: string
 }
 

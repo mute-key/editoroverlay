@@ -2,9 +2,12 @@ import * as vscode from 'vscode';
 import * as Type from '../type/type.d';
 import Error from '../util/error';
 import { isDecorationChanged, resetAllDecoration } from '../editor/decoration/decoration';
-import { renderDecorationOnEditor } from '../editor/decoration/decoration';
+import { renderDecorationOnEditor } from '../editor/decoration/handler';
 import { renderGroupIs, updateIndentOption } from '../editor/editor';
 import { resetEditorDiagnosticStatistics, updateDiagnostic } from '../diagnostic/diagnostic';
+import { hrtimeToMS } from '../util/util';
+import { configCondition } from '../configuration/shared/validation';
+import { eventNames } from 'process';
 
 const windowStateChanged: Type.DecorationEventFunc = ({ decorationState, renderGroup }): vscode.Disposable => {
     return vscode.window.onDidChangeWindowState((event: vscode.WindowState) => {
@@ -59,7 +62,6 @@ const activeEditorChanged: Type.DecorationEventFunc = ({ configInfo, decorationS
     });
 };
 
-
 const editorOptionChanged = (context): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorOptions((event: vscode.TextEditorOptionsChangeEvent) => {
         if (event.textEditor) {
@@ -68,25 +70,24 @@ const editorOptionChanged = (context): vscode.Disposable => {
     });
 };
 
-const selectionChanged: Type.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
-    return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) => {
-        if (event.selections) {
+const selectionChanged: Type.DecorationEventFunc = (context): vscode.Disposable => {
 
-            const renderGroup: Type.RenderGroupSetProperty | undefined = renderGroupIs(event.textEditor);
-
-            if (!renderGroup) {
-                return;
-            }
-
-            isDecorationChanged(event.textEditor, decorationState, renderGroup.type as Type.DecorationInfoPropType);
-
+    function textEditorSelectionChangeEvent(context) {
+        return function (event: vscode.TextEditorSelectionChangeEvent) {
+            const renderGroup: Type.RenderGroupSetProperty = renderGroupIs(event.textEditor);
+        
+            isDecorationChanged(event.textEditor, context.decorationState, renderGroup.type as Type.DecorationInfoPropType);
+        
             renderDecorationOnEditor({
                 editor: event.textEditor,
-                decorationState: decorationState,
-                renderGroup: renderGroup
+                decorationState: context.decorationState,
+                renderGroup: renderGroup as Type.RenderGroupSetProperty,
+                __proto__: null
             });
-        }
-    });
+        };
+    }
+
+    return vscode.window.onDidChangeTextEditorSelection(textEditorSelectionChangeEvent(context));
 };
 
 const visibleRangeChanged = (): vscode.Disposable => {

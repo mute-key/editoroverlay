@@ -14,12 +14,18 @@ type AppliedHighlightType = {
 
 type DecorationStateType = {
     appliedHighlight: AppliedHighlightType
-    selectionText: vscode.TextEditorDecorationType[] | readonly[]
-    diagnosticText: vscode.TextEditorDecorationType[] | readonly[],
-    statusInfo: {
-        [key: string]: StatusType.StatusTextInfoType[] | []
-    }
+    statusText: vscode.TextEditorDecorationType[] | any[],
+    statusInfo: StatusType.StatusTextInfoType[] | any[]
 }
+
+// type DecorationStateType = {
+//     appliedHighlight: AppliedHighlightType
+//     selectionText: vscode.TextEditorDecorationType[] | readonly[]
+//     diagnosticText: vscode.TextEditorDecorationType[] | readonly[],
+//     statusInfo: {
+//         [key: string]: StatusType.StatusTextInfoType[] | []
+//     }
+// }
 
 type DecorationStyleKeyOnlyType = keyof typeof DECORATION_STYLE_PREFIX
 
@@ -72,6 +78,7 @@ type AppliedDecorationType = {
 type DecorationWithRangeType = {
     decoration: vscode.TextEditorDecorationType,
     range: vscode.Range[]
+    __proto__: null,
 }
 
 type decorationCoordinatorSplit = {
@@ -100,10 +107,9 @@ type BorderPositionParserType = {
 type BorderPositionInfoType = Record<DecorationStyleKeyOnlyType, BorderPositionParserType | undefined>;
 
 type SelectionHighlightKindContext = {
-    decorationState: DecorationStateType
     editor: vscode.TextEditor,
-    borderConfig: BorderPositionParserType
     textEditorHighlight: vscode.TextEditorDecorationType[]
+    borderConfigSymlink: symbol
 }
 
 type SelectionTypeToDecorationFunc = (context: SelectionHighlightKindContext) => DecorationWithRangeType[]

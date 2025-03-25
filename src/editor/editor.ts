@@ -2,13 +2,15 @@ import * as vscode from 'vscode';
 import * as Type from '../type/type';
 import * as $ from '../constant/symbol';
 import Regex from '../util/regex.collection';
-import { SELECTION_TYPE } from '../constant/enum';
 import { HIGHLIGHT_STYLE_SYMBOL_LIST, RENDER_GROUP_SET, SELECTION_KIND } from '../constant/object';
 import { bindStatusContentTextState } from './decoration/status/selection';
 import { selectionInfo } from './decoration/status/selection';
 import { bindDiagnosticContentTextState, diagnosticInfo } from './decoration/status/diagnostic';
 
-const renderGroupSet = { ...RENDER_GROUP_SET } as unknown as Type.RenderGroupSet;
+const renderGroupSet = {
+    ...RENDER_GROUP_SET,
+    __proto__: null
+} as unknown as Type.RenderGroupSet;
 
 const updateIndentOption = (editor: vscode.TextEditor): void => {
     const bindTo = bindStatusContentTextState();
@@ -35,7 +37,8 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): Type.RenderGroupS
             renderGroupSet[selectionKey] = {
                 type: SELECTION_KIND[selectionKey],
                 selection: selection,
-                diagnostic: diagonosticAvaliabity[selectionKey] ? diagnostic : undefined
+                diagnostic: diagonosticAvaliabity[selectionKey] ? diagnostic : undefined,
+                __proto__: null
             } as Type.RenderGroupSetProperty;
         }
     });
@@ -43,21 +46,19 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): Type.RenderGroupS
     return renderGroupSet[$.cursorOnly] as Type.RenderGroupSetProperty;
 };
 
-const renderGroupIs = (editor: vscode.TextEditor): Type.RenderGroupSetProperty | undefined => {
-    // console.log(renderGroupSet);
+function renderGroupIs(editor: vscode.TextEditor): Type.RenderGroupSetProperty {
+    // console.log(renderGroupSet)
     if (editor.selections.length === 1) {
         if (editor.selections[0].isEmpty) {
             return renderGroupSet[$.cursorOnly];
         }
 
-        if (editor.selections[0].isSingleLine) {
-            return renderGroupSet[$.singleLine];
-        } else {
+        if (!editor.selections[0].isSingleLine) {
             return renderGroupSet[$.multiLine];
+        } else {
+            return renderGroupSet[$.singleLine];
         }
-    }
-
-    if (editor.selections.length > 1) {
+    } else {
         return renderGroupSet[$.multiCursor];;
     }
 };

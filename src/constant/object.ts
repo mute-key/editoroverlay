@@ -1,24 +1,12 @@
 import * as vscode from 'vscode';
 import * as Type from '../type/type.d';
-import { BORDER_POSITION_MASK, BORDER_POSITION_VARIATION, DECORATION_STYLE_CONFIG_KEY, DECORATION_GENERAL_STYLE_CONFIG_KEY, DECORATION_SELECTION_STYLE_CONFIG_KEY, DECORATION_STYLE_KEY, DECORATION_TYPE_MASK, SELECTION_TYPE, CONFIG_SECTION_KEY, SELECTION_CONTENT_TEXT_CONFIG_KEY, CONFIG_KEY_LINKER, DIAGNOSTIC_SEVERITY_KEY, DIAGNOSTIC_CONTENT_TEXT_KIND, DIAGNOSTIC_CONTENT_TEXT_KEY, DIAGNOSTIC_TEXT_STYLE_KEY } from './enum';
-import { posix } from 'path';
 import * as $ from './symbol';
+import { BORDER_POSITION_MASK, BORDER_POSITION_VARIATION, DECORATION_STYLE_CONFIG_KEY, DECORATION_GENERAL_STYLE_CONFIG_KEY, DECORATION_SELECTION_STYLE_CONFIG_KEY, DECORATION_STYLE_KEY, DECORATION_TYPE_MASK, SELECTION_TYPE, CONFIG_SECTION_KEY, SELECTION_CONTENT_TEXT_CONFIG_KEY, DIAGNOSTIC_SEVERITY_KEY, DIAGNOSTIC_CONTENT_TEXT_KEY, DIAGNOSTIC_TEXT_STYLE_KEY } from './enum';
 
 // ==============================================================================
 // [ RUNTIME READONLY CONSTANT/ENUM ]
 // ==============================================================================
 
-/**
- * readonly config object lteral structure.
- * import, shallow copy, as Type.ConfigInfoType.
- * 
- * workspace configuration could have been 'default' but
- * i think undefined is more difinitive for unset default value.
- * 
- * i think need to split this into 2 to static and dynamic.
- * this is getting to heavy to read.
- * 
- */
 export const CONFIG_SECTION = {
     [CONFIG_SECTION_KEY.GENERAL]: CONFIG_SECTION_KEY.GENERAL,
     [CONFIG_SECTION_KEY.CURSOR_ONLY]: CONFIG_SECTION_KEY.CURSOR_ONLY,
@@ -31,16 +19,24 @@ export const CONFIG_SECTION = {
 
 export const CONFIG_INFO = {
     name: undefined,
+    renderLimiter: undefined,
+    rendered: [0, 0],
     generalConfigInfo: {
         borderOpacity: undefined,
         backgroundOpacity: undefined,
-        selectionTextEnabled: CONFIG_KEY_LINKER.SELECTION_TEXT_ENABLED,
-        diagnosticTextEnabled: CONFIG_KEY_LINKER.DIAGNOSTIC_TEXT_ENABLED,
+        selectionTextEnabled: undefined,
+        diagnosticTextEnabled: undefined,
     } as const,
     configError: undefined,
 } as const;
 
+export const CONFIG_KEY_LINKER_SECTION = {
+    selectionTextEnabled: ['selectionText', 'enabled'],
+    diagnosticTextEnabled: ['diagnosticText', 'enabled'],
+};
+
 export const SELECTION_DECORAITON_CONFIG = {
+    enabled: undefined,
     color: undefined,
     colorOpacity: undefined,
     backgroundColor: undefined,
@@ -98,7 +94,8 @@ export const INDENT_INFO = {
 export const RENDER_GROUP_SET_PROPERTY = {
     type: undefined,
     selectionCount: undefined,
-    diagnostic: undefined
+    diagnostic: undefined,
+    __proto__: null,
 } as const;
 
 export const RENDER_GROUP_SET = {
@@ -106,35 +103,18 @@ export const RENDER_GROUP_SET = {
     [$.singleLine]: RENDER_GROUP_SET_PROPERTY,
     [$.multiLine]: RENDER_GROUP_SET_PROPERTY,
     [$.multiCursor]: RENDER_GROUP_SET_PROPERTY,
+    __proto__: null,
 };
 
-/**
- * decoration state object to set or unset decorations on editor.
- * to be used as shallow copied object.
- * 
- */
 export const DECORATION_STATE = {
     appliedHighlight: {
         applied: undefined,
-        ofDecorationType: undefined
+        ofDecorationType: undefined,
+        __proto__: null,
     } as const,
-    selectionText: [],
-    diagnosticText: [],
-    statusInfo: {
-        selectionText: undefined,
-        diagnosticText: undefined,
-    }
-} as const;
-
-export const DECORATION_INFO = {
-    selectionType: undefined,
-    selectionCount: undefined,
-    diagnostic: undefined
-} as const;
-
-export const CONTENT_TEXT_POSITIION = {
-    contentText: undefined,
-    position: undefined
+    statusText: [],
+    // diagnosticText: [],
+    statusInfo: []
 } as const;
 
 export const HIGHLIGHT_STYLE_SYMBOL_LIST = [
@@ -173,7 +153,8 @@ export const DECORATION_STYLE_PREFIX = {
 export const DECORATION_OPTION_CONFIG = {
     isWholeLine: undefined,
     rangeBehavior: undefined,
-    after: {}
+    after: {},
+    __proto__: null,
 } as const;
 
 export const DECORATION_OPTION_AFTER_CONFIG = {
@@ -184,35 +165,37 @@ export const DECORATION_OPTION_AFTER_CONFIG = {
     fontStyle: undefined,
     textDecoration: undefined,
     margin: undefined,
+    __proto__: null,
 } as const;
 
 export const DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET = {
-    [DIAGNOSTIC_CONTENT_TEXT_KIND.OK_CONTENT_TEXT]: DIAGNOSTIC_CONTENT_TEXT_KEY.OK_EDITOR_CONTENT_TEXT,
-    [DIAGNOSTIC_CONTENT_TEXT_KIND.WARNING_CONTENT_TEXT]: DIAGNOSTIC_CONTENT_TEXT_KEY.WARNING_EDITOR_CONTENT_TEXT,
-    [DIAGNOSTIC_CONTENT_TEXT_KIND.ERROR_CONTENT_TEXT]: DIAGNOSTIC_CONTENT_TEXT_KEY.ERROR_EDITOR_CONTENT_TEXT
+    [$.okContentText]: $.okEditorContentText as symbol,
+    [$.warningContentText]: $.errorEditorContentText as symbol,
+    [$.errorContentText]: $.warningEditorContentText as symbol
 };
 
 export const DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET = {
-    [DIAGNOSTIC_CONTENT_TEXT_KIND.OK_CONTENT_TEXT]: DIAGNOSTIC_CONTENT_TEXT_KEY.OK_WORKSPACE_CONTENT_TEXT,
-    [DIAGNOSTIC_CONTENT_TEXT_KIND.WARNING_CONTENT_TEXT]: DIAGNOSTIC_CONTENT_TEXT_KEY.WARNING_WORKSPACE_CONTENT_TEXT,
-    [DIAGNOSTIC_CONTENT_TEXT_KIND.ERROR_CONTENT_TEXT]: DIAGNOSTIC_CONTENT_TEXT_KEY.ERROR_WORKSPACE_CONTENT_TEXT,
+    [$.okContentText]: $.okWorkspaceContentText as symbol,
+    [$.warningContentText]: $.warningWorkspaceContentText as symbol,
+    [$.errorContentText]: $.errorWorkspaceContentText as symbol
 } as const;
 
-
-export const DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER = {
-    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: "okWorkspaceContentText",
-    [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: "warningWorkspaceContentText",
-    [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: "errorWorkspaceContentText",
-} as const;
 
 export const DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER = {
-    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: "okEditorContentText",
-    [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: "warningEditorContentText",
-    [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: "errorEditorContentText",
+    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: $.okEditorContentText as symbol,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: $.errorEditorContentText as symbol,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: $.warningEditorContentText as symbol,
 } as const;
 
+export const DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER = {
+    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: $.okWorkspaceContentText as symbol,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: $.warningWorkspaceContentText as symbol,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: $.errorWorkspaceContentText as symbol,
+} as const;
+
+
 export const DIAGNOSTIC_ALL_PLACEHOLDER_LINKER = {
-    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: "okAllContentText",
+    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: $.okAllContentText,
 } as const;
 
 export const DECORATION_OPTION_LINKER = {
@@ -225,6 +208,18 @@ export const DECORATION_OPTION_LINKER = {
     warningEditorContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.WARNINGTEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE],
     errorWorkspaceContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_TEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE],
     errorEditorContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_TEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]
+} as const;
+
+export const DIAGNOSTIC_CONTENT_TEXT_NAME_TO_SYM = {
+    problemPlaceholderContentText: $.problemPlaceholderContentText,
+    allOkPlaceholderContentText: $.allOkPlaceholderContentText,
+    okWorkspaceContentText: $.okWorkspaceContentText,
+    okEditorContentText: $.okEditorContentText,
+    okAllContentText: $.okAllContentText,
+    warningWorkspaceContentText: $.warningWorkspaceContentText,
+    warningEditorContentText: $.warningEditorContentText,
+    errorWorkspaceContentText: $.errorWorkspaceContentText,
+    errorEditorContentText: $.errorEditorContentText,
 } as const;
 
 export const DIAGNOSTIC_STYLE_LIST: Type.TextList[] = [
@@ -247,6 +242,7 @@ export const DIAGNOSTIC_VISIBILITY_CONFIG = {
 } as const;
 
 export const DIAGNOSTIC_CONFIG = {
+    enabled: undefined,
     leftMargin: undefined,
     visibility: DIAGNOSTIC_VISIBILITY_CONFIG,
     problemPlaceholderContentText: undefined,
@@ -293,19 +289,19 @@ export const DIAGNOSTIC_DECORATION_STYLE = {
     leftMargin: undefined,
     diagonosticDecorationOption: {
         [DIAGNOSTIC_TEXT_STYLE_KEY.DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE]: undefined,
-        [DIAGNOSTIC_TEXT_STYLE_KEY.OK_TEXT_STYLE]: undefined, // change to const enum laster
-        [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: undefined, // change to const enum laster
-        [DIAGNOSTIC_TEXT_STYLE_KEY.WARNINGTEXT_STYLE]: undefined, // change to const enum laster
-        [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: undefined, // change to const enum laster
-        [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_TEXT_STYLE]: undefined, // change to const enum laster
-        [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: undefined, // change to const enum laster
+        [DIAGNOSTIC_TEXT_STYLE_KEY.OK_TEXT_STYLE]: undefined,
+        [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: undefined,
+        [DIAGNOSTIC_TEXT_STYLE_KEY.WARNINGTEXT_STYLE]: undefined,
+        [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: undefined,
+        [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_TEXT_STYLE]: undefined,
+        [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: undefined,
     },
 } as const;
 
 export const DIAGNOSTIC_SEVERITY_TO_KEY = {
     [vscode.DiagnosticSeverity.Warning]: DIAGNOSTIC_SEVERITY_KEY.WARNING,
     [vscode.DiagnosticSeverity.Error]: DIAGNOSTIC_SEVERITY_KEY.ERROR
-};
+} as const;
 
 
 export const SELECTION_CONTENT_TEXT = {
@@ -317,18 +313,17 @@ export const SELECTION_CONTENT_TEXT = {
 } as const;
 
 export const SELECTION_CONTENT_TEXT_SYMLINK = {
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: $.cursorOnlyText,
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: $.singleLineText,
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: $.multiLineCursorText,
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: $.multiLineAnchorText,
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: $.multiCursorText,
- } as const;
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: $.cursorOnlyText as symbol,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: $.singleLineText as symbol,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: $.multiLineCursorText as symbol,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: $.multiLineAnchorText as symbol,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: $.multiCursorText as symbol,
+} as const;
 
 export const SELECTION_CONTENT_TEXT_ENTRY = {
     contentText: [],
     position: []
 };
-
 
 export const DIAGNOSTIC_CONTENT_TEXT = {
     layout: {},
@@ -409,23 +404,23 @@ export const BORDER_WIDTH_DEFINITION = {
 
 export const SELECTION_KIND: Type.DecorationInfoType = {
     [$.reset]: {
-        KEY: $.reset,
+        KEY: $.reset as symbol as symbol,
         MASK: DECORATION_TYPE_MASK.RESET
     } as const,
     [$.cursorOnly]: {
-        KEY: $.cursorOnly,
+        KEY: $.cursorOnly as symbol,
         MASK: DECORATION_TYPE_MASK.CURSOR_ONLY
     } as const,
     [$.singleLine]: {
-        KEY: $.singleLine,
+        KEY: $.singleLine as symbol,
         MASK: DECORATION_TYPE_MASK.SINGLE_LINE
     } as const,
     [$.multiLine]: {
-        KEY: $.multiLine,
+        KEY: $.multiLine as symbol,
         MASK: DECORATION_TYPE_MASK.MULTI_LINE
     } as const,
     [$.multiCursor]: {
-        KEY: $.multiCursor,
+        KEY: $.multiCursor as symbol,
         MASK: DECORATION_TYPE_MASK.MULTI_CURSOR
     } as const,
 } as const;

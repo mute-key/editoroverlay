@@ -98,8 +98,8 @@ export const enum DECORATION_SELECTION_STYLE_CONFIG_KEY {
 }
 
 export const enum CONFIG_KEY_LINKER {
-    SELECTION_TEXT_ENABLED = 'selectionText.enabled',
-    DIAGNOSTIC_TEXT_ENABLED = 'diagnosticText.enabled',
+    SELECTION_TEXT_ENABLED = 'selectionTextEnabled',
+    DIAGNOSTIC_TEXT_ENABLED = 'diagnosticTextEnabled',
 }
 
 export const enum CONFIG_SECTION_KEY {

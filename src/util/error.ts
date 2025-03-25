@@ -9,7 +9,6 @@ class ErrorDecription {
         this.#configurationSection = configurationSection;
         this.#errorMessage = errorMessage;
         // this.#betterSectionName(configurationSection);
-        console.log(this.#configurationSection);
     }
 
     get = () => {
@@ -25,7 +24,6 @@ class ErrorHelper {
     protected static packageName: string;
 
     protected static configurationSectionList = (): string[] => {
-        console.log('configurationSectionList', this.errorList);
         return this.errorList.map(error => error.get().section);
     };
 
@@ -34,9 +32,7 @@ class ErrorHelper {
     // };
 
     protected static ifExtensionName = (section: string): string => {
-        console.log('ifExtensionName', this.packageName)
         if (section.indexOf(this.packageName) && section.split('.').length > 2) {
-            console.log(section.replace(this.packageName + '.', ''));
             return section.replace(this.packageName + '.', '');
         } else {
             return section;
@@ -63,11 +59,9 @@ export default abstract class Error extends ErrorHelper {
 
     public static setPackageName = (packageName: string): void => {
         this.packageName = packageName;
-        console.log(this.packageName);
     };
 
     public static check = (): boolean => {
-        console.log(this.errorList.length);
         return this.errorList.length > 0;
     };
 

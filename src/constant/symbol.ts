@@ -1,5 +1,8 @@
-import { SELECTION_CONTENT_TEXT_CONFIG_KEY, SELECTION_TYPE } from "./enum";
+import { DIAGNOSTIC_CONTENT_TEXT_KIND, SELECTION_CONTENT_TEXT_CONFIG_KEY, SELECTION_TYPE } from "./enum";
 
+//::==============================================================================
+//:: [ HIGHLIGHT/SELECTION SYMBOLS ]
+//::==============================================================================
 export const reset = Symbol(SELECTION_TYPE.RESET);
 export const cursorOnly = Symbol(SELECTION_TYPE.CURSOR_ONLY);
 export const singleLine = Symbol(SELECTION_TYPE.SINGLE_LINE);
@@ -11,6 +14,19 @@ export const singleLineText = Symbol(SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LI
 export const multiLineCursorText = Symbol(SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT);
 export const multiLineAnchorText = Symbol(SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT);
 export const multiCursorText = Symbol(SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT);
+
+//::==============================================================================
+//::[ SELECTION STATUS SYMBOLS ]
+// ==============================================================================
+export const multiLineLineCountSym = Symbol('multiLineLcSym');
+export const multiLineChararcterSym = Symbol('multiLineCharSym');
+
+//::==============================================================================
+//::[ DIAGNOSTIC STATUS SYMBOLS ]
+//::==============================================================================
+export const okContentText = Symbol(DIAGNOSTIC_CONTENT_TEXT_KIND.OK_CONTENT_TEXT);
+export const warningContentText = Symbol(DIAGNOSTIC_CONTENT_TEXT_KIND.WARNING_CONTENT_TEXT);
+export const errorContentText = Symbol(DIAGNOSTIC_CONTENT_TEXT_KIND.ERROR_CONTENT_TEXT);
 
 export const all = Symbol('all');
 export const okAllContentText = Symbol("all.okAllContentText");
@@ -28,4 +44,6 @@ export const workspace = Symbol('workspace');
 export const okWorkspaceContentText = Symbol("workspace.okWorkspaceContentText");
 export const warningWorkspaceContentText = Symbol("workspace.warningWorkspaceContentText");
 export const errorWorkspaceContentText = Symbol("workspace.errorWorkspaceContentText");
+
+
 

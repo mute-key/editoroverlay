@@ -5,7 +5,7 @@ import * as windowEvent from './event/window';
 import * as workspaceEvent from './event/workspace';
 import * as languagesEvent from './event/language';
 import Error from './util/error';
-import { renderDecorationOnEditor } from './editor/decoration/decoration';
+import { renderDecorationOnEditor } from './editor/decoration/handler';
 import { prepareRenderGroup } from './editor/editor';
 
 const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vscode.Disposable[] | void> => {
@@ -22,16 +22,14 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
         }
 
         const configInfo: Type.ConfigInfoReadyType = loadConfig.config;
-        const decorationState: Type.DecorationStateType = loadConfig.decoration;
         const activeEditor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
-
-        const renderGroup = prepareRenderGroup(configInfo);
 
         const eventContext: Type.EventContext = {
             editor: activeEditor,
             configInfo: configInfo,
-            decorationState: decorationState,
-            renderGroup: renderGroup
+            decorationState: loadConfig.decoration,
+            renderGroup: prepareRenderGroup(configInfo),
+            __proto__: null
         };
 
         if (activeEditor) {

@@ -43,7 +43,7 @@
                 "properties": {
                     "cursorlinehighlight.general.borderOpacity": {
                         "type": "number",
-                        "default": 0.7,
+                        "default": 0.5,
                         "minimum": 0,
                         "maximum": 1,
                         "markdownDescription": "%description.general.borderOpacity%",
@@ -51,7 +51,7 @@
                     },
                     "cursorlinehighlight.general.backgroundOpacity": {
                         "type": "number",
-                        "default": 0.3,
+                        "default": 0.18,
                         "minimum": 0,
                         "maximum": 1,
                         "markdownDescription": "%description.general.backgroundOpacity%",

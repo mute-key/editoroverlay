@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
 import * as Type from '../../type/type';
-import { CONFIG_SECTION, BORDER_WIDTH_DEFINITION, DECORATION_STYLE_PREFIX, NO_CONFIGURATION_DEOCORATION_DEFAULT, NO_CONFIGURATION_GENERAL_DEFAULT, HIGHLIGHT_STYLE_LIST, HIGHLIGHT_STYLE_SYMBOL_LIST } from '../../constant/object';
+import { CONFIG_SECTION, BORDER_WIDTH_DEFINITION, DECORATION_STYLE_PREFIX, NO_CONFIGURATION_DEOCORATION_DEFAULT, NO_CONFIGURATION_GENERAL_DEFAULT, HIGHLIGHT_STYLE_LIST, HIGHLIGHT_STYLE_SYMBOL_LIST, CONFIG_KEY_LINKER_SECTION } from '../../constant/object';
 import { colorConfigTransform, getConfigValue } from '../shared/configuration';
 import { createEditorDecorationType, disposeDecoration } from '../../editor/decoration/decoration';
 import { bindHighlightStyleState } from '../../editor/decoration/highlight/highlight';
 import { getWorkspaceConfiguration, readBits } from '../../util/util';
-import { SELECTION_TYPE } from '../../constant/enum';
+import { CONFIG_KEY_LINKER, SELECTION_TYPE } from '../../constant/enum';
 import * as $ from '../../constant/symbol';
 
 const checkConfigKeyAndCast = <T extends Type.DecorationStyleConfigNameType | Type.GeneralConfigNameOnlyType>(key: string): T => {
@@ -128,10 +128,9 @@ const borderPositionParser = (selectionType: Type.DecorationStyleKeyOnlyType, bo
 };
 
 const updateGeneralConfig = (configReady: Type.ConfigInfoReadyType) => {
-    console.log('updateGeneralConfig');
     for (const key in configReady.generalConfigInfo) {
-        if (configReady.generalConfigInfo[key]) {
-            const sectionLinker = configReady.generalConfigInfo[key].split('.');
+        if (key === CONFIG_KEY_LINKER.DIAGNOSTIC_TEXT_ENABLED || key === CONFIG_KEY_LINKER.SELECTION_TEXT_ENABLED) {
+            const sectionLinker = CONFIG_KEY_LINKER_SECTION[key];
             const configSection = getWorkspaceConfiguration(configReady.name + '.' + sectionLinker[0]);
             const configValue = getConfigValue(configSection, sectionLinker[1], NO_CONFIGURATION_GENERAL_DEFAULT[key], configReady.name + '.' + sectionLinker[0]);
             configReady.generalConfigInfo[key] = configValue;
