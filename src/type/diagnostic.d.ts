@@ -155,6 +155,7 @@ type DiagnosticContentTextType = {
     editor: DiagonosticContentTextKindType,
     workspace: DiagonosticContentTextKindType
     all: DiagonosticContentTextAll
+    __proto__: null
 }
 
 type DiagnosticVisibilityType = {
@@ -236,7 +237,8 @@ type ContentTextWithPositionType = {
 interface DiagnosticContext {
     state: DiagnosticStateType,
     textState: DiagnosticContentTextType,
-    diagnosticVisibility: DiagnosticVisibilityType
+    diagnosticVisibility: DiagnosticVisibilityType,
+    __proto__: null
 }
 
 type BuildDiagonosticDecorationType = (context: DiagnosticContext) => any[]

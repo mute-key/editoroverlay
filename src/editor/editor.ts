@@ -46,8 +46,7 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): Type.RenderGroupS
     return renderGroupSet[$.cursorOnly] as Type.RenderGroupSetProperty;
 };
 
-function renderGroupIs(editor: vscode.TextEditor): Type.RenderGroupSetProperty {
-    // console.log(renderGroupSet)
+const renderGroupIs = (editor: vscode.TextEditor): Type.RenderGroupSetProperty => {
     if (editor.selections.length === 1) {
         if (editor.selections[0].isEmpty) {
             return renderGroupSet[$.cursorOnly];

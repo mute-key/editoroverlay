@@ -39,7 +39,7 @@ type NoConfigurationDeocorationPropType = {
 }
 
 type NoConfigurationDecorationType = {
-    [key: symbol]: NoConfigurationDeocorationPropType | any
+    [key: string]: NoConfigurationDeocorationPropType | any
 }
 
 type DecorationStyleConfigPrefixType = typeof DECORATION_STYLE_PREFIX[keyof typeof DECORATION_STYLE_PREFIX] | "";

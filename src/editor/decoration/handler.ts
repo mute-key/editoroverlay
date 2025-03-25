@@ -3,6 +3,8 @@ import * as Type from '../../type/type';
 import { hightlightCoordinator } from './highlight/highlight';
 import { updateDiagnostic } from '../../diagnostic/diagnostic';
 import { applyDecoration, createEditorDecorationType, unsetAndDisposeDecoration } from './decoration';
+import { editor } from '../../constant/symbol';
+import { renderGroupIs } from '../editor';
 
 const clearDecorationState = (decorationState: Type.DecorationStateType) => {
     decorationState.appliedHighlight.applied = undefined;
@@ -19,7 +21,7 @@ const statusInfoHandler = (editor: vscode.TextEditor, decorationState: Type.Deco
     });
 };
 
-function renderStatusInfo({ editor, renderGroup, decorationState }) {
+const renderStatusInfo = ({ editor, renderGroup, decorationState }) => {
 
     decorationState.statusInfo = [];
 
@@ -35,10 +37,12 @@ function renderStatusInfo({ editor, renderGroup, decorationState }) {
     decorationState.statusInfo.forEach(statusInfoHandler(editor, decorationState));
 };
 
-function renderDecorationOnEditor(context: Type.DecorationContext) {
+const renderDecorationOnEditor = (context: Type.DecorationContext) => {
     // { decoration, range }
-    hightlightCoordinator(context).forEach(({ decoration, range }) => {
-        // console.log(highlight);
+    // {editor, renderGroup, decorationState}
+    // decorationState.appliedHighlight.ofDecorationType
+
+    hightlightCoordinator(context.editor, context.renderGroup.type.KEY).forEach(({ decoration, range }) => {
         applyDecoration(context.editor, decoration, range);
     });
 

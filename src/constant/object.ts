@@ -88,7 +88,8 @@ export const SELECTION_DECORATION_STYLE = {
 export const INDENT_INFO = {
     size: undefined,
     type: undefined,
-    regex: undefined
+    regex: undefined,
+    __proto__: null
 } as const;
 
 export const RENDER_GROUP_SET_PROPERTY = {
@@ -113,8 +114,8 @@ export const DECORATION_STATE = {
         __proto__: null,
     } as const,
     statusText: [],
-    // diagnosticText: [],
-    statusInfo: []
+    statusInfo: [],
+    __proto__: null
 } as const;
 
 export const HIGHLIGHT_STYLE_SYMBOL_LIST = [
@@ -129,6 +130,7 @@ export const HIGHLIGHT_STYLE_LIST = {
     [$.singleLine]: undefined,
     [$.multiLine]: undefined,
     [$.multiCursor]: undefined,
+    __proto__: null
 } as const;
 
 export const HIGHLIGHT_BORDER_POSITION_INFO = {
@@ -136,6 +138,7 @@ export const HIGHLIGHT_BORDER_POSITION_INFO = {
     [$.singleLine]: undefined,
     [$.multiLine]: undefined,
     [$.multiCursor]: undefined,
+    __proto__: null
 } as const;
 
 /**
@@ -148,6 +151,7 @@ export const DECORATION_STYLE_PREFIX = {
     [$.singleLine]: 'singleLine',
     [$.multiLine]: 'multiLine',
     [$.multiCursor]: 'multiCursor',
+    __proto__: null
 } as const;
 
 export const DECORATION_OPTION_CONFIG = {
@@ -168,29 +172,55 @@ export const DECORATION_OPTION_AFTER_CONFIG = {
     __proto__: null,
 } as const;
 
+export const SELECTION_KIND: Type.DecorationInfoType = {
+    [$.reset]: {
+        KEY: $.reset,
+        MASK: DECORATION_TYPE_MASK.RESET
+    } as const,
+    [$.cursorOnly]: {
+        KEY: $.cursorOnly,
+        MASK: DECORATION_TYPE_MASK.CURSOR_ONLY
+    } as const,
+    [$.singleLine]: {
+        KEY: $.singleLine,
+        MASK: DECORATION_TYPE_MASK.SINGLE_LINE
+    } as const,
+    [$.multiLine]: {
+        KEY: $.multiLine,
+        MASK: DECORATION_TYPE_MASK.MULTI_LINE
+    } as const,
+    [$.multiCursor]: {
+        KEY: $.multiCursor,
+        MASK: DECORATION_TYPE_MASK.MULTI_CURSOR
+    } as const,
+    __proto__: null
+} as const;
+
 export const DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET = {
-    [$.okContentText]: $.okEditorContentText as symbol,
-    [$.warningContentText]: $.errorEditorContentText as symbol,
-    [$.errorContentText]: $.warningEditorContentText as symbol
+    [$.okContentText]: $.okEditorContentText,
+    [$.warningContentText]: $.errorEditorContentText,
+    [$.errorContentText]: $.warningEditorContentText,
+    __proto__: null
 };
 
 export const DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET = {
-    [$.okContentText]: $.okWorkspaceContentText as symbol,
-    [$.warningContentText]: $.warningWorkspaceContentText as symbol,
-    [$.errorContentText]: $.errorWorkspaceContentText as symbol
+    [$.okContentText]: $.okWorkspaceContentText,
+    [$.warningContentText]: $.warningWorkspaceContentText,
+    [$.errorContentText]: $.errorWorkspaceContentText,
+    __proto__: null
 } as const;
 
 
 export const DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER = {
-    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: $.okEditorContentText as symbol,
-    [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: $.errorEditorContentText as symbol,
-    [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: $.warningEditorContentText as symbol,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: $.okEditorContentText,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: $.errorEditorContentText,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: $.warningEditorContentText,
 } as const;
 
 export const DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER = {
-    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: $.okWorkspaceContentText as symbol,
-    [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: $.warningWorkspaceContentText as symbol,
-    [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: $.errorWorkspaceContentText as symbol,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: $.okWorkspaceContentText,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: $.warningWorkspaceContentText,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: $.errorWorkspaceContentText,
 } as const;
 
 
@@ -238,7 +268,8 @@ export const DIAGNOSTIC_VISIBILITY_CONFIG = {
     overrideLayoutPlaceholderColorToHighestSeverity: undefined,
     overrideAllOk: undefined,
     hideOk: undefined,
-    hideWarning: undefined
+    hideWarning: undefined,
+    __proto__: null
 } as const;
 
 export const DIAGNOSTIC_CONFIG = {
@@ -267,22 +298,29 @@ export const DIAGNOSTIC_STATE = {
     severity: 0,
     editor: {
         warning: {
-            total: 0
+            total: 0,
+            __proto__: null
         },
         error: {
-            total: 0
-        }
+            total: 0,
+            __proto__: null
+        },
+        __proto__: null
     },
     workspace: {
         warning: {
             source: 0,
-            total: 0
-        } as const,
+            total: 0,
+            __proto__: null
+        },
         error: {
             source: 0,
-            total: 0
-        } as const,
-    }
+            total: 0,
+            __proto__: null
+        },
+        __proto__: null
+    },
+    __proto__: null
 } as const;
 
 export const DIAGNOSTIC_DECORATION_STYLE = {
@@ -313,17 +351,12 @@ export const SELECTION_CONTENT_TEXT = {
 } as const;
 
 export const SELECTION_CONTENT_TEXT_SYMLINK = {
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: $.cursorOnlyText as symbol,
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: $.singleLineText as symbol,
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: $.multiLineCursorText as symbol,
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: $.multiLineAnchorText as symbol,
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: $.multiCursorText as symbol,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: $.cursorOnlyText,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: $.singleLineText,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: $.multiLineCursorText,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: $.multiLineAnchorText,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: $.multiCursorText,
 } as const;
-
-export const SELECTION_CONTENT_TEXT_ENTRY = {
-    contentText: [],
-    position: []
-};
 
 export const DIAGNOSTIC_CONTENT_TEXT = {
     layout: {},
@@ -349,10 +382,7 @@ export const DIAGNOSTIC_CONTENT_TEXT_LIST: Type.TextList = [
     "errorEditorContentText"
 ] as const; // change to enum later
 
-/**
- *  
- * 
- */
+
 export const SINGLE_BORDER_SELECTION = {
     [BORDER_POSITION_VARIATION.NONE]: [
         BORDER_POSITION_MASK.NONE
@@ -373,10 +403,6 @@ export const SINGLE_BORDER_SELECTION = {
     ] as const,
 } as const;
 
-/**
- * use only for multiline single selection.
- * 
- */
 export const MULTILINE_BORDER_SELECTION = {
     [BORDER_POSITION_VARIATION.NONE]: [
         BORDER_POSITION_MASK.NONE,
@@ -402,33 +428,6 @@ export const BORDER_WIDTH_DEFINITION = {
     [$.multiCursor]: SINGLE_BORDER_SELECTION,
 } as const;
 
-export const SELECTION_KIND: Type.DecorationInfoType = {
-    [$.reset]: {
-        KEY: $.reset as symbol as symbol,
-        MASK: DECORATION_TYPE_MASK.RESET
-    } as const,
-    [$.cursorOnly]: {
-        KEY: $.cursorOnly as symbol,
-        MASK: DECORATION_TYPE_MASK.CURSOR_ONLY
-    } as const,
-    [$.singleLine]: {
-        KEY: $.singleLine as symbol,
-        MASK: DECORATION_TYPE_MASK.SINGLE_LINE
-    } as const,
-    [$.multiLine]: {
-        KEY: $.multiLine as symbol,
-        MASK: DECORATION_TYPE_MASK.MULTI_LINE
-    } as const,
-    [$.multiCursor]: {
-        KEY: $.multiCursor as symbol,
-        MASK: DECORATION_TYPE_MASK.MULTI_CURSOR
-    } as const,
-} as const;
-
-/**
- * to protect runtime as well as notify user that malformed configuration value in setting.json.
- * 
- */
 export const NO_CONFIGURATION_GENERAL_DEFAULT = {
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.OPACITY]: 1,
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.BACKGROUND_OPACITY]: 0.5,

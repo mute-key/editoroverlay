@@ -5,8 +5,8 @@ import Range from '../../range';
 import { DIAGNOSTIC_CONTENT_TEXT, DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET, DIAGNOSTIC_VISIBILITY_CONFIG, DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET } from '../../../constant/object';
 import { DIAGNOSTIC_BIOME, DIAGNOSTIC_CONTENT_TEXT_KEY } from '../../../constant/enum';
 
-const diagnosticContentText = { 
-    ...DIAGNOSTIC_CONTENT_TEXT, 
+const diagnosticContentText = {
+    ...DIAGNOSTIC_CONTENT_TEXT,
     __proto__: null
 } as Type.DiagnosticContentTextType;
 
@@ -27,6 +27,7 @@ namespace Placeholder {
         editor: editorSym,
         workspace: workspaceSym,
     };
+
 }
 
 namespace Notation {
@@ -80,18 +81,19 @@ const diagnosticOf: Type.DiagnosticOfType = {
     },
 };
 
-function diagonosticMultiStyleDecoration(diagnosticState, diagnosticContentTextIs: Type.DiagnosticContentTextStateType): Type.DecorationRenderOptionType[] {
+const diagonosticMultiStyleDecoration = (diagnosticState, diagnosticContentTextIs: Type.DiagnosticContentTextStateType): Type.DecorationRenderOptionType[] => {
     if (diagnosticContentTextIs) {
 
         const context = {
             state: diagnosticState,
-            notation: diagnosticContentTextIs.notation
+            notation: diagnosticContentTextIs.notation,
+            __proto__: null
         };
 
         return diagnosticContentTextIs.contentText.map(decorationOption => {
             if (typeof decorationOption.after.contentText !== 'string') {
-                const decorationOptionFunc = { ...decorationOption };
-                decorationOptionFunc.after = { ...decorationOption.after };
+                const decorationOptionFunc = { ...decorationOption, __proto__: null };
+                decorationOptionFunc.after = { ...decorationOption.after, __proto__: null };
                 decorationOptionFunc.after.contentText = decorationOption.after.contentText(context);
                 return decorationOptionFunc;
             }
@@ -101,15 +103,16 @@ function diagonosticMultiStyleDecoration(diagnosticState, diagnosticContentTextI
     return [];
 };
 
-function diagnosticKind({ state, contentText, keySet }) {
+const diagnosticKind = ({ state, contentText, keySet }) => {
     return {
         ok: () => diagonosticMultiStyleDecoration(state, contentText[keySet[$.okContentText]]),
         warning: () => diagonosticMultiStyleDecoration(state, contentText[keySet[$.warningContentText]]),
-        error: () => diagonosticMultiStyleDecoration(state, contentText[keySet[$.errorContentText]])
+        error: () => diagonosticMultiStyleDecoration(state, contentText[keySet[$.errorContentText]]),
+        __proto__: null
     };
 };
 
-function diagnosticCounter(context) {
+const diagnosticCounter = (context) => {
 
     if (context.state.warning.total + context.state.error.total === 0) {
         return diagnosticKind(context).ok();
@@ -132,22 +135,24 @@ const diagnosticBiomeSplit = (state: Type.DiagnosticStateType['editor'] | Type.D
 
     const context = {
         state: state,
-        contentText: contentText
+        contentText: contentText,
+        __proto__: null
     };
 
     return {
         'workspace': () => diagnosticCounter({
             ...context,
-            keySet: { ...DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET }
+            keySet: { ...DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET, __proto__: null }, __proto__: null
         }),
         'editor': () => diagnosticCounter({
             ...context,
-            keySet: { ...DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET }
+            keySet: { ...DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET, __proto__: null }, __proto__: null
         }),
-        'all': () => []
+        'all': () => [],
+        __proto__: null
     };
 };
-function diagnosticLayoutAllOkOverride(state: Type.DiagnosticStateType, textState: Type.DiagnosticContentTextType): Type.DecorationRenderOptionType[] {
+const diagnosticLayoutAllOkOverride = (state: Type.DiagnosticStateType, textState: Type.DiagnosticContentTextType): Type.DecorationRenderOptionType[] => {
     return textState.layout[$.allOkPlaceholderContentText].contentText.map(decoration => {
         if (decoration.after.contentText === Placeholder.allOkSym) {
             return diagonosticMultiStyleDecoration(state, textState.all[$.okAllContentText]);
@@ -159,7 +164,7 @@ function diagnosticLayoutAllOkOverride(state: Type.DiagnosticStateType, textStat
     }).flat();
 };
 
-function diagnosticLayoutDivided(state: Type.DiagnosticStateType, textState: Type.DiagnosticContentTextType): Type.DecorationRenderOptionType[]{
+const diagnosticLayoutDivided = (state: Type.DiagnosticStateType, textState: Type.DiagnosticContentTextType): Type.DecorationRenderOptionType[] => {
     return textState.layout[$.problemPlaceholderContentText].contentText.map(decoration => {
         if (decoration.after.contentText === Placeholder.workspaceSym) {
             return diagnosticBiomeSplit(state.workspace, textState.workspace).workspace();
@@ -176,23 +181,25 @@ function diagnosticLayoutDivided(state: Type.DiagnosticStateType, textState: Typ
 };
 
 
-function buildDiagonosticDecorationLayout(context: Type.DiagnosticContext): any[] {
+const buildDiagonosticDecorationLayout = (context: Type.DiagnosticContext): any[] => {
     const { state, textState } = context;
     const diagnosticLayout = state.severity === DIAGNOSTIC_BIOME.OK ? diagnosticLayoutAllOkOverride : diagnosticLayoutDivided;
     return diagnosticLayout(state, textState);
 };
 
 
-function diagnosticInfo(editor: vscode.TextEditor, diagnosticState: Type.DiagnosticStateType): Type.StatusTextInfoType[]{
+const diagnosticInfo = (editor: vscode.TextEditor, diagnosticState: Type.DiagnosticStateType): Type.StatusTextInfoType[] => {
     const context: Type.DiagnosticContext = {
         state: diagnosticState,
         textState: diagnosticContentText,
-        diagnosticVisibility: diagnosticVisibility
+        diagnosticVisibility: diagnosticVisibility,
+        __proto__: null
     };
 
     return [{
         contentText: buildDiagonosticDecorationLayout(context) as Type.DecorationRenderOptionType[],
-        range: Range.createCursorRange(editor)
+        range: Range.createCursorRange(editor),
+        __proto__: null
     }];
 };
 

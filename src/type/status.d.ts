@@ -52,7 +52,8 @@ type ContentTextPositionFunc = {
 }
 
 type SelectionTextInfoSplitType = {
-    [k in keyof typeof DECORATION_STYLE_KEY as symbol]: () => StatusTextInfoType[]
+    [key: symbol]: () => StatusTextInfoType[]
+    __proto__: null
 };
 
 type CursorOnlyStatusTextRegExp = {
@@ -161,6 +162,7 @@ type StatusInfoType = {
 type StatusTextInfoType = {
     contentText: DecorationType.DecorationRenderOptionType[]
     range: vscode.Range
+    __proto__: null
 }
 
 

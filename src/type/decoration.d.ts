@@ -47,6 +47,7 @@ type DecorationContext = {
     editor: vscode.TextEditor
     decorationState: DecorationStateType
     renderGroup: RenderGroupSetProperty
+    __proto__: null
 };
 
 type SelectionInfoType = {
@@ -55,7 +56,7 @@ type SelectionInfoType = {
 }
 
 type DecorationInfoPropType = {
-    KEY: symbol,
+    KEY: string,
     MASK: DECORATION_TYPE_MASK
 }
 
@@ -66,7 +67,8 @@ type DecorationCoordinatorFunc = (context: DecorationContext) => DecorationWithR
 type UnsetFunctionType = (selectionKind: DecorationInfoPropType) => void
 
 type DecorationInfoType = {
-    [k in keyof typeof SELECTION_TYPE as symbol]: DecorationInfoPropType | any;
+    [key: symbol]: DecorationInfoPropType | any
+    __proto__: null
 }
 
 type AppliedDecorationType = {
@@ -93,7 +95,10 @@ type createRange = {
     endPosition: number[] | vscode.Position
 }
 
-type CoordinatorSplitType = Record<symbol, (context: SelectionHighlightKindContext) => DecorationWithRangeType[] | any>
+type CoordinatorSplitType = {
+    [key: symbol]: (context: SelectionHighlightKindContext) => DecorationWithRangeType[] | any
+    __proto__: null
+}
 
 type BorderPositionParserType = {
     isWholeLine: boolean,
@@ -110,6 +115,7 @@ type SelectionHighlightKindContext = {
     editor: vscode.TextEditor,
     textEditorHighlight: vscode.TextEditorDecorationType[]
     borderConfigSymlink: symbol
+    __proto__: null
 }
 
 type SelectionTypeToDecorationFunc = (context: SelectionHighlightKindContext) => DecorationWithRangeType[]

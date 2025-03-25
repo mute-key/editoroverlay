@@ -31,6 +31,11 @@ const unsetAndDisposeDecoration = (editor: vscode.TextEditor, decorationType: vs
 };
 
 const resetAllDecoration = (decorationState: Type.DecorationStateType) => {
+
+    if (decorationState.statusText) {
+        decorationState.statusText.forEach((decorationType) => decorationType.dispose());
+    }
+
     vscode.window.visibleTextEditors.forEach(editor => {
         if (decorationState.appliedHighlight.ofDecorationType !== undefined) {
             decorationState.appliedHighlight.ofDecorationType.forEach(decoration => {
@@ -38,10 +43,6 @@ const resetAllDecoration = (decorationState: Type.DecorationStateType) => {
             });
         }
     });
-
-    if (decorationState.statusText) {
-        decorationState.statusText.forEach((decorationType) => decorationType.dispose());
-    }
 };
 
 const createEditorDecorationType = (styleAppliedConfig: any): vscode.TextEditorDecorationType => {

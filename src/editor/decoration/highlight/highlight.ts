@@ -6,19 +6,20 @@ import { HIGHLIGHT_BORDER_POSITION_INFO, HIGHLIGHT_STYLE_LIST, HIGHLIGHT_STYLE_S
 import { resetDecorationRange } from '../decoration';
 // import { DECORATION_STYLE_KEY, DECORATION_TYPE_MASK, SELECTION_TYPE } from '../../../constant/enum';
 
-const highlightStyleList = { 
+const highlightStyleList = {
     ...HIGHLIGHT_STYLE_LIST,
     __proto__: null
- } as unknown as Type.HighlightStyleListType;
+} as unknown as Type.HighlightStyleListType;
 
-const borderPositionInfo = { 
+const borderPositionInfo = {
     ...HIGHLIGHT_BORDER_POSITION_INFO,
     __proto__: null,
 } as unknown as Type.BorderPositionInfoType;
 
 const cursorOnlyHighlightRange: Type.SelectionTypeToDecorationFunc = ({ editor, borderConfigSymlink, textEditorHighlight }): Type.DecorationWithRangeType[] => {
+
     const borderConfig: Type.BorderPositionParserType = borderPositionInfo[borderConfigSymlink] as Type.BorderPositionParserType;
-    
+
     // index 0 - border applied decoration on selection
     // index 1 - background only decoration
 
@@ -66,7 +67,7 @@ const singelLineHighlightRange: Type.SelectionTypeToDecorationFunc = ({ editor, 
     }];
 };
 
-function multiLineHighlightRange({ editor, textEditorHighlight }): Type.DecorationWithRangeType[] {
+const multiLineHighlightRange = ({ editor, textEditorHighlight }): Type.DecorationWithRangeType[] => {
 
     // index 0 - top border
     // index 1 - bottom border
@@ -110,7 +111,7 @@ const multiCursorHighlightRange: Type.SelectionTypeToDecorationFunc = ({ editor,
     }];
 };
 
-function unsetRangeOfHighlightStyle(editor: vscode.TextEditor) {
+const unsetRangeOfHighlightStyle = (editor: vscode.TextEditor) => {
     HIGHLIGHT_STYLE_SYMBOL_LIST.forEach(highlight => {
         resetDecorationRange(editor, highlightStyleList[highlight]);
     });
@@ -121,18 +122,16 @@ const coordinatorSplit: Type.CoordinatorSplitType = {
     [$.singleLine]: (context: Type.SelectionHighlightKindContext) => singelLineHighlightRange(context),
     [$.multiLine]: (context: Type.SelectionHighlightKindContext) => multiLineHighlightRange(context),
     [$.multiCursor]: (context: Type.SelectionHighlightKindContext) => multiCursorHighlightRange(context),
+    __proto__: null
 };
 
-function hightlightCoordinator({ editor, renderGroup, decorationState }) {
-    
-    const textEditorHighlight = highlightStyleList[renderGroup.type.KEY] as vscode.TextEditorDecorationType[];
-    
-    decorationState.appliedHighlight.ofDecorationType = textEditorHighlight;
+const hightlightCoordinator = (editor, renderGroupKey) => {
 
-    return coordinatorSplit[renderGroup.type.KEY]({
+    const textEditorHighlight = highlightStyleList[renderGroupKey] as vscode.TextEditorDecorationType[];
+    return coordinatorSplit[renderGroupKey]({
         editor,
         textEditorHighlight,
-        borderConfigSymlink: renderGroup.type.KEY,
+        borderConfigSymlink: renderGroupKey,
         __proto__: null,
     });
 };

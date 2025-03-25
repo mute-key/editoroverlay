@@ -16,7 +16,6 @@ const configChanged: Type.DecorationEventFunc = ({ configInfo, decorationState})
             });
 
             if (sectionName) {
-                console.log('????')
                 update.sectionChanged()[sectionName](configInfo);
                 update.sectionChanged()[CONFIG_SECTION_KEY.GENERAL](configInfo);
                 prepareRenderGroup(configInfo);

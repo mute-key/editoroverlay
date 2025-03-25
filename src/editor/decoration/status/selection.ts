@@ -10,7 +10,10 @@ const selectionContentText = {
     __proto__: null
 } as unknown as Type.StatusContentTextType;
 
-const indentInfo = { ...INDENT_INFO, __proto__: null } as Type.IndentInfoType;
+const indentInfo = { 
+    ...INDENT_INFO, 
+    __proto__: null 
+} as Type.IndentInfoType;
 
 const columnDelta = (editor, delta = 0) => {
     const col = editor.selection.active.character + delta;
@@ -32,21 +35,14 @@ const lineNumber = {
 };
 
 const multiLineOf = {
-    lc: $.multiLineLineCountSym,
-    char: $.multiLineChararcterSym,
+    lc: $.multiLineLineCountSym  as symbol,
+    char: $.multiLineChararcterSym  as symbol,
 };
 
-function lineCounter(editor: vscode.TextEditor) {
-    return ((editor.selection.active.line - editor.selection.anchor.line) + 1);
-}
-
-function characterCounter(editor: vscode.TextEditor) {
-    return String(editor.document.getText(editor.selection).replace(indentInfo.regex as RegExp, "").length);
-} 
-
 const multilineFunctionSymLink = {
-    [$.multiLineLineCountSym]: lineCounter,
-    [$.multiLineChararcterSym]: characterCounter
+    [$.multiLineLineCountSym as symbol]: (editor) => String((editor.selection.end.line - editor.selection.start.line) + 1),
+    [$.multiLineChararcterSym as symbol]: (editor) => String(editor.document.getText(editor.selection).replace(indentInfo.regex as RegExp, "").length),
+    __proto__: null
 };
 
 const multiCursorOf = {
@@ -97,7 +93,7 @@ const selectionOf: Type.ContentTextStateType = {
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: multiCursorOf,
 };
 
-function contentTextFunctionSymlink(editor: vscode.TextEditor, { contentText, position }: Type.ContentTextSymlinkKind, buffer: any): Type.DecorationRenderOptionType[] {
+const contentTextFunctionSymlink = (editor: vscode.TextEditor, { contentText, position }: Type.ContentTextSymlinkKind, buffer: any): Type.DecorationRenderOptionType[] => {
     position.forEach(([pos, sym]) => {
         if (!buffer[sym]) {
             buffer[sym] = multilineFunctionSymLink[sym](editor);
@@ -107,14 +103,14 @@ function contentTextFunctionSymlink(editor: vscode.TextEditor, { contentText, po
     return contentText;
 };
 
-function contentTextFunc(context: Type.ContentTextFuncContext, contentText: any): Type.DecorationRenderOptionType[] {
+const contentTextFunc = (context: Type.ContentTextFuncContext, contentText: any): Type.DecorationRenderOptionType[] => {
     return contentText.map(decorationOption => {
         if (typeof decorationOption.after.contentText === 'string') {
             return decorationOption;
         }
 
-        const decorationOptionFunc = { ...decorationOption };
-        decorationOptionFunc.after = { ...decorationOption.after };
+        const decorationOptionFunc = { ...decorationOption, __proto__: null };
+        decorationOptionFunc.after = { ...decorationOption.after, __proto__: null };
         decorationOptionFunc.after.contentText = String(decorationOption.after.contentText(context));
         return decorationOptionFunc;
     });
@@ -123,44 +119,38 @@ function contentTextFunc(context: Type.ContentTextFuncContext, contentText: any)
 const cursorOnlySelection = ({ editor }: Type.ContentTextFuncContext): Type.StatusTextInfoType[] => {
     return [{
         contentText: contentTextFunc({ idx: 0, editor }, selectionContentText[$.cursorOnlyText].contentText as any[]),
-        range: Range.createActiveRange(editor)
+        range: Range.createActiveRange(editor),
+        __proto__: null
     }];
 };
 
 const singleLineSelection = ({ editor }: Type.ContentTextFuncContext): Type.StatusTextInfoType[] => {
     return [{
         contentText: contentTextFunc({ idx: 0, editor }, selectionContentText[$.singleLineText].contentText as any[]),
-        range: Range.createActiveRange(editor)
+        range: Range.createActiveRange(editor),
+        __proto__: null
     }];
 };
 
-function multilineSelection({ editor }: Type.ContentTextFuncContext): Type.StatusTextInfoType[] {
+const multilineSelection = ({ editor }: Type.ContentTextFuncContext): Type.StatusTextInfoType[] => {
 
     const buffer = {
-        [$.multiLineLineCountSym]: undefined,
-        [$.multiLineChararcterSym]: undefined
+        [$.multiLineLineCountSym as symbol]: undefined,
+        [$.multiLineChararcterSym as symbol]: undefined
     };
 
     const anchor = contentTextFunctionSymlink(editor, selectionContentText[$.multiLineAnchorText] as Type.ContentTextSymlinkKind, buffer);
     const cursor = contentTextFunctionSymlink(editor, selectionContentText[$.multiLineCursorText] as Type.ContentTextSymlinkKind, buffer);
 
-    const statusList = [{
+    return [{
         contentText: anchor,
-        range: Range.createAnchorRange(editor)
+        range: Range.createAnchorRange(editor),
+        __proto__: null
     }, {
         contentText: cursor,
-        range: Range.createActiveRange(editor)
+        range: Range.createActiveRange(editor),
+        __proto__: null
     }];
-
-    return statusList;
-
-    // return [{
-    //     contentText: anchor,
-    //     range: Range.createAnchorRange(editor)
-    // }, {
-    //     contentText: cursor,
-    //     range: Range.createActiveRange(editor)
-    // }];
 };
 
 const multiCursorSelection = ({ idx, editor }: Type.ContentTextFuncContext): Type.StatusTextInfoType[] => {
@@ -178,7 +168,8 @@ const multiCursorSelection = ({ idx, editor }: Type.ContentTextFuncContext): Typ
 
         selectionTextInfo.push({
             contentText: contentTextFunc({ idx, editor }, selectionContentText[$.multiCursorText].contentText as any[]),
-            range: Range.createStartEndRangeOfSelection(editor.selections[idx])
+            range: Range.createStartEndRangeOfSelection(editor.selections[idx]),
+            __proto__: null
         });
 
         statusLine.push(editor.selections[idx].end.line);
@@ -192,10 +183,12 @@ const selectionTextInfoSplit = (context: Type.ContentTextFuncContext): Type.Sele
         [$.singleLine]: () => singleLineSelection(context),
         [$.multiLine]: () => multilineSelection(context),
         [$.multiCursor]: () => multiCursorSelection(context),
+        __proto__: null
     };
 };
 
-function selectionInfo(editor: vscode.TextEditor, type: Type.DecorationInfoPropType): Type.StatusTextInfoType[] {
+const selectionInfo = (editor: vscode.TextEditor, type: Type.DecorationInfoPropType): Type.StatusTextInfoType[] => {
+
     const context: Type.ContentTextFuncContext = {
         idx: 0,
         editor: editor

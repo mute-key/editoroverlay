@@ -7,7 +7,8 @@ type EventContext = {
     editor?: vscode.TextEditor
     configInfo: ConfigType.ConfigInfoReadyType
     decorationState: DecorationType.DecorationStateType,
-    renderGroup: DecorationType.RenderGroupSetProperty
+    renderGroup: DecorationType.RenderGroupSetProperty,
+    __proto__: null
 }
 
 type DecorationEventFunc = (context: EventContext) => vscode.Disposable
