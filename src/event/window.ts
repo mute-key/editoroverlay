@@ -45,7 +45,7 @@ const activeEditorChanged: Type.DecorationEventFunc = ({ configInfo, decorationS
                 await resetEditorDiagnosticStatistics();
                 await updateDiagnostic(editor.document.uri);
             }
-
+            
             updateIndentOption(editor);
 
             renderDecorationOnEditor({

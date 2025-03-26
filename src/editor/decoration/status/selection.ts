@@ -1,3 +1,5 @@
+"use strict";
+
 import * as vscode from 'vscode';
 import * as Type from '../../../type/type';
 import * as $ from '../../../constant/symbol';
@@ -82,7 +84,7 @@ const multiCursorOf = {
             idx++;
         }
         return charCount;
-    }
+    },
 };
 
 const selectionOf: Type.ContentTextStateType = {
@@ -136,7 +138,8 @@ const multilineSelection = ({ editor }: Type.ContentTextFuncContext): Type.Statu
 
     const buffer = {
         [$.multiLineLineCountSym as symbol]: undefined,
-        [$.multiLineChararcterSym as symbol]: undefined
+        [$.multiLineChararcterSym as symbol]: undefined,
+        __proto__: null
     };
 
     const anchor = contentTextFunctionSymlink(editor, selectionContentText[$.multiLineAnchorText] as Type.ContentTextSymlinkKind, buffer);

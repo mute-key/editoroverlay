@@ -28,6 +28,7 @@ export const CONFIG_INFO = {
         diagnosticTextEnabled: undefined,
     } as const,
     configError: undefined,
+    __proto__: null
 } as const;
 
 export const CONFIG_KEY_LINKER_SECTION = {
@@ -369,6 +370,7 @@ export const DIAGNOSTIC_CONTENT_TEXT = {
 export const DIAGNOSTIC_DECORATION_TEXT_KIND = {
     contentText: undefined,
     notation: undefined,
+    __proto__: null
 };
 
 export const DIAGNOSTIC_CONTENT_TEXT_LIST: Type.TextList = [

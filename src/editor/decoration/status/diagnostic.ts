@@ -142,11 +142,19 @@ const diagnosticBiomeSplit = (state: Type.DiagnosticStateType['editor'] | Type.D
     return {
         'workspace': () => diagnosticCounter({
             ...context,
-            keySet: { ...DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET, __proto__: null }, __proto__: null
+            keySet: { 
+                ...DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET, 
+                __proto__: null 
+            }, 
+            __proto__: null
         }),
         'editor': () => diagnosticCounter({
             ...context,
-            keySet: { ...DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET, __proto__: null }, __proto__: null
+            keySet: { 
+                ...DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET, 
+                __proto__: null 
+            }, 
+            __proto__: null
         }),
         'all': () => [],
         __proto__: null
@@ -161,7 +169,7 @@ const diagnosticLayoutAllOkOverride = (state: Type.DiagnosticStateType, textStat
         const overrideColor = textState.layout[$.allOkPlaceholderContentText]?.override;
         decoration.after.color = overrideColor ? overrideColor[DIAGNOSTIC_BIOME.OK].color : decoration.after.color;
         return decoration;
-    }).flat();
+    });
 };
 
 const diagnosticLayoutDivided = (state: Type.DiagnosticStateType, textState: Type.DiagnosticContentTextType): Type.DecorationRenderOptionType[] => {
@@ -177,7 +185,7 @@ const diagnosticLayoutDivided = (state: Type.DiagnosticStateType, textState: Typ
         const overrideColor = textState.layout[$.problemPlaceholderContentText].override;
         decoration.after.color = overrideColor ? overrideColor[state.severity].color : decoration.after.color;
         return decoration;
-    }).flat();
+    });
 };
 
 

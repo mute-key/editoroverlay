@@ -26,6 +26,7 @@ const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentText
         textOftarget[sym] = {
             contentText: contentTextStyled,
             position: Object.entries(textPosition.position),
+            __proto__: null
         };
 
         if (leftMargin && leftMargin !== '0px' || leftMargin !== '0em') {

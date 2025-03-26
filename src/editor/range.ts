@@ -1,4 +1,4 @@
-import * as vscode from 'vscode';
+import { Position, Range, TextEditor, Selection } from 'vscode';
 import * as Type from '../type/type';
 
 // "disabled",
@@ -6,34 +6,34 @@ import * as Type from '../type/type';
 // "previousLine",
 // "nextLine"
 
-const createRangeNNNN = (startLine: number, startChar: number, endLine: number, endChar: number): vscode.Range =>
-    new vscode.Range(
-        new vscode.Position(startLine, startChar),
-        new vscode.Position(endLine, endChar));
+const createRangeNNNN = (startLine: number, startChar: number, endLine: number, endChar: number): Range =>
+    new Range(
+        new Position(startLine, startChar),
+        new Position(endLine, endChar));
 
-const createRangeSPEP = (start: vscode.Position, end: vscode.Position): vscode.Range =>
-    new vscode.Range(start, end);
+const createRangeSPEP = (start: Position, end: Position): Range =>
+    new Range(start, end);
 
-const createRangeNNEP = (line: number, startChar: number, end: vscode.Position): vscode.Range =>
-    new vscode.Range(
-        new vscode.Position(line, startChar),
+const createRangeNNEP = (line: number, startChar: number, end: Position): Range =>
+    new Range(
+        new Position(line, startChar),
         end);
 
-const createCursorRange = (editor: vscode.TextEditor, lineDelta: number = 0): vscode.Range =>
-    new vscode.Range(
-        new vscode.Position(editor.selection.end.line + lineDelta, editor.selection.end.character),
-        new vscode.Position(editor.selection.end.line + lineDelta, editor.selection.end.character));
+const createCursorRange = (editor: TextEditor, lineDelta: number = 0): Range =>
+    new Range(
+        new Position(editor.selection.end.line + lineDelta, editor.selection.end.character),
+        new Position(editor.selection.end.line + lineDelta, editor.selection.end.character));
 
-const createActiveRange = (editor: vscode.TextEditor): vscode.Range =>
+const createActiveRange = (editor: TextEditor): Range =>
     createRangeSPEP(editor.selection.active, editor.selection.active);
 
-const createAnchorRange = (editor: vscode.TextEditor): vscode.Range =>
+const createAnchorRange = (editor: TextEditor): Range =>
     createRangeSPEP(editor.selection.anchor, editor.selection.anchor);
 
-const createStartEndRangeOfSelection = (selection: vscode.Selection): vscode.Range =>
+const createStartEndRangeOfSelection = (selection: Selection): Range =>
     createRangeSPEP(selection.start, selection.end);
 
-const Range = {
+const range = {
     createRangeNNNN: createRangeNNNN,
     createRangeSPEP: createRangeSPEP,
     createRangeNNEP: createRangeNNEP,
@@ -43,4 +43,4 @@ const Range = {
     createStartEndRangeOfSelection: createStartEndRangeOfSelection,
 };
 
-export default Range;
+export default range;

@@ -30,6 +30,7 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): Type.RenderGroupS
         [$.singleLine]: bindDiagnostic.configOf.displayWhenSingleLine,
         [$.multiLine]: bindDiagnostic.configOf.displayWhenMultiLine,
         [$.multiCursor]: bindDiagnostic.configOf.displayWhenMultiCursor,
+        __proto__: null
     };
 
     HIGHLIGHT_STYLE_SYMBOL_LIST.forEach(selectionKey => {

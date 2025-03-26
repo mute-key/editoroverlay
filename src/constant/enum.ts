@@ -8,7 +8,7 @@
 // ==============================================================================
 
 
-export const enum SYSTEM_MESSAGE {
+export declare const enum SYSTEM_MESSAGE {
     RELOADING_CONFIG = 'Config has been changed. Reloading configuration. (Messaage Dismiss in 2 second.)'
 }
 

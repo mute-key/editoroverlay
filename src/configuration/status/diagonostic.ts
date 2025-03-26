@@ -21,8 +21,8 @@ const applyLeftMargin = (textOf: Type.DiagnosticContentTextType, visibility: Typ
 
     [$.allOkPlaceholderContentText, $.problemPlaceholderContentText].forEach(placeholderKind => {
         if (typeof textOf.layout[placeholderKind].contentText[0].contentText === 'symbol') {
-            const marginDecoration = { ...textOf.layout[placeholderKind].contentText[0].contentText };
-            marginDecoration.after = { ...textOf.layout[placeholderKind].contentText[0].contentText.after };
+            const marginDecoration = { ...textOf.layout[placeholderKind].contentText[0].contentText, __proto__: null };
+            marginDecoration.after = { ...textOf.layout[placeholderKind].contentText[0].contentText.after, __proto__: null };
             marginDecoration.contentText = '';
             marginDecoration.margin = leftMarginToMarginString(leftMargin);
             textOf.layout[placeholderKind].contentText[0].unshift(marginDecoration);
@@ -54,8 +54,7 @@ const buildDiagnosticTextState = (textOftarget, textOfSource, style: Type.Diagon
             if (target[propertyName][contentTextName].notation) {
                 context.notation = target[propertyName][contentTextName].notation;
             }
-            // console.log(contentTextName)
-            // console.log(DIAGNOSTIC_CONTENT_TEXT_NAME_TO_SYM[contentTextName])
+
             target[propertyName][contentTextName].contentText = convertPositionDecorationRenderOption(context);
         }
     };
@@ -79,11 +78,11 @@ const buildDiagnosticTextState = (textOftarget, textOfSource, style: Type.Diagon
 const ifNoationNotNull = (property: string, str: string) => {
     if (str !== 'null' && str.length > 0 && !Regex.resourceScope.test(str)) {
         return {
-            [property]: str
+            [property]: str,
+            __proto__: null
         };
     }
-    // Object.create(null)
-    return {};
+    return { __proto__: null };
 };
 
 const createNotation = (biome: symbol, prefix: string, postfix: string) => {
@@ -92,8 +91,10 @@ const createNotation = (biome: symbol, prefix: string, postfix: string) => {
             ...DIAGNOSTIC_DECORATION_TEXT_KIND,
             notation: {
                 ...ifNoationNotNull('prefix', prefix),
-                ...ifNoationNotNull('postfix', postfix)
-            }
+                ...ifNoationNotNull('postfix', postfix),
+                __proto__: null
+            },
+            __proto__: null
         }
     };
 };
@@ -129,17 +130,22 @@ const overrideStyle = (config, overrideBiome) => {
     Object.entries(overrideStyleDescription).forEach(([biome, override]) => {
         if (overrideBiome & Number(biome) && config[override.styleName]) {
             override.target.forEach(color => {
-                color[biome] = { color: hexToRgbaStringLiteral(config[override.styleName].color as string, config[override.styleName].colorOpacity, '#333333', 0.7) };
+                color[biome] = {
+                    color: hexToRgbaStringLiteral(config[override.styleName].color as string, config[override.styleName].colorOpacity, '#333333', 0.7),
+                    __proto__: null
+                };
             });
         }
     });
 
     return {
         [$.problemPlaceholderContentText]: {
-            override: Object.keys(problemOverrideColor).length > 0 ? problemOverrideColor : undefined
+            override: Object.keys(problemOverrideColor).length > 0 ? problemOverrideColor : undefined,
+            __proto__: null
         },
         [$.allOkPlaceholderContentText]: {
-            override: Object.keys(allOkOverrideColor).length > 0 ? allOkOverrideColor : undefined
+            override: Object.keys(allOkOverrideColor).length > 0 ? allOkOverrideColor : undefined,
+            __proto__: null
         },
     };
 };
@@ -147,13 +153,14 @@ const overrideStyle = (config, overrideBiome) => {
 const buildDiagnosticStyle = (config: Type.DiagnosticConfigType, style: Type.DiagonosticDecorationStyle, diagnosticStyleList: string[], visibility: Type.DiagnosticVisibilityType, diagnosticBiome) => {
 
     const result = {
-        workspace: {},
-        editor: {},
-        all: {},
+        workspace: { __proto__: null },
+        editor: { __proto__: null },
+        all: { __proto__: null },
         layout: {
-            [$.problemPlaceholderContentText]: {},
-            [$.allOkPlaceholderContentText]: {}
-        }
+            [$.problemPlaceholderContentText]: { __proto__: null },
+            [$.allOkPlaceholderContentText]: { __proto__: null }
+        },
+        __proto__: null
     };
 
     if (config.leftMargin) {
@@ -196,9 +203,10 @@ const buildDiagnosticStyle = (config: Type.DiagnosticConfigType, style: Type.Dia
     return {
         ...result,
         layout: {
-            [$.problemPlaceholderContentText]: {},
-            [$.allOkPlaceholderContentText]: {},
-            ...ifOverrride
+            [$.problemPlaceholderContentText]: { __proto__: null },
+            [$.allOkPlaceholderContentText]: { __proto__: null },
+            ...ifOverrride,
+            __proto__: null
         }
     };
 };
@@ -257,7 +265,7 @@ const clearOverrideState = (stateOf) => {
 };
 
 const updateDiagnosticTextConfig = (configReady: Type.ConfigInfoReadyType, configuratioChange: boolean = false) => {
-    
+
     const diagnosticConfig = { ...DIAGNOSTIC_CONFIG } as Type.DiagnosticConfigType;
 
     const diagnosticDecorationStyle = { ...DIAGNOSTIC_DECORATION_STYLE } as unknown as Type.DiagonosticDecorationStyle;
