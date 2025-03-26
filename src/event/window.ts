@@ -7,7 +7,7 @@ import { renderGroupIs, updateIndentOption } from '../editor/editor';
 import { resetEditorDiagnosticStatistics, updateDiagnostic } from '../diagnostic/diagnostic';
 
 const windowStateChanged: Type.DecorationEventFunc = ({ decorationState, renderGroup }): vscode.Disposable => {
-    return vscode.window.onDidChangeWindowState((event: vscode.WindowState) => {
+    return vscode.window.onDidChangeWindowState((event: vscode.WindowState): void => {
         if (event.focused) {
 
             // apply decoration to active editor.
@@ -63,7 +63,7 @@ const activeEditorChanged: Type.DecorationEventFunc = ({ configInfo, decorationS
 };
 
 const editorOptionChanged = (context): vscode.Disposable => {
-    return vscode.window.onDidChangeTextEditorOptions((event: vscode.TextEditorOptionsChangeEvent) => {
+    return vscode.window.onDidChangeTextEditorOptions((event: vscode.TextEditorOptionsChangeEvent): void => {
         if (event.textEditor) {
             updateIndentOption(event.textEditor);
         }
@@ -71,9 +71,9 @@ const editorOptionChanged = (context): vscode.Disposable => {
 };
 
 const selectionChanged: Type.DecorationEventFunc = (context): vscode.Disposable => {
-    return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) => {
+    return vscode.window.onDidChangeTextEditorSelection(async (event: vscode.TextEditorSelectionChangeEvent): Promise<void> => {
         if (event.selections) {
-            renderDecorationOnEditor({
+            await renderDecorationOnEditor({
                 ...context,
                 editor: event.textEditor
             });
@@ -82,7 +82,7 @@ const selectionChanged: Type.DecorationEventFunc = (context): vscode.Disposable 
 };
 
 const visibleRangeChanged = (): vscode.Disposable => {
-    return vscode.window.onDidChangeTextEditorVisibleRanges((event: vscode.TextEditorVisibleRangesChangeEvent) => {
+    return vscode.window.onDidChangeTextEditorVisibleRanges((event: vscode.TextEditorVisibleRangesChangeEvent): void => {
         if (event) {
 
         }

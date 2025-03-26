@@ -2061,8 +2061,8 @@ var renderGroupIs = (editor3) => {
 var clearDecorationState = (decorationState2) => {
   decorationState2.appliedHighlight.applied = void 0;
   decorationState2.appliedHighlight.ofDecorationType = void 0;
-  decorationState2.selectionText = [];
-  decorationState2.diagnosticText = [];
+  decorationState2.selectionInfo = [];
+  decorationState2.diagnosticInfo = [];
   decorationState2.statusText = [];
 };
 var statusInfoHandler = (editor3, statusText, range) => (decorationOption) => {
@@ -2073,28 +2073,28 @@ var statusInfoHandler = (editor3, statusText, range) => (decorationOption) => {
 var renderStatusInfo = ({ editor: editor3, renderGroup, decorationState: decorationState2 }) => {
   decorationState2.statusText = unsetAndDisposeDecoration(editor3, decorationState2.statusText);
   if (renderGroup.selection) {
-    decorationState2.selectionText = renderGroup.selection(editor3, renderGroup.type);
-    let length = decorationState2.selectionText.length | 0;
+    decorationState2.selectionInfo = renderGroup.selection(editor3, renderGroup.type);
+    let length = decorationState2.selectionInfo.length | 0;
     while (length--) {
-      decorationState2.selectionText[length].contentText.forEach(
+      decorationState2.selectionInfo[length].contentText.forEach(
         statusInfoHandler(
           editor3,
           decorationState2.statusText,
-          decorationState2.selectionText[length].range
+          decorationState2.selectionInfo[length].range
         )
       );
     }
-    delete decorationState2.selection;
+    delete decorationState2.selectionText;
   }
   if (renderGroup.diagnostic) {
-    decorationState2.diagnosticText = renderGroup.diagnostic(editor3, updateDiagnostic());
-    let length = decorationState2.diagnosticText.length | 0;
+    decorationState2.diagnosticInfo = renderGroup.diagnostic(editor3, updateDiagnostic());
+    let length = decorationState2.diagnosticInfo.length | 0;
     while (length--) {
-      decorationState2.diagnosticText[length].contentText.forEach(
+      decorationState2.diagnosticInfo[length].contentText.forEach(
         statusInfoHandler(
           editor3,
           decorationState2.statusText,
-          decorationState2.diagnosticText[length].range
+          decorationState2.diagnosticInfo[length].range
         )
       );
     }
@@ -2167,9 +2167,9 @@ var editorOptionChanged = (context) => {
   });
 };
 var selectionChanged = (context) => {
-  return vscode10.window.onDidChangeTextEditorSelection((event) => {
+  return vscode10.window.onDidChangeTextEditorSelection(async (event) => {
     if (event.selections) {
-      renderDecorationOnEditor({
+      await renderDecorationOnEditor({
         ...context,
         editor: event.textEditor
       });

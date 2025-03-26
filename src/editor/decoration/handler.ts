@@ -8,72 +8,54 @@ import { renderGroupIs } from '../editor';
 const clearDecorationState = (decorationState: Type.DecorationStateType) => {
     decorationState.appliedHighlight.applied = undefined;
     decorationState.appliedHighlight.ofDecorationType = undefined;
-    decorationState.selectionText = [];
-    decorationState.diagnosticText = [];
+    decorationState.selectionInfo = [];
+    decorationState.diagnosticInfo = [];
     decorationState.statusText = [];
 };
 
-const statusInfoHandler = (editor: vscode.TextEditor, statusText, range) => (decorationOption): void => {
+const statusInfoHandler = (editor: vscode.TextEditor, statusText: vscode.TextEditorDecorationType[], range: vscode.Range) => (decorationOption): void => {
     const decoration = createEditorDecorationType(decorationOption as vscode.DecorationRenderOptions);
     applyDecoration(editor, decoration, [range]);
     statusText.push(decoration);
 };
-
-// const statusInfoHandler = (editor, statusInfo: Type.StatusTextInfoType): vscode.TextEditorDecorationType[] => {
-
-//     const decorationList: vscode.TextEditorDecorationType[] = [];
-//     const length = statusInfo['contentText'].length;
-//     let idx = 0;
-//     while (idx < length) {
-//         const decoration = createEditorDecorationType(statusInfo['contentText'][idx] as vscode.DecorationRenderOptions);
-//         applyDecoration(editor, decoration, [statusInfo['range']]);
-//         decorationList.push(decoration);
-//         idx++;
-//     }
-//     return decorationList;
-// };
 
 const renderStatusInfo = ({ editor, renderGroup, decorationState }) => {
 
     decorationState.statusText = unsetAndDisposeDecoration(editor, decorationState.statusText);
     
     if (renderGroup.selection) {
-        decorationState.selectionText = renderGroup.selection(editor, renderGroup.type) as Type.StatusTextInfoType[];
+        decorationState.selectionInfo = renderGroup.selection(editor, renderGroup.type) as Type.StatusTextInfoType[];
 
-        let length = decorationState.selectionText.length | 0;
+        let length = decorationState.selectionInfo.length | 0;
 
         while (length--) {
-            decorationState.selectionText[length].contentText.forEach(
+            decorationState.selectionInfo[length].contentText.forEach(
                 statusInfoHandler(
                     editor, 
                     decorationState.statusText, 
-                    decorationState.selectionText[length].range
+                    decorationState.selectionInfo[length].range
                 )
             );
         }
-        delete decorationState.selection;
+        delete decorationState.selectionText;
     }
 
     if (renderGroup.diagnostic) {
-        decorationState.diagnosticText = renderGroup.diagnostic(editor, updateDiagnostic()) as Type.StatusTextInfoType[];
+        decorationState.diagnosticInfo = renderGroup.diagnostic(editor, updateDiagnostic()) as Type.StatusTextInfoType[];
 
-        let length = decorationState.diagnosticText.length | 0;
+        let length = decorationState.diagnosticInfo.length | 0;
 
         while (length--) {
-            decorationState.diagnosticText[length].contentText.forEach(
+            decorationState.diagnosticInfo[length].contentText.forEach(
                 statusInfoHandler(
                     editor, 
                     decorationState.statusText, 
-                    decorationState.diagnosticText[length].range
+                    decorationState.diagnosticInfo[length].range
                 )
             );
         }
         delete decorationState.diagnosticText;
-        // let length = decorationState.diagnosticText.length | 0;
-        // while (length--) {
-        //     decorationState.statusText.push(...statusInfoHandler(editor, decorationState.diagnosticText[length]));
-        // }
-        // let length = decorationState.diagnosticText.length | 0;
+        
         // while (length--) {
         //     decorationState.statusText.push(...decorationState.diagnosticText[length].contentText.map(decorationOption => {
         //         const decoration = createEditorDecorationType(decorationOption as vscode.DecorationRenderOptions);
@@ -82,13 +64,6 @@ const renderStatusInfo = ({ editor, renderGroup, decorationState }) => {
         //     }));
         // }
     }
-
-
-
-    // decorationState.statusText = decorationState.statusInfo.map(...statusInfoHandler(editor));
-
-    // decorationState
-    // decorationState.statusText.push(decoration);
 };
 
 const renderDecorationOnEditor = (context: Type.DecorationContext) => {
