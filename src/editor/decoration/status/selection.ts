@@ -118,7 +118,7 @@ const contentTextFunc = (context: Type.ContentTextFuncContext, contentText: any)
 
 const cursorOnlySelection = ({ editor }: Type.ContentTextFuncContext): Type.StatusTextInfoType[] => {
     return [{
-        contentText: contentTextFunc({ idx: 0, editor }, selectionContentText[$.cursorOnlyText].contentText as any[]),
+        contentText: contentTextFunc({ idx: 0, editor, __proto__: null }, selectionContentText[$.cursorOnlyText].contentText as any[]),
         range: Range.createActiveRange(editor),
         __proto__: null
     }];
@@ -126,7 +126,7 @@ const cursorOnlySelection = ({ editor }: Type.ContentTextFuncContext): Type.Stat
 
 const singleLineSelection = ({ editor }: Type.ContentTextFuncContext): Type.StatusTextInfoType[] => {
     return [{
-        contentText: contentTextFunc({ idx: 0, editor }, selectionContentText[$.singleLineText].contentText as any[]),
+        contentText: contentTextFunc({ idx: 0, editor, __proto__: null }, selectionContentText[$.singleLineText].contentText as any[]),
         range: Range.createActiveRange(editor),
         __proto__: null
     }];
@@ -167,7 +167,7 @@ const multiCursorSelection = ({ idx, editor }: Type.ContentTextFuncContext): Typ
         idx = idx + 1;
 
         selectionTextInfo.push({
-            contentText: contentTextFunc({ idx, editor }, selectionContentText[$.multiCursorText].contentText as any[]),
+            contentText: contentTextFunc({ idx, editor, __proto__: null }, selectionContentText[$.multiCursorText].contentText as any[]),
             range: Range.createStartEndRangeOfSelection(editor.selections[idx]),
             __proto__: null
         });
@@ -191,7 +191,8 @@ const selectionInfo = (editor: vscode.TextEditor, type: Type.DecorationInfoPropT
 
     const context: Type.ContentTextFuncContext = {
         idx: 0,
-        editor: editor
+        editor: editor,
+        __proto__: null
     };
 
     return selectionTextInfoSplit(context)[type.KEY]();

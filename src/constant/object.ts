@@ -113,7 +113,8 @@ export const DECORATION_STATE = {
         ofDecorationType: undefined,
         __proto__: null,
     } as const,
-    statusText: [],
+    selectionText: [],
+    diagnosticText: [],
     statusInfo: [],
     __proto__: null
 } as const;
@@ -126,10 +127,10 @@ export const HIGHLIGHT_STYLE_SYMBOL_LIST = [
 ];
 
 export const HIGHLIGHT_STYLE_LIST = {
-    [$.cursorOnly]: undefined,
-    [$.singleLine]: undefined,
-    [$.multiLine]: undefined,
-    [$.multiCursor]: undefined,
+    [$.cursorOnly]: [],
+    [$.singleLine]: [],
+    [$.multiLine]: [],
+    [$.multiCursor]: [],
     __proto__: null
 } as const;
 

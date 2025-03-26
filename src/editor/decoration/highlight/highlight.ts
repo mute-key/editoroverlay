@@ -16,42 +16,42 @@ const borderPositionInfo = {
     __proto__: null,
 } as unknown as Type.BorderPositionInfoType;
 
-const cursorOnlyHighlightRange: Type.SelectionTypeToDecorationFunc = ({ editor, borderConfigSymlink, textEditorHighlight }): Type.DecorationWithRangeType[] => {
+const cursorOnlyHighlightRange: Type.SelectionTypeToDecorationFunc = ({ editor, textEditorHighlight }): Type.DecorationWithRangeType[] => {
 
-    const borderConfig: Type.BorderPositionParserType = borderPositionInfo[borderConfigSymlink] as Type.BorderPositionParserType;
+    // const borderConfig: Type.BorderPositionParserType = borderPositionInfo[borderConfigSymlink] as Type.BorderPositionParserType;
 
     // index 0 - border applied decoration on selection
     // index 1 - background only decoration
 
-    if (borderConfig.isWholeLine) {
-        return [{
-            decoration: textEditorHighlight[0],
-            range: [Range.createRangeSPEP(editor.selection.active, editor.selection.active)],
-            __proto__: null
-        }];
-    }
+    return [{
+        decoration: textEditorHighlight[0],
+        range: [Range.createRangeSPEP(editor.selection.active, editor.selection.active)],
+        __proto__: null
+    }];
+    // if (borderConfig.isWholeLine) {
+    // }
 
-    if (borderConfig.beforeCursor) {
-        return [{
-            decoration: textEditorHighlight[0],
-            range: [Range.createRangeNNNN(editor.selection.active.line, 0, editor.selection.active.line, editor.selection.active.character)],
-            __proto__: null
-        }];
-    }
+    // if (borderConfig.beforeCursor) {
+    //     return [{
+    //         decoration: textEditorHighlight[0],
+    //         range: [Range.createRangeNNNN(editor.selection.active.line, 0, editor.selection.active.line, editor.selection.active.character)],
+    //         __proto__: null
+    //     }];
+    // }
 
-    if (borderConfig.afterCursor) {
-        return [{
-            decoration: textEditorHighlight[0],
-            range: [Range.createRangeNNEP(editor.selection.active.line, editor.selection.active.character, editor.document.lineAt(editor.selection.active.line).range.end)],
-            __proto__: null
-        },
-        {
-            decoration: textEditorHighlight[1],
-            range: [Range.createRangeNNNN(editor.selection.active.line, 0, editor.selection.active.line, editor.selection.active.character)],
-            __proto__: null
-        }];
-    }
-    return [];
+    // if (borderConfig.afterCursor) {
+    //     return [{
+    //         decoration: textEditorHighlight[0],
+    //         range: [Range.createRangeNNEP(editor.selection.active.line, editor.selection.active.character, editor.document.lineAt(editor.selection.active.line).range.end)],
+    //         __proto__: null
+    //     },
+    //     {
+    //         decoration: textEditorHighlight[1],
+    //         range: [Range.createRangeNNNN(editor.selection.active.line, 0, editor.selection.active.line, editor.selection.active.character)],
+    //         __proto__: null
+    //     }];
+    // }
+    // return [];
 };
 
 const singelLineHighlightRange: Type.SelectionTypeToDecorationFunc = ({ editor, textEditorHighlight }): Type.DecorationWithRangeType[] => {
@@ -128,6 +128,7 @@ const coordinatorSplit: Type.CoordinatorSplitType = {
 const hightlightCoordinator = (editor, renderGroupKey) => {
 
     const textEditorHighlight = highlightStyleList[renderGroupKey] as vscode.TextEditorDecorationType[];
+
     return coordinatorSplit[renderGroupKey]({
         editor,
         textEditorHighlight,

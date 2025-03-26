@@ -3,7 +3,7 @@ import * as Type from '../../type/type';
 import { DECORATION_STATE } from '../../constant/object';
 import { unsetRangeOfHighlightStyle } from './highlight/highlight';
 
-const decorationState = { 
+const decorationState = {
     ...DECORATION_STATE,
     __proto__: null
 } as unknown as Type.DecorationStateType;
@@ -18,11 +18,11 @@ const disposeDecoration = (highlightStyleList: vscode.TextEditorDecorationType[]
     });
 };
 
-const resetDecorationRange = (editor: vscode.TextEditor, decorationType: vscode.TextEditorDecorationType[] | undefined): void => {
-    decorationType?.forEach(decoration => applyDecoration(editor, decoration, []));
+const resetDecorationRange = (editor: vscode.TextEditor, decorationType: vscode.TextEditorDecorationType[]): void => {
+    decorationType.forEach(decoration => applyDecoration(editor, decoration, []));
 };
 
-const unsetAndDisposeDecoration = (editor: vscode.TextEditor, decorationType: vscode.TextEditorDecorationType[] | undefined): vscode.TextEditorDecorationType[] => {
+const unsetAndDisposeDecoration = (editor: vscode.TextEditor, decorationType: vscode.TextEditorDecorationType[]): [] => {
     decorationType?.forEach(decoration => {
         applyDecoration(editor, decoration, []);
         decoration.dispose();
@@ -49,7 +49,7 @@ const createEditorDecorationType = (styleAppliedConfig: any): vscode.TextEditorD
     return vscode.window.createTextEditorDecorationType(styleAppliedConfig as vscode.DecorationRenderOptions);
 };
 
-function isDecorationChanged(editor: vscode.TextEditor, decorationState: Type.DecorationStateType, selectionKind: Type.DecorationInfoPropType) {
+const isDecorationChanged = (editor: vscode.TextEditor, decorationState: Type.DecorationStateType, selectionKind: Type.DecorationInfoPropType) => {
     if (decorationState.appliedHighlight.applied && (decorationState.appliedHighlight.applied.MASK !== selectionKind.MASK)) {
         unsetRangeOfHighlightStyle(editor);
     }

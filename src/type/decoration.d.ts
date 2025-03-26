@@ -18,18 +18,9 @@ type DecorationStateType = {
     statusInfo: StatusType.StatusTextInfoType[] | any[]
 }
 
-// type DecorationStateType = {
-//     appliedHighlight: AppliedHighlightType
-//     selectionText: vscode.TextEditorDecorationType[] | readonly[]
-//     diagnosticText: vscode.TextEditorDecorationType[] | readonly[],
-//     statusInfo: {
-//         [key: string]: StatusType.StatusTextInfoType[] | []
-//     }
-// }
-
 type DecorationStyleKeyOnlyType = keyof typeof DECORATION_STYLE_PREFIX
 
-type HighlightStyleListType = Record<DecorationStyleKeyOnlyType, vscode.TextEditorDecorationType[] | undefined>;
+type HighlightStyleListType = Record<DecorationStyleKeyOnlyType, vscode.TextEditorDecorationType[]>;
 
 type UnsetDecorationFunctionType = (editor: vscode.TextEditor, decorationStatus: DecorationStateType) => (selectionKind: DecorationInfoPropType) => void;
 

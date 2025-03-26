@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as Type from '../type/type.d';
 import Error from '../util/error';
 import { isDecorationChanged, resetAllDecoration } from '../editor/decoration/decoration';
-import { renderDecorationOnEditor } from '../editor/decoration/handler';
+import { clearDecorationState, renderDecorationOnEditor } from '../editor/decoration/handler';
 import { renderGroupIs, updateIndentOption } from '../editor/editor';
 import { resetEditorDiagnosticStatistics, updateDiagnostic } from '../diagnostic/diagnostic';
 
@@ -39,6 +39,7 @@ const activeEditorChanged: Type.DecorationEventFunc = ({ configInfo, decorationS
             }
 
             resetAllDecoration(decorationState);
+            
 
             if (configInfo.generalConfigInfo.diagnosticTextEnabled) {
                 await resetEditorDiagnosticStatistics();
@@ -69,19 +70,14 @@ const editorOptionChanged = (context): vscode.Disposable => {
     });
 };
 
-const selectionChanged: Type.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
+const selectionChanged: Type.DecorationEventFunc = (context): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) => {
-
-        const renderGroup: Type.RenderGroupSetProperty = renderGroupIs(event.textEditor);
-
-        isDecorationChanged(event.textEditor, decorationState, renderGroup.type as Type.DecorationInfoPropType);
-
-        renderDecorationOnEditor({
-            editor: event.textEditor,
-            decorationState: decorationState,
-            renderGroup: renderGroup as Type.RenderGroupSetProperty,
-            __proto__: null
-        });
+        if (event.selections) {
+            renderDecorationOnEditor({
+                ...context,
+                editor: event.textEditor
+            });
+        }
     });
 };
 
