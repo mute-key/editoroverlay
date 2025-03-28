@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as Type from '../type/type.d';
 import Error from '../util/error';
-import { isDecorationChanged, resetAllDecoration } from '../editor/decoration/decoration';
+import { resetAllDecoration } from '../editor/decoration/decoration';
 import { clearDecorationState, renderDecorationOnEditor } from '../editor/decoration/handler';
 import { renderGroupIs, updateIndentOption } from '../editor/editor';
 import { resetEditorDiagnosticStatistics, updateDiagnostic } from '../diagnostic/diagnostic';
@@ -71,13 +71,17 @@ const editorOptionChanged = (context): vscode.Disposable => {
 };
 
 const selectionChanged: Type.DecorationEventFunc = (context): vscode.Disposable => {
-    return vscode.window.onDidChangeTextEditorSelection(async (event: vscode.TextEditorSelectionChangeEvent): Promise<void> => {
-        if (event.selections) {
-            await renderDecorationOnEditor({
-                ...context,
-                editor: event.textEditor
-            });
-        }
+    return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) => {
+        return renderDecorationOnEditor({
+            ...context,
+            editor: event.textEditor
+        });
+        // idx++;
+        // if (event.selections) {
+            
+            // await delete context.decorationState.selectionInfo;
+            // await delete context.decorationState.diagnosticInfo;
+        // }
     });
 };
 

@@ -8,15 +8,16 @@ type DecorationTypeSplit = {
 }
 
 type AppliedHighlightType = {
-    applied?: DecorationInfoPropType,
+    applied: DecorationInfoPropType,
     ofDecorationType?: vscode.TextEditorDecorationType[]
 };
 
 type DecorationStateType = {
     appliedHighlight: AppliedHighlightType
-    selectionInfo: StatusType.StatusTextInfoType[] | any[],
-    diagnosticInfo: StatusType.StatusTextInfoType[] | any[],
-    statusText: vscode.TextEditorDecorationType[] | any[]
+    selectionText: vscode.TextEditorDecorationType[] | any[],
+    diagnosticText: vscode.TextEditorDecorationType[] | any[],
+    diagnosticInfo?: StatusType.StatusTextInfoType[] | any[],
+    selectionInfo?: StatusType.StatusTextInfoType[] | any[],
 }
 
 type DecorationStyleKeyOnlyType = keyof typeof DECORATION_STYLE_PREFIX
@@ -88,7 +89,8 @@ type createRange = {
 }
 
 type CoordinatorSplitType = {
-    [key: symbol]: (context: SelectionHighlightKindContext) => DecorationWithRangeType[] | any
+    // [key: symbol]: (context: SelectionHighlightKindContext) => DecorationWithRangeType[] | any
+    [key: symbol]: any
     __proto__: null
 }
 

@@ -16,7 +16,7 @@ const borderPositionInfo = {
     __proto__: null,
 } as unknown as Type.BorderPositionInfoType;
 
-const cursorOnlyHighlightRange: Type.SelectionTypeToDecorationFunc = ({ editor, textEditorHighlight }): Type.DecorationWithRangeType[] => {
+const cursorOnlyHighlightRange = (editor): Type.DecorationWithRangeType[] => {
 
     // const borderConfig: Type.BorderPositionParserType = borderPositionInfo[borderConfigSymlink] as Type.BorderPositionParserType;
 
@@ -24,7 +24,7 @@ const cursorOnlyHighlightRange: Type.SelectionTypeToDecorationFunc = ({ editor, 
     // index 1 - background only decoration
 
     return [{
-        decoration: textEditorHighlight[0],
+        decoration: highlightStyleList[$.cursorOnly][0],
         range: [Range.createRangeSPEP(editor.selection.active, editor.selection.active)],
         __proto__: null
     }];
@@ -54,47 +54,47 @@ const cursorOnlyHighlightRange: Type.SelectionTypeToDecorationFunc = ({ editor, 
     // return [];
 };
 
-const singelLineHighlightRange: Type.SelectionTypeToDecorationFunc = ({ editor, textEditorHighlight }): Type.DecorationWithRangeType[] => {
+const singelLineHighlightRange = (editor): Type.DecorationWithRangeType[] => {
 
     // index 0 - single line decoration on selection
     // index 1 - background color only decoration <- this is todo. maybe. problem is this deco is not whole line. :(
     // [!] review to differentiate zero border decoraiton for wholeLine background and not-wholeLine background.
 
     return [{
-        decoration: textEditorHighlight[0],
+        decoration: highlightStyleList[$.singleLine][0],
         range: [Range.createRangeSPEP(editor.selection.start, editor.selection.end)],
         __proto__: null
     }];
 };
 
-const multiLineHighlightRange = ({ editor, textEditorHighlight }): Type.DecorationWithRangeType[] => {
+const multiLineHighlightRange = (editor): Type.DecorationWithRangeType[] => {
 
     // index 0 - top border
     // index 1 - bottom border
     // index 2 - background color only for the range inbetween 0 and 1.
 
     return [{
-        decoration: textEditorHighlight[0],
+        decoration: highlightStyleList[$.multiLine][0],
         range: [Range.createRangeSPEP(editor.selection.start, editor.selection.start)],
         __proto__: null
     }, {
-        decoration: textEditorHighlight[1],
+        decoration: highlightStyleList[$.multiLine][1],
         range: [Range.createRangeSPEP(editor.selection.end, editor.selection.end)],
         __proto__: null
     }, {
-        decoration: textEditorHighlight[2],
+        decoration: highlightStyleList[$.multiLine][2],
         range: [editor.selection],
         __proto__: null
     }];
 };
 
-const multiCursorHighlightRange: Type.SelectionTypeToDecorationFunc = ({ editor, textEditorHighlight }): Type.DecorationWithRangeType[] => {
+const multiCursorHighlightRange = (editor): Type.DecorationWithRangeType[] => {
 
     // index 0 - selection area
     // index 1 - to apply background color on line until cursor position.
 
     return [{
-        decoration: textEditorHighlight[0],
+        decoration: highlightStyleList[$.multiCursor][0],
         range: editor.selections.reduce((acc: vscode.Range[], selection: vscode.Selection) => {
             acc.push(Range.createRangeSPEP(selection.start, selection.active));
             return acc;
@@ -102,7 +102,7 @@ const multiCursorHighlightRange: Type.SelectionTypeToDecorationFunc = ({ editor,
         __proto__: null
     },
     {
-        decoration: textEditorHighlight[1],
+        decoration: highlightStyleList[$.multiCursor][1],
         range: editor.selections.reduce((acc: vscode.Range[], selection: vscode.Selection) => {
             acc.push(Range.createRangeNNNN(selection.active.line, 0, selection.active.line, selection.active.character));
             return acc;
@@ -118,23 +118,25 @@ const unsetRangeOfHighlightStyle = (editor: vscode.TextEditor) => {
 };
 
 const coordinatorSplit: Type.CoordinatorSplitType = {
-    [$.cursorOnly]: (context: Type.SelectionHighlightKindContext) => cursorOnlyHighlightRange(context),
-    [$.singleLine]: (context: Type.SelectionHighlightKindContext) => singelLineHighlightRange(context),
-    [$.multiLine]: (context: Type.SelectionHighlightKindContext) => multiLineHighlightRange(context),
-    [$.multiCursor]: (context: Type.SelectionHighlightKindContext) => multiCursorHighlightRange(context),
+    [$.cursorOnly]: (editor: vscode.TextEditor) => cursorOnlyHighlightRange(editor),
+    [$.singleLine]: (editor: vscode.TextEditor) => singelLineHighlightRange(editor),
+    [$.multiLine]: (editor: vscode.TextEditor) => multiLineHighlightRange(editor),
+    [$.multiCursor]: (editor: vscode.TextEditor) => multiCursorHighlightRange(editor),
     __proto__: null
 };
 
 const hightlightCoordinator = (editor, renderGroupKey) => {
 
-    const textEditorHighlight = highlightStyleList[renderGroupKey] as vscode.TextEditorDecorationType[];
+    // const textEditorHighlight = highlightStyleList[renderGroupKey] as vscode.TextEditorDecorationType[];
+    return coordinatorSplit[renderGroupKey](editor);
 
-    return coordinatorSplit[renderGroupKey]({
-        editor,
-        textEditorHighlight,
-        borderConfigSymlink: renderGroupKey,
-        __proto__: null,
-    });
+    // return coordinatorSplit[renderGroupKey]({
+    //     editor,
+    //     renderGroupKey
+    //     textEditorHighlight: highlightStyleList[renderGroupKey],
+    //     borderConfigSymlink: ,
+    //     __proto__: null,
+    // });
 };
 
 const bindHighlightStyleState = () => {

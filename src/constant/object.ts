@@ -116,7 +116,8 @@ export const DECORATION_STATE = {
     } as const,
     selectionText: [],
     diagnosticText: [],
-    statusInfo: [],
+    selectionInfo: [],
+    diagnosticInfo: [],
     __proto__: null
 } as const;
 

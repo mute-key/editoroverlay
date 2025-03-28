@@ -37,6 +37,8 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
         if (activeEditor) {
             renderDecorationOnEditor(eventContext as Type.DecorationContext);
         }
+        
+        
 
         return [
             windowEvent.windowStateChanged(eventContext),

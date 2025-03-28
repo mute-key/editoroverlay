@@ -108,7 +108,7 @@ const hexToRgbaStringLiteral = (hex: string, opacity: number = 0.6, defaultValue
     return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 };
 
-const hrtimeToMS = (hrtime: [number, number]): number => process.hrtime(hrtime)[1]/1000000;
+const hrtimeToMS = (hrtime: [number, number]): number => process.hrtime(hrtime)[1] / 1000000;
 
 export {
     fnv1aHash,

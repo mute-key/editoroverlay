@@ -8,7 +8,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 }
-
+structuredClone;
 export function deactivate() {
     
 }
