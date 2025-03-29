@@ -14,7 +14,7 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
 
         Error.setPackageName(extensionContext.extension.packageJSON.name);
 
-        const loadConfig = config.loadConfiguration(extensionContext);
+        const loadConfig = await config.loadConfiguration(extensionContext);
 
         if (!loadConfig) {
             console.error('Failed to initialize config.');

@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as Type from '../type/type';
-import * as $ from '../constant/symbol';
+import * as __0x from '../constant/numeric';
 import Regex from '../util/regex.collection';
 import { HIGHLIGHT_STYLE_SYMBOL_LIST, RENDER_GROUP_SET, SELECTION_KIND } from '../constant/object';
 import { bindStatusContentTextState } from './decoration/status/selection';
@@ -26,10 +26,10 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): Type.RenderGroupS
     const diagnostic = config.generalConfigInfo.diagnosticTextEnabled ? diagnosticInfo : undefined;
     const bindDiagnostic = bindDiagnosticContentTextState();
     const diagonosticAvaliabity = {
-        [$.cursorOnly]: bindDiagnostic.configOf.displayWhenCursorOnly,
-        [$.singleLine]: bindDiagnostic.configOf.displayWhenSingleLine,
-        [$.multiLine]: bindDiagnostic.configOf.displayWhenMultiLine,
-        [$.multiCursor]: bindDiagnostic.configOf.displayWhenMultiCursor,
+        [__0x.cursorOnly]: bindDiagnostic.configOf.displayWhenCursorOnly,
+        [__0x.singleLine]: bindDiagnostic.configOf.displayWhenSingleLine,
+        [__0x.multiLine]: bindDiagnostic.configOf.displayWhenMultiLine,
+        [__0x.multiCursor]: bindDiagnostic.configOf.displayWhenMultiCursor,
         __proto__: null
     };
 
@@ -44,22 +44,52 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): Type.RenderGroupS
         }
     });
 
-    return renderGroupSet[$.cursorOnly] as Type.RenderGroupSetProperty;
+    return renderGroupSet[__0x.cursorOnly] as Type.RenderGroupSetProperty;
+};
+
+
+const minifyEditor = (editor: vscode.TextEditor) => {
+    
+    // editor.document,
+    // editor.selection
+    // editor.selections
+    // // editor.setDecorations
+    // editor.document.getText
+    // editor.document.lineAt
+
+    // editor.selection.active
+    // editor.selection.anchor
+    // editor.selection.start
+    // editor.selection.end
+
+
+    // editor.selection.active.line,
+    // editor.selection.active.character
+
+    // editor.selection.start.line
+    // editor.selection.start.character
+    // editor.selection.end.line
+    // editor.selection.end.character
+    
+
+
+    
+    
 };
 
 const renderGroupIs = (editor: vscode.TextEditor): Type.RenderGroupSetProperty => {
     if (editor.selections.length === 1) {
         if (editor.selections[0].isEmpty) {
-            return renderGroupSet[$.cursorOnly];
+            return renderGroupSet[__0x.cursorOnly];
         }
 
         if (!editor.selections[0].isSingleLine) {
-            return renderGroupSet[$.multiLine];
+            return renderGroupSet[__0x.multiLine];
         } else {
-            return renderGroupSet[$.singleLine];
+            return renderGroupSet[__0x.singleLine];
         }
     } else {
-        return renderGroupSet[$.multiCursor];;
+        return renderGroupSet[__0x.multiCursor];;
     }
 };
 

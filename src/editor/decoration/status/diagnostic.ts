@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as Type from '../../../type/type';
-import * as $ from '../../../constant/symbol';
+import * as __0x from '../../../constant/numeric';
 import Range from '../../range';
 import { DIAGNOSTIC_CONTENT_TEXT, DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET, DIAGNOSTIC_VISIBILITY_CONFIG, DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET } from '../../../constant/object';
 import { DIAGNOSTIC_BIOME, DIAGNOSTIC_CONTENT_TEXT_KEY } from '../../../constant/enum';
@@ -105,9 +105,9 @@ const diagonosticMultiStyleDecoration = (diagnosticState, diagnosticContentTextI
 
 const diagnosticKind = ({ state, contentText, keySet }) => {
     return {
-        ok: () => diagonosticMultiStyleDecoration(state, contentText[keySet[$.okContentText]]),
-        warning: () => diagonosticMultiStyleDecoration(state, contentText[keySet[$.warningContentText]]),
-        error: () => diagonosticMultiStyleDecoration(state, contentText[keySet[$.errorContentText]]),
+        ok: () => diagonosticMultiStyleDecoration(state, contentText[keySet[__0x.okContentText]]),
+        warning: () => diagonosticMultiStyleDecoration(state, contentText[keySet[__0x.warningContentText]]),
+        error: () => diagonosticMultiStyleDecoration(state, contentText[keySet[__0x.errorContentText]]),
         __proto__: null
     };
 };
@@ -161,19 +161,19 @@ const diagnosticBiomeSplit = (state: Type.DiagnosticStateType['editor'] | Type.D
     };
 };
 const diagnosticLayoutAllOkOverride = (state: Type.DiagnosticStateType, textState: Type.DiagnosticContentTextType): Type.DecorationRenderOptionType[] => {
-    return textState.layout[$.allOkPlaceholderContentText].contentText.map(decoration => {
+    return textState.layout[__0x.allOkPlaceholderContentText].contentText.map(decoration => {
         if (decoration.after.contentText === Placeholder.allOkSym) {
-            return diagonosticMultiStyleDecoration(state, textState.all[$.okAllContentText]);
+            return diagonosticMultiStyleDecoration(state, textState.all[__0x.okAllContentText]);
         }
 
-        const overrideColor = textState.layout[$.allOkPlaceholderContentText]?.override;
+        const overrideColor = textState.layout[__0x.allOkPlaceholderContentText]?.override;
         decoration.after.color = overrideColor ? overrideColor[DIAGNOSTIC_BIOME.OK].color : decoration.after.color;
         return decoration;
     });
 };
 
 const diagnosticLayoutDivided = (state: Type.DiagnosticStateType, textState: Type.DiagnosticContentTextType): Type.DecorationRenderOptionType[] => {
-    return textState.layout[$.problemPlaceholderContentText].contentText.map(decoration => {
+    return textState.layout[__0x.problemPlaceholderContentText].contentText.map(decoration => {
         if (decoration.after.contentText === Placeholder.workspaceSym) {
             return diagnosticBiomeSplit(state.workspace, textState.workspace).workspace();
         }
@@ -182,7 +182,7 @@ const diagnosticLayoutDivided = (state: Type.DiagnosticStateType, textState: Typ
             return diagnosticBiomeSplit(state.editor, textState.editor).editor();
         }
 
-        const overrideColor = textState.layout[$.problemPlaceholderContentText].override;
+        const overrideColor = textState.layout[__0x.problemPlaceholderContentText].override;
         decoration.after.color = overrideColor ? overrideColor[state.severity].color : decoration.after.color;
         return decoration;
     });

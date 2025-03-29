@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import * as vscode from 'vscode';
 import * as Type from '../../type/type';
+import * as __0x from '../../constant/numeric';
 import { CONFIG_SECTION, BORDER_WIDTH_DEFINITION, DECORATION_STYLE_PREFIX, NO_CONFIGURATION_DEOCORATION_DEFAULT, NO_CONFIGURATION_GENERAL_DEFAULT, HIGHLIGHT_STYLE_LIST, HIGHLIGHT_STYLE_SYMBOL_LIST, CONFIG_KEY_LINKER_SECTION } from '../../constant/object';
 import { colorConfigTransform, getConfigValue } from '../shared/configuration';
 import { createEditorDecorationType, disposeDecoration } from '../../editor/decoration/decoration';
 import { bindHighlightStyleState } from '../../editor/decoration/highlight/highlight';
 import { getWorkspaceConfiguration, readBits } from '../../util/util';
 import { CONFIG_KEY_LINKER, SELECTION_TYPE } from '../../constant/enum';
-import * as $ from '../../constant/symbol';
 
 const checkConfigKeyAndCast = <T extends Type.DecorationStyleConfigNameType | Type.GeneralConfigNameOnlyType>(key: string): T => {
     return key as T;
@@ -59,7 +60,7 @@ const createDecorationType: Type.CreateDecorationFunctionType = (config: Type.De
             styledConfig.push(conf);
             return styledConfig;
         }, [] as Type.DecorationStyleConfigType[]).reduce((textEditorDecoration, styleAppliedConfig, idx) => {
-            if (decorationKey === $.multiLine && idx !== 2) {
+            if (decorationKey === __0x.multiLine && idx !== 2) {
                 delete styleAppliedConfig.backgroundColor;
             }
             textEditorDecoration.push(createEditorDecorationType(combineBorderStyle(styleAppliedConfig)));

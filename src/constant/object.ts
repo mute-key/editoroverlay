@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as Type from '../type/type.d';
-import * as $ from './symbol';
+import * as __0x from '../constant/numeric';
+
 import { BORDER_POSITION_MASK, BORDER_POSITION_VARIATION, DECORATION_STYLE_CONFIG_KEY, DECORATION_GENERAL_STYLE_CONFIG_KEY, DECORATION_SELECTION_STYLE_CONFIG_KEY, DECORATION_STYLE_KEY, DECORATION_TYPE_MASK, SELECTION_TYPE, CONFIG_SECTION_KEY, SELECTION_CONTENT_TEXT_CONFIG_KEY, DIAGNOSTIC_SEVERITY_KEY, DIAGNOSTIC_CONTENT_TEXT_KEY, DIAGNOSTIC_TEXT_STYLE_KEY } from './enum';
 
 // ==============================================================================
@@ -101,10 +102,10 @@ export const RENDER_GROUP_SET_PROPERTY = {
 } as const;
 
 export const RENDER_GROUP_SET = {
-    [$.cursorOnly]: RENDER_GROUP_SET_PROPERTY,
-    [$.singleLine]: RENDER_GROUP_SET_PROPERTY,
-    [$.multiLine]: RENDER_GROUP_SET_PROPERTY,
-    [$.multiCursor]: RENDER_GROUP_SET_PROPERTY,
+    [__0x.cursorOnly]: RENDER_GROUP_SET_PROPERTY,
+    [__0x.singleLine]: RENDER_GROUP_SET_PROPERTY,
+    [__0x.multiLine]: RENDER_GROUP_SET_PROPERTY,
+    [__0x.multiCursor]: RENDER_GROUP_SET_PROPERTY,
     __proto__: null,
 };
 
@@ -122,25 +123,26 @@ export const DECORATION_STATE = {
 } as const;
 
 export const HIGHLIGHT_STYLE_SYMBOL_LIST = [
-    $.cursorOnly,
-    $.singleLine,
-    $.multiLine,
-    $.multiCursor,
+    __0x.cursorOnly,
+    __0x.singleLine,
+    __0x.multiLine,
+    __0x.multiCursor,
 ];
 
 export const HIGHLIGHT_STYLE_LIST = {
-    [$.cursorOnly]: [],
-    [$.singleLine]: [],
-    [$.multiLine]: [],
-    [$.multiCursor]: [],
+    [__0x.reset]: [],
+    [__0x.cursorOnly]: [],
+    [__0x.singleLine]: [],
+    [__0x.multiLine]: [],
+    [__0x.multiCursor]: [],
     __proto__: null
 } as const;
 
 export const HIGHLIGHT_BORDER_POSITION_INFO = {
-    [$.cursorOnly]: undefined,
-    [$.singleLine]: undefined,
-    [$.multiLine]: undefined,
-    [$.multiCursor]: undefined,
+    [__0x.cursorOnly]: undefined,
+    [__0x.singleLine]: undefined,
+    [__0x.multiLine]: undefined,
+    [__0x.multiCursor]: undefined,
     __proto__: null
 } as const;
 
@@ -150,10 +152,10 @@ export const HIGHLIGHT_BORDER_POSITION_INFO = {
  * 
  */
 export const DECORATION_STYLE_PREFIX = {
-    [$.cursorOnly]: 'cursorOnly',
-    [$.singleLine]: 'singleLine',
-    [$.multiLine]: 'multiLine',
-    [$.multiCursor]: 'multiCursor',
+    [__0x.cursorOnly]: 'cursorOnly',
+    [__0x.singleLine]: 'singleLine',
+    [__0x.multiLine]: 'multiLine',
+    [__0x.multiCursor]: 'multiCursor',
     __proto__: null
 } as const;
 
@@ -176,59 +178,59 @@ export const DECORATION_OPTION_AFTER_CONFIG = {
 } as const;
 
 export const SELECTION_KIND: Type.DecorationInfoType = {
-    [$.reset]: {
-        KEY: $.reset,
+    [__0x.reset]: {
+        KEY: __0x.reset,
         MASK: DECORATION_TYPE_MASK.RESET
     } as const,
-    [$.cursorOnly]: {
-        KEY: $.cursorOnly,
+    [__0x.cursorOnly]: {
+        KEY: __0x.cursorOnly,
         MASK: DECORATION_TYPE_MASK.CURSOR_ONLY
     } as const,
-    [$.singleLine]: {
-        KEY: $.singleLine,
+    [__0x.singleLine]: {
+        KEY: __0x.singleLine,
         MASK: DECORATION_TYPE_MASK.SINGLE_LINE
     } as const,
-    [$.multiLine]: {
-        KEY: $.multiLine,
+    [__0x.multiLine]: {
+        KEY: __0x.multiLine,
         MASK: DECORATION_TYPE_MASK.MULTI_LINE
     } as const,
-    [$.multiCursor]: {
-        KEY: $.multiCursor,
+    [__0x.multiCursor]: {
+        KEY: __0x.multiCursor,
         MASK: DECORATION_TYPE_MASK.MULTI_CURSOR
     } as const,
     __proto__: null
 } as const;
 
 export const DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET = {
-    [$.okContentText]: $.okEditorContentText,
-    [$.warningContentText]: $.errorEditorContentText,
-    [$.errorContentText]: $.warningEditorContentText,
+    [__0x.okContentText]: __0x.okEditorContentText,
+    [__0x.warningContentText]: __0x.errorEditorContentText,
+    [__0x.errorContentText]: __0x.warningEditorContentText,
     __proto__: null
 };
 
 export const DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET = {
-    [$.okContentText]: $.okWorkspaceContentText,
-    [$.warningContentText]: $.warningWorkspaceContentText,
-    [$.errorContentText]: $.errorWorkspaceContentText,
+    [__0x.okContentText]: __0x.okWorkspaceContentText,
+    [__0x.warningContentText]: __0x.warningWorkspaceContentText,
+    [__0x.errorContentText]: __0x.errorWorkspaceContentText,
     __proto__: null
 } as const;
 
 
 export const DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER = {
-    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: $.okEditorContentText,
-    [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: $.errorEditorContentText,
-    [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: $.warningEditorContentText,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: __0x.okEditorContentText,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: __0x.errorEditorContentText,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: __0x.warningEditorContentText,
 } as const;
 
 export const DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER = {
-    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: $.okWorkspaceContentText,
-    [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: $.warningWorkspaceContentText,
-    [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: $.errorWorkspaceContentText,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: __0x.okWorkspaceContentText,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: __0x.warningWorkspaceContentText,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: __0x.errorWorkspaceContentText,
 } as const;
 
 
 export const DIAGNOSTIC_ALL_PLACEHOLDER_LINKER = {
-    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: $.okAllContentText,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: __0x.okAllContentText,
 } as const;
 
 export const DECORATION_OPTION_LINKER = {
@@ -244,15 +246,15 @@ export const DECORATION_OPTION_LINKER = {
 } as const;
 
 export const DIAGNOSTIC_CONTENT_TEXT_NAME_TO_SYM = {
-    problemPlaceholderContentText: $.problemPlaceholderContentText,
-    allOkPlaceholderContentText: $.allOkPlaceholderContentText,
-    okWorkspaceContentText: $.okWorkspaceContentText,
-    okEditorContentText: $.okEditorContentText,
-    okAllContentText: $.okAllContentText,
-    warningWorkspaceContentText: $.warningWorkspaceContentText,
-    warningEditorContentText: $.warningEditorContentText,
-    errorWorkspaceContentText: $.errorWorkspaceContentText,
-    errorEditorContentText: $.errorEditorContentText,
+    problemPlaceholderContentText: __0x.problemPlaceholderContentText,
+    allOkPlaceholderContentText: __0x.allOkPlaceholderContentText,
+    okWorkspaceContentText: __0x.okWorkspaceContentText,
+    okEditorContentText: __0x.okEditorContentText,
+    okAllContentText: __0x.okAllContentText,
+    warningWorkspaceContentText: __0x.warningWorkspaceContentText,
+    warningEditorContentText: __0x.warningEditorContentText,
+    errorWorkspaceContentText: __0x.errorWorkspaceContentText,
+    errorEditorContentText: __0x.errorEditorContentText,
 } as const;
 
 export const DIAGNOSTIC_STYLE_LIST: Type.TextList[] = [
@@ -346,19 +348,19 @@ export const DIAGNOSTIC_SEVERITY_TO_KEY = {
 
 
 export const SELECTION_CONTENT_TEXT = {
-    [$.cursorOnlyText]: undefined,
-    [$.singleLineText]: undefined,
-    [$.multiLineCursorText]: undefined,
-    [$.multiLineAnchorText]: undefined,
-    [$.multiCursorText]: undefined,
+    [__0x.cursorOnlyText]: undefined,
+    [__0x.singleLineText]: undefined,
+    [__0x.multiLineCursorText]: undefined,
+    [__0x.multiLineAnchorText]: undefined,
+    [__0x.multiCursorText]: undefined,
 } as const;
 
 export const SELECTION_CONTENT_TEXT_SYMLINK = {
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: $.cursorOnlyText,
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: $.singleLineText,
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: $.multiLineCursorText,
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: $.multiLineAnchorText,
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: $.multiCursorText,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: __0x.cursorOnlyText,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: __0x.singleLineText,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: __0x.multiLineCursorText,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: __0x.multiLineAnchorText,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: __0x.multiCursorText,
 } as const;
 
 export const DIAGNOSTIC_CONTENT_TEXT = {
@@ -426,10 +428,10 @@ export const MULTILINE_BORDER_SELECTION = {
 } as const;
 
 export const BORDER_WIDTH_DEFINITION = {
-    [$.cursorOnly]: SINGLE_BORDER_SELECTION,
-    [$.singleLine]: SINGLE_BORDER_SELECTION,
-    [$.multiLine]: MULTILINE_BORDER_SELECTION,
-    [$.multiCursor]: SINGLE_BORDER_SELECTION,
+    [__0x.cursorOnly]: SINGLE_BORDER_SELECTION,
+    [__0x.singleLine]: SINGLE_BORDER_SELECTION,
+    [__0x.multiLine]: MULTILINE_BORDER_SELECTION,
+    [__0x.multiCursor]: SINGLE_BORDER_SELECTION,
 } as const;
 
 export const NO_CONFIGURATION_GENERAL_DEFAULT = {
@@ -447,7 +449,7 @@ export const SELECTION_DEFAULT = {
 } as const;
 
 export const NO_CONFIGURATION_DEOCORATION_DEFAULT: Type.NoConfigurationDecorationType = {
-    [$.cursorOnly]: {
+    [__0x.cursorOnly]: {
         [DECORATION_STYLE_CONFIG_KEY.IS_WHOLE_LINE]: true,
         [DECORATION_STYLE_CONFIG_KEY.BORDER_WIDTH]: '2px',
         [DECORATION_STYLE_CONFIG_KEY.BORDER_STYLE]: 'dotted',
@@ -455,7 +457,7 @@ export const NO_CONFIGURATION_DEOCORATION_DEFAULT: Type.NoConfigurationDecoratio
         [DECORATION_STYLE_CONFIG_KEY.BORDER_POSITION]: 'bottom',
         [DECORATION_STYLE_CONFIG_KEY.BACKGROUND_COLOR]: '#ff0000',
     } as const,
-    [$.singleLine]: {
+    [__0x.singleLine]: {
         [DECORATION_STYLE_CONFIG_KEY.IS_WHOLE_LINE]: false,
         [DECORATION_STYLE_CONFIG_KEY.BORDER_WIDTH]: '2px',
         [DECORATION_STYLE_CONFIG_KEY.BORDER_STYLE]: 'dotted',
@@ -463,7 +465,7 @@ export const NO_CONFIGURATION_DEOCORATION_DEFAULT: Type.NoConfigurationDecoratio
         [DECORATION_STYLE_CONFIG_KEY.BORDER_POSITION]: 'bottom',
         [DECORATION_STYLE_CONFIG_KEY.BACKGROUND_COLOR]: '#ff0000',
     } as const,
-    [$.multiLine]: {
+    [__0x.multiLine]: {
         [DECORATION_STYLE_CONFIG_KEY.IS_WHOLE_LINE]: true,
         [DECORATION_STYLE_CONFIG_KEY.BORDER_WIDTH]: '2px',
         [DECORATION_STYLE_CONFIG_KEY.BORDER_STYLE]: 'dotted',
@@ -471,7 +473,7 @@ export const NO_CONFIGURATION_DEOCORATION_DEFAULT: Type.NoConfigurationDecoratio
         [DECORATION_STYLE_CONFIG_KEY.BORDER_POSITION]: 'bottom',
         [DECORATION_STYLE_CONFIG_KEY.BACKGROUND_COLOR]: '#ff0000',
     } as const,
-    [$.multiCursor]: {
+    [__0x.multiCursor]: {
         [DECORATION_STYLE_CONFIG_KEY.IS_WHOLE_LINE]: false,
         [DECORATION_STYLE_CONFIG_KEY.BORDER_WIDTH]: '2px',
         [DECORATION_STYLE_CONFIG_KEY.BORDER_STYLE]: 'dotted',

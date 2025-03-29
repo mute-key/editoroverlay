@@ -4,6 +4,9 @@ import { CONFIG_SECTION, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { bindStatusContentTextState } from '../../editor/decoration/status/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
+// import { sealBuffer, setSelectionTextbufferSize } from '../../editor/decoration/handler';
+
+
 
 const convertPositionToDecorationRenderOption = (textPosition, SelectionDecorationStyle): void => {
     return textPosition.contentText.map((text, idx) => {
@@ -34,7 +37,10 @@ const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentText
                 textOftarget[sym].contentText[0].after['margin'] = leftMarginToMarginString(leftMargin);
             }
         }
+
+        // setSelectionTextbufferSize(sym, textOftarget[sym].contentText.length);
     });
+    // sealBuffer();
 };
 
 const buildSelectionTextDecorationRenderOption = (config: Type.SelectionDecorationConfigType, style: Type.SelectionDecorationStyleType) => {

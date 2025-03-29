@@ -52,7 +52,7 @@ type ContentTextPositionFunc = {
 }
 
 type SelectionTextInfoSplitType = {
-    [key: symbol]: () => StatusTextInfoType[]
+    [key: number]: () => StatusTextInfoType[]
     __proto__: null
 };
 
@@ -177,7 +177,7 @@ type ContentTextFuncSignature = (context: ContentTextFuncContext) => any
 
 type ContentTextFuncNoContextSignature = (editor: vscode.TextEditor) => any
 
-type ContentTextFunc = Record<string, (symbol | string | ContentTextFuncSignature)>;
+type ContentTextFunc = Record<string, (number | string | ContentTextFuncSignature)>;
 
 type ContentTextStateFuncSignature = (statusContentText: StatusContentTextType) => void
 

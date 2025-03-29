@@ -18,6 +18,11 @@ export default [{
         "@typescript-eslint/naming-convention": ["warn", {
             selector: "import",
             format: ["camelCase", "PascalCase"],
+            custom: {
+                regex: /__[0-9]x/,
+                match: boolean
+              }
+            
         }],
 
         curly: "warn",

@@ -49,7 +49,7 @@ type SelectionInfoType = {
 }
 
 type DecorationInfoPropType = {
-    KEY: string,
+    KEY: symbol,
     MASK: DECORATION_TYPE_MASK
 }
 
@@ -60,7 +60,7 @@ type DecorationCoordinatorFunc = (context: DecorationContext) => DecorationWithR
 type UnsetFunctionType = (selectionKind: DecorationInfoPropType) => void
 
 type DecorationInfoType = {
-    [key: symbol]: DecorationInfoPropType | any
+    [key: number]: DecorationInfoPropType | any
     __proto__: null
 }
 
@@ -90,7 +90,7 @@ type createRange = {
 
 type CoordinatorSplitType = {
     // [key: symbol]: (context: SelectionHighlightKindContext) => DecorationWithRangeType[] | any
-    [key: symbol]: any
+    [key: number]: any
     __proto__: null
 }
 
