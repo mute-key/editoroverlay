@@ -9,8 +9,7 @@ import { writeEditorConfiguration } from './shared/editor';
 import { bindEditorDecoration } from '../editor/decoration/decoration';
 
 const configInfo = { 
-    ...CONFIG_INFO,
-    __proto__: null
+    ...CONFIG_INFO
 } as Type.ConfigInfoType;
 
 const loadConfiguration = (context?: vscode.ExtensionContext): Type.InitialisedConfigType | undefined => {

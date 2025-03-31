@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import * as Type from '../type/type.d';
-import * as __0x from '../constant/numeric';
-
+import * as __0x from './shared/numeric';
 import { BORDER_POSITION_MASK, BORDER_POSITION_VARIATION, DECORATION_STYLE_CONFIG_KEY, DECORATION_GENERAL_STYLE_CONFIG_KEY, DECORATION_SELECTION_STYLE_CONFIG_KEY, DECORATION_STYLE_KEY, DECORATION_TYPE_MASK, SELECTION_TYPE, CONFIG_SECTION_KEY, SELECTION_CONTENT_TEXT_CONFIG_KEY, DIAGNOSTIC_SEVERITY_KEY, DIAGNOSTIC_CONTENT_TEXT_KEY, DIAGNOSTIC_TEXT_STYLE_KEY } from './enum';
 
 // ==============================================================================
@@ -28,8 +27,7 @@ export const CONFIG_INFO = {
         selectionTextEnabled: undefined,
         diagnosticTextEnabled: undefined,
     } as const,
-    configError: undefined,
-    __proto__: null
+    configError: undefined
 } as const;
 
 export const CONFIG_KEY_LINKER_SECTION = {
@@ -90,15 +88,13 @@ export const SELECTION_DECORATION_STYLE = {
 export const INDENT_INFO = {
     size: undefined,
     type: undefined,
-    regex: undefined,
-    __proto__: null
+    regex: undefined
 } as const;
 
 export const RENDER_GROUP_SET_PROPERTY = {
     type: undefined,
     selectionCount: undefined,
     diagnostic: undefined,
-    __proto__: null,
 } as const;
 
 export const RENDER_GROUP_SET = {
@@ -106,20 +102,12 @@ export const RENDER_GROUP_SET = {
     [__0x.singleLine]: RENDER_GROUP_SET_PROPERTY,
     [__0x.multiLine]: RENDER_GROUP_SET_PROPERTY,
     [__0x.multiCursor]: RENDER_GROUP_SET_PROPERTY,
-    __proto__: null,
 };
 
 export const DECORATION_STATE = {
-    appliedHighlight: {
-        applied: undefined,
-        ofDecorationType: undefined,
-        __proto__: null,
-    } as const,
-    selectionText: [],
-    diagnosticText: [],
-    selectionInfo: [],
-    diagnosticInfo: [],
-    __proto__: null
+    appliedHighlight: Object.seal(new Int16Array(1)),
+    selectionText: Object.seal(new Int16Array(1)),
+    diagnosticText: Object.seal(new Int16Array(1)),
 } as const;
 
 export const HIGHLIGHT_STYLE_SYMBOL_LIST = [
@@ -134,16 +122,14 @@ export const HIGHLIGHT_STYLE_LIST = {
     [__0x.cursorOnly]: [],
     [__0x.singleLine]: [],
     [__0x.multiLine]: [],
-    [__0x.multiCursor]: [],
-    __proto__: null
+    [__0x.multiCursor]: []
 } as const;
 
 export const HIGHLIGHT_BORDER_POSITION_INFO = {
     [__0x.cursorOnly]: undefined,
     [__0x.singleLine]: undefined,
     [__0x.multiLine]: undefined,
-    [__0x.multiCursor]: undefined,
-    __proto__: null
+    [__0x.multiCursor]: undefined
 } as const;
 
 /**
@@ -155,15 +141,13 @@ export const DECORATION_STYLE_PREFIX = {
     [__0x.cursorOnly]: 'cursorOnly',
     [__0x.singleLine]: 'singleLine',
     [__0x.multiLine]: 'multiLine',
-    [__0x.multiCursor]: 'multiCursor',
-    __proto__: null
+    [__0x.multiCursor]: 'multiCursor'
 } as const;
 
 export const DECORATION_OPTION_CONFIG = {
     isWholeLine: undefined,
     rangeBehavior: undefined,
     after: {},
-    __proto__: null,
 } as const;
 
 export const DECORATION_OPTION_AFTER_CONFIG = {
@@ -174,7 +158,6 @@ export const DECORATION_OPTION_AFTER_CONFIG = {
     fontStyle: undefined,
     textDecoration: undefined,
     margin: undefined,
-    __proto__: null,
 } as const;
 
 export const SELECTION_KIND: Type.DecorationInfoType = {
@@ -197,22 +180,19 @@ export const SELECTION_KIND: Type.DecorationInfoType = {
     [__0x.multiCursor]: {
         KEY: __0x.multiCursor,
         MASK: DECORATION_TYPE_MASK.MULTI_CURSOR
-    } as const,
-    __proto__: null
+    } as const
 } as const;
 
 export const DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET = {
     [__0x.okContentText]: __0x.okEditorContentText,
     [__0x.warningContentText]: __0x.errorEditorContentText,
-    [__0x.errorContentText]: __0x.warningEditorContentText,
-    __proto__: null
+    [__0x.errorContentText]: __0x.warningEditorContentText
 };
 
 export const DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET = {
     [__0x.okContentText]: __0x.okWorkspaceContentText,
     [__0x.warningContentText]: __0x.warningWorkspaceContentText,
-    [__0x.errorContentText]: __0x.errorWorkspaceContentText,
-    __proto__: null
+    [__0x.errorContentText]: __0x.errorWorkspaceContentText
 } as const;
 
 
@@ -273,8 +253,7 @@ export const DIAGNOSTIC_VISIBILITY_CONFIG = {
     overrideLayoutPlaceholderColorToHighestSeverity: undefined,
     overrideAllOk: undefined,
     hideOk: undefined,
-    hideWarning: undefined,
-    __proto__: null
+    hideWarning: undefined
 } as const;
 
 export const DIAGNOSTIC_CONFIG = {
@@ -303,29 +282,22 @@ export const DIAGNOSTIC_STATE = {
     severity: 0,
     editor: {
         warning: {
-            total: 0,
-            __proto__: null
+            total: 0
         },
         error: {
-            total: 0,
-            __proto__: null
-        },
-        __proto__: null
+            total: 0
+        }
     },
     workspace: {
         warning: {
             source: 0,
-            total: 0,
-            __proto__: null
+            total: 0
         },
         error: {
             source: 0,
-            total: 0,
-            __proto__: null
-        },
-        __proto__: null
-    },
-    __proto__: null
+            total: 0
+        }
+    }
 } as const;
 
 export const DIAGNOSTIC_DECORATION_STYLE = {
@@ -372,8 +344,7 @@ export const DIAGNOSTIC_CONTENT_TEXT = {
 
 export const DIAGNOSTIC_DECORATION_TEXT_KIND = {
     contentText: undefined,
-    notation: undefined,
-    __proto__: null
+    notation: undefined
 };
 
 export const DIAGNOSTIC_CONTENT_TEXT_LIST: Type.TextList = [

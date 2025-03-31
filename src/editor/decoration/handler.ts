@@ -1,16 +1,16 @@
 import * as vscode from 'vscode';
 import * as Type from '../../type/type';
-import * as __0x from '../../constant/numeric';
+import * as __0x from '../../constant/shared/numeric';
 import { hightlightCoordinator, unsetRangeOfHighlightStyle } from './highlight/highlight';
 import { updateDiagnostic } from '../../diagnostic/diagnostic';
-import { applyDecoration, createEditorDecorationType, isHighlightChanged, unsetAndDisposeDecoration } from './decoration';
+// import { isHighlightChanged } from './decoration';
 import { renderGroupIs } from '../editor';
 import { SELECTION_KIND } from '../../constant/object';
+import { selectionInfo } from './status/selection';
 
 
 const clearDecorationState = (decorationState: Type.DecorationStateType) => {
-    decorationState.appliedHighlight.applied = { ...SELECTION_KIND[__0x.reset] };
-    decorationState.appliedHighlight.ofDecorationType = undefined;
+    decorationState.appliedHighlight[0] = __0x.reset;
     decorationState.selectionInfo = [];
     decorationState.diagnosticInfo = [];
     // decorationState.statusText = [];
@@ -34,7 +34,7 @@ const clearDecorationState = (decorationState: Type.DecorationStateType) => {
 
 const renderStatusInfo = ({ editor, renderGroup, decorationState }) => {
 
-    // resetPrevious(decorationState.appliedHighlight.applied);
+    // resetPrevious(decorationState.appliedHighlight[0].applied);
 
     // decorationState.selectionText = unsetAndDisposeDecoration(editor, decorationState.selectionText);
 
@@ -88,26 +88,41 @@ const renderStatusInfo = ({ editor, renderGroup, decorationState }) => {
     // }
 };
 
-const renderDecorationOnEditor = (context: Type.DecorationContext) => {
+// 에디터 객체가 꼬일 가능성이 있는건가? 흠 
+// 셀렉션 타입이 바뀌면 그 전의것을 완벽하게 리셋을 해야한다.
+// 깔끔하게 리셋하는 방법을 생각해봐야겟다.
+// 같은 타입이면 클리어 깨끝하게 된다.
+const renderDecorationOnEditor = ({editor, decorationState}: Type.DecorationContext) => {
 
-    const renderGroup: Type.RenderGroupSetProperty = renderGroupIs(context.editor);
 
-    context.renderGroup = renderGroup;
+    const renderGroup: Type.RenderGroupSetProperty = renderGroupIs(editor);
+
+    hightlightCoordinator(renderGroup.highlight, decorationState.appliedHighlight[0]);
+
+    if (renderGroup.selection) {
+        selectionInfo(renderGroup.highlight, decorationState.appliedHighlight[0]);
+        // renderGroup.selection(renderGroup.highlight, decorationState.appliedHighlight[0]);
+    }
+
+    decorationState.appliedHighlight[0] = renderGroup.highlight;
+
     
-    // if (context.decorationState.appliedHighlight.applied.MASK !== renderGroup.type.MASK) {
-    //     unsetRangeOfHighlightStyle(context.editor);
+    ;
+
+    // if (renderGroup.diagnostic) {
+
     // }
 
-    hightlightCoordinator(renderGroup.type.KEY, context.decorationState.appliedHighlight.applied.KEY);
+    
 
-    context.decorationState.appliedHighlight.applied = renderGroup.type;
+    
 
     // highlightInfo.forEach(Highlight => {
     //     applyDecoration(context.editor, Highlight.decoration, Highlight.range);
     //     return Highlight.decoration;
     // });
 
-    // context.decorationState.appliedHighlight.applied = renderGroup.type;
+    // context.decorationState.appliedHighlight[0].applied = renderGroup.type;
 
     // renderStatusInfo(context);
 };

@@ -2,7 +2,7 @@ import * as Type from '../../type/type';
 import Regex from '../../util/regex.collection';
 import { CONFIG_SECTION, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_SYMLINK } from '../../constant/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
-import { bindStatusContentTextState } from '../../editor/decoration/status/selection';
+import { bindStatusContentTextState, sealBuffer, setSelectionTextbufferSize } from '../../editor/decoration/status/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 // import { sealBuffer, setSelectionTextbufferSize } from '../../editor/decoration/handler';
 
@@ -28,8 +28,7 @@ const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentText
         const sym = SELECTION_CONTENT_TEXT_SYMLINK[key];
         textOftarget[sym] = {
             contentText: contentTextStyled,
-            position: Object.entries(textPosition.position),
-            __proto__: null
+            position: Object.entries(textPosition.position)
         };
 
         if (leftMargin && leftMargin !== '0px' || leftMargin !== '0em') {
@@ -38,9 +37,9 @@ const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentText
             }
         }
 
-        // setSelectionTextbufferSize(sym, textOftarget[sym].contentText.length);
+        setSelectionTextbufferSize(sym, textOftarget[sym].contentText.length);
     });
-    // sealBuffer();
+    sealBuffer();
 };
 
 const buildSelectionTextDecorationRenderOption = (config: Type.SelectionDecorationConfigType, style: Type.SelectionDecorationStyleType) => {

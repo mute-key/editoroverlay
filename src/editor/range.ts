@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import * as Type from '../type/type';
 
 // "disabled",
 // "IfOutOfVisibleRange",
@@ -33,7 +32,7 @@ const createAnchorRange = (editor: vscode.TextEditor): vscode.Range =>
 const createStartEndRangeOfSelection = (selection: vscode.Selection): vscode.Range =>
     createRangeSPEP(selection.start, selection.end);
 
-const Range = {
+const range = {
     createRangeNNNN: createRangeNNNN,
     createRangeSPEP: createRangeSPEP,
     createRangeNNEP: createRangeNNEP,
@@ -43,4 +42,4 @@ const Range = {
     createStartEndRangeOfSelection: createStartEndRangeOfSelection,
 };
 
-export default Range;
+export default range;

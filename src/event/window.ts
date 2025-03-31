@@ -1,22 +1,23 @@
 import * as vscode from 'vscode';
 import * as Type from '../type/type.d';
+import * as __0x from '../constant/shared/numeric';
 import Error from '../util/error';
 import { resetAllDecoration } from '../editor/decoration/decoration';
 import { clearDecorationState, renderDecorationOnEditor } from '../editor/decoration/handler';
-import { renderGroupIs, updateIndentOption } from '../editor/editor';
+import { renderGroupIs, renderGroupOfKey, updateIndentOption } from '../editor/editor';
 import { resetEditorDiagnosticStatistics, updateDiagnostic } from '../diagnostic/diagnostic';
 
 const windowStateChanged: Type.DecorationEventFunc = ({ decorationState, renderGroup }): vscode.Disposable => {
     return vscode.window.onDidChangeWindowState((event: vscode.WindowState): void => {
         if (event.focused) {
+            decorationState.appliedHighlight.applied = renderGroupOfKey(__0x.cursorOnly)
 
             // apply decoration to active editor.
             if (vscode.window.activeTextEditor) {
                 renderDecorationOnEditor({
                     editor: vscode.window.activeTextEditor,
                     decorationState: decorationState,
-                    renderGroup: renderGroup,
-                    __proto__: null
+                    renderGroup: renderGroup
                 });
             }
         } else {
@@ -51,8 +52,7 @@ const activeEditorChanged: Type.DecorationEventFunc = ({ configInfo, decorationS
             renderDecorationOnEditor({
                 editor: editor,
                 decorationState: decorationState,
-                renderGroup: renderGroup,
-                __proto__: null
+                renderGroup: renderGroup
             });
 
             if (Error.check() && editor) {

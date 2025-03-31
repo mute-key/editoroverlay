@@ -1,5 +1,5 @@
 import * as Type from '../../type/type';
-import * as __0x from '../../constant/numeric';
+import * as __0x from '../../constant/shared/numeric';
 import Regex from '../../util/regex.collection';
 import { DIAGNOSTIC_CONFIG, CONFIG_SECTION, DIAGNOSTIC_CONTENT_TEXT_LIST, DIAGNOSTIC_DECORATION_STYLE, DIAGNOSTIC_STYLE_LIST, DIAGNOSTIC_DECORATION_TEXT_KIND, DECORATION_OPTION_LINKER, DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER, DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER, DIAGNOSTIC_ALL_PLACEHOLDER_LINKER, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_SYM } from '../../constant/object';
 import { DIAGNOSTIC_BIOME, DIAGNOSTIC_TEXT_STYLE_KEY } from '../../constant/enum';
@@ -21,8 +21,8 @@ const applyLeftMargin = (textOf: Type.DiagnosticContentTextType, visibility: Typ
 
     [__0x.allOkPlaceholderContentText, __0x.problemPlaceholderContentText].forEach(placeholderKind => {
         if (typeof textOf.layout[placeholderKind].contentText[0].contentText === 'symbol') {
-            const marginDecoration = { ...textOf.layout[placeholderKind].contentText[0].contentText, __proto__: null };
-            marginDecoration.after = { ...textOf.layout[placeholderKind].contentText[0].contentText.after, __proto__: null };
+            const marginDecoration = { ...textOf.layout[placeholderKind].contentText[0].contentText, };
+            marginDecoration.after = { ...textOf.layout[placeholderKind].contentText[0].contentText.after, };
             marginDecoration.contentText = '';
             marginDecoration.margin = leftMarginToMarginString(leftMargin);
             textOf.layout[placeholderKind].contentText[0].unshift(marginDecoration);
@@ -79,10 +79,10 @@ const ifNoationNotNull = (property: string, str: string) => {
     if (str !== 'null' && str.length > 0 && !Regex.resourceScope.test(str)) {
         return {
             [property]: str,
-            __proto__: null
+
         };
     }
-    return { __proto__: null };
+    return {};
 };
 
 const createNotation = (biome: symbol, prefix: string, postfix: string) => {
@@ -92,9 +92,9 @@ const createNotation = (biome: symbol, prefix: string, postfix: string) => {
             notation: {
                 ...ifNoationNotNull('prefix', prefix),
                 ...ifNoationNotNull('postfix', postfix),
-                __proto__: null
+
             },
-            __proto__: null
+
         }
     };
 };
@@ -132,7 +132,7 @@ const overrideStyle = (config, overrideBiome) => {
             override.target.forEach(color => {
                 color[biome] = {
                     color: hexToRgbaStringLiteral(config[override.styleName].color as string, config[override.styleName].colorOpacity, '#333333', 0.7),
-                    __proto__: null
+
                 };
             });
         }
@@ -141,11 +141,11 @@ const overrideStyle = (config, overrideBiome) => {
     return {
         [__0x.problemPlaceholderContentText]: {
             override: Object.keys(problemOverrideColor).length > 0 ? problemOverrideColor : undefined,
-            __proto__: null
+
         },
         [__0x.allOkPlaceholderContentText]: {
             override: Object.keys(allOkOverrideColor).length > 0 ? allOkOverrideColor : undefined,
-            __proto__: null
+
         },
     };
 };
@@ -153,14 +153,14 @@ const overrideStyle = (config, overrideBiome) => {
 const buildDiagnosticStyle = (config: Type.DiagnosticConfigType, style: Type.DiagonosticDecorationStyle, diagnosticStyleList: string[], visibility: Type.DiagnosticVisibilityType, diagnosticBiome) => {
 
     const result = {
-        workspace: { __proto__: null },
-        editor: { __proto__: null },
-        all: { __proto__: null },
+        workspace: {},
+        editor: {},
+        all: {},
         layout: {
-            [__0x.problemPlaceholderContentText]: { __proto__: null },
-            [__0x.allOkPlaceholderContentText]: { __proto__: null }
+            [__0x.problemPlaceholderContentText]: {},
+            [__0x.allOkPlaceholderContentText]: {}
         },
-        __proto__: null
+
     };
 
     if (config.leftMargin) {
@@ -203,10 +203,10 @@ const buildDiagnosticStyle = (config: Type.DiagnosticConfigType, style: Type.Dia
     return {
         ...result,
         layout: {
-            [__0x.problemPlaceholderContentText]: { __proto__: null },
-            [__0x.allOkPlaceholderContentText]: { __proto__: null },
+            [__0x.problemPlaceholderContentText]: {},
+            [__0x.allOkPlaceholderContentText]: {},
             ...ifOverrride,
-            __proto__: null
+
         }
     };
 };

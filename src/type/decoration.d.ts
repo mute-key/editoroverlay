@@ -13,7 +13,7 @@ type AppliedHighlightType = {
 };
 
 type DecorationStateType = {
-    appliedHighlight: AppliedHighlightType
+    appliedHighlight: number
     selectionText: vscode.TextEditorDecorationType[] | any[],
     diagnosticText: vscode.TextEditorDecorationType[] | any[],
     diagnosticInfo?: StatusType.StatusTextInfoType[] | any[],
@@ -27,7 +27,7 @@ type HighlightStyleListType = Record<DecorationStyleKeyOnlyType, vscode.TextEdit
 type UnsetDecorationFunctionType = (editor: vscode.TextEditor, decorationStatus: DecorationStateType) => (selectionKind: DecorationInfoPropType) => void;
 
 type RenderGroupSetProperty = {
-    type: DecorationInfoPropType,
+    highlight: number,
     selection?: any,
     diagnostic?: any
 }
@@ -40,7 +40,6 @@ type DecorationContext = {
     editor: vscode.TextEditor
     decorationState: DecorationStateType
     renderGroup: RenderGroupSetProperty
-    __proto__: null
 };
 
 type SelectionInfoType = {
@@ -49,7 +48,7 @@ type SelectionInfoType = {
 }
 
 type DecorationInfoPropType = {
-    KEY: symbol,
+    KEY: number,
     MASK: DECORATION_TYPE_MASK
 }
 
@@ -61,7 +60,6 @@ type UnsetFunctionType = (selectionKind: DecorationInfoPropType) => void
 
 type DecorationInfoType = {
     [key: number]: DecorationInfoPropType | any
-    __proto__: null
 }
 
 type AppliedDecorationType = {
@@ -72,8 +70,7 @@ type AppliedDecorationType = {
 
 type DecorationWithRangeType = {
     decoration: vscode.TextEditorDecorationType,
-    range: vscode.Range[]
-    __proto__: null,
+    range: vscode.Range[],
 }
 
 type decorationCoordinatorSplit = {
@@ -91,7 +88,6 @@ type createRange = {
 type CoordinatorSplitType = {
     // [key: symbol]: (context: SelectionHighlightKindContext) => DecorationWithRangeType[] | any
     [key: number]: any
-    __proto__: null
 }
 
 type BorderPositionParserType = {
@@ -109,7 +105,6 @@ type SelectionHighlightKindContext = {
     editor: vscode.TextEditor,
     textEditorHighlight: vscode.TextEditorDecorationType[]
     borderConfigSymlink: symbol
-    __proto__: null
 }
 
 type SelectionTypeToDecorationFunc = (context: SelectionHighlightKindContext) => DecorationWithRangeType[]

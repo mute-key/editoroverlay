@@ -52,8 +52,7 @@ type ContentTextPositionFunc = {
 }
 
 type SelectionTextInfoSplitType = {
-    [key: number]: () => StatusTextInfoType[]
-    __proto__: null
+    [key: number]: () => void
 };
 
 type CursorOnlyStatusTextRegExp = {
@@ -162,14 +161,12 @@ type StatusInfoType = {
 type StatusTextInfoType = {
     contentText: DecorationType.DecorationRenderOptionType[]
     range: vscode.Range
-    __proto__: null
 }
 
 
 type ContentTextFuncContext = {
     idx: number,
     editor: vscode.TextEditor,
-    __proto__: null
     // indent: IndentReadyType,
 }
 

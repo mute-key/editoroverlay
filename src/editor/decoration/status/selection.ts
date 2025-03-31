@@ -1,50 +1,41 @@
 import * as vscode from 'vscode';
 import * as Type from '../../../type/type';
-import * as __0x from '../../../constant/numeric';
+import * as __0x from '../../../constant/shared/numeric';
 import Range from '../../range';
 import { SELECTION_CONTENT_TEXT_CONFIG_KEY } from '../../../constant/enum';
-import { INDENT_INFO, SELECTION_CONTENT_TEXT } from '../../../constant/object';
+import { DECORATION_OPTION_CONFIG, INDENT_INFO, SELECTION_CONTENT_TEXT } from '../../../constant/object';
+import { createEditorDecorationType, disposeDecoration } from '../decoration';
 
 const selectionContentText = {
-    ...SELECTION_CONTENT_TEXT,
-    __proto__: null
+    ...SELECTION_CONTENT_TEXT
 } as unknown as Type.StatusContentTextType;
 
 const indentInfo = {
-    ...INDENT_INFO,
-    __proto__: null
+    ...INDENT_INFO
 } as Type.IndentInfoType;
 
-
 const selectionTextBuffer = {
-    [__0x.cursorOnly]: [] as any[],
-    [__0x.singleLine]: [] as any[],
-    [__0x.multiLine]: [] as any[],
-    [__0x.multiCursor]: (() => [] as any[])(),
+    [__0x.reset]: [] as any[],
+    [__0x.cursorOnlyText]: [] as any[],
+    [__0x.singleLineText]: [] as any[],
+    [__0x.multiLineAnchorText]: [] as any[],
+    [__0x.multiLineCursorText]: [] as any[],
+    [__0x.multiCursorText]: [] as any[],
 };
 
-const setSelectionTextbufferSize = (key: number, size: number) => {
+const setSelectionTextbufferSize = (key: number, size: number): void => {
+    const emptyDecoration = createEditorDecorationType({});
+    const buffer = new Array(size).fill(emptyDecoration);
 
-    const buffer = new Array(size).fill(Object.create(null));
-
-    if (key === __0x.cursorOnlyText) {
-        selectionTextBuffer[__0x.cursorOnly][0] = Object.seal(buffer);
-    }
-    if (key === __0x.singleLineText) {
-        selectionTextBuffer[__0x.singleLine][0] = Object.seal(buffer);
-    }
-    if (key === __0x.multiLineAnchorText) {
-        selectionTextBuffer[__0x.multiLine].push(Object.seal(buffer));
-    }
-    if (key === __0x.multiLineCursorText) {
-        selectionTextBuffer[__0x.multiLine].push(Object.seal(buffer));
-    }
     if (key === __0x.multiCursorText) {
-        // selectionTextBuffer[__0x.multiCursor] = [Object.seal(buffer)];
+        selectionTextBuffer[__0x.multiCursor] = [Object.seal(buffer), []];
+        return;
     }
+
+    selectionTextBuffer[key] = Object.seal(buffer);
 };
 
-const sealBuffer = () => {
+const sealBuffer = (): void => {
     Object.seal(selectionTextBuffer[__0x.cursorOnly]);
     Object.seal(selectionTextBuffer[__0x.singleLine]);
     Object.seal(selectionTextBuffer[__0x.multiLine]);
@@ -77,8 +68,7 @@ const multiLineOf = {
 
 const multilineFunctionSymLink = {
     [__0x.multiLineLineCountSym]: (editor) => String((editor.selection.end.line - editor.selection.start.line) + 1),
-    [__0x.multiLineChararcterSym]: (editor) => String(editor.document.getText(editor.selection).replace(indentInfo.regex as RegExp, "").length),
-    __proto__: null
+    [__0x.multiLineChararcterSym]: (editor) => String(editor.document.getText(editor.selection).replace(indentInfo.regex as RegExp, "").length)
 };
 
 const multiCursorOf = {
@@ -129,127 +119,177 @@ const selectionOf: Type.ContentTextStateType = {
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: multiCursorOf,
 };
 
-const contentTextFunctionSymlink = (editor: vscode.TextEditor, { contentText, position }: Type.ContentTextSymlinkKind, buffer: any): Type.DecorationRenderOptionType[] => {
-    position.forEach(([pos, sym]) => {
-        if (!buffer[sym]) {
-            buffer[sym] = multilineFunctionSymLink[sym](editor);
-        }
-        contentText[pos].after.contentText = String(buffer[sym]);
-    });
-    return contentText;
-};
+const contentTextFunc = (context: Type.ContentTextFuncContext, contentText: any, range, key: number): void => {
+    contentText.forEach((decorationOption, idx) => {
+        const decorationOptionFunc = { ...decorationOption };
+        decorationOptionFunc.after = { ...decorationOption.after };
 
-const contentTextFunc = (context: Type.ContentTextFuncContext, contentText: any): Type.DecorationRenderOptionType[] => {
-    return contentText.map(decorationOption => {
-        if (typeof decorationOption.after.contentText === 'string') {
-            return decorationOption;
+        if (typeof decorationOption.after.contentText !== 'string') {
+            decorationOptionFunc.after.contentText = String(decorationOption.after.contentText(context));
         }
 
-        const decorationOptionFunc = { ...decorationOption, __proto__: null };
-        decorationOptionFunc.after = { ...decorationOption.after, __proto__: null };
-        decorationOptionFunc.after.contentText = String(decorationOption.after.contentText(context));
-        return decorationOptionFunc;
+        const decoration = vscode.window.createTextEditorDecorationType(decorationOptionFunc);
+        // context.editor.setDecorations(clone, [range(context.editor)])
+        // context.editor.setDecorations(decoration, [range(context.editor)])
+        // context.editor.setDecorations(selectionTextBuffer[key][idx], [])
+        // selectionTextBuffer[key][idx].dispose();
+        // selectionTextBuffer[key][idx] = clone;
     });
 };
 
-const cursorOnlySelection = ({ editor }: Type.ContentTextFuncContext): any[] => {
-    return [
-        [contentTextFunc({ idx: 0, editor, __proto__: null }, selectionContentText[__0x.cursorOnlyText].contentText as any[]),
-        Range.createActiveRange(editor)]
-    ];
-    // return [{
-    //     contentText: contentTextFunc({ idx: 0, editor, __proto__: null }, selectionContentText[__0x.cursorOnlyText].contentText as any[]),
-    //     range: Range.createActiveRange(editor),
-    //     __proto__: null
-    // }];
-};
-
-const singleLineSelection = ({ editor }: Type.ContentTextFuncContext): any[] => {
-    return [
-        [contentTextFunc({ idx: 0, editor, __proto__: null }, selectionContentText[__0x.singleLineText].contentText as any[]),
-        Range.createActiveRange(editor)]
-    ];
-
-    // return [{
-    //     contentText: contentTextFunc({ idx: 0, editor, __proto__: null }, selectionContentText[__0x.singleLineText].contentText as any[]),
-    //     range: Range.createActiveRange(editor),
-    //     __proto__: null
-    // }];
-};
-
-const multilineSelection = ({ editor }: Type.ContentTextFuncContext): any[] => {
-
-    const buffer = {
-        [__0x.multiLineLineCountSym]: undefined,
-        [__0x.multiLineChararcterSym]: undefined,
-        __proto__: null
-    };
-
-    const anchor = contentTextFunctionSymlink(editor, selectionContentText[__0x.multiLineAnchorText] as Type.ContentTextSymlinkKind, buffer);
-    const cursor = contentTextFunctionSymlink(editor, selectionContentText[__0x.multiLineCursorText] as Type.ContentTextSymlinkKind, buffer);
-
-    return [
-        [anchor.reverse(), Range.createAnchorRange(editor)],
-        [cursor.reverse(), Range.createActiveRange(editor)]
-    ];
-    // return [{
-    //     contentText: anchor,
-    //     range: Range.createAnchorRange(editor),
-    //     __proto__: null
-    // }, {
-    //     contentText: cursor,
-    //     range: Range.createActiveRange(editor),
-    //     __proto__: null
-    // }];
-};
-
-const multiCursorSelection = ({ idx, editor }: Type.ContentTextFuncContext): any[] => {
-
-    const selectionTextInfo: any[] = [];
-    const statusLine: number[] = [];
-
-    while (idx--) {
-        const lineSet = new Set(statusLine);
-        if (lineSet.has(editor.selections[idx].end.line)) {
-            continue;
-        }
-
-        idx = idx + 1;
-        selectionTextInfo.push([
-            contentTextFunc({ idx, editor, __proto__: null }, selectionContentText[__0x.multiCursorText].contentText as any[]),
-            Range.createStartEndRangeOfSelection(editor.selections[idx])
-        ]);
-
-        // selectionTextInfo.push({
-        //     contentText: contentTextFunc({ idx, editor, __proto__: null }, selectionContentText[__0x.multiCursorText].contentText as any[]),
-        //     range: Range.createStartEndRangeOfSelection(editor.selections[idx]),
-        //     __proto__: null
-        // });
-
-        statusLine.push(editor.selections[idx].end.line);
+const cursorOnlySelection = (): void => {
+    const editor = vscode.window.activeTextEditor;
+    if (editor) {
+        contentTextFunc(
+            { idx: 0, editor },
+            selectionContentText[__0x.cursorOnlyText].contentText,
+            Range.createActiveRange,
+            __0x.cursorOnlyText);
     }
-    return selectionTextInfo;
 };
 
-const selectionTextInfoSplit = (context: Type.ContentTextFuncContext): Type.SelectionTextInfoSplitType => {
-    return {
-        [__0x.cursorOnly]: () => cursorOnlySelection(context),
-        [__0x.singleLine]: () => singleLineSelection(context),
-        [__0x.multiLine]: () => multilineSelection(context),
-        [__0x.multiCursor]: () => multiCursorSelection(context),
-        __proto__: null
-    };
+const singleLineSelection = (): void => {
+    const editor = vscode.window.activeTextEditor;
+
+    if (editor) {
+
+
+
+
+        // return [
+        //     [contentTextFunc({ idx: 0, editor }, selectionContentText[__0x.singleLineText].contentText as any[]),
+        //     Range.createActiveRange(editor)]
+        // ];
+    }
+    // return []
+
+    // return [{
+    //     contentText: contentTextFunc({ idx: 0, editor }, selectionContentText[__0x.singleLineText].contentText as any[]),
+    //     range: Range.createActiveRange(editor)
+    // }];
 };
 
-const selectionInfo = (editor: vscode.TextEditor, type: Type.DecorationInfoPropType) => {
+const decorationOptionBuffer = { ...DECORATION_OPTION_CONFIG } as Type.DecorationRenderOptionType
 
-    const context: Type.ContentTextFuncContext = {
-        idx: 0,
-        editor: editor,
-        __proto__: null
+const contentTextFunctionSymlink = (editor, range, key, multiLineBuffer) => (decorationOption, idx) => {
+    decorationOptionBuffer.after = { ...decorationOption.after }
+    const text = decorationOptionBuffer.after.contentText;
+    if (typeof text !== 'string') {
+        if (multiLineBuffer[text] === null) {
+            multiLineBuffer[text] = multilineFunctionSymLink[text](editor);
+        }
+        decorationOptionBuffer.after.contentText = String(multiLineBuffer[text]);
+    }
+
+    const decoration = vscode.window.createTextEditorDecorationType(decorationOptionBuffer);
+    // const clone = { ...decoration };
+    // console.log(clone)
+    
+    editor.setDecorationsFast(decoration, [range(editor)])
+    // editor.setDecorations(selectionTextBuffer[key][idx], [])
+    selectionTextBuffer[key][idx].dispose();
+    selectionTextBuffer[key][idx] = decoration;
+
+    // decoration
+}
+
+const multilineSelection = (): void => {
+    const editor = vscode.window.activeTextEditor
+    const multiLineBuffer: Record<number, number | null> = {
+        [__0x.multiLineLineCountSym]: null,
+        [__0x.multiLineChararcterSym]: null
     };
 
-    selectionTextInfoSplit(context)[type.KEY]();
+    if (editor !== undefined) {
+        selectionContentText[__0x.multiLineAnchorText]
+            .contentText
+            .forEach(
+                contentTextFunctionSymlink(
+                    editor,
+                    Range.createAnchorRange,
+                    __0x.multiLineAnchorText,
+                    multiLineBuffer));
+
+        selectionContentText[__0x.multiLineCursorText]
+            .contentText
+            .forEach(
+                contentTextFunctionSymlink(
+                    editor,
+                    Range.createActiveRange,
+                    __0x.multiLineCursorText,
+                    multiLineBuffer));
+
+        // multiLineBuffer[__0x.multiLineLineCountSym] = null
+        // multiLineBuffer[__0x.multiLineChararcterSym] = null
+    }
+};
+
+const multiCursorSelection = (): any[] => {
+
+    const editor = vscode.window.activeTextEditor;
+
+    if (editor !== undefined) {
+        const selectionTextInfo: any[] = [];
+        const statusLine: number[] = [];
+        const context: Type.ContentTextFuncContext = {
+            idx: 0,
+            editor: editor
+        }
+
+        let idx = 0;
+
+        while (idx--) {
+            const lineSet = new Set(statusLine);
+            if (lineSet.has(editor.selections[idx].end.line)) {
+                continue;
+            }
+
+            idx = idx + 1;
+            // selectionTextInfo.push([
+            //     contentTextFunc(context, selectionContentText[__0x.multiCursorText].contentText as any[]),
+            //     Range.createStartEndRangeOfSelection(editor.selections[idx])
+            // ]);
+
+            // selectionTextInfo.push({
+            //     contentText: contentTextFunc({ idx, editor }, selectionContentText[__0x.multiCursorText].contentText as any[]),
+            //     range: Range.createStartEndRangeOfSelection(editor.selections[idx])
+            // });
+
+            statusLine.push(editor.selections[idx].end.line);
+        }
+        return selectionTextInfo;
+    }
+    return [];
+};
+
+const selectionTextInfoSplit: Type.SelectionTextInfoSplitType = {
+    [__0x.cursorOnly]: () => cursorOnlySelection(),
+    [__0x.singleLine]: () => singleLineSelection(),
+    [__0x.multiLine]: () => multilineSelection(),
+    [__0x.multiCursor]: () => multiCursorSelection()
+};
+
+const clearPrevious = (previousKey: number) => {
+    switch (previousKey) {
+        case __0x.cursorOnly:
+            disposeDecoration(selectionTextBuffer[__0x.cursorOnlyText])
+        case __0x.singleLine:
+            disposeDecoration(selectionTextBuffer[__0x.singleLineText])
+        case __0x.multiLine:
+            disposeDecoration(selectionTextBuffer[__0x.multiLineAnchorText])
+            disposeDecoration(selectionTextBuffer[__0x.multiLineCursorText])
+        case __0x.multiCursor:
+            selectionTextBuffer[__0x.multiCursorText].forEach(disposeDecoration);
+        default: break;
+    }
+};
+
+const selectionInfo = (highlightKey: number, previousKey: number) => {
+    if (highlightKey != previousKey) {
+        clearPrevious(previousKey);
+    }
+
+    selectionTextInfoSplit[highlightKey]();
 };
 
 const bindStatusContentTextState = (): Type.BindContentTextStateType => {
@@ -262,5 +302,7 @@ const bindStatusContentTextState = (): Type.BindContentTextStateType => {
 
 export {
     selectionInfo,
-    bindStatusContentTextState
+    bindStatusContentTextState,
+    setSelectionTextbufferSize,
+    sealBuffer
 };

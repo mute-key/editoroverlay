@@ -1,19 +1,16 @@
 import * as vscode from 'vscode';
 import * as Type from '../../../type/type';
-import * as __0x from '../../../constant/numeric';
+import * as __0x from '../../../constant/shared/numeric';
 import Range from '../../range';
 import { HIGHLIGHT_BORDER_POSITION_INFO, HIGHLIGHT_STYLE_LIST, HIGHLIGHT_STYLE_SYMBOL_LIST } from '../../../constant/object';
 import { applyDecoration, resetDecorationRange } from '../decoration';
-// import { DECORATION_STYLE_KEY, DECORATION_TYPE_MASK, SELECTION_TYPE } from '../../../constant/enum';
 
 const highlightStyleList = {
-    ...HIGHLIGHT_STYLE_LIST,
-    __proto__: null
+    ...HIGHLIGHT_STYLE_LIST
 } as unknown as Type.HighlightStyleListType;
 
 const borderPositionInfo = {
     ...HIGHLIGHT_BORDER_POSITION_INFO,
-    __proto__: null,
 } as unknown as Type.BorderPositionInfoType;
 
 const cursorOnlyHighlightRange = (previousKey): void => {
@@ -33,7 +30,6 @@ const cursorOnlyHighlightRange = (previousKey): void => {
     // return [{
     //     decoration: highlightStyleList[__0x.cursorOnly][0],
     //     range: [Range.createRangeSPEP(editor.selection.active, editor.selection.active)],
-    //     __proto__: null
     // }];
 
     // if (borderConfig.isWholeLine) {
@@ -43,7 +39,6 @@ const cursorOnlyHighlightRange = (previousKey): void => {
     //     return [{
     //         decoration: textEditorHighlight[0],
     //         range: [Range.createRangeNNNN(editor.selection.active.line, 0, editor.selection.active.line, editor.selection.active.character)],
-    //         __proto__: null
     //     }];
     // }
 
@@ -51,12 +46,10 @@ const cursorOnlyHighlightRange = (previousKey): void => {
     //     return [{
     //         decoration: textEditorHighlight[0],
     //         range: [Range.createRangeNNEP(editor.selection.active.line, editor.selection.active.character, editor.document.lineAt(editor.selection.active.line).range.end)],
-    //         __proto__: null
     //     },
     //     {
     //         decoration: textEditorHighlight[1],
     //         range: [Range.createRangeNNNN(editor.selection.active.line, 0, editor.selection.active.line, editor.selection.active.character)],
-    //         __proto__: null
     //     }];
     // }
     // return [];
@@ -73,12 +66,6 @@ const singelLineHighlightRange = (previousKey): void => {
         // [!] review to differentiate zero border decoraiton for wholeLine background and not-wholeLine background.
 
         applyDecoration(editor, highlightStyleList[__0x.singleLine][0], [Range.createRangeSPEP(editor.selection.start, editor.selection.end)]);
-
-        // return [{
-        //     decoration: highlightStyleList[__0x.singleLine][0],
-        //     range: [Range.createRangeSPEP(editor.selection.start, editor.selection.end)],
-        //     __proto__: null
-        // }];
     };
 };
 
@@ -99,27 +86,10 @@ const multiLineHighlightRange = (previousKey) => {
         applyDecoration(editor, highlightStyleList[__0x.multiLine][1], [Range.createRangeSPEP(editor.selection.end, editor.selection.end)]);
         applyDecoration(editor, highlightStyleList[__0x.multiLine][2], [editor.selection]);
     }
-
-
-    // return [{
-    //     decoration: highlightStyleList[__0x.multiLine][0],
-    //     range: [Range.createRangeSPEP(editor.selection.start, editor.selection.start)],
-    //     __proto__: null
-    // }, {
-    //     decoration: highlightStyleList[__0x.multiLine][1],
-    //     range: [Range.createRangeSPEP(editor.selection.end, editor.selection.end)],
-    //     __proto__: null
-    // }, {
-    //     decoration: highlightStyleList[__0x.multiLine][2],
-    //     range: [editor.selection],
-    //     __proto__: null
-    // }];
 };
 
 const multiCursorHighlightRange = (previousKey): void => {
     const editor = vscode.window.activeTextEditor;
-
-
 
     if (editor) {
         resetDecorationRange(editor, highlightStyleList[previousKey]);
@@ -135,23 +105,6 @@ const multiCursorHighlightRange = (previousKey): void => {
             return acc;
         }, [] as vscode.Range[]));
     }
-
-    // return [{
-    //     decoration: highlightStyleList[__0x.multiCursor][0],
-    //     range: editor.selections.reduce((acc: vscode.Range[], selection: vscode.Selection) => {
-    //         acc.push(Range.createRangeSPEP(selection.start, selection.active));
-    //         return acc;
-    //     }, [] as vscode.Range[]),
-    //     __proto__: null
-    // },
-    // {
-    //     decoration: highlightStyleList[__0x.multiCursor][1],
-    //     range: editor.selections.reduce((acc: vscode.Range[], selection: vscode.Selection) => {
-    //         acc.push(Range.createRangeNNNN(selection.active.line, 0, selection.active.line, selection.active.character));
-    //         return acc;
-    //     }, [] as vscode.Range[]),
-    //     __proto__: null
-    // }];
 };
 
 const unsetRangeOfHighlightStyle = (editor: vscode.TextEditor) => {
@@ -164,11 +117,10 @@ const coordinatorSplit: Type.CoordinatorSplitType = {
     [__0x.cursorOnly]: (previousKey) => cursorOnlyHighlightRange(previousKey),
     [__0x.singleLine]: (previousKey) => singelLineHighlightRange(previousKey),
     [__0x.multiLine]: (previousKey) => multiLineHighlightRange(previousKey),
-    [__0x.multiCursor]: (previousKey) => multiCursorHighlightRange(previousKey),
-    __proto__: null
+    [__0x.multiCursor]: (previousKey) => multiCursorHighlightRange(previousKey)
 };
 
-const hightlightCoordinator = (currentKey: symbol, previousKey: symbol) => {
+const hightlightCoordinator = (currentKey: number, previousKey: number) => {
     coordinatorSplit[currentKey](previousKey);
 };
 

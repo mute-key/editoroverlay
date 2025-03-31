@@ -1,13 +1,12 @@
 import * as vscode from 'vscode';
 import * as Type from '../../../type/type';
-import * as __0x from '../../../constant/numeric';
+import * as __0x from '../../../constant/shared/numeric';
 import Range from '../../range';
 import { DIAGNOSTIC_CONTENT_TEXT, DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET, DIAGNOSTIC_VISIBILITY_CONFIG, DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET } from '../../../constant/object';
 import { DIAGNOSTIC_BIOME, DIAGNOSTIC_CONTENT_TEXT_KEY } from '../../../constant/enum';
 
 const diagnosticContentText = {
-    ...DIAGNOSTIC_CONTENT_TEXT,
-    __proto__: null
+    ...DIAGNOSTIC_CONTENT_TEXT
 } as Type.DiagnosticContentTextType;
 
 const diagnosticVisibility = { ...DIAGNOSTIC_VISIBILITY_CONFIG } as Type.DiagnosticVisibilityType;
@@ -86,14 +85,13 @@ const diagonosticMultiStyleDecoration = (diagnosticState, diagnosticContentTextI
 
         const context = {
             state: diagnosticState,
-            notation: diagnosticContentTextIs.notation,
-            __proto__: null
+            notation: diagnosticContentTextIs.notation
         };
 
         return diagnosticContentTextIs.contentText.map(decorationOption => {
             if (typeof decorationOption.after.contentText !== 'string') {
-                const decorationOptionFunc = { ...decorationOption, __proto__: null };
-                decorationOptionFunc.after = { ...decorationOption.after, __proto__: null };
+                const decorationOptionFunc = { ...decorationOption };
+                decorationOptionFunc.after = { ...decorationOption.after };
                 decorationOptionFunc.after.contentText = decorationOption.after.contentText(context);
                 return decorationOptionFunc;
             }
@@ -107,8 +105,7 @@ const diagnosticKind = ({ state, contentText, keySet }) => {
     return {
         ok: () => diagonosticMultiStyleDecoration(state, contentText[keySet[__0x.okContentText]]),
         warning: () => diagonosticMultiStyleDecoration(state, contentText[keySet[__0x.warningContentText]]),
-        error: () => diagonosticMultiStyleDecoration(state, contentText[keySet[__0x.errorContentText]]),
-        __proto__: null
+        error: () => diagonosticMultiStyleDecoration(state, contentText[keySet[__0x.errorContentText]])
     };
 };
 
@@ -135,29 +132,23 @@ const diagnosticBiomeSplit = (state: Type.DiagnosticStateType['editor'] | Type.D
 
     const context = {
         state: state,
-        contentText: contentText,
-        __proto__: null
+        contentText: contentText
     };
 
     return {
         'workspace': () => diagnosticCounter({
             ...context,
             keySet: { 
-                ...DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET, 
-                __proto__: null 
-            }, 
-            __proto__: null
+                ...DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET
+            }
         }),
         'editor': () => diagnosticCounter({
             ...context,
             keySet: { 
-                ...DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET, 
-                __proto__: null 
-            }, 
-            __proto__: null
+                ...DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET
+            }
         }),
-        'all': () => [],
-        __proto__: null
+        'all': () => []
     };
 };
 const diagnosticLayoutAllOkOverride = (state: Type.DiagnosticStateType, textState: Type.DiagnosticContentTextType): Type.DecorationRenderOptionType[] => {
@@ -200,14 +191,12 @@ const diagnosticInfo = (editor: vscode.TextEditor, diagnosticState: Type.Diagnos
     const context: Type.DiagnosticContext = {
         state: diagnosticState,
         textState: diagnosticContentText,
-        diagnosticVisibility: diagnosticVisibility,
-        __proto__: null
+        diagnosticVisibility: diagnosticVisibility
     };
 
     return [{
         contentText: buildDiagonosticDecorationLayout(context) as Type.DecorationRenderOptionType[],
-        range: Range.createCursorRange(editor),
-        __proto__: null
+        range: Range.createCursorRange(editor)
     }];
 };
 

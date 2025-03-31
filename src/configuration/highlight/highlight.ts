@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import * as vscode from 'vscode';
 import * as Type from '../../type/type';
-import * as __0x from '../../constant/numeric';
+import * as __0x from '../../constant/shared/numeric';
 import { CONFIG_SECTION, BORDER_WIDTH_DEFINITION, DECORATION_STYLE_PREFIX, NO_CONFIGURATION_DEOCORATION_DEFAULT, NO_CONFIGURATION_GENERAL_DEFAULT, HIGHLIGHT_STYLE_LIST, HIGHLIGHT_STYLE_SYMBOL_LIST, CONFIG_KEY_LINKER_SECTION } from '../../constant/object';
 import { colorConfigTransform, getConfigValue } from '../shared/configuration';
 import { createEditorDecorationType, disposeDecoration } from '../../editor/decoration/decoration';
