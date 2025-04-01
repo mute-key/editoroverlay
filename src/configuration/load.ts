@@ -29,6 +29,9 @@ const loadConfiguration = (context?: vscode.ExtensionContext): Type.InitialisedC
 
     const decorationState = bindEditorDecoration().stateOf;
 
+    decorationState.appliedHighlight = new Array(1).fill(0);
+    Object.seal(decorationState.appliedHighlight);
+
     if (!configReady.configError) {
         configReady.configError = [];
         updateLegacyConfig(configReady);
@@ -46,7 +49,6 @@ const loadConfiguration = (context?: vscode.ExtensionContext): Type.InitialisedC
             updateDiagnosticTextConfig(configReady);
         }
 
-        
         return {
             config: configReady,
             decoration: decorationState

@@ -5,10 +5,13 @@ import Regex from '../util/regex.collection';
 import { HIGHLIGHT_STYLE_SYMBOL_LIST, RENDER_GROUP_SET, SELECTION_KIND } from '../constant/object';
 import { bindStatusContentTextState } from './decoration/status/selection';
 import { bindDiagnosticContentTextState, diagnosticInfo } from './decoration/status/diagnostic';
+import { selectionInfo } from './decoration/status/selection';
 
 const renderGroupSet = {
     ...RENDER_GROUP_SET
 } as unknown as Type.RenderGroupSet;
+
+const renderGroupOfKey = (key: number) => renderGroupSet[key]
 
 const updateIndentOption = (editor: vscode.TextEditor): void => {
     const bindTo = bindStatusContentTextState();
@@ -20,8 +23,7 @@ const updateIndentOption = (editor: vscode.TextEditor): void => {
 };
 
 const prepareRenderGroup = (config: Type.ConfigInfoReadyType): Type.RenderGroupSetProperty => {
-    // const selection = config.generalConfigInfo.selectionTextEnabled ? selectionInfo : undefined;
-    const selection = config.generalConfigInfo.selectionTextEnabled;
+    const selection = config.generalConfigInfo.selectionTextEnabled ? selectionInfo : undefined;
     const diagnostic = config.generalConfigInfo.diagnosticTextEnabled ? diagnosticInfo : undefined;
     const bindDiagnostic = bindDiagnosticContentTextState();
     const diagonosticAvaliabity = {
@@ -31,7 +33,9 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): Type.RenderGroupS
         [__0x.multiCursor]: bindDiagnostic.configOf.displayWhenMultiCursor
     };
 
+
     HIGHLIGHT_STYLE_SYMBOL_LIST.forEach(selectionKey => {
+
         if (SELECTION_KIND[selectionKey]) {
             renderGroupSet[selectionKey] = {
                 highlight: selectionKey,
@@ -43,8 +47,6 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): Type.RenderGroupS
 
     return renderGroupSet[__0x.cursorOnly] as Type.RenderGroupSetProperty;
 };
-
-const renderGroupOfKey = (key: number) => renderGroupSet[key]
 
 const renderGroupIs = (editor: vscode.TextEditor): Type.RenderGroupSetProperty => {
     if (editor.selections.length === 1) {
@@ -66,6 +68,5 @@ export {
     updateIndentOption,
     prepareRenderGroup,
     renderGroupIs,
-    renderGroupOfKey,
-
+    renderGroupOfKey
 };

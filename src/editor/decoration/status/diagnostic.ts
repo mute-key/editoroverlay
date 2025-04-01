@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as Type from '../../../type/type';
 import * as __0x from '../../../constant/shared/numeric';
-import Range from '../../range';
+import { createCursorRange, createLineRange } from '../../range';
 import { DIAGNOSTIC_CONTENT_TEXT, DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET, DIAGNOSTIC_VISIBILITY_CONFIG, DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET } from '../../../constant/object';
 import { DIAGNOSTIC_BIOME, DIAGNOSTIC_CONTENT_TEXT_KEY } from '../../../constant/enum';
 
@@ -186,7 +186,6 @@ const buildDiagonosticDecorationLayout = (context: Type.DiagnosticContext): any[
     return diagnosticLayout(state, textState);
 };
 
-
 const diagnosticInfo = (editor: vscode.TextEditor, diagnosticState: Type.DiagnosticStateType): Type.StatusTextInfoType[] => {
     const context: Type.DiagnosticContext = {
         state: diagnosticState,
@@ -196,7 +195,7 @@ const diagnosticInfo = (editor: vscode.TextEditor, diagnosticState: Type.Diagnos
 
     return [{
         contentText: buildDiagonosticDecorationLayout(context) as Type.DecorationRenderOptionType[],
-        range: Range.createCursorRange(editor)
+        range: createCursorRange(editor)
     }];
 };
 

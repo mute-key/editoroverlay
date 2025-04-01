@@ -13,7 +13,7 @@ type AppliedHighlightType = {
 };
 
 type DecorationStateType = {
-    appliedHighlight: number
+    appliedHighlight: any[]
     selectionText: vscode.TextEditorDecorationType[] | any[],
     diagnosticText: vscode.TextEditorDecorationType[] | any[],
     diagnosticInfo?: StatusType.StatusTextInfoType[] | any[],
@@ -30,6 +30,7 @@ type RenderGroupSetProperty = {
     highlight: number,
     selection?: any,
     diagnostic?: any
+    editorReference?: any[]
 }
 
 type RenderGroupSet = {
@@ -38,8 +39,6 @@ type RenderGroupSet = {
 
 type DecorationContext = {
     editor: vscode.TextEditor
-    decorationState: DecorationStateType
-    renderGroup: RenderGroupSetProperty
 };
 
 type SelectionInfoType = {

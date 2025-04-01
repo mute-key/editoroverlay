@@ -28,17 +28,21 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
         clearDecorationState(loadConfig.decoration);
 
         const eventContext: Type.EventContext = {
-            editor: activeEditor,
             configInfo: configInfo,
-            decorationState: loadConfig.decoration,
-            renderGroup: prepareRenderGroup(configInfo)
+            decorationState: loadConfig.decoration
         };
 
+        prepareRenderGroup(configInfo);
+
         if (activeEditor) {
-            eventContext.decorationState.appliedHighlight[0] = __0x.cursorOnly //renderGroupOfKey(__0x.cursorOnly)
-            renderDecorationOnEditor(eventContext as Type.DecorationContext);
+
+            loadConfig.decoration.appliedHighlight[0] = __0x.cursorOnly
+            
+            renderDecorationOnEditor({
+                editor: activeEditor
+            }, loadConfig.decoration);
         }
-        
+
         return [
             windowEvent.windowStateChanged(eventContext),
             windowEvent.activeEditorChanged(eventContext),

@@ -1,9 +1,10 @@
 import * as vscode from 'vscode';
 import * as Type from '../../../type/type';
 import * as __0x from '../../../constant/shared/numeric';
-import Range from '../../range';
+import { createLineRange, createRangeNNNN, createRangeSPEP } from '../../range';
 import { HIGHLIGHT_BORDER_POSITION_INFO, HIGHLIGHT_STYLE_LIST, HIGHLIGHT_STYLE_SYMBOL_LIST } from '../../../constant/object';
 import { applyDecoration, resetDecorationRange } from '../decoration';
+import { multilineSelection } from '../status/selection';
 
 const highlightStyleList = {
     ...HIGHLIGHT_STYLE_LIST
@@ -24,7 +25,7 @@ const cursorOnlyHighlightRange = (previousKey): void => {
 
         resetDecorationRange(editor, highlightStyleList[previousKey]);
 
-        applyDecoration(editor, highlightStyleList[__0x.cursorOnly][0], [Range.createRangeSPEP(editor.selection.active, editor.selection.active)]);
+        applyDecoration(editor, highlightStyleList[__0x.cursorOnly][0], [createLineRange(editor.selection.active)]);
     }
 
     // return [{
@@ -56,55 +57,41 @@ const cursorOnlyHighlightRange = (previousKey): void => {
 };
 
 const singelLineHighlightRange = (previousKey): void => {
-
-
-    const editor = vscode.window.activeTextEditor;
-
-    if (editor) {
-        // index 0 - single line decoration on selection
-        // index 1 - background color only decoration <- this is todo. maybe. problem is this deco is not whole line. :(
-        // [!] review to differentiate zero border decoraiton for wholeLine background and not-wholeLine background.
-
-        applyDecoration(editor, highlightStyleList[__0x.singleLine][0], [Range.createRangeSPEP(editor.selection.start, editor.selection.end)]);
-    };
+    const editor = vscode.window.activeTextEditor as vscode.TextEditor;
+    applyDecoration(editor, highlightStyleList[__0x.singleLine][0], [createRangeSPEP(editor.selection.start, editor.selection.end)]);    
 };
 
 const multiLineHighlightRange = (previousKey) => {
+    const editor = vscode.window.activeTextEditor as vscode.TextEditor;
 
+    resetDecorationRange(editor, highlightStyleList[previousKey]);
 
+    // index 0 - top border
+    // index 1 - bottom border
+    // index 2 - background color only for the range inbetween 0 and 1.
 
-    const editor = vscode.window.activeTextEditor;
+    applyDecoration(editor, highlightStyleList[__0x.multiLine][0], [createLineRange(editor.selection.start)]);
+    applyDecoration(editor, highlightStyleList[__0x.multiLine][1], [createLineRange(editor.selection.end)]);
+    applyDecoration(editor, highlightStyleList[__0x.multiLine][2], [editor.selection]);
 
-    if (editor) {
-        resetDecorationRange(editor, highlightStyleList[previousKey]);
-
-        // index 0 - top border
-        // index 1 - bottom border
-        // index 2 - background color only for the range inbetween 0 and 1.
-
-        applyDecoration(editor, highlightStyleList[__0x.multiLine][0], [Range.createRangeSPEP(editor.selection.start, editor.selection.start)]);
-        applyDecoration(editor, highlightStyleList[__0x.multiLine][1], [Range.createRangeSPEP(editor.selection.end, editor.selection.end)]);
-        applyDecoration(editor, highlightStyleList[__0x.multiLine][2], [editor.selection]);
-    }
+    multilineSelection();
 };
 
 const multiCursorHighlightRange = (previousKey): void => {
-    const editor = vscode.window.activeTextEditor;
+    const editor = vscode.window.activeTextEditor as vscode.TextEditor;
+    resetDecorationRange(editor, highlightStyleList[previousKey]);
 
-    if (editor) {
-        resetDecorationRange(editor, highlightStyleList[previousKey]);
-
-        // index 0 - selection area
-        // index 1 - to apply background color on line until cursor position.
-        applyDecoration(editor, highlightStyleList[__0x.multiCursor][0], editor.selections.reduce((acc: vscode.Range[], selection: vscode.Selection) => {
-            acc.push(Range.createRangeSPEP(selection.start, selection.active));
-            return acc;
-        }, [] as vscode.Range[]));
-        applyDecoration(editor, highlightStyleList[__0x.multiCursor][1], editor.selections.reduce((acc: vscode.Range[], selection: vscode.Selection) => {
-            acc.push(Range.createRangeNNNN(selection.active.line, 0, selection.active.line, selection.active.character));
-            return acc;
-        }, [] as vscode.Range[]));
-    }
+    // index 0 - selection area
+    // index 1 - to apply background color on line until cursor position.
+    applyDecoration(editor, highlightStyleList[__0x.multiCursor][0], editor.selections.reduce((acc: vscode.Range[], selection: vscode.Selection) => {
+        acc.push(createRangeSPEP(selection.start, selection.active));
+        return acc;
+    }, [] as vscode.Range[]));
+    applyDecoration(editor, highlightStyleList[__0x.multiCursor][1], editor.selections.reduce((acc: vscode.Range[], selection: vscode.Selection) => {
+        acc.push(createRangeNNNN(selection.active.line, 0, selection.active.line, selection.active.character));
+        return acc;
+    }, [] as vscode.Range[]));
+    
 };
 
 const unsetRangeOfHighlightStyle = (editor: vscode.TextEditor) => {

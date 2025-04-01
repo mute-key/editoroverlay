@@ -19,8 +19,8 @@ const configChanged: Type.DecorationEventFunc = ({ configInfo, decorationState})
                 update.sectionChanged()[sectionName](configInfo);
                 update.sectionChanged()[CONFIG_SECTION_KEY.GENERAL](configInfo);
                 prepareRenderGroup(configInfo);
-                resetAllDecoration(decorationState);
                 clearDecorationState(decorationState);
+                resetAllDecoration();
             }
 
             if (Error.check()) {

@@ -1,6 +1,6 @@
 import * as Type from '../../type/type';
 import Regex from '../../util/regex.collection';
-import { CONFIG_SECTION, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_SYMLINK } from '../../constant/object';
+import { CONFIG_SECTION, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_NUMLINK } from '../../constant/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { bindStatusContentTextState, sealBuffer, setSelectionTextbufferSize } from '../../editor/decoration/status/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
@@ -25,19 +25,19 @@ const convertPositionToDecorationRenderOption = (textPosition, SelectionDecorati
 const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentTextBufferType,SelectionDecorationStyle,  leftMargin): void => {
     Object.entries(textOfSource).forEach(([key, textPosition], idx) => {
         const contentTextStyled = convertPositionToDecorationRenderOption(textPosition, SelectionDecorationStyle);;
-        const sym = SELECTION_CONTENT_TEXT_SYMLINK[key];
-        textOftarget[sym] = {
+        const hex = SELECTION_CONTENT_TEXT_NUMLINK[key];
+        textOftarget[hex] = {
             contentText: contentTextStyled,
             position: Object.entries(textPosition.position)
         };
 
         if (leftMargin && leftMargin !== '0px' || leftMargin !== '0em') {
-            if (textOftarget[sym].contentText[0]) {
-                textOftarget[sym].contentText[0].after['margin'] = leftMarginToMarginString(leftMargin);
+            if (textOftarget[hex].contentText[0]) {
+                textOftarget[hex].contentText[0].after['margin'] = leftMarginToMarginString(leftMargin);
             }
         }
 
-        setSelectionTextbufferSize(sym, textOftarget[sym].contentText.length);
+        setSelectionTextbufferSize(hex, textOftarget[hex].contentText.length);
     });
     sealBuffer();
 };

@@ -92,22 +92,22 @@ export const INDENT_INFO = {
 } as const;
 
 export const RENDER_GROUP_SET_PROPERTY = {
-    type: undefined,
+    highlight: undefined,
     selectionCount: undefined,
-    diagnostic: undefined,
+    diagnostic: undefined
 } as const;
 
 export const RENDER_GROUP_SET = {
     [__0x.cursorOnly]: RENDER_GROUP_SET_PROPERTY,
     [__0x.singleLine]: RENDER_GROUP_SET_PROPERTY,
     [__0x.multiLine]: RENDER_GROUP_SET_PROPERTY,
-    [__0x.multiCursor]: RENDER_GROUP_SET_PROPERTY,
+    [__0x.multiCursor]: RENDER_GROUP_SET_PROPERTY
 };
 
 export const DECORATION_STATE = {
-    appliedHighlight: Object.seal(new Int16Array(1)),
-    selectionText: Object.seal(new Int16Array(1)),
-    diagnosticText: Object.seal(new Int16Array(1)),
+    appliedHighlight: [],
+    // selectionText: undefined,
+    // diagnosticText: undefined,
 } as const;
 
 export const HIGHLIGHT_STYLE_SYMBOL_LIST = [
@@ -327,7 +327,7 @@ export const SELECTION_CONTENT_TEXT = {
     [__0x.multiCursorText]: undefined,
 } as const;
 
-export const SELECTION_CONTENT_TEXT_SYMLINK = {
+export const SELECTION_CONTENT_TEXT_NUMLINK = {
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: __0x.cursorOnlyText,
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: __0x.singleLineText,
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: __0x.multiLineCursorText,

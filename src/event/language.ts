@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as Type from '../type/type.d';
 import { updateDiagnostic } from '../diagnostic/diagnostic';
-import { clearDecorationState, renderStatusInfo } from '../editor/decoration/handler';
+import { clearDecorationState } from '../editor/decoration/handler';
 
 const diagnosticChanged: Type.DecorationEventFunc = (context): vscode.Disposable => {
     return vscode.languages.onDidChangeDiagnostics(async (event: vscode.DiagnosticChangeEvent) => {

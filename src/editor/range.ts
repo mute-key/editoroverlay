@@ -23,23 +23,19 @@ const createCursorRange = (editor: vscode.TextEditor, lineDelta: number = 0): vs
         new vscode.Position(editor.selection.end.line + lineDelta, editor.selection.end.character),
         new vscode.Position(editor.selection.end.line + lineDelta, editor.selection.end.character));
 
-const createActiveRange = (editor: vscode.TextEditor): vscode.Range =>
-    createRangeSPEP(editor.selection.active, editor.selection.active);
+const createLineRange = (position: vscode.Position): vscode.Range =>
+    new vscode.Range(position, position);
 
-const createAnchorRange = (editor: vscode.TextEditor): vscode.Range =>
-    createRangeSPEP(editor.selection.anchor, editor.selection.anchor);
+
 
 const createStartEndRangeOfSelection = (selection: vscode.Selection): vscode.Range =>
     createRangeSPEP(selection.start, selection.end);
 
-const range = {
-    createRangeNNNN: createRangeNNNN,
-    createRangeSPEP: createRangeSPEP,
-    createRangeNNEP: createRangeNNEP,
-    createCursorRange: createCursorRange,
-    createActiveRange: createActiveRange,
-    createAnchorRange: createAnchorRange,
-    createStartEndRangeOfSelection: createStartEndRangeOfSelection,
+export {
+    createRangeNNNN,
+    createRangeSPEP,
+    createRangeNNEP,
+    createCursorRange,
+    createLineRange,
+    createStartEndRangeOfSelection,
 };
-
-export default range;

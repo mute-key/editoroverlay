@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import * as Type from '../../type/type';
 import { DECORATION_STATE } from '../../constant/object';
+import { clearBufferStack } from './status/selection';
+import { unsetRangeOfHighlightStyle } from './highlight/highlight';
 
 const decorationState = {
     ...DECORATION_STATE
@@ -20,38 +22,16 @@ const resetDecorationRange = (editor: vscode.TextEditor, decorationType: vscode.
     decorationType?.forEach(decoration => applyDecoration(editor, decoration, []));
 };
 
-const unsetAndDisposeDecoration = (editor: vscode.TextEditor, decorationType: vscode.TextEditorDecorationType[]) => {
-    let idx = decorationType.length | 0;
-    while (idx--) {
-        applyDecoration(editor, decorationType[idx], []);
-        decorationType[idx].dispose();
-    }
-};
-
-const resetAllDecoration = (decorationState: Type.DecorationStateType) => {
-
-    // if (decorationState.statusText) {
-    //     decorationState.statusText.forEach((decorationType) => decorationType.dispose());
-    // }
-
-    // vscode.window.visibleTextEditors.forEach(editor => {
-    //     if (decorationState.appliedHighlight.ofDecorationType !== undefined) {
-    //         decorationState.appliedHighlight.ofDecorationType.forEach(decoration => {
-    //             applyDecoration(editor, decoration, []);
-    //         });
-    //     }
-    // });
+const resetAllDecoration = () => {
+    vscode.window.visibleTextEditors.forEach(editor => {
+        unsetRangeOfHighlightStyle(editor)
+        clearBufferStack(editor);
+    });
 };
 
 const createEditorDecorationType = (styleAppliedConfig: any): vscode.TextEditorDecorationType => {
     return vscode.window.createTextEditorDecorationType(styleAppliedConfig as vscode.DecorationRenderOptions);
 };
-
-// const isHighlightChanged = (renderGroup) => {
-    
-    
-    
-// };
 
 const bindEditorDecoration = () => {
     return {
@@ -64,8 +44,6 @@ export {
     applyDecoration,
     disposeDecoration,
     resetDecorationRange,
-    unsetAndDisposeDecoration,
     createEditorDecorationType,
     resetAllDecoration,
-    // isHighlightChanged,
 };
