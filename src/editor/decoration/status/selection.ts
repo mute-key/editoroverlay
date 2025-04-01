@@ -4,9 +4,7 @@ import * as __0x from '../../../constant/shared/numeric';
 import { createLineRange } from '../../range';
 import { SELECTION_CONTENT_TEXT_CONFIG_KEY } from '../../../constant/enum';
 import { DECORATION_OPTION_CONFIG, INDENT_INFO, SELECTION_CONTENT_TEXT } from '../../../constant/object';
-import { createEditorDecorationType, disposeDecoration, resetDecorationRange } from '../decoration';
-import { editorOptionChanged } from '../../../event/window';
-import { randomBytes } from 'crypto';
+import { resetDecorationRange } from '../decoration';
 
 const selectionContentText = {
     ...SELECTION_CONTENT_TEXT
@@ -180,35 +178,6 @@ const singleLineSelection = (): void => {
     }
 };
 
-
-
-// const contentTextFuncBuffered = (selectionBuffer, range, countBuffer) => {
-//     return (decorationType, pos) => {
-//         const editor = vscode.window.activeTextEditor as vscode.TextEditor
-//         let decoration = decorationType;
-
-//         editor.setDecorations(selectionBuffer[pos], resetRange);
-
-//         if (typeof decorationType.after.contentText !== 'string') {
-//             const numlink = decorationType.after.contentText
-
-//             if (countBuffer[numlink] === null) {
-//                 countBuffer[numlink] = multilineFunctionSymLink[numlink](editor);
-//             }
-
-//             decorationOptionBuffer.after = { ...decorationType.after }
-//             decorationOptionBuffer.after.contentText = String(countBuffer[numlink]);
-//             decoration = decorationOptionBuffer;
-//         }
-
-//         const renderOption = { ...renderOptionBuffer }
-//         renderOption.range = range as vscode.Range;
-//         renderOption.renderOptions = decoration;
-
-//         editor.setDecorations(selectionBuffer[pos], [renderOption])
-//     }
-// }
-
 const renderOptionBuffer = [{
     range: {},
     renderOptions: {}
@@ -376,5 +345,8 @@ export {
     setSelectionTextbufferSize,
     sealBuffer,
     clearBufferStack,
-    multilineSelection
+    cursorOnlySelection,
+    singleLineSelection,
+    multilineSelection,
+    multiCursorSelection,
 };

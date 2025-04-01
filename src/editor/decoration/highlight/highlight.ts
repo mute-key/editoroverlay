@@ -19,6 +19,7 @@ const cursorOnlyHighlightRange = (previousKey): void => {
     // const borderConfig: Type.BorderPositionParserType = borderPositionInfo[borderConfigSymlink] as Type.BorderPositionParserType;
 
     const editor = vscode.window.activeTextEditor;
+
     if (editor) {
         // index 0 - border applied decoration on selection
         // index 1 - background only decoration
@@ -73,8 +74,6 @@ const multiLineHighlightRange = (previousKey) => {
     applyDecoration(editor, highlightStyleList[__0x.multiLine][0], [createLineRange(editor.selection.start)]);
     applyDecoration(editor, highlightStyleList[__0x.multiLine][1], [createLineRange(editor.selection.end)]);
     applyDecoration(editor, highlightStyleList[__0x.multiLine][2], [editor.selection]);
-
-    multilineSelection();
 };
 
 const multiCursorHighlightRange = (previousKey): void => {
@@ -121,5 +120,9 @@ const bindHighlightStyleState = () => {
 export {
     hightlightCoordinator,
     bindHighlightStyleState,
-    unsetRangeOfHighlightStyle
+    unsetRangeOfHighlightStyle,
+    cursorOnlyHighlightRange,
+    singelLineHighlightRange,
+    multiLineHighlightRange,
+    multiCursorHighlightRange,
 };

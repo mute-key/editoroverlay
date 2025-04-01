@@ -39,6 +39,7 @@ type RenderGroupSet = {
 
 type DecorationContext = {
     editor: vscode.TextEditor
+    decorationState: DecorationStateType
 };
 
 type SelectionInfoType = {

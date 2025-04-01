@@ -1179,7 +1179,6 @@ var multiLineHighlightRange = (previousKey) => {
   applyDecoration(editor2, highlightStyleList[multiLine][0], [createLineRange(editor2.selection.start)]);
   applyDecoration(editor2, highlightStyleList[multiLine][1], [createLineRange(editor2.selection.end)]);
   applyDecoration(editor2, highlightStyleList[multiLine][2], [editor2.selection]);
-  multilineSelection();
 };
 var multiCursorHighlightRange = (previousKey) => {
   const editor2 = vscode8.window.activeTextEditor;
@@ -1204,9 +1203,6 @@ var coordinatorSplit = {
   [multiLine]: (previousKey) => multiLineHighlightRange(previousKey),
   [multiCursor]: (previousKey) => multiCursorHighlightRange(previousKey)
 };
-var hightlightCoordinator = (currentKey, previousKey) => {
-  coordinatorSplit[currentKey](previousKey);
-};
 var bindHighlightStyleState = () => {
   return {
     styleOf: highlightStyleList,
@@ -1221,7 +1217,7 @@ var decorationState = {
 var applyDecoration = (editor2, decoraiton, range) => {
   editor2.setDecorations(decoraiton, range);
 };
-var disposeDecoration2 = (highlightStyleList2 = []) => {
+var disposeDecoration = (highlightStyleList2 = []) => {
   highlightStyleList2.forEach((decorationType) => {
     decorationType.dispose();
   });
@@ -1235,7 +1231,7 @@ var resetAllDecoration = () => {
     clearBufferStack(editor2);
   });
 };
-var createEditorDecorationType2 = (styleAppliedConfig) => {
+var createEditorDecorationType = (styleAppliedConfig) => {
   return vscode9.window.createTextEditorDecorationType(styleAppliedConfig);
 };
 var bindEditorDecoration = () => {
@@ -1286,7 +1282,7 @@ var createDecorationType = (config, decorationKey, decorationTypeSplit2) => {
       if (decorationKey === multiLine && idx !== 2) {
         delete styleAppliedConfig.backgroundColor;
       }
-      textEditorDecoration.push(createEditorDecorationType2(combineBorderStyle(styleAppliedConfig)));
+      textEditorDecoration.push(createEditorDecorationType(combineBorderStyle(styleAppliedConfig)));
       return textEditorDecoration;
     }, []);
     if (decorationTypeStack.length === 0) {
@@ -1357,7 +1353,7 @@ var updateGeneralConfig = (configReady) => {
 var updateHighlightStyleConfiguration = (configReady, selectionType) => {
   let bindTo = bindHighlightStyleState();
   if (bindTo.styleOf[selectionType]) {
-    disposeDecoration2(bindTo.styleOf[selectionType]);
+    disposeDecoration(bindTo.styleOf[selectionType]);
   }
   const configSet = getConfigSet(configReady, selectionType);
   const parsed = borderPositionParser(selectionType, String(configSet.borderPosition));
@@ -1932,6 +1928,13 @@ var loadConfiguration = (context) => {
 // src/event/window.ts
 var vscode12 = __toESM(require("vscode"));
 
+// src/editor/decoration/handler.ts
+var clearDecorationState = (decorationState2) => {
+  decorationState2.appliedHighlight[0] = reset;
+};
+var renderDecorationOnEditor = ({ editor: editor2, decorationState: decorationState2 }) => {
+};
+
 // src/editor/editor.ts
 var renderGroupSet = {
   ...RENDER_GROUP_SET
@@ -1941,6 +1944,22 @@ var updateIndentOption = (editor2) => {
   bindTo.infoOf.size = Number(editor2.options.tabSize ?? editor2.options.indentSize ?? 4);
   bindTo.infoOf.type = editor2.options.insertSpaces ? "\n" : "	";
   bindTo.infoOf.regex = editor2.options.insertSpaces ? regex_collection_default.indentAndEOLRegex(bindTo.infoOf.size) : regex_collection_default.tagtAndEOLRegex;
+};
+var cursorOnlyRenderGroup = (previousKey) => {
+  cursorOnlyHighlightRange(previousKey);
+  cursorOnlySelection();
+};
+var singleLineRenderGoup = (previousKey) => {
+  singelLineHighlightRange(previousKey);
+  singleLineSelection();
+};
+var multiLineRenderGroup = (previousKey) => {
+  multiLineHighlightRange(previousKey);
+  multilineSelection();
+};
+var multiCursorRenderGroup = (previousKey) => {
+  multiCursorHighlightRange(previousKey);
+  multiCursorSelection();
 };
 var prepareRenderGroup = (config) => {
   const selection = config.generalConfigInfo.selectionTextEnabled ? selectionInfo : void 0;
@@ -1952,44 +1971,36 @@ var prepareRenderGroup = (config) => {
     [multiLine]: bindDiagnostic.configOf.displayWhenMultiLine,
     [multiCursor]: bindDiagnostic.configOf.displayWhenMultiCursor
   };
+  const renderGroupBind = {
+    [cursorOnly]: cursorOnlyRenderGroup,
+    [singleLine]: singleLineRenderGoup,
+    [multiLine]: multiLineRenderGroup,
+    [multiCursor]: multiCursorRenderGroup
+  };
   HIGHLIGHT_STYLE_SYMBOL_LIST.forEach((selectionKey) => {
     if (SELECTION_KIND[selectionKey]) {
-      renderGroupSet[selectionKey] = {
-        highlight: selectionKey,
-        selection,
-        diagnostic: diagonosticAvaliabity[selectionKey] ? diagnostic : void 0
-      };
+      renderGroupSet[selectionKey] = renderGroupBind[selectionKey];
     }
   });
   return renderGroupSet[cursorOnly];
 };
-var renderGroupIs = (editor2) => {
+var renderGroupIs = (editor2, previousKey) => {
   if (editor2.selections.length === 1) {
     if (editor2.selections[0].isEmpty) {
-      return renderGroupSet[cursorOnly];
+      renderGroupSet[cursorOnly](previousKey);
+      return cursorOnly;
     }
     if (!editor2.selections[0].isSingleLine) {
-      return renderGroupSet[multiLine];
+      renderGroupSet[multiLine](previousKey);
+      return multiLine;
     } else {
-      return renderGroupSet[singleLine];
+      renderGroupSet[singleLine](previousKey);
+      return singleLine;
     }
   } else {
-    return renderGroupSet[multiCursor];
-    ;
+    renderGroupSet[multiCursor](previousKey);
+    return multiCursor;
   }
-};
-
-// src/editor/decoration/handler.ts
-var clearDecorationState = (decorationState2) => {
-  decorationState2.appliedHighlight[0] = reset;
-};
-var renderDecorationOnEditor = ({ editor: editor2 }, decorationState2) => {
-  const renderGroup = renderGroupIs(editor2);
-  hightlightCoordinator(renderGroup.highlight, decorationState2.appliedHighlight[0]);
-  if (renderGroup.selection) {
-    renderGroup.selection(renderGroup.highlight, decorationState2.appliedHighlight[0]);
-  }
-  decorationState2.appliedHighlight[0] = renderGroup.highlight;
 };
 
 // src/diagnostic/diagnostic.ts
@@ -2069,8 +2080,9 @@ var windowStateChanged = ({ decorationState: decorationState2 }) => {
       decorationState2.appliedHighlight[0] = cursorOnly;
       if (vscode12.window.activeTextEditor) {
         renderDecorationOnEditor({
-          editor: vscode12.window.activeTextEditor
-        }, decorationState2);
+          editor: vscode12.window.activeTextEditor,
+          decorationState: decorationState2
+        });
       }
     } else {
       resetAllDecoration();
@@ -2093,8 +2105,9 @@ var activeEditorChanged = ({ configInfo: configInfo2, decorationState: decoratio
       }
       updateIndentOption(editor2);
       renderDecorationOnEditor({
-        editor: editor2
-      }, decorationState2);
+        editor: editor2,
+        decorationState: decorationState2
+      });
       if (Error2.check() && editor2) {
         Error2.notify(2e3);
       }
@@ -2109,11 +2122,9 @@ var editorOptionChanged = (context) => {
   });
 };
 var selectionChanged = ({ decorationState: decorationState2 }) => {
-  return vscode12.window.onDidChangeTextEditorSelection(
-    (event) => renderDecorationOnEditor({
-      editor: event.textEditor
-    }, decorationState2)
-  );
+  return vscode12.window.onDidChangeTextEditorSelection((event) => {
+    decorationState2.appliedHighlight[0] = renderGroupIs(event.textEditor, decorationState2.appliedHighlight[0]);
+  });
 };
 
 // src/event/workspace.ts
@@ -2195,8 +2206,9 @@ var initialize = async (extensionContext) => {
     if (activeEditor) {
       loadConfig.decoration.appliedHighlight[0] = cursorOnly;
       renderDecorationOnEditor({
-        editor: activeEditor
-      }, loadConfig.decoration);
+        editor: activeEditor,
+        decorationState: loadConfig.decoration
+      });
     }
     return [
       windowStateChanged(eventContext),

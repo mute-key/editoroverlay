@@ -4,7 +4,7 @@ import * as __0x from '../constant/shared/numeric';
 import Error from '../util/error';
 import { resetAllDecoration } from '../editor/decoration/decoration';
 import { renderDecorationOnEditor } from '../editor/decoration/handler';
-import { updateIndentOption } from '../editor/editor';
+import { renderGroupIs, updateIndentOption } from '../editor/editor';
 import { resetEditorDiagnosticStatistics, updateDiagnostic } from '../diagnostic/diagnostic';
 
 const windowStateChanged: Type.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
@@ -15,8 +15,9 @@ const windowStateChanged: Type.DecorationEventFunc = ({ decorationState }): vsco
             // apply decoration to active editor.
             if (vscode.window.activeTextEditor) {
                 renderDecorationOnEditor({
-                    editor: vscode.window.activeTextEditor
-                }, decorationState);
+                    editor: vscode.window.activeTextEditor,
+                    decorationState: decorationState
+                });
             }
         } else {
             resetAllDecoration();
@@ -46,8 +47,9 @@ const activeEditorChanged: Type.DecorationEventFunc = ({ configInfo, decorationS
             updateIndentOption(editor);
 
             renderDecorationOnEditor({
-                editor: editor
-            }, decorationState);
+                editor: editor,
+                decorationState: decorationState
+            });
 
             if (Error.check() && editor) {
                 Error.notify(2000);
@@ -65,11 +67,14 @@ const editorOptionChanged = (context): vscode.Disposable => {
 };
 
 const selectionChanged: Type.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
-    return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) =>
-        renderDecorationOnEditor({
-            editor: event.textEditor,
-        }, decorationState)
-    );
+    return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) => {
+        // renderDecorationOnEditor({
+        //     editor: event.textEditor,
+        //     decorationState: decorationState
+        // })
+        decorationState.appliedHighlight[0] = renderGroupIs(event.textEditor, decorationState.appliedHighlight[0]);
+
+    })
 };
 
 const visibleRangeChanged = (): vscode.Disposable => {

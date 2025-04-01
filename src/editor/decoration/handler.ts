@@ -12,23 +12,13 @@ const clearDecorationState = (decorationState: Type.DecorationStateType) => {
     // decorationState.statusText = [];
 };
 
-const renderDecorationOnEditor = ({ editor }: Type.DecorationContext, decorationState) => {
+const renderDecorationOnEditor = ({ editor, decorationState }: Type.DecorationContext) => {
 
-    const renderGroup: Type.RenderGroupSetProperty = renderGroupIs(editor);
+    // renderGroupIs(editor, decorationState.appliedHighlight[0]);
 
-    hightlightCoordinator(renderGroup.highlight, decorationState.appliedHighlight[0]);
+    // decorationState.appliedHighlight[0] = renderGroup.highlight;
 
-    if (renderGroup.selection) {
-        renderGroup.selection(renderGroup.highlight, decorationState.appliedHighlight[0]);
-    }
-
-    // if (renderGroup.diagnostic) {
-
-    // }
-
-    decorationState.appliedHighlight[0] = renderGroup.highlight;
-
-
+    
 };
 
 export {

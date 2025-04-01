@@ -39,8 +39,9 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
             loadConfig.decoration.appliedHighlight[0] = __0x.cursorOnly
             
             renderDecorationOnEditor({
-                editor: activeEditor
-            }, loadConfig.decoration);
+                editor: activeEditor,
+                decorationState: loadConfig.decoration
+            });
         }
 
         return [
