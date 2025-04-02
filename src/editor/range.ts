@@ -29,6 +29,8 @@ const createLineRange = (position: vscode.Position): vscode.Range =>
 const createStartEndRangeOfSelection = (selection: vscode.Selection): vscode.Range =>
     createRangeSPEP(selection.start, selection.end);
 
+const blankRange = Object.seal([] as vscode.Range[]);
+
 export {
     createRangeNNNN,
     createRangeSPEP,
@@ -36,4 +38,5 @@ export {
     createCursorRange,
     createLineRange,
     createStartEndRangeOfSelection,
+    blankRange
 };

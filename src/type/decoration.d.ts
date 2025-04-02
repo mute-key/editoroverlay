@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
 import * as StatusType from './status.d';
-import { DECORATION_STYLE_CONFIG_KEY, DECORATION_TYPE_MASK, SELECTION_TYPE } from "src/constant/enum";
-import { DECORATION_STYLE_PREFIX } from "src/constant/object";
+import {DECORATION_STYLE_PREFIX} from '../constant/config/object'
+import { DECORATION_STYLE_CONFIG_KEY, DECORATION_TYPE_MASK, SELECTION_TYPE } from 'src/constant/config/enum';
+import { MIMEParams } from 'util';
 
 type DecorationTypeSplit = {
     [K in keyof typeof DECORATION_STYLE_PREFIX]: string[]
@@ -126,9 +127,9 @@ type DecorationStyleConfigType = {
     // [DECORATION_STYLE_KEY.FONT_WEIGHT]: string
 }
 
-type SelectionConfigFunctionType = (config: DecorationStyleConfigType, decorationKey: DecorationStyleKeyOnlyType) => string[] | undefined
+type SelectionConfigFunctionType = (config: DecorationStyleConfigType, decorationKey: number) => string[] | undefined
 
-type CreateDecorationFunctionType = (config: DecorationStyleConfigType, decorationKey: DecorationStyleKeyOnlyType, decorationTypeSplit: SelectionConfigFunctionType) => vscode.TextEditorDecorationType[] | undefined
+type CreateDecorationFunctionType = (config: DecorationStyleConfigType, decorationKey: number, decorationTypeSplit: SelectionConfigFunctionType) => vscode.TextEditorDecorationType[] | undefined
 
 type ColourConfigTransformType = {
     of: string,

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as Type from '../type/type.d';
 import { updateDiagnostic } from '../diagnostic/diagnostic';
-import { clearDecorationState } from '../editor/decoration/decoration';
+import { clearDecorationState } from '../editor/editor';
 import { renderGroupIs } from '../editor/editor';
 
 const diagnosticChanged: Type.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {

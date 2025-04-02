@@ -1,8 +1,7 @@
 import * as vscode from 'vscode';
 import * as DecorationType from './decoration.d';
 import * as StatusType from './status.d';
-import { DIAGNOSTIC_CONTENT_TEXT_KEY } from 'src/constant/enum';
-
+import { DIAGNOSTIC_CONTENT_TEXT_KEY } from 'src/constant/config/enum';
 
 type DiagnosticSourceType = {
     [key: string]: {

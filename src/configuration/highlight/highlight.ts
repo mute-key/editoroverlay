@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as Type from '../../type/type';
 import * as __0x from '../../constant/shared/numeric';
 import { colorConfigTransform, getConfigValue } from '../shared/configuration';
-import { createEditorDecorationType, disposeDecoration } from '../../editor/decoration/decoration';
+import { createEditorDecorationType, disposeDecoration } from '../../editor/editor';
 import { bindHighlightStyleState } from '../../editor/decoration/highlight/highlight';
 import { getWorkspaceConfiguration, readBits } from '../../util/util';
 import { BORDER_WIDTH_DEFINITION, CONFIG_KEY_LINKER_SECTION, CONFIG_SECTION, DECORATION_STYLE_PREFIX, NO_CONFIGURATION_DEOCORATION_DEFAULT, NO_CONFIGURATION_GENERAL_DEFAULT } from '../../constant/config/object';
@@ -19,9 +19,9 @@ const checkConfigKeyAndCast = <T extends Type.DecorationStyleConfigNameType | Ty
  * @returns
  * 
  */
-const getConfigSet = (configReady: Type.ConfigInfoReadyType, decorationKey: Type.DecorationStyleKeyOnlyType): Type.DecorationStyleConfigType => {
+const getConfigSet = (configReady: Type.ConfigInfoReadyType, decorationKey: number): Type.DecorationStyleConfigType => {
     const configSectionName = DECORATION_STYLE_PREFIX[decorationKey];
-    const defaultConfigDefinition = NO_CONFIGURATION_DEOCORATION_DEFAULT[decorationKey as string];
+    const defaultConfigDefinition = NO_CONFIGURATION_DEOCORATION_DEFAULT[decorationKey];
     const configSection = getWorkspaceConfiguration(configReady.name + '.' + configSectionName);
 
     return Object.entries(defaultConfigDefinition).reduce((config, [configName, defaultValue]) => {
@@ -47,7 +47,7 @@ const combineBorderStyle = (style: vscode.DecorationRenderOptions) => {
 
 };
 
-const createDecorationType: Type.CreateDecorationFunctionType = (config: Type.DecorationStyleConfigType, decorationKey: Type.DecorationStyleKeyOnlyType, decorationTypeSplit: Type.SelectionConfigFunctionType) => {
+const createDecorationType = (config: Type.DecorationStyleConfigType, decorationKey: number, decorationTypeSplit: Type.SelectionConfigFunctionType) => {
     try {
         const split = decorationTypeSplit(config, decorationKey);
         if (!split || split.length === 0) {
@@ -78,7 +78,7 @@ const createDecorationType: Type.CreateDecorationFunctionType = (config: Type.De
     }
 };
 
-const decorationTypeSplit = (config: Type.DecorationStyleConfigType, decorationKey: Type.DecorationStyleKeyOnlyType): string[] | undefined => {
+const decorationTypeSplit = (config: any, decorationKey: number): string[] | undefined => {
     if (Object.hasOwn(BORDER_WIDTH_DEFINITION, decorationKey)) {
         if (Object.hasOwn(BORDER_WIDTH_DEFINITION[decorationKey], String(config.borderPosition))) {
             return borderPosition(config, BORDER_WIDTH_DEFINITION[decorationKey][config.borderPosition]);
@@ -97,7 +97,7 @@ const borderPosition = (config: Type.DecorationStyleConfigType, borderWidthMask:
     return borderWidth;
 };
 
-const borderPositionParser = (selectionType: Type.DecorationStyleKeyOnlyType, borderPosition: string): Type.BorderPositionParserType => {
+const borderPositionParser = (selectionType: number, borderPosition: string): Type.BorderPositionParserType => {
     const position = borderPosition.replaceAll(' ', '').split('|');
     let isWholeLine = false;
     let beforeCursor = false;
@@ -113,7 +113,7 @@ const borderPositionParser = (selectionType: Type.DecorationStyleKeyOnlyType, bo
         selectionOnly = /selectionOnly/s.test(position[1]);
 
         // if multi-line
-        if (selectionType === 'MULTI_LINE' && position[0] === 'left') {
+        if (selectionType === __0x.multiLine && position[0] === 'left') {
             isWholeLine = true;
         }
     }
@@ -142,7 +142,7 @@ const updateGeneralConfig = (configReady: Type.ConfigInfoReadyType) => {
     }
 };
 
-const updateHighlightStyleConfiguration = (configReady: Type.ConfigInfoReadyType, selectionType: Type.DecorationStyleKeyOnlyType | string | symbol) => {
+const updateHighlightStyleConfiguration = (configReady: Type.ConfigInfoReadyType, selectionType: number) => {
 
     let bindTo: any = bindHighlightStyleState();
 

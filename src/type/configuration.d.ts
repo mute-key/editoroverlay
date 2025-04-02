@@ -2,17 +2,8 @@ import * as vscode from 'vscode';
 import * as StatusType from './status';
 import * as DecorationType from './decoration';
 import * as DiagnosticType from './diagnostic';
-
-import {
-    DECORATION_STYLE_CONFIG_KEY,
-    DECORATION_GENERAL_STYLE_CONFIG_KEY,
-    DECORATION_SELECTION_STYLE_CONFIG_KEY,
-    BORDER_POSITION_VARIATION,
-} from '../constant/enum';
-import {
-    DECORATION_STYLE_PREFIX,
-} from '../constant/object';
-import { symlink } from 'fs';
+import { BORDER_POSITION_VARIATION, DECORATION_GENERAL_STYLE_CONFIG_KEY, DECORATION_SELECTION_STYLE_CONFIG_KEY, DECORATION_STYLE_CONFIG_KEY } from 'src/constant/config/enum';
+import { DECORATION_STYLE_PREFIX } from 'src/constant/config/object';
 
 type NoConfigurationGeneraType = {
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.OPACITY]: number

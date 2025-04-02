@@ -799,11 +799,8 @@ var workspaceProxyConfiguration = (config, workspaceConfigSectionName, ifContent
   });
 };
 
-// src/editor/decoration/decoration.ts
+// src/editor/editor.ts
 var vscode8 = __toESM(require("vscode"));
-
-// src/editor/decoration/status/selection.ts
-var vscode7 = __toESM(require("vscode"));
 
 // src/constant/shared/object.ts
 var INDENT_INFO = {
@@ -823,7 +820,7 @@ var RENDER_GROUP_SET = {
   [multiCursor]: RENDER_GROUP_SET_PROPERTY
 };
 var DECORATION_STATE = {
-  appliedHighlight: []
+  appliedHighlight: [0]
   // selectionText: undefined,
   // diagnosticText: undefined,
 };
@@ -891,6 +888,9 @@ var DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET = {
   [errorContentText]: errorWorkspaceContentText
 };
 
+// src/editor/decoration/status/selection.ts
+var vscode7 = __toESM(require("vscode"));
+
 // src/editor/range.ts
 var vscode6 = __toESM(require("vscode"));
 var createRangeNNNN = (startLine, startChar, endLine, endChar) => new vscode6.Range(
@@ -903,6 +903,7 @@ var createCursorRange = (editor2, lineDelta = 0) => new vscode6.Range(
   new vscode6.Position(editor2.selection.end.line + lineDelta, editor2.selection.end.character)
 );
 var createLineRange = (position) => new vscode6.Range(position, position);
+var blankRange = Object.seal([]);
 
 // src/editor/decoration/status/selection.ts
 var selectionContentText = {
@@ -1004,7 +1005,6 @@ var selectionOf = {
   ["multiLineAnchorText" /* MULTI_LINE_ANCHOR_TEXT */]: { ...lineNumber2, ...multiLineOf },
   ["multiCursorText" /* MULTI_CURSOR_TEXT */]: multiCursorOf
 };
-var resetRange = Object.seal([]);
 var contentTextFunc = (buffer, context, option) => (contentText, idx) => {
   option.renderOptions = contentText;
   if (typeof contentText.after.contentText !== "string") {
@@ -1015,7 +1015,7 @@ var contentTextFunc = (buffer, context, option) => (contentText, idx) => {
   context.editor.setDecorations(buffer[idx], [option]);
 };
 var cursorOnlySelection = (editor2, previousKey) => {
-  clearPrevious(editor2.setDecorations, previousKey, resetRange);
+  clearPrevious(editor2.setDecorations, previousKey, blankRange);
   const context = {
     idx: 0,
     editor: editor2
@@ -1034,7 +1034,7 @@ var cursorOnlySelection = (editor2, previousKey) => {
   );
 };
 var singleLineSelection = (editor2, previousKey) => {
-  clearPrevious(editor2.setDecorations, previousKey, resetRange);
+  clearPrevious(editor2.setDecorations, previousKey, blankRange);
   const context = {
     idx: 0,
     editor: editor2
@@ -1071,7 +1071,7 @@ var decorationOptionGrid = {
   renderOptions: void 0
 };
 var multilineSelection = (editor2, previousKey) => {
-  clearPrevious(editor2.setDecorations, previousKey, resetRange);
+  clearPrevious(editor2.setDecorations, previousKey, blankRange);
   const multiLineBuffer = {
     [multiLineLineCountSym]: null,
     [multiLineChararcterSym]: null
@@ -1098,7 +1098,7 @@ var multilineSelection = (editor2, previousKey) => {
   );
 };
 var multiCursorSelection = (editor2, previousKey) => {
-  clearPrevious(editor2.setDecorations, previousKey, resetRange);
+  clearPrevious(editor2.setDecorations, previousKey, blankRange);
   const selectionTextInfo = [];
   const statusLine = [];
   const context = {
@@ -1128,21 +1128,21 @@ var clearBufferStack = (editor2) => {
   resetDecorationRange(editor2, selectionTextBuffer[multiLineAnchorText]);
   resetDecorationRange(editor2, selectionTextBuffer[multiLineCursorText]);
 };
-var clearBuffer = (setDecorations, resetRange2) => (buffer) => setDecorations(buffer, resetRange2);
-var clearPrevious = (setDecorations, previousKey, resetRange2) => {
+var clearBuffer = (setDecorations, resetRange) => (buffer) => setDecorations(buffer, resetRange);
+var clearPrevious = (setDecorations, previousKey, resetRange) => {
   switch (previousKey[0]) {
     case cursorOnly:
-      selectionTextBuffer[cursorOnlyText]?.forEach(clearBuffer(setDecorations, resetRange2));
+      selectionTextBuffer[cursorOnlyText]?.forEach(clearBuffer(setDecorations, resetRange));
       break;
     case singleLine:
-      selectionTextBuffer[singleLineText]?.forEach(clearBuffer(setDecorations, resetRange2));
+      selectionTextBuffer[singleLineText]?.forEach(clearBuffer(setDecorations, resetRange));
       break;
     case multiLine:
-      selectionTextBuffer[multiLineAnchorText]?.forEach(clearBuffer(setDecorations, resetRange2));
-      selectionTextBuffer[multiLineCursorText]?.forEach(clearBuffer(setDecorations, resetRange2));
+      selectionTextBuffer[multiLineAnchorText]?.forEach(clearBuffer(setDecorations, resetRange));
+      selectionTextBuffer[multiLineCursorText]?.forEach(clearBuffer(setDecorations, resetRange));
       break;
     case multiCursor:
-      selectionTextBuffer[multiCursorText]?.forEach(clearBuffer(setDecorations, resetRange2));
+      selectionTextBuffer[multiCursorText]?.forEach(clearBuffer(setDecorations, resetRange));
       break;
     default:
       break;
@@ -1154,338 +1154,6 @@ var bindStatusContentTextState = () => {
     textOf: selectionContentText,
     infoOf: indentInfo
   };
-};
-
-// src/editor/decoration/highlight/highlight.ts
-var highlightStyleList = {
-  ...HIGHLIGHT_STYLE_LIST
-};
-var borderPositionInfo = {
-  ...HIGHLIGHT_BORDER_POSITION_INFO
-};
-var cursorOnlyHighlightRange = (editor2, previousKey) => {
-  resetDecorationRange(editor2, highlightStyleList[previousKey]);
-  applyDecoration(editor2, highlightStyleList[cursorOnly][0], [createLineRange(editor2.selection.active)]);
-};
-var singelLineHighlightRange = (editor2, previousKey) => {
-  resetDecorationRange(editor2, highlightStyleList[previousKey]);
-  applyDecoration(editor2, highlightStyleList[singleLine][0], [createRangeSPEP(editor2.selection.start, editor2.selection.end)]);
-};
-var multiLineHighlightRange = (editor2, previousKey) => {
-  resetDecorationRange(editor2, highlightStyleList[previousKey]);
-  applyDecoration(editor2, highlightStyleList[multiLine][0], [createLineRange(editor2.selection.start)]);
-  applyDecoration(editor2, highlightStyleList[multiLine][1], [createLineRange(editor2.selection.end)]);
-  applyDecoration(editor2, highlightStyleList[multiLine][2], [editor2.selection]);
-};
-var multiCursorHighlightRange = (editor2, previousKey) => {
-  resetDecorationRange(editor2, highlightStyleList[previousKey]);
-  applyDecoration(editor2, highlightStyleList[multiCursor][0], editor2.selections.reduce((acc, selection) => {
-    acc.push(createRangeSPEP(selection.start, selection.active));
-    return acc;
-  }, []));
-  applyDecoration(editor2, highlightStyleList[multiCursor][1], editor2.selections.reduce((acc, selection) => {
-    acc.push(createRangeNNNN(selection.active.line, 0, selection.active.line, selection.active.character));
-    return acc;
-  }, []));
-};
-var unsetRangeOfHighlightStyle = (editor2) => {
-  SELECTION_KIND_LIST.forEach((highlight) => {
-    resetDecorationRange(editor2, highlightStyleList[highlight]);
-  });
-};
-var coordinatorSplit = {
-  [cursorOnly]: (editor2, previousKey) => cursorOnlyHighlightRange(editor2, previousKey),
-  [singleLine]: (editor2, previousKey) => singelLineHighlightRange(editor2, previousKey),
-  [multiLine]: (editor2, previousKey) => multiLineHighlightRange(editor2, previousKey),
-  [multiCursor]: (editor2, previousKey) => multiCursorHighlightRange(editor2, previousKey)
-};
-var bindHighlightStyleState = () => {
-  return {
-    styleOf: highlightStyleList,
-    infoOf: borderPositionInfo
-  };
-};
-
-// src/editor/decoration/decoration.ts
-var decorationState = {
-  ...DECORATION_STATE
-};
-var applyDecoration = (editor2, decoraiton, range) => {
-  editor2.setDecorations(decoraiton, range);
-};
-var disposeDecoration = (highlightStyleList2 = []) => {
-  highlightStyleList2.forEach((decorationType) => {
-    decorationType.dispose();
-  });
-};
-var resetDecorationRange = (editor2, decorationType) => {
-  decorationType?.forEach((decoration) => applyDecoration(editor2, decoration, []));
-};
-var resetAllDecoration = () => {
-  vscode8.window.visibleTextEditors.forEach((editor2) => {
-    unsetRangeOfHighlightStyle(editor2);
-    clearBufferStack(editor2);
-  });
-};
-var createEditorDecorationType = (styleAppliedConfig) => {
-  return vscode8.window.createTextEditorDecorationType(styleAppliedConfig);
-};
-var bindEditorDecoration = () => {
-  return {
-    stateOf: decorationState
-  };
-};
-var clearDecorationState = (decorationState2) => {
-  decorationState2.appliedHighlight[0] = reset;
-};
-
-// src/configuration/highlight/highlight.ts
-var checkConfigKeyAndCast = (key) => {
-  return key;
-};
-var getConfigSet = (configReady, decorationKey) => {
-  const configSectionName = DECORATION_STYLE_PREFIX[decorationKey];
-  const defaultConfigDefinition = NO_CONFIGURATION_DEOCORATION_DEFAULT[decorationKey];
-  const configSection = getWorkspaceConfiguration(configReady.name + "." + configSectionName);
-  return Object.entries(defaultConfigDefinition).reduce((config, [configName, defaultValue]) => {
-    const configValue = getConfigValue(configSection, checkConfigKeyAndCast(configName), defaultValue, configReady.name + "." + configSectionName);
-    if (configValue !== void 0 && configValue !== null) {
-      if (Object.hasOwn(colorConfigTransform, configName)) {
-        const colorTransform = colorConfigTransform[configName];
-        config[configName] = colorTransform.fn(configValue, configReady.generalConfigInfo[colorTransform.of], defaultValue);
-      } else {
-        config[configName] = configValue;
-      }
-    }
-    return config;
-  }, {});
-};
-var combineBorderStyle = (style) => {
-  style.border = `${style.borderStyle} ${style.borderColor};`;
-  delete style.borderStyle;
-  delete style.borderColor;
-  return style;
-};
-var createDecorationType = (config, decorationKey, decorationTypeSplit2) => {
-  try {
-    const split = decorationTypeSplit2(config, decorationKey);
-    if (!split || split.length === 0) {
-      return;
-    }
-    const decorationTypeStack = split.reduce((styledConfig, str) => {
-      const conf = { ...config };
-      conf.borderWidth = str;
-      styledConfig.push(conf);
-      return styledConfig;
-    }, []).reduce((textEditorDecoration, styleAppliedConfig, idx) => {
-      if (decorationKey === multiLine && idx !== 2) {
-        delete styleAppliedConfig.backgroundColor;
-      }
-      textEditorDecoration.push(createEditorDecorationType(combineBorderStyle(styleAppliedConfig)));
-      return textEditorDecoration;
-    }, []);
-    if (decorationTypeStack.length === 0) {
-      return;
-    }
-    return decorationTypeStack;
-  } catch (err) {
-    console.log("creating decoration type thrown error:", decorationKey, err);
-    return;
-  }
-};
-var decorationTypeSplit = (config, decorationKey) => {
-  if (Object.hasOwn(BORDER_WIDTH_DEFINITION, decorationKey)) {
-    if (Object.hasOwn(BORDER_WIDTH_DEFINITION[decorationKey], String(config.borderPosition))) {
-      return borderPosition(config, BORDER_WIDTH_DEFINITION[decorationKey][config.borderPosition]);
-    }
-    return;
-  }
-  return;
-};
-var borderPosition = (config, borderWidthMask) => {
-  const borderWidth = [];
-  for (const bitMask of borderWidthMask) {
-    const border = readBits(bitMask, String(config.borderWidth), "0");
-    borderWidth.push(border.join(" "));
-  }
-  return borderWidth;
-};
-var borderPositionParser = (selectionType, borderPosition2) => {
-  const position = borderPosition2.replaceAll(" ", "").split("|");
-  let isWholeLine = false;
-  let beforeCursor = false;
-  let afterCursor = false;
-  let atLineStart = false;
-  let selectionOnly = false;
-  if (position.length > 1) {
-    isWholeLine = /isWholeLine/s.test(position[1]);
-    beforeCursor = /beforeCursor/s.test(position[1]);
-    afterCursor = /afterCursor/s.test(position[1]);
-    atLineStart = /atLineStart/s.test(position[1]);
-    selectionOnly = /selectionOnly/s.test(position[1]);
-    if (selectionType === "MULTI_LINE" && position[0] === "left") {
-      isWholeLine = true;
-    }
-  }
-  return {
-    isWholeLine,
-    borderPosition: position[0],
-    beforeCursor,
-    afterCursor,
-    atLineStart,
-    selectionOnly
-  };
-};
-var updateGeneralConfig = (configReady) => {
-  for (const key in configReady.generalConfigInfo) {
-    if (key === "diagnosticTextEnabled" /* DIAGNOSTIC_TEXT_ENABLED */ || key === "selectionTextEnabled" /* SELECTION_TEXT_ENABLED */) {
-      const sectionLinker = CONFIG_KEY_LINKER_SECTION[key];
-      const configSection = getWorkspaceConfiguration(configReady.name + "." + sectionLinker[0]);
-      const configValue = getConfigValue(configSection, sectionLinker[1], NO_CONFIGURATION_GENERAL_DEFAULT[key], configReady.name + "." + sectionLinker[0]);
-      configReady.generalConfigInfo[key] = configValue;
-    } else {
-      const configSection = getWorkspaceConfiguration(configReady.name + "." + CONFIG_SECTION.general);
-      configReady.generalConfigInfo[key] = getConfigValue(configSection, key, NO_CONFIGURATION_GENERAL_DEFAULT[key], configReady.name + "." + CONFIG_SECTION.general);
-    }
-  }
-};
-var updateHighlightStyleConfiguration = (configReady, selectionType) => {
-  let bindTo = bindHighlightStyleState();
-  if (bindTo.styleOf[selectionType]) {
-    disposeDecoration(bindTo.styleOf[selectionType]);
-  }
-  const configSet = getConfigSet(configReady, selectionType);
-  const parsed = borderPositionParser(selectionType, String(configSet.borderPosition));
-  bindTo.infoOf[selectionType] = parsed;
-  configSet.borderPosition = parsed.borderPosition;
-  configSet.isWholeLine = parsed.isWholeLine;
-  const decorationTypeList = createDecorationType(configSet, selectionType, decorationTypeSplit);
-  if (!decorationTypeList) {
-    return false;
-  }
-  bindTo.styleOf[selectionType] = decorationTypeList;
-  delete bindTo.styleOf;
-  delete bindTo.infoOf;
-};
-var generateHighlightDecoration = (configReady) => {
-  updateGeneralConfig(configReady);
-  for (const key of SELECTION_KIND_LIST) {
-    const selectionType = key;
-    updateHighlightStyleConfiguration(configReady, selectionType);
-  }
-  return true;
-};
-
-// src/configuration/collection/patch.ts
-var vscode9 = __toESM(require("vscode"));
-var legacyConfig = {
-  borderOpacity: "general.borderOpacity",
-  backgroundOpacity: "general.backgroundOpacity",
-  statusTextEnabled: "selectionText.enabled",
-  statusTextIconEnabled: "selectionText.iconEnabled",
-  statusTextColor: "selectionText.color",
-  statusTextBackgroundColor: "selectionText.backgroundColor",
-  statusTextOpacity: "selectionText.opacity",
-  statusTextFontStyle: "statusTselectionTextext.fontStyle",
-  statusTextFontWeight: "selectionText.fontWeight",
-  cursorOnlyBorderColor: "cursorOnly.borderColor",
-  cursorOnlyBackgroundColor: "cursorOnly.backgroundColor",
-  cursorOnlyBorderPosition: "cursorOnly.borderPosition",
-  cursorOnlyBorderWidth: "cursorOnly.borderWidth",
-  cursorOnlyBorderStyle: "cursorOnly.borderStyle",
-  cursorOnlyBorderStyleWithafterCursor: "cursorOnly.borderStyleWithafterCursor",
-  singleLineBorderColor: "singleLine.borderColor",
-  singleLineBackgroundColor: "singleLine.backgroundColor",
-  singleLine: "singleLine.borderPosition",
-  singleLineBorderWidth: "singleLine.borderWidth",
-  singleLineBorderStyle: "singleLine.borderStyle",
-  multiLineBorderColor: "multiLine.borderColor",
-  multiLineBackgroundColor: "multiLine.backgroundColor",
-  multiLineBorderPosition: "multiLine.borderPosition",
-  multiLineBorderWidth: "multiLine.borderWidth",
-  multiLineBorderStyle: "multiLine.borderStyle",
-  multiCursorBorderColor: "multiCursor.borderColor",
-  multiCursorBackgroundColor: "multiCursor.backgroundColor",
-  multiCursorBorderPosition: "multiCursor.borderPosition",
-  multiCursorBorderWidth: "multiCursor.borderWidth",
-  multiCursorBorderStyle: "multiCursor.borderStyle"
-};
-var updateUserSetting = (extensionConfig, newKey, value) => {
-  return extensionConfig.update(newKey, value, vscode9.ConfigurationTarget.Global);
-};
-var removeUserSetting = (extensionConfig, key) => {
-  return extensionConfig.update(key, void 0, vscode9.ConfigurationTarget.Global);
-};
-var updateLegacyConfig = async (configReady) => {
-  const extensionConfig = getWorkspaceConfiguration(configReady.name);
-  Object.entries(extensionConfig).forEach(async ([key, value]) => {
-    if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
-      if (Object.hasOwn(legacyConfig, key)) {
-        const newKey = legacyConfig[key];
-        await updateUserSetting(extensionConfig, newKey, value);
-        await removeUserSetting(extensionConfig, key);
-      }
-    }
-  });
-};
-
-// src/configuration/status/selection.ts
-var convertPositionToDecorationRenderOption = (textPosition, SelectionDecorationStyle) => {
-  return textPosition.contentText.map((text, idx) => {
-    const option = typeof text === "string" ? SelectionDecorationStyle.placeholderDecorationOption : SelectionDecorationStyle.selectionDecorationOption[textPosition.position[idx]];
-    const contentTextRenderOption = setContentTextOnDecorationRenderOption(option, text);
-    if (typeof text === "symbol") {
-      textPosition.position[idx] = contentTextRenderOption.after.contentText;
-    }
-    return contentTextRenderOption;
-  }).filter((decorationOption) => decorationOption !== void 0);
-};
-var buildStatusTextState = (textOftarget, textOfSource, SelectionDecorationStyle, leftMargin) => {
-  Object.entries(textOfSource).forEach(([key, textPosition], idx) => {
-    const contentTextStyled = convertPositionToDecorationRenderOption(textPosition, SelectionDecorationStyle);
-    ;
-    const hex = SELECTION_CONTENT_TEXT_NUMLINK[key];
-    textOftarget[hex] = {
-      contentText: contentTextStyled,
-      position: Object.entries(textPosition.position)
-    };
-    if (leftMargin && leftMargin !== "0px" || leftMargin !== "0em") {
-      if (textOftarget[hex].contentText[0]) {
-        textOftarget[hex].contentText[0].after["margin"] = leftMarginToMarginString(leftMargin);
-      }
-    }
-    setSelectionTextbufferSize(hex, textOftarget[hex].contentText.length);
-  });
-  sealBuffer();
-};
-var buildSelectionTextDecorationRenderOption = (config, style) => {
-  style.placeholderDecorationOption = convertToDecorationRenderOption(config, true);
-  Object.keys(style.selectionDecorationOption).forEach((key, idx) => {
-    const styleConfig = {
-      color: config.selectionCountTextStyle[key],
-      colorOpacity: config.selectionCountTextStyle.opacity,
-      fontStyle: config.selectionCountTextStyle.fontStyle,
-      fontWeight: config.selectionCountTextStyle.fontWeight
-    };
-    style.selectionDecorationOption[key] = convertToDecorationRenderOption(styleConfig, true);
-  });
-};
-var updateSelectionTextConfig = (configReady) => {
-  const SelectionDecorationConfig = { ...SELECTION_DECORAITON_CONFIG };
-  const SelectionDecorationStyle = { ...SELECTION_DECORATION_STYLE };
-  const bindTo = bindStatusContentTextState();
-  const bindToBuffer = {
-    functionOf: bindTo.functionOf,
-    textOf: {}
-  };
-  workspaceProxyConfiguration(SelectionDecorationConfig, configReady.name + "." + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST, bindToBuffer, regex_collection_default.statusContentText);
-  buildSelectionTextDecorationRenderOption(SelectionDecorationConfig, SelectionDecorationStyle);
-  buildStatusTextState(bindTo.textOf, bindToBuffer.textOf, SelectionDecorationStyle, SelectionDecorationConfig.leftMargin);
-  delete bindTo.functionOf;
-  delete bindTo.infoOf;
-  delete bindTo.textOf;
-  delete bindToBuffer.textOf;
-  delete bindToBuffer.functionOf;
 };
 
 // src/editor/decoration/status/diagnostic.ts
@@ -1657,6 +1325,428 @@ var bindDiagnosticContentTextState = () => {
     textOf: diagnosticContentText,
     configOf: diagnosticVisibility
   };
+};
+
+// src/editor/decoration/highlight/highlight.ts
+var highlightStyleList = {
+  ...HIGHLIGHT_STYLE_LIST
+};
+var borderPositionInfo = {
+  ...HIGHLIGHT_BORDER_POSITION_INFO
+};
+var cursorOnlyHighlightRange = (editor2, previousKey) => {
+  clearPrevious2(editor2.setDecorations, previousKey, blankRange);
+  applyDecoration(editor2.setDecorations, highlightStyleList[cursorOnly][0], [createLineRange(editor2.selection.active)]);
+};
+var singelLineHighlightRange = (editor2, previousKey) => {
+  clearPrevious2(editor2.setDecorations, previousKey, blankRange);
+  applyDecoration(editor2.setDecorations, highlightStyleList[singleLine][0], [createRangeSPEP(editor2.selection.start, editor2.selection.end)]);
+};
+var multiLineHighlightRange = (editor2, previousKey) => {
+  clearPrevious2(editor2.setDecorations, previousKey, blankRange);
+  applyDecoration(editor2.setDecorations, highlightStyleList[multiLine][0], [createLineRange(editor2.selection.start)]);
+  applyDecoration(editor2.setDecorations, highlightStyleList[multiLine][1], [createLineRange(editor2.selection.end)]);
+  applyDecoration(editor2.setDecorations, highlightStyleList[multiLine][2], [editor2.selection]);
+};
+var multiCursorHighlightRange = (editor2, previousKey) => {
+  clearPrevious2(editor2.setDecorations, previousKey, blankRange);
+  applyDecoration(editor2.setDecorations, highlightStyleList[multiCursor][0], editor2.selections.reduce((acc, selection) => {
+    acc.push(createRangeSPEP(selection.start, selection.active));
+    return acc;
+  }, []));
+  applyDecoration(editor2.setDecorations, highlightStyleList[multiCursor][1], editor2.selections.reduce((acc, selection) => {
+    acc.push(createRangeNNNN(selection.active.line, 0, selection.active.line, selection.active.character));
+    return acc;
+  }, []));
+};
+var clearBuffer2 = (setDecorations, resetRange) => (buffer) => setDecorations(buffer, resetRange);
+var clearPrevious2 = (setDecorations, previousKey, resetRange) => {
+  switch (previousKey[0]) {
+    case 257 /* CURSOR_ONLY */:
+      highlightStyleList[257 /* CURSOR_ONLY */]?.forEach(clearBuffer2(setDecorations, resetRange));
+      break;
+    case 258 /* SINGLE_LINE */:
+      highlightStyleList[258 /* SINGLE_LINE */]?.forEach(clearBuffer2(setDecorations, resetRange));
+      break;
+    case 259 /* MULTI_LINE */:
+      highlightStyleList[259 /* MULTI_LINE */]?.forEach(clearBuffer2(setDecorations, resetRange));
+      break;
+    case 260 /* MULTI_CURSOR */:
+      highlightStyleList[260 /* MULTI_CURSOR */]?.forEach(clearBuffer2(setDecorations, resetRange));
+      break;
+    default:
+      break;
+  }
+};
+var unsetRangeOfHighlightStyle = (editor2) => {
+  SELECTION_KIND_LIST.forEach((highlight) => {
+  });
+};
+var coordinatorSplit = {
+  [cursorOnly]: (editor2, previousKey) => cursorOnlyHighlightRange(editor2, previousKey),
+  [singleLine]: (editor2, previousKey) => singelLineHighlightRange(editor2, previousKey),
+  [multiLine]: (editor2, previousKey) => multiLineHighlightRange(editor2, previousKey),
+  [multiCursor]: (editor2, previousKey) => multiCursorHighlightRange(editor2, previousKey)
+};
+var bindHighlightStyleState = () => {
+  return {
+    styleOf: highlightStyleList,
+    infoOf: borderPositionInfo
+  };
+};
+
+// src/editor/editor.ts
+var renderGroupSet = {
+  ...RENDER_GROUP_SET
+};
+var decorationState = {
+  ...DECORATION_STATE
+};
+var updateIndentOption = (editor2) => {
+  const bindTo = bindStatusContentTextState();
+  bindTo.infoOf.size = Number(editor2.options.tabSize ?? editor2.options.indentSize ?? 4);
+  bindTo.infoOf.type = editor2.options.insertSpaces ? "\n" : "	";
+  bindTo.infoOf.regex = editor2.options.insertSpaces ? regex_collection_default.indentAndEOLRegex(bindTo.infoOf.size) : regex_collection_default.tagtAndEOLRegex;
+};
+var applyDecoration = (setDecorations, decoraiton, range) => {
+  setDecorations(decoraiton, range);
+};
+var disposeDecoration = (highlightStyleList2 = []) => {
+  highlightStyleList2.forEach((decorationType) => {
+    decorationType.dispose();
+  });
+};
+var resetDecorationRange = (editor2, decorationType) => {
+};
+var resetAllDecoration = () => {
+  vscode8.window.visibleTextEditors.forEach((editor2) => {
+    unsetRangeOfHighlightStyle(editor2);
+    clearBufferStack(editor2);
+  });
+};
+var createEditorDecorationType = (styleAppliedConfig) => {
+  return vscode8.window.createTextEditorDecorationType(styleAppliedConfig);
+};
+var clearDecorationState = (decorationState2) => {
+  decorationState2.appliedHighlight[0] = reset;
+};
+var prepareRenderGroup = (config) => {
+  const selection = config.generalConfigInfo.selectionTextEnabled;
+  const diagnostic = config.generalConfigInfo.diagnosticTextEnabled ? diagnosticInfo : void 0;
+  const bindDiagnostic = bindDiagnosticContentTextState();
+  const diagonosticAvaliabity = {
+    [cursorOnly]: bindDiagnostic.configOf.displayWhenCursorOnly,
+    [singleLine]: bindDiagnostic.configOf.displayWhenSingleLine,
+    [multiLine]: bindDiagnostic.configOf.displayWhenMultiLine,
+    [multiCursor]: bindDiagnostic.configOf.displayWhenMultiCursor
+  };
+  const highlightList = {
+    [cursorOnly]: cursorOnlyHighlightRange,
+    [singleLine]: singelLineHighlightRange,
+    [multiLine]: multiLineHighlightRange,
+    [multiCursor]: multiCursorHighlightRange
+  };
+  const selectionList = {
+    [cursorOnly]: cursorOnlySelection,
+    [singleLine]: singleLineSelection,
+    [multiLine]: multilineSelection,
+    [multiCursor]: multiCursorSelection
+  };
+  SELECTION_KIND_LIST.forEach((numKey) => {
+    if (SELECTION_KIND[numKey]) {
+      const callList = [];
+      callList.push(highlightList[numKey]);
+      if (selection) {
+        callList.push(selectionList[numKey]);
+      }
+      renderFnStack[numKey] = callList;
+      renderGroupSet[numKey] = {
+        highlight: numKey,
+        selection,
+        diagnostic: diagonosticAvaliabity[numKey] ? diagnostic : void 0
+      };
+    }
+  });
+  return renderGroupSet[cursorOnly];
+};
+var renderFnStack = {
+  [cursorOnly]: [],
+  [singleLine]: [],
+  [multiLine]: [],
+  [multiCursor]: []
+};
+var fnList = (editor2, numKey) => (fn) => fn(editor2, numKey);
+var renderGroupIs = (editor2, numKey) => {
+  if (editor2.selections.length === 1) {
+    if (editor2.selections[0].isEmpty) {
+      renderFnStack[cursorOnly].forEach(fnList(editor2, numKey));
+      return cursorOnly;
+    }
+    if (!editor2.selections[0].isSingleLine) {
+      renderFnStack[multiLine].forEach(fnList(editor2, numKey));
+      return multiLine;
+    } else {
+      renderFnStack[singleLine].forEach(fnList(editor2, numKey));
+      return singleLine;
+    }
+  } else {
+    renderFnStack[multiCursor].forEach(fnList(editor2, numKey));
+    return multiCursor;
+  }
+};
+var bindEditorDecoration = () => {
+  return {
+    stateOf: decorationState
+  };
+};
+
+// src/configuration/highlight/highlight.ts
+var checkConfigKeyAndCast = (key) => {
+  return key;
+};
+var getConfigSet = (configReady, decorationKey) => {
+  const configSectionName = DECORATION_STYLE_PREFIX[decorationKey];
+  const defaultConfigDefinition = NO_CONFIGURATION_DEOCORATION_DEFAULT[decorationKey];
+  const configSection = getWorkspaceConfiguration(configReady.name + "." + configSectionName);
+  return Object.entries(defaultConfigDefinition).reduce((config, [configName, defaultValue]) => {
+    const configValue = getConfigValue(configSection, checkConfigKeyAndCast(configName), defaultValue, configReady.name + "." + configSectionName);
+    if (configValue !== void 0 && configValue !== null) {
+      if (Object.hasOwn(colorConfigTransform, configName)) {
+        const colorTransform = colorConfigTransform[configName];
+        config[configName] = colorTransform.fn(configValue, configReady.generalConfigInfo[colorTransform.of], defaultValue);
+      } else {
+        config[configName] = configValue;
+      }
+    }
+    return config;
+  }, {});
+};
+var combineBorderStyle = (style) => {
+  style.border = `${style.borderStyle} ${style.borderColor};`;
+  delete style.borderStyle;
+  delete style.borderColor;
+  return style;
+};
+var createDecorationType = (config, decorationKey, decorationTypeSplit2) => {
+  try {
+    const split = decorationTypeSplit2(config, decorationKey);
+    if (!split || split.length === 0) {
+      return;
+    }
+    const decorationTypeStack = split.reduce((styledConfig, str) => {
+      const conf = { ...config };
+      conf.borderWidth = str;
+      styledConfig.push(conf);
+      return styledConfig;
+    }, []).reduce((textEditorDecoration, styleAppliedConfig, idx) => {
+      if (decorationKey === multiLine && idx !== 2) {
+        delete styleAppliedConfig.backgroundColor;
+      }
+      textEditorDecoration.push(createEditorDecorationType(combineBorderStyle(styleAppliedConfig)));
+      return textEditorDecoration;
+    }, []);
+    if (decorationTypeStack.length === 0) {
+      return;
+    }
+    return decorationTypeStack;
+  } catch (err) {
+    console.log("creating decoration type thrown error:", decorationKey, err);
+    return;
+  }
+};
+var decorationTypeSplit = (config, decorationKey) => {
+  if (Object.hasOwn(BORDER_WIDTH_DEFINITION, decorationKey)) {
+    if (Object.hasOwn(BORDER_WIDTH_DEFINITION[decorationKey], String(config.borderPosition))) {
+      return borderPosition(config, BORDER_WIDTH_DEFINITION[decorationKey][config.borderPosition]);
+    }
+    return;
+  }
+  return;
+};
+var borderPosition = (config, borderWidthMask) => {
+  const borderWidth = [];
+  for (const bitMask of borderWidthMask) {
+    const border = readBits(bitMask, String(config.borderWidth), "0");
+    borderWidth.push(border.join(" "));
+  }
+  return borderWidth;
+};
+var borderPositionParser = (selectionType, borderPosition2) => {
+  const position = borderPosition2.replaceAll(" ", "").split("|");
+  let isWholeLine = false;
+  let beforeCursor = false;
+  let afterCursor = false;
+  let atLineStart = false;
+  let selectionOnly = false;
+  if (position.length > 1) {
+    isWholeLine = /isWholeLine/s.test(position[1]);
+    beforeCursor = /beforeCursor/s.test(position[1]);
+    afterCursor = /afterCursor/s.test(position[1]);
+    atLineStart = /atLineStart/s.test(position[1]);
+    selectionOnly = /selectionOnly/s.test(position[1]);
+    if (selectionType === multiLine && position[0] === "left") {
+      isWholeLine = true;
+    }
+  }
+  return {
+    isWholeLine,
+    borderPosition: position[0],
+    beforeCursor,
+    afterCursor,
+    atLineStart,
+    selectionOnly
+  };
+};
+var updateGeneralConfig = (configReady) => {
+  for (const key in configReady.generalConfigInfo) {
+    if (key === "diagnosticTextEnabled" /* DIAGNOSTIC_TEXT_ENABLED */ || key === "selectionTextEnabled" /* SELECTION_TEXT_ENABLED */) {
+      const sectionLinker = CONFIG_KEY_LINKER_SECTION[key];
+      const configSection = getWorkspaceConfiguration(configReady.name + "." + sectionLinker[0]);
+      const configValue = getConfigValue(configSection, sectionLinker[1], NO_CONFIGURATION_GENERAL_DEFAULT[key], configReady.name + "." + sectionLinker[0]);
+      configReady.generalConfigInfo[key] = configValue;
+    } else {
+      const configSection = getWorkspaceConfiguration(configReady.name + "." + CONFIG_SECTION.general);
+      configReady.generalConfigInfo[key] = getConfigValue(configSection, key, NO_CONFIGURATION_GENERAL_DEFAULT[key], configReady.name + "." + CONFIG_SECTION.general);
+    }
+  }
+};
+var updateHighlightStyleConfiguration = (configReady, selectionType) => {
+  let bindTo = bindHighlightStyleState();
+  if (bindTo.styleOf[selectionType]) {
+    disposeDecoration(bindTo.styleOf[selectionType]);
+  }
+  const configSet = getConfigSet(configReady, selectionType);
+  const parsed = borderPositionParser(selectionType, String(configSet.borderPosition));
+  bindTo.infoOf[selectionType] = parsed;
+  configSet.borderPosition = parsed.borderPosition;
+  configSet.isWholeLine = parsed.isWholeLine;
+  const decorationTypeList = createDecorationType(configSet, selectionType, decorationTypeSplit);
+  if (!decorationTypeList) {
+    return false;
+  }
+  bindTo.styleOf[selectionType] = decorationTypeList;
+  delete bindTo.styleOf;
+  delete bindTo.infoOf;
+};
+var generateHighlightDecoration = (configReady) => {
+  updateGeneralConfig(configReady);
+  for (const key of SELECTION_KIND_LIST) {
+    const selectionType = key;
+    updateHighlightStyleConfiguration(configReady, selectionType);
+  }
+  return true;
+};
+
+// src/configuration/collection/patch.ts
+var vscode9 = __toESM(require("vscode"));
+var legacyConfig = {
+  borderOpacity: "general.borderOpacity",
+  backgroundOpacity: "general.backgroundOpacity",
+  statusTextEnabled: "selectionText.enabled",
+  statusTextIconEnabled: "selectionText.iconEnabled",
+  statusTextColor: "selectionText.color",
+  statusTextBackgroundColor: "selectionText.backgroundColor",
+  statusTextOpacity: "selectionText.opacity",
+  statusTextFontStyle: "statusTselectionTextext.fontStyle",
+  statusTextFontWeight: "selectionText.fontWeight",
+  cursorOnlyBorderColor: "cursorOnly.borderColor",
+  cursorOnlyBackgroundColor: "cursorOnly.backgroundColor",
+  cursorOnlyBorderPosition: "cursorOnly.borderPosition",
+  cursorOnlyBorderWidth: "cursorOnly.borderWidth",
+  cursorOnlyBorderStyle: "cursorOnly.borderStyle",
+  cursorOnlyBorderStyleWithafterCursor: "cursorOnly.borderStyleWithafterCursor",
+  singleLineBorderColor: "singleLine.borderColor",
+  singleLineBackgroundColor: "singleLine.backgroundColor",
+  singleLine: "singleLine.borderPosition",
+  singleLineBorderWidth: "singleLine.borderWidth",
+  singleLineBorderStyle: "singleLine.borderStyle",
+  multiLineBorderColor: "multiLine.borderColor",
+  multiLineBackgroundColor: "multiLine.backgroundColor",
+  multiLineBorderPosition: "multiLine.borderPosition",
+  multiLineBorderWidth: "multiLine.borderWidth",
+  multiLineBorderStyle: "multiLine.borderStyle",
+  multiCursorBorderColor: "multiCursor.borderColor",
+  multiCursorBackgroundColor: "multiCursor.backgroundColor",
+  multiCursorBorderPosition: "multiCursor.borderPosition",
+  multiCursorBorderWidth: "multiCursor.borderWidth",
+  multiCursorBorderStyle: "multiCursor.borderStyle"
+};
+var updateUserSetting = (extensionConfig, newKey, value) => {
+  return extensionConfig.update(newKey, value, vscode9.ConfigurationTarget.Global);
+};
+var removeUserSetting = (extensionConfig, key) => {
+  return extensionConfig.update(key, void 0, vscode9.ConfigurationTarget.Global);
+};
+var updateLegacyConfig = async (configReady) => {
+  const extensionConfig = getWorkspaceConfiguration(configReady.name);
+  Object.entries(extensionConfig).forEach(async ([key, value]) => {
+    if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+      if (Object.hasOwn(legacyConfig, key)) {
+        const newKey = legacyConfig[key];
+        await updateUserSetting(extensionConfig, newKey, value);
+        await removeUserSetting(extensionConfig, key);
+      }
+    }
+  });
+};
+
+// src/configuration/status/selection.ts
+var convertPositionToDecorationRenderOption = (textPosition, SelectionDecorationStyle) => {
+  return textPosition.contentText.map((text, idx) => {
+    const option = typeof text === "string" ? SelectionDecorationStyle.placeholderDecorationOption : SelectionDecorationStyle.selectionDecorationOption[textPosition.position[idx]];
+    const contentTextRenderOption = setContentTextOnDecorationRenderOption(option, text);
+    if (typeof text === "symbol") {
+      textPosition.position[idx] = contentTextRenderOption.after.contentText;
+    }
+    return contentTextRenderOption;
+  }).filter((decorationOption) => decorationOption !== void 0);
+};
+var buildStatusTextState = (textOftarget, textOfSource, SelectionDecorationStyle, leftMargin) => {
+  Object.entries(textOfSource).forEach(([key, textPosition], idx) => {
+    const contentTextStyled = convertPositionToDecorationRenderOption(textPosition, SelectionDecorationStyle);
+    ;
+    const hex = SELECTION_CONTENT_TEXT_NUMLINK[key];
+    textOftarget[hex] = {
+      contentText: contentTextStyled,
+      position: Object.entries(textPosition.position)
+    };
+    if (leftMargin && leftMargin !== "0px" || leftMargin !== "0em") {
+      if (textOftarget[hex].contentText[0]) {
+        textOftarget[hex].contentText[0].after["margin"] = leftMarginToMarginString(leftMargin);
+      }
+    }
+    setSelectionTextbufferSize(hex, textOftarget[hex].contentText.length);
+  });
+  sealBuffer();
+};
+var buildSelectionTextDecorationRenderOption = (config, style) => {
+  style.placeholderDecorationOption = convertToDecorationRenderOption(config, true);
+  Object.keys(style.selectionDecorationOption).forEach((key, idx) => {
+    const styleConfig = {
+      color: config.selectionCountTextStyle[key],
+      colorOpacity: config.selectionCountTextStyle.opacity,
+      fontStyle: config.selectionCountTextStyle.fontStyle,
+      fontWeight: config.selectionCountTextStyle.fontWeight
+    };
+    style.selectionDecorationOption[key] = convertToDecorationRenderOption(styleConfig, true);
+  });
+};
+var updateSelectionTextConfig = (configReady) => {
+  const SelectionDecorationConfig = { ...SELECTION_DECORAITON_CONFIG };
+  const SelectionDecorationStyle = { ...SELECTION_DECORATION_STYLE };
+  const bindTo = bindStatusContentTextState();
+  const bindToBuffer = {
+    functionOf: bindTo.functionOf,
+    textOf: {}
+  };
+  workspaceProxyConfiguration(SelectionDecorationConfig, configReady.name + "." + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST, bindToBuffer, regex_collection_default.statusContentText);
+  buildSelectionTextDecorationRenderOption(SelectionDecorationConfig, SelectionDecorationStyle);
+  buildStatusTextState(bindTo.textOf, bindToBuffer.textOf, SelectionDecorationStyle, SelectionDecorationConfig.leftMargin);
+  delete bindTo.functionOf;
+  delete bindTo.infoOf;
+  delete bindTo.textOf;
+  delete bindToBuffer.textOf;
+  delete bindToBuffer.functionOf;
 };
 
 // src/configuration/status/diagonostic.ts
@@ -1915,6 +2005,7 @@ var loadConfiguration = (context) => {
     if (configReady.generalConfigInfo.diagnosticTextEnabled) {
       updateDiagnosticTextConfig(configReady);
     }
+    Object.seal(decorationState2.appliedHighlight);
     return {
       config: configReady,
       decoration: decorationState2
@@ -1925,82 +2016,6 @@ var loadConfiguration = (context) => {
 
 // src/event/window.ts
 var vscode11 = __toESM(require("vscode"));
-
-// src/editor/editor.ts
-var renderGroupSet = {
-  ...RENDER_GROUP_SET
-};
-var updateIndentOption = (editor2) => {
-  const bindTo = bindStatusContentTextState();
-  bindTo.infoOf.size = Number(editor2.options.tabSize ?? editor2.options.indentSize ?? 4);
-  bindTo.infoOf.type = editor2.options.insertSpaces ? "\n" : "	";
-  bindTo.infoOf.regex = editor2.options.insertSpaces ? regex_collection_default.indentAndEOLRegex(bindTo.infoOf.size) : regex_collection_default.tagtAndEOLRegex;
-};
-var prepareRenderGroup = (config) => {
-  const selection = config.generalConfigInfo.selectionTextEnabled;
-  const diagnostic = config.generalConfigInfo.diagnosticTextEnabled ? diagnosticInfo : void 0;
-  const bindDiagnostic = bindDiagnosticContentTextState();
-  const diagonosticAvaliabity = {
-    [cursorOnly]: bindDiagnostic.configOf.displayWhenCursorOnly,
-    [singleLine]: bindDiagnostic.configOf.displayWhenSingleLine,
-    [multiLine]: bindDiagnostic.configOf.displayWhenMultiLine,
-    [multiCursor]: bindDiagnostic.configOf.displayWhenMultiCursor
-  };
-  const highlightList = {
-    [cursorOnly]: cursorOnlyHighlightRange,
-    [singleLine]: singelLineHighlightRange,
-    [multiLine]: multiLineHighlightRange,
-    [multiCursor]: multiCursorHighlightRange
-  };
-  const selectionList = {
-    [cursorOnly]: cursorOnlySelection,
-    [singleLine]: singleLineSelection,
-    [multiLine]: multilineSelection,
-    [multiCursor]: multiCursorSelection
-  };
-  SELECTION_KIND_LIST.forEach((numKey) => {
-    if (SELECTION_KIND[numKey]) {
-      const callList = [];
-      callList.push(highlightList[numKey]);
-      if (selection) {
-        callList.push(selectionList[numKey]);
-      }
-      renderCallStack[numKey] = callList;
-      renderGroupSet[numKey] = {
-        highlight: numKey,
-        selection,
-        diagnostic: diagonosticAvaliabity[numKey] ? diagnostic : void 0
-      };
-    }
-  });
-  return renderGroupSet[cursorOnly];
-};
-var renderCallStack = {
-  [cursorOnly]: [],
-  [singleLine]: [],
-  [multiLine]: [],
-  [multiCursor]: []
-};
-var callstack = (editor2, numKey) => (fn) => fn(editor2, numKey);
-var renderGroupIs = (editor2, numKey) => {
-  const stack = callstack(editor2, numKey);
-  if (editor2.selections.length === 1) {
-    if (editor2.selections[0].isEmpty) {
-      renderCallStack[cursorOnly].forEach(stack);
-      return cursorOnly;
-    }
-    if (!editor2.selections[0].isSingleLine) {
-      renderCallStack[multiLine].forEach(stack);
-      return multiLine;
-    } else {
-      renderCallStack[singleLine].forEach(stack);
-      return singleLine;
-    }
-  } else {
-    renderCallStack[multiCursor].forEach(stack);
-    return multiCursor;
-  }
-};
 
 // src/diagnostic/diagnostic.ts
 var vscode10 = __toESM(require("vscode"));
@@ -2135,10 +2150,10 @@ var sectionList = [
 var sectionChanged = () => {
   return {
     ["general" /* GENERAL */]: (config) => updateGeneralConfig(config),
-    ["cursorOnly" /* CURSOR_ONLY */]: (config) => updateHighlightStyleConfiguration(config, "CURSOR_ONLY" /* CURSOR_ONLY */),
-    ["singleLine" /* SINGLE_LINE */]: (config) => updateHighlightStyleConfiguration(config, "SINGLE_LINE" /* SINGLE_LINE */),
-    ["multiLine" /* MULTI_LINE */]: (config) => updateHighlightStyleConfiguration(config, "MULTI_LINE" /* MULTI_LINE */),
-    ["multiCursor" /* MULTI_CURSOR */]: (config) => updateHighlightStyleConfiguration(config, "MULTI_CURSOR" /* MULTI_CURSOR */),
+    ["cursorOnly" /* CURSOR_ONLY */]: (config) => updateHighlightStyleConfiguration(config, cursorOnly),
+    ["singleLine" /* SINGLE_LINE */]: (config) => updateHighlightStyleConfiguration(config, singleLine),
+    ["multiLine" /* MULTI_LINE */]: (config) => updateHighlightStyleConfiguration(config, multiLine),
+    ["multiCursor" /* MULTI_CURSOR */]: (config) => updateHighlightStyleConfiguration(config, multiCursor),
     ["selectionText" /* SELECTION_TEXT */]: (config) => updateSelectionTextConfig(config),
     ["diagnosticText" /* DIAGNOSTIC_TEXT */]: (config) => updateDiagnosticTextConfig(config, true)
   };

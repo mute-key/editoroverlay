@@ -6,7 +6,7 @@ import * as workspaceEvent from './event/workspace';
 import * as languagesEvent from './event/language';
 import * as __0x from './constant/shared/numeric';
 import Error from './util/error';
-import { clearDecorationState } from './editor/decoration/decoration';
+import { clearDecorationState } from './editor/editor';
 import { prepareRenderGroup, renderGroupIs } from './editor/editor';
 
 const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vscode.Disposable[] | void> => {

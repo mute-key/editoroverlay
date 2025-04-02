@@ -2,17 +2,20 @@ import * as vscode from 'vscode';
 import * as Type from '../type/type';
 import * as __0x from '../constant/shared/numeric';
 import Regex from '../util/regex.collection';
-import { RENDER_GROUP_SET, SELECTION_KIND_LIST } from '../constant/shared/object';
+import { DECORATION_STATE, RENDER_GROUP_SET, SELECTION_KIND_LIST } from '../constant/shared/object';
 import { SELECTION_KIND } from '../constant/config/object';
-import { bindStatusContentTextState } from './decoration/status/selection';
+import { bindStatusContentTextState, clearBufferStack } from './decoration/status/selection';
 import { bindDiagnosticContentTextState, diagnosticInfo } from './decoration/status/diagnostic';
-import { cursorOnlyHighlightRange, singelLineHighlightRange, multiLineHighlightRange, multiCursorHighlightRange } from './decoration/highlight/highlight'
+import { cursorOnlyHighlightRange, singelLineHighlightRange, multiLineHighlightRange, multiCursorHighlightRange, unsetRangeOfHighlightStyle } from './decoration/highlight/highlight'
 import { cursorOnlySelection, singleLineSelection, multilineSelection, multiCursorSelection } from './decoration/status/selection'
-
 
 const renderGroupSet = {
     ...RENDER_GROUP_SET
 } as unknown as Type.RenderGroupSet;
+
+const decorationState = {
+    ...DECORATION_STATE
+} as unknown as Type.DecorationStateType;
 
 const renderGroupOfKey = (key: number) => renderGroupSet[key]
 
@@ -23,6 +26,35 @@ const updateIndentOption = (editor: vscode.TextEditor): void => {
     bindTo.infoOf.regex = editor.options.insertSpaces
         ? Regex.indentAndEOLRegex(bindTo.infoOf.size)
         : Regex.tagtAndEOLRegex;
+};
+
+const applyDecoration = (setDecorations: vscode.TextEditor['setDecorations'], decoraiton: vscode.TextEditorDecorationType, range: vscode.Range[]): void => {
+    setDecorations(decoraiton, range);
+};
+
+const disposeDecoration = (highlightStyleList: vscode.TextEditorDecorationType[] = []) => {
+    highlightStyleList.forEach((decorationType): void => {
+        decorationType.dispose();
+    });
+};
+
+const resetDecorationRange = (editor: vscode.TextEditor, decorationType: vscode.TextEditorDecorationType[]): void => {
+    // decorationType?.forEach(decoration => applyDecoration(editor, decoration, []));
+};
+
+const resetAllDecoration = () => {
+    vscode.window.visibleTextEditors.forEach(editor => {
+        unsetRangeOfHighlightStyle(editor)
+        clearBufferStack(editor);
+    });
+};
+
+const createEditorDecorationType = (styleAppliedConfig: any): vscode.TextEditorDecorationType => {
+    return vscode.window.createTextEditorDecorationType(styleAppliedConfig as vscode.DecorationRenderOptions);
+};
+
+const clearDecorationState = (decorationState: Type.DecorationStateType) => {
+    decorationState.appliedHighlight[0] = __0x.reset;
 };
 
 const prepareRenderGroup = (config: Type.ConfigInfoReadyType): Type.RenderGroupSetProperty => {
@@ -64,7 +96,7 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): Type.RenderGroupS
             //     callList.push(diagnostic);
             // }
 
-            renderCallStack[numKey] = callList;
+            renderFnStack[numKey] = callList;
 
             renderGroupSet[numKey] = {
                 highlight: numKey,
@@ -77,38 +109,53 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): Type.RenderGroupS
     return renderGroupSet[__0x.cursorOnly] as Type.RenderGroupSetProperty;
 };
 
-const renderCallStack = {
+const renderFnStack = {
     [__0x.cursorOnly]: [] as any[],
     [__0x.singleLine]: [] as any[],
     [__0x.multiLine]: [] as any[],
     [__0x.multiCursor]: [] as any[]
 };
 
-const callstack = (editor: vscode.TextEditor, numKey: number[]) => fn => fn(editor, numKey);
+const fnList = (editor: vscode.TextEditor, numKey: number[]) => fn => fn(editor, numKey);
 
 const renderGroupIs = (editor: vscode.TextEditor, numKey: number[]): number => {
-    const stack = callstack(editor, numKey);
+
+    // const stack = callstack(editor, numKey);
+
     if (editor.selections.length === 1) {
         if (editor.selections[0].isEmpty) {
-            renderCallStack[__0x.cursorOnly].forEach(stack);
+            renderFnStack[__0x.cursorOnly].forEach(fnList(editor, numKey));
             return __0x.cursorOnly;
         }
         if (!editor.selections[0].isSingleLine) {
-            renderCallStack[__0x.multiLine].forEach(stack);
+            renderFnStack[__0x.multiLine].forEach(fnList(editor, numKey));
             return __0x.multiLine;
         } else {
-            renderCallStack[__0x.singleLine].forEach(stack);
+            renderFnStack[__0x.singleLine].forEach(fnList(editor, numKey));
             return __0x.singleLine;
         }
     } else {
-        renderCallStack[__0x.multiCursor].forEach(stack)
+        renderFnStack[__0x.multiCursor].forEach(fnList(editor, numKey))
         return __0x.multiCursor;
     }
 };
 
+const bindEditorDecoration = () => {
+    return {
+        stateOf: decorationState
+    };
+};
+
 export {
     updateIndentOption,
+    clearDecorationState,
+    applyDecoration,
+    createEditorDecorationType,
+    resetDecorationRange,
+    disposeDecoration,
+    resetAllDecoration,
     prepareRenderGroup,
     renderGroupIs,
-    renderGroupOfKey
+    renderGroupOfKey,
+    bindEditorDecoration,
 };

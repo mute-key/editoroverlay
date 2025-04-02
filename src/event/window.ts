@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as Type from '../type/type.d';
 import * as __0x from '../constant/shared/numeric';
 import Error from '../util/error';
-import { resetAllDecoration } from '../editor/decoration/decoration';
+import { resetAllDecoration } from '../editor/editor';
 import { renderGroupIs, updateIndentOption } from '../editor/editor';
 import { resetEditorDiagnosticStatistics, updateDiagnostic } from '../diagnostic/diagnostic';
 
@@ -14,7 +14,7 @@ const windowStateChanged: Type.DecorationEventFunc = ({ decorationState }): vsco
             if (vscode.window.activeTextEditor) {
                 decorationState.appliedHighlight[0] = renderGroupIs(vscode.window.activeTextEditor, [__0x.cursorOnly]);
             }
-            
+
         } else {
             resetAllDecoration();
         }
@@ -41,7 +41,7 @@ const activeEditorChanged: Type.DecorationEventFunc = ({ configInfo, decorationS
             }
 
             updateIndentOption(editor);
-
+            
             decorationState.appliedHighlight[0] = renderGroupIs(editor, [__0x.cursorOnly]);
 
             if (Error.check() && editor) {

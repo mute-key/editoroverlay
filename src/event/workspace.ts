@@ -3,7 +3,7 @@ import * as Type from '../type/type.d';
 import * as update from '../configuration/update';
 import Error from '../util/error';
 import { prepareRenderGroup } from '../editor/editor';
-import { clearDecorationState, resetAllDecoration } from '../editor/decoration/decoration';
+import { clearDecorationState, resetAllDecoration } from '../editor/editor';
 import { CONFIG_SECTION_KEY } from '../constant/config/enum';
 
 const configChanged: Type.DecorationEventFunc = ({ configInfo, decorationState}): vscode.Disposable => {

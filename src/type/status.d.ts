@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as DecorationType from './decoration.d';
-import { DECORATION_STYLE_KEY, SELECTION_CONTENT_TEXT_CONFIG_KEY } from 'src/constant/enum';
+import { SELECTION_CONTENT_TEXT_CONFIG_KEY } from 'src/constant/config/enum';
 
 type SelectionDecorationStyleType = {
     leftMargin?: string

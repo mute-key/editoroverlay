@@ -6,7 +6,7 @@ import { updateLegacyConfig } from './collection/patch';
 import { updateSelectionTextConfig } from './status/selection';
 import { updateDiagnosticTextConfig } from './status/diagonostic';
 import { writeEditorConfiguration } from './shared/editor';
-import { bindEditorDecoration } from '../editor/decoration/decoration';
+import { bindEditorDecoration } from '../editor/editor';
 
 const configInfo = { 
     ...CONFIG_INFO
@@ -45,6 +45,8 @@ const loadConfiguration = (context?: vscode.ExtensionContext): Type.InitialisedC
         if (configReady.generalConfigInfo.diagnosticTextEnabled) {
             updateDiagnosticTextConfig(configReady);
         }
+
+        Object.seal(decorationState.appliedHighlight);
 
         return {
             config: configReady,

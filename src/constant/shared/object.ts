@@ -24,7 +24,7 @@ export const RENDER_GROUP_SET = {
 };
 
 export const DECORATION_STATE = {
-    appliedHighlight: [],
+    appliedHighlight: [0],
     // selectionText: undefined,
     // diagnosticText: undefined,
 } as const;
