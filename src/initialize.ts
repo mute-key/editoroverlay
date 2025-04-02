@@ -6,8 +6,8 @@ import * as workspaceEvent from './event/workspace';
 import * as languagesEvent from './event/language';
 import * as __0x from './constant/shared/numeric';
 import Error from './util/error';
-import { clearDecorationState, renderDecorationOnEditor } from './editor/decoration/handler';
-import { prepareRenderGroup, renderGroupOfKey } from './editor/editor';
+import { clearDecorationState } from './editor/decoration/decoration';
+import { prepareRenderGroup, renderGroupIs } from './editor/editor';
 
 const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vscode.Disposable[] | void> => {
     try {
@@ -35,13 +35,7 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
         prepareRenderGroup(configInfo);
 
         if (activeEditor) {
-
-            loadConfig.decoration.appliedHighlight[0] = __0x.cursorOnly
-            
-            renderDecorationOnEditor({
-                editor: activeEditor,
-                decorationState: loadConfig.decoration
-            });
+            loadConfig.decoration.appliedHighlight[0] = renderGroupIs(activeEditor, [__0x.cursorOnly]);
         }
 
         return [

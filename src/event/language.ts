@@ -1,16 +1,18 @@
 import * as vscode from 'vscode';
 import * as Type from '../type/type.d';
 import { updateDiagnostic } from '../diagnostic/diagnostic';
-import { clearDecorationState } from '../editor/decoration/handler';
+import { clearDecorationState } from '../editor/decoration/decoration';
+import { renderGroupIs } from '../editor/editor';
 
-const diagnosticChanged: Type.DecorationEventFunc = (context): vscode.Disposable => {
+const diagnosticChanged: Type.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
     return vscode.languages.onDidChangeDiagnostics(async (event: vscode.DiagnosticChangeEvent) => {
         const editor = vscode.window.activeTextEditor;
         if (editor && event) {
-            context.editor = editor;
-            // clearDecorationState(context.decorationState);
+            
+            // clearDecorationState(decorationState);
             await updateDiagnostic(editor.document.uri);
-            // await renderStatusInfo(context as Type.DecorationContext);
+            decorationState.appliedHighlight[0] = renderGroupIs(editor, decorationState.appliedHighlight);
+            
         }
     });
 };

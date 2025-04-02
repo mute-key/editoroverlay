@@ -2,12 +2,13 @@ import * as vscode from 'vscode';
 import * as Type from '../type/type';
 import * as __0x from '../constant/shared/numeric';
 import Regex from '../util/regex.collection';
-import { HIGHLIGHT_STYLE_SYMBOL_LIST, RENDER_GROUP_SET, SELECTION_KIND } from '../constant/object';
+import { RENDER_GROUP_SET, SELECTION_KIND_LIST } from '../constant/shared/object';
+import { SELECTION_KIND } from '../constant/config/object';
 import { bindStatusContentTextState } from './decoration/status/selection';
 import { bindDiagnosticContentTextState, diagnosticInfo } from './decoration/status/diagnostic';
-import { selectionInfo } from './decoration/status/selection';
 import { cursorOnlyHighlightRange, singelLineHighlightRange, multiLineHighlightRange, multiCursorHighlightRange } from './decoration/highlight/highlight'
 import { cursorOnlySelection, singleLineSelection, multilineSelection, multiCursorSelection } from './decoration/status/selection'
+
 
 const renderGroupSet = {
     ...RENDER_GROUP_SET
@@ -24,28 +25,8 @@ const updateIndentOption = (editor: vscode.TextEditor): void => {
         : Regex.tagtAndEOLRegex;
 };
 
-const cursorOnlyRenderGroup = (previousKey) => {
-    cursorOnlyHighlightRange(previousKey)
-    cursorOnlySelection()
-}
-
-const singleLineRenderGoup = (previousKey) => {
-    singelLineHighlightRange(previousKey)
-    singleLineSelection()
-}
-
-const multiLineRenderGroup = (previousKey) => {
-    multiLineHighlightRange(previousKey)
-    multilineSelection()
-}
-
-const multiCursorRenderGroup = (previousKey) => {
-    multiCursorHighlightRange(previousKey)
-    multiCursorSelection()
-}
-
 const prepareRenderGroup = (config: Type.ConfigInfoReadyType): Type.RenderGroupSetProperty => {
-    const selection = config.generalConfigInfo.selectionTextEnabled ? selectionInfo : undefined;
+    const selection = config.generalConfigInfo.selectionTextEnabled;
     const diagnostic = config.generalConfigInfo.diagnosticTextEnabled ? diagnosticInfo : undefined;
     const bindDiagnostic = bindDiagnosticContentTextState();
     const diagonosticAvaliabity = {
@@ -54,46 +35,73 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): Type.RenderGroupS
         [__0x.multiLine]: bindDiagnostic.configOf.displayWhenMultiLine,
         [__0x.multiCursor]: bindDiagnostic.configOf.displayWhenMultiCursor
     };
-    const renderGroupBind = {
-        [__0x.cursorOnly]: cursorOnlyRenderGroup,
-        [__0x.singleLine]: singleLineRenderGoup,
-        [__0x.multiLine]: multiLineRenderGroup,
-        [__0x.multiCursor]: multiCursorRenderGroup,
+
+    const highlightList = {
+        [__0x.cursorOnly]: cursorOnlyHighlightRange,
+        [__0x.singleLine]: singelLineHighlightRange,
+        [__0x.multiLine]: multiLineHighlightRange,
+        [__0x.multiCursor]: multiCursorHighlightRange
     };
 
-    HIGHLIGHT_STYLE_SYMBOL_LIST.forEach(selectionKey => {
+    const selectionList = {
+        [__0x.cursorOnly]: cursorOnlySelection,
+        [__0x.singleLine]: singleLineSelection,
+        [__0x.multiLine]: multilineSelection,
+        [__0x.multiCursor]: multiCursorSelection
+    };
 
-        if (SELECTION_KIND[selectionKey]) {
-            renderGroupSet[selectionKey] = renderGroupBind[selectionKey];
+    SELECTION_KIND_LIST.forEach(numKey => {
 
-            // () => {
-                // as Type.RenderGroupSetProperty
-                // highlight: selectionKey,
-                // selection: selection,
-                // diagnostic: diagonosticAvaliabity[selectionKey] ? diagnostic : undefined
-            // };
+        if (SELECTION_KIND[numKey]) {
+            const callList: any[] = [];
+            callList.push(highlightList[numKey]);
+
+            if (selection) {
+                callList.push(selectionList[numKey]);
+            }
+
+            // if (diagnostic) {
+            //     callList.push(diagnostic);
+            // }
+
+            renderCallStack[numKey] = callList;
+
+            renderGroupSet[numKey] = {
+                highlight: numKey,
+                selection: selection,
+                diagnostic: diagonosticAvaliabity[numKey] ? diagnostic : undefined
+            } as Type.RenderGroupSetProperty;
         }
     });
 
     return renderGroupSet[__0x.cursorOnly] as Type.RenderGroupSetProperty;
 };
 
-const renderGroupIs = (editor: vscode.TextEditor, previousKey: number) => {
+const renderCallStack = {
+    [__0x.cursorOnly]: [] as any[],
+    [__0x.singleLine]: [] as any[],
+    [__0x.multiLine]: [] as any[],
+    [__0x.multiCursor]: [] as any[]
+};
+
+const callstack = (editor: vscode.TextEditor, numKey: number[]) => fn => fn(editor, numKey);
+
+const renderGroupIs = (editor: vscode.TextEditor, numKey: number[]): number => {
+    const stack = callstack(editor, numKey);
     if (editor.selections.length === 1) {
         if (editor.selections[0].isEmpty) {
-            renderGroupSet[__0x.cursorOnly](previousKey);
+            renderCallStack[__0x.cursorOnly].forEach(stack);
             return __0x.cursorOnly;
         }
-
         if (!editor.selections[0].isSingleLine) {
-            renderGroupSet[__0x.multiLine](previousKey);
+            renderCallStack[__0x.multiLine].forEach(stack);
             return __0x.multiLine;
         } else {
-            renderGroupSet[__0x.singleLine](previousKey);
+            renderCallStack[__0x.singleLine].forEach(stack);
             return __0x.singleLine;
         }
     } else {
-        renderGroupSet[__0x.multiCursor](previousKey);
+        renderCallStack[__0x.multiCursor].forEach(stack)
         return __0x.multiCursor;
     }
 };

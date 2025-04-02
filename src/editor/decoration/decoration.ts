@@ -1,8 +1,9 @@
 import * as vscode from 'vscode';
 import * as Type from '../../type/type';
-import { DECORATION_STATE } from '../../constant/object';
+import * as __0x from '../../constant/shared/numeric';
 import { clearBufferStack } from './status/selection';
 import { unsetRangeOfHighlightStyle } from './highlight/highlight';
+import { DECORATION_STATE } from '../../constant/shared/object';
 
 const decorationState = {
     ...DECORATION_STATE
@@ -39,6 +40,10 @@ const bindEditorDecoration = () => {
     };
 };
 
+const clearDecorationState = (decorationState: Type.DecorationStateType) => {
+    decorationState.appliedHighlight[0] = __0x.reset;
+};
+
 export {
     bindEditorDecoration,
     applyDecoration,
@@ -46,4 +51,5 @@ export {
     resetDecorationRange,
     createEditorDecorationType,
     resetAllDecoration,
+    clearDecorationState
 };

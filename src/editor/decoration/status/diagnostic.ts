@@ -2,8 +2,9 @@ import * as vscode from 'vscode';
 import * as Type from '../../../type/type';
 import * as __0x from '../../../constant/shared/numeric';
 import { createCursorRange, createLineRange } from '../../range';
-import { DIAGNOSTIC_CONTENT_TEXT, DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET, DIAGNOSTIC_VISIBILITY_CONFIG, DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET } from '../../../constant/object';
-import { DIAGNOSTIC_BIOME, DIAGNOSTIC_CONTENT_TEXT_KEY } from '../../../constant/enum';
+import { DIAGNOSTIC_CONTENT_TEXT, DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET, DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET } from '../../../constant/shared/object';
+import { DIAGNOSTIC_VISIBILITY_CONFIG } from '../../../constant/config/object';
+import { DIAGNOSTIC_BIOME, DIAGNOSTIC_CONTENT_TEXT_KEY } from '../../../constant/config/enum';
 
 const diagnosticContentText = {
     ...DIAGNOSTIC_CONTENT_TEXT
@@ -138,13 +139,13 @@ const diagnosticBiomeSplit = (state: Type.DiagnosticStateType['editor'] | Type.D
     return {
         'workspace': () => diagnosticCounter({
             ...context,
-            keySet: { 
+            keySet: {
                 ...DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET
             }
         }),
         'editor': () => diagnosticCounter({
             ...context,
-            keySet: { 
+            keySet: {
                 ...DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET
             }
         }),

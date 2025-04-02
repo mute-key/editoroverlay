@@ -1,17 +1,6 @@
-/**
- * [READONLY constants]
- * 
- */
-
 // ==============================================================================
-// [ NON-RUNTIME, COMPILE-TIME CONSTANT/ENUM ]
+// [ COMPILE-TIME CONSTANT ENUM ]
 // ==============================================================================
-
-
-export declare const enum SYSTEM_MESSAGE {
-    RELOADING_CONFIG = 'Config has been changed. Reloading configuration. (Messaage Dismiss in 2 second.)'
-}
-
 export const enum SELECTION_TYPE {
     RESET = 'RESET',
     CURSOR_ONLY = 'CURSOR_ONLY',
@@ -19,30 +8,9 @@ export const enum SELECTION_TYPE {
     MULTI_LINE = 'MULTI_LINE',
     MULTI_CURSOR = 'MULTI_CURSOR',
 }
-
-export const enum DECORATION_TYPE_MASK {
-    RESET = 0b1111,
-    CURSOR_ONLY = 1 << 0,
-    SINGLE_LINE = 1 << 1,
-    MULTI_LINE = 1 << 2,
-    MULTI_CURSOR = 1 << 3
+export declare const enum SYSTEM_MESSAGE {
+    RELOADING_CONFIG = 'Config has been changed. Reloading configuration. (Messaage Dismiss in 2 second.)'
 }
-
-export const enum DECORATION_STYLE_CONFIG_KEY {
-    USE_OVERRIDE = 'useOverrride',
-    IS_WHOLE_LINE = 'isWholeLine',
-    BORDER_POSITION = 'borderPosition',
-    BORDER_STYLE = 'borderStyle',
-    BORDER_WIDTH = 'borderWidth',
-    BORDER_COLOR = 'borderColor',
-    BORDER_RADIUS = 'borderRadius',
-    BACKGROUND_COLOR = 'backgroundColor',
-    OVERVIEW_RULER_COLOR = 'overviewRulerColor',
-    OVERVIEW_RULER_LANE = 'overviewRulerLane',
-    // gutterIconPath: vscode.Uri.file('path/to/icon.svg'),
-    // gutterIconSize: 'contain',
-}
-
 /**
  * configurable border position enum in setting.
  * 
@@ -69,12 +37,29 @@ export const enum BORDER_POSITION_MASK {
     LEFT = 0b0001,
 }
 
+export const enum DECORATION_TYPE_MASK {
+    RESET = 0b1111,
+    CURSOR_ONLY = 1 << 0,
+    SINGLE_LINE = 1 << 1,
+    MULTI_LINE = 1 << 2,
+    MULTI_CURSOR = 1 << 3
+}
 
-/**
- * this enum does not need RESET field.
- * use as KEY only
- * 
- */
+export const enum DECORATION_STYLE_CONFIG_KEY {
+    USE_OVERRIDE = 'useOverrride',
+    IS_WHOLE_LINE = 'isWholeLine',
+    BORDER_POSITION = 'borderPosition',
+    BORDER_STYLE = 'borderStyle',
+    BORDER_WIDTH = 'borderWidth',
+    BORDER_COLOR = 'borderColor',
+    BORDER_RADIUS = 'borderRadius',
+    BACKGROUND_COLOR = 'backgroundColor',
+    OVERVIEW_RULER_COLOR = 'overviewRulerColor',
+    OVERVIEW_RULER_LANE = 'overviewRulerLane',
+    // gutterIconPath: vscode.Uri.file('path/to/icon.svg'),
+    // gutterIconSize: 'contain',
+}
+
 export const enum DECORATION_STYLE_KEY {
     CURSOR_ONLY = 'CURSOR_ONLY',
     SINGLE_LINE = 'SINGLE_LINE',

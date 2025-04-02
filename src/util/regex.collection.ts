@@ -1,5 +1,5 @@
+import { DIAGNOSTIC_CONTENT_TEXT_KEY, SELECTION_CONTENT_TEXT_CONFIG_KEY } from '../constant/config/enum';
 import * as Type from '../type/type';
-import { DIAGNOSTIC_CONTENT_TEXT_KEY, SELECTION_CONTENT_TEXT_CONFIG_KEY } from '../constant/enum';
 
 const prefix = /(\${pre})/s;
 

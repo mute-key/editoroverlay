@@ -13,7 +13,7 @@ type AppliedHighlightType = {
 };
 
 type DecorationStateType = {
-    appliedHighlight: any[]
+    appliedHighlight: number[]
     selectionText: vscode.TextEditorDecorationType[] | any[],
     diagnosticText: vscode.TextEditorDecorationType[] | any[],
     diagnosticInfo?: StatusType.StatusTextInfoType[] | any[],

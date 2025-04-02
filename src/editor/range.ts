@@ -26,8 +26,6 @@ const createCursorRange = (editor: vscode.TextEditor, lineDelta: number = 0): vs
 const createLineRange = (position: vscode.Position): vscode.Range =>
     new vscode.Range(position, position);
 
-
-
 const createStartEndRangeOfSelection = (selection: vscode.Selection): vscode.Range =>
     createRangeSPEP(selection.start, selection.end);
 

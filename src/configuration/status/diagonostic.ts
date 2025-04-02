@@ -1,13 +1,13 @@
 import * as Type from '../../type/type';
 import * as __0x from '../../constant/shared/numeric';
 import Regex from '../../util/regex.collection';
-import { DIAGNOSTIC_CONFIG, CONFIG_SECTION, DIAGNOSTIC_CONTENT_TEXT_LIST, DIAGNOSTIC_DECORATION_STYLE, DIAGNOSTIC_STYLE_LIST, DIAGNOSTIC_DECORATION_TEXT_KIND, DECORATION_OPTION_LINKER, DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER, DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER, DIAGNOSTIC_ALL_PLACEHOLDER_LINKER, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_SYM } from '../../constant/object';
-import { DIAGNOSTIC_BIOME, DIAGNOSTIC_TEXT_STYLE_KEY } from '../../constant/enum';
+import { CONFIG_SECTION, DECORATION_OPTION_LINKER, DIAGNOSTIC_ALL_PLACEHOLDER_LINKER, DIAGNOSTIC_CONFIG, DIAGNOSTIC_CONTENT_TEXT_LIST, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM, DIAGNOSTIC_DECORATION_STYLE, DIAGNOSTIC_DECORATION_TEXT_KIND, DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER, DIAGNOSTIC_STYLE_LIST, DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER } from '../../constant/config/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { sanitizeConfigValue } from '../shared/validation';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 import { bindDiagnosticContentTextState } from '../../editor/decoration/status/diagnostic';
 import { hexToRgbaStringLiteral, readBits } from '../../util/util';
+import { DIAGNOSTIC_BIOME, DIAGNOSTIC_TEXT_STYLE_KEY } from '../../constant/config/enum';
 
 const positionKeyList = ['pre', 'post'] as const;
 
@@ -70,7 +70,7 @@ const buildDiagnosticTextState = (textOftarget, textOfSource, style: Type.Diagon
         };
 
         ['workspace', 'editor', 'all', 'layout'].forEach(biome => {
-            convertPositionWrapper(context, textOftarget, biome, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_SYM[contentTextName]);
+            convertPositionWrapper(context, textOftarget, biome, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM[contentTextName]);
         });
     });
 };

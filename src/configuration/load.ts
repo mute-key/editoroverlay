@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as Type from '../type/type';
-import { CONFIG_INFO } from '../constant/object';
+import { CONFIG_INFO } from '../constant/config/object';
 import { generateHighlightDecoration } from './highlight/highlight';
 import { updateLegacyConfig } from './collection/patch';
 import { updateSelectionTextConfig } from './status/selection';
@@ -28,10 +28,7 @@ const loadConfiguration = (context?: vscode.ExtensionContext): Type.InitialisedC
     const configReady = configInfo as Type.ConfigInfoReadyType;
 
     const decorationState = bindEditorDecoration().stateOf;
-
-    decorationState.appliedHighlight = new Array(1).fill(0);
-    Object.seal(decorationState.appliedHighlight);
-
+;
     if (!configReady.configError) {
         configReady.configError = [];
         updateLegacyConfig(configReady);

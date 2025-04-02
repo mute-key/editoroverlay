@@ -1,11 +1,9 @@
 import * as Type from '../../type/type';
 import Regex from '../../util/regex.collection';
-import { CONFIG_SECTION, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_NUMLINK } from '../../constant/object';
+import { CONFIG_SECTION, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_NUMLINK, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE } from '../../constant/config/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { bindStatusContentTextState, sealBuffer, setSelectionTextbufferSize } from '../../editor/decoration/status/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
-// import { sealBuffer, setSelectionTextbufferSize } from '../../editor/decoration/handler';
-
 
 
 const convertPositionToDecorationRenderOption = (textPosition, SelectionDecorationStyle): void => {

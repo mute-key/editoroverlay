@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 import * as Type from '../../type/type';
 import Regex from '../../util/regex.collection';
-import { DECORATION_OPTION_AFTER_CONFIG, DECORATION_OPTION_CONFIG } from '../../constant/object';
+import Error from '../../util/error';
+import { DECORATION_OPTION_AFTER_CONFIG, DECORATION_OPTION_CONFIG } from '../../constant/config/object';
 import { sanitizeContentText } from './validation';
 import { hexToRgbaStringLiteral, splitAndPosition } from '../../util/util';
-import Error from '../../util/error';
 
 const leftMarginToMarginString = (leftMargin: string | undefined) => `0 0 0 ${leftMargin}`;
 

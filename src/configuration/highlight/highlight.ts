@@ -1,13 +1,13 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import * as vscode from 'vscode';
 import * as Type from '../../type/type';
 import * as __0x from '../../constant/shared/numeric';
-import { CONFIG_SECTION, BORDER_WIDTH_DEFINITION, DECORATION_STYLE_PREFIX, NO_CONFIGURATION_DEOCORATION_DEFAULT, NO_CONFIGURATION_GENERAL_DEFAULT, HIGHLIGHT_STYLE_LIST, HIGHLIGHT_STYLE_SYMBOL_LIST, CONFIG_KEY_LINKER_SECTION } from '../../constant/object';
 import { colorConfigTransform, getConfigValue } from '../shared/configuration';
 import { createEditorDecorationType, disposeDecoration } from '../../editor/decoration/decoration';
 import { bindHighlightStyleState } from '../../editor/decoration/highlight/highlight';
 import { getWorkspaceConfiguration, readBits } from '../../util/util';
-import { CONFIG_KEY_LINKER, SELECTION_TYPE } from '../../constant/enum';
+import { BORDER_WIDTH_DEFINITION, CONFIG_KEY_LINKER_SECTION, CONFIG_SECTION, DECORATION_STYLE_PREFIX, NO_CONFIGURATION_DEOCORATION_DEFAULT, NO_CONFIGURATION_GENERAL_DEFAULT } from '../../constant/config/object';
+import { SELECTION_KIND_LIST } from '../../constant/shared/object';
+import { CONFIG_KEY_LINKER } from '../../constant/config/enum';
 
 const checkConfigKeyAndCast = <T extends Type.DecorationStyleConfigNameType | Type.GeneralConfigNameOnlyType>(key: string): T => {
     return key as T;
@@ -174,7 +174,7 @@ const generateHighlightDecoration = (configReady: Type.ConfigInfoReadyType): boo
 
     updateGeneralConfig(configReady);
 
-    for (const key of HIGHLIGHT_STYLE_SYMBOL_LIST) {
+    for (const key of SELECTION_KIND_LIST) {
         const selectionType = key as Type.DecorationStyleKeyOnlyType;
         updateHighlightStyleConfiguration(configReady, selectionType);
     }

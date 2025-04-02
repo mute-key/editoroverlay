@@ -1,8 +1,7 @@
-import * as Type from '../type/type';
-import { CONFIG_SECTION_KEY, SELECTION_TYPE } from '../constant/enum';
 import { updateGeneralConfig, updateHighlightStyleConfiguration } from './highlight/highlight';
 import { updateSelectionTextConfig } from './status/selection';
 import { updateDiagnosticTextConfig } from './status/diagonostic';
+import { CONFIG_SECTION_KEY, SELECTION_TYPE } from '../constant/config/enum';
 
 const sectionList = [
     CONFIG_SECTION_KEY.GENERAL,
