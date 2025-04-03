@@ -1,29 +1,22 @@
 import * as vscode from 'vscode';
 import * as Type from '../../type/type';
 import * as __0x from '../../constant/shared/numeric';
-import { colorConfigTransform, getConfigValue } from '../shared/configuration';
-import { createEditorDecorationType, disposeDecoration } from '../../editor/editor';
-import { bindHighlightStyleState } from '../../editor/decoration/highlight/highlight';
-import { getWorkspaceConfiguration, readBits } from '../../util/util';
 import { BORDER_WIDTH_DEFINITION, CONFIG_KEY_LINKER_SECTION, CONFIG_SECTION, DECORATION_STYLE_PREFIX, NO_CONFIGURATION_DEOCORATION_DEFAULT, NO_CONFIGURATION_GENERAL_DEFAULT } from '../../constant/config/object';
-import { SELECTION_KIND_LIST } from '../../constant/shared/object';
 import { CONFIG_KEY_LINKER } from '../../constant/config/enum';
+import { SELECTION_KIND_LIST } from '../../constant/shared/object';
+import { bindHighlightStyleState } from '../../editor/decoration/highlight/highlight';
+import { colorConfigTransform, getConfigValue } from '../shared/configuration';
+import { createEditorDecorationType } from '../../editor/editor';
+import { getWorkspaceConfiguration, readBits } from '../../util/util';
 
 const checkConfigKeyAndCast = <T extends Type.DecorationStyleConfigNameType | Type.GeneralConfigNameOnlyType>(key: string): T => {
     return key as T;
 };
 
-/**
- * @param config
- * @param decorationKey
- * @returns
- * 
- */
 const getConfigSet = (configReady: Type.ConfigInfoReadyType, decorationKey: number): Type.DecorationStyleConfigType => {
     const configSectionName = DECORATION_STYLE_PREFIX[decorationKey];
-    const defaultConfigDefinition = NO_CONFIGURATION_DEOCORATION_DEFAULT[decorationKey];
+    const defaultConfigDefinition = NO_CONFIGURATION_DEOCORATION_DEFAULT;
     const configSection = getWorkspaceConfiguration(configReady.name + '.' + configSectionName);
-
     return Object.entries(defaultConfigDefinition).reduce((config, [configName, defaultValue]) => {
         const configValue: string | boolean | number | null = getConfigValue(configSection, checkConfigKeyAndCast(configName), defaultValue as Type.DecorationStyleConfigValueType, configReady.name + '.' + configSectionName);
         // configValue can be boolean.
@@ -44,7 +37,6 @@ const combineBorderStyle = (style: vscode.DecorationRenderOptions) => {
     delete style.borderStyle;
     delete style.borderColor;
     return style;
-
 };
 
 const createDecorationType = (config: Type.DecorationStyleConfigType, decorationKey: number, decorationTypeSplit: Type.SelectionConfigFunctionType) => {
@@ -53,7 +45,6 @@ const createDecorationType = (config: Type.DecorationStyleConfigType, decoration
         if (!split || split.length === 0) {
             return;
         }
-
         const decorationTypeStack = split.reduce((styledConfig, str) => {
             const conf = { ...config };
             conf.borderWidth = str;
@@ -66,11 +57,9 @@ const createDecorationType = (config: Type.DecorationStyleConfigType, decoration
             textEditorDecoration.push(createEditorDecorationType(combineBorderStyle(styleAppliedConfig)));
             return textEditorDecoration;
         }, [] as vscode.TextEditorDecorationType[]);
-
         if (decorationTypeStack.length === 0) {
             return;
         }
-
         return decorationTypeStack;
     } catch (err) {
         console.log('creating decoration type thrown error:', decorationKey, err);
@@ -104,20 +93,16 @@ const borderPositionParser = (selectionType: number, borderPosition: string): Ty
     let afterCursor = false;
     let atLineStart = false;
     let selectionOnly = false;
-
     if (position.length > 1) {
         isWholeLine = /isWholeLine/s.test(position[1]);
         beforeCursor = /beforeCursor/s.test(position[1]);
         afterCursor = /afterCursor/s.test(position[1]);
         atLineStart = /atLineStart/s.test(position[1]);
         selectionOnly = /selectionOnly/s.test(position[1]);
-
-        // if multi-line
-        if (selectionType === __0x.multiLine && position[0] === 'left') {
+        if (selectionType === __0x.multiLine && position[0] === 'left') { // if multi-line
             isWholeLine = true;
         }
     }
-
     return {
         isWholeLine: isWholeLine,
         borderPosition: position[0],
@@ -143,42 +128,30 @@ const updateGeneralConfig = (configReady: Type.ConfigInfoReadyType) => {
 };
 
 const updateHighlightStyleConfiguration = (configReady: Type.ConfigInfoReadyType, selectionType: number) => {
-
     let bindTo: any = bindHighlightStyleState();
-
     if (bindTo.styleOf[selectionType]) {
-        disposeDecoration(bindTo.styleOf[selectionType]);
+        bindTo.styleOf[selectionType].forEach(decoration => decoration.dispose())
     }
-
     const configSet: Type.DecorationStyleConfigType = getConfigSet(configReady, selectionType);
     const parsed = borderPositionParser(selectionType, String(configSet.borderPosition));
-
     bindTo.infoOf[selectionType] = parsed;
-
     configSet.borderPosition = parsed.borderPosition;
     configSet.isWholeLine = parsed.isWholeLine;
-
     const decorationTypeList = createDecorationType(configSet, selectionType, decorationTypeSplit);
-
     if (!decorationTypeList) {
         return false;
     }
-
     bindTo.styleOf[selectionType] = decorationTypeList;
-
     delete bindTo.styleOf;
     delete bindTo.infoOf;
 };
 
 const generateHighlightDecoration = (configReady: Type.ConfigInfoReadyType): boolean => {
-
     updateGeneralConfig(configReady);
-
     for (const key of SELECTION_KIND_LIST) {
         const selectionType = key as Type.DecorationStyleKeyOnlyType;
         updateHighlightStyleConfiguration(configReady, selectionType);
     }
-
     return true;
 };
 

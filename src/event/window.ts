@@ -9,7 +9,6 @@ import { resetEditorDiagnosticStatistics, updateDiagnostic } from '../diagnostic
 const windowStateChanged: Type.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
     return vscode.window.onDidChangeWindowState((event: vscode.WindowState): void => {
         if (event.focused) {
-            // decorationState.appliedHighlight[0] = __0x.cursorOnly; // renderGroupOfKey(__0x.cursorOnly)
 
             if (vscode.window.activeTextEditor) {
                 decorationState.appliedHighlight[0] = renderGroupIs(vscode.window.activeTextEditor, [__0x.cursorOnly]);
@@ -67,9 +66,7 @@ const selectionChanged: Type.DecorationEventFunc = ({ decorationState }): vscode
 
 const visibleRangeChanged = (): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorVisibleRanges((event: vscode.TextEditorVisibleRangesChangeEvent): void => {
-        if (event) {
-
-        }
+        if (event) {}
     });
 };
 

@@ -9,28 +9,6 @@ type DiagnosticSourceType = {
     }
 }
 
-type DiagnosticStateType = {
-    severity: number,
-    editor: {
-        warning: {
-            total: number
-        },
-        error: {
-            total: number
-        }
-    },
-    workspace: {
-        warning: {
-            source: number,
-            total: number
-        },
-        error: {
-            source: number,
-            total: number
-        },
-    }
-}
-
 type DiagonosticDecorationStyle = {
     leftMargin: string,
     diagonosticDecorationOptionReady: DecorationType.DecorationRenderOptionType[],
@@ -115,47 +93,6 @@ type DiagnosticErrorTextType = {
     }
 }
 
-
-type DiagnosticContentTextStateType = {
-    contentText: (string | any)[]
-    notation: {
-        prefix: string,
-        postfix: string
-    }
-}
-
-type DiagonosticContentTextKindType = {
-    [k in DIAGNOSTIC_CONTENT_TEXT_KEY]: DiagnosticContentTextStateType;
-}
-
-type DiagonosticContentTextAll = {
-    okAllContentText: DiagnosticContentTextStateType
-}
-
-type DiagnosticContentTextType = {
-    layout: {
-        problemPlaceholderContentText: {
-            contentText: any[],
-            override: {
-                [key: number]: {
-                    [key: string]: string
-                }
-            }
-        },
-        allOkPlaceholderContentText: {
-            contentText: any[], 
-            override: {
-                [key: number]: {
-                    [key: string]: string
-                }
-            }
-        },
-    },
-    editor: DiagonosticContentTextKindType,
-    workspace: DiagonosticContentTextKindType
-    all: DiagonosticContentTextAll
-}
-
 type DiagnosticVisibilityType = {
     displayWhenCursorOnly?: boolean,
     displayWhenSingleLine?: boolean,
@@ -191,19 +128,11 @@ type DiagnosticConfigType = {
 
 type DiagnosticTextStateBodyStyleFunc = (config: DecorationType.DecorationTextStyleConfig) => void
 
-type DiagnosticOfType = {
-    [k in DIAGNOSTIC_CONTENT_TEXT_KEY]: DiagonosticTextFunc
-}
 
-type DiagonosticTextContext = {
-    allok: any, 
-    editor: any, 
-    workspace: any
-    notation: DiagonosticTextStateTextEntryType,
-    state: DiagnosticStateType['workspace']
-}
 
-type DiagonosticTextFunc = Record<string, Symbol | ((context: DiagonosticTextContext) => string | undefined | any) >;
+
+
+
 
 type BindDiagnosticContentTextStateType = {
     diagnosticOf: any,
@@ -232,11 +161,6 @@ type ContentTextWithPositionType = {
     position: {}
 }
 
-interface DiagnosticContext {
-    state: DiagnosticStateType,
-    textState: DiagnosticContentTextType,
-    diagnosticVisibility: DiagnosticVisibilityType,
-}
 
 type BuildDiagonosticDecorationType = (context: DiagnosticContext) => any[]
 

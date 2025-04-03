@@ -199,7 +199,6 @@ const buildDiagnosticStyle = (config: Type.DiagnosticConfigType, style: Type.Dia
 
     const overrideBiome = diagnosticBiome.workspace | diagnosticBiome.editor;
     const ifOverrride = visibility.overrideLayoutPlaceholderColorToHighestSeverity ? overrideStyle(config, overrideBiome) : undefined;
-    console.log(result);
     return {
         ...result,
         layout: {

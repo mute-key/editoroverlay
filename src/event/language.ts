@@ -3,6 +3,7 @@ import * as Type from '../type/type.d';
 import { updateDiagnostic } from '../diagnostic/diagnostic';
 import { clearDecorationState } from '../editor/editor';
 import { renderGroupIs } from '../editor/editor';
+import { diagnosticInfo } from '../editor/decoration/status/diagnostic';
 
 const diagnosticChanged: Type.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
     return vscode.languages.onDidChangeDiagnostics(async (event: vscode.DiagnosticChangeEvent) => {
@@ -10,8 +11,9 @@ const diagnosticChanged: Type.DecorationEventFunc = ({ decorationState }): vscod
         if (editor && event) {
             
             // clearDecorationState(decorationState);
-            await updateDiagnostic(editor.document.uri);
-            decorationState.appliedHighlight[0] = renderGroupIs(editor, decorationState.appliedHighlight);
+            // const diagnosticState = await updateDiagnostic(editor.document.uri);
+            diagnosticInfo(editor);
+            // decorationState.appliedHighlight[0] = renderGroupIs(editor, decorationState.appliedHighlight);
             
         }
     });

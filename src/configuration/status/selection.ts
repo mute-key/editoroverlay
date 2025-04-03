@@ -2,7 +2,7 @@ import * as Type from '../../type/type';
 import Regex from '../../util/regex.collection';
 import { CONFIG_SECTION, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_NUMLINK, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE } from '../../constant/config/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
-import { bindStatusContentTextState, sealBuffer, setSelectionTextbufferSize } from '../../editor/decoration/status/selection';
+import { bindStatusContentTextState, setSelectionTextbuffer } from '../../editor/decoration/status/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 
 
@@ -23,21 +23,20 @@ const convertPositionToDecorationRenderOption = (textPosition, SelectionDecorati
 const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentTextBufferType,SelectionDecorationStyle,  leftMargin): void => {
     Object.entries(textOfSource).forEach(([key, textPosition], idx) => {
         const contentTextStyled = convertPositionToDecorationRenderOption(textPosition, SelectionDecorationStyle);;
-        const hex = SELECTION_CONTENT_TEXT_NUMLINK[key];
-        textOftarget[hex] = {
+        const hexKey = SELECTION_CONTENT_TEXT_NUMLINK[key];
+        textOftarget[hexKey] = {
             contentText: contentTextStyled,
             position: Object.entries(textPosition.position)
         };
 
         if (leftMargin && leftMargin !== '0px' || leftMargin !== '0em') {
-            if (textOftarget[hex].contentText[0]) {
-                textOftarget[hex].contentText[0].after['margin'] = leftMarginToMarginString(leftMargin);
+            if (textOftarget[hexKey].contentText[0]) {
+                textOftarget[hexKey].contentText[0].after['margin'] = leftMarginToMarginString(leftMargin);
             }
         }
 
-        setSelectionTextbufferSize(hex, textOftarget[hex].contentText.length);
+        setSelectionTextbuffer(hexKey, textOftarget[hexKey].contentText.length);
     });
-    sealBuffer();
 };
 
 const buildSelectionTextDecorationRenderOption = (config: Type.SelectionDecorationConfigType, style: Type.SelectionDecorationStyleType) => {

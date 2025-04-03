@@ -92,8 +92,8 @@ export const enum HEX_MULTILINE_FN {
     CHAR = 0x0207,
 }
 
-export const multiLineLineCountSym = HEX_MULTILINE_FN.LC;
-export const multiLineChararcterSym = HEX_MULTILINE_FN.CHAR;
+export const multiLineLineCountHex = HEX_MULTILINE_FN.LC;
+export const multiLineChararcterHex = HEX_MULTILINE_FN.CHAR;
 
 //::==============================================================================
 //::[ DIAGNOSTIC STATUS ] 0x0300
@@ -161,12 +161,22 @@ export const source = DIAGNOSTIC_STATE.SOURCE;
 //::[ MISC ] 0x1000, 00 is reserved.
 //::==============================================================================
 
-export const enum RENDER_GROUP_SET_PROPERTY {
-    TYPE = 0x1001,
-    SELECTIONCOUNT = 0x1002,
-    DIAGNOSTIC = 0x1003,
+export const enum DIAGNOSTIC_PLACEHOLDER {
+    ALL_OK = 0x1001,
+    EDITOR = 0x1002,
+    WORKSPACE = 0x1003,
 }
 
-export const renderGroupType = RENDER_GROUP_SET_PROPERTY.TYPE
-export const renderGroupSelection = RENDER_GROUP_SET_PROPERTY.SELECTIONCOUNT
-export const renderGroupDiagnostic = RENDER_GROUP_SET_PROPERTY.DIAGNOSTIC
+export const allOkHexKey = DIAGNOSTIC_PLACEHOLDER.ALL_OK;
+export const editorHexKey = DIAGNOSTIC_PLACEHOLDER.EDITOR;
+export const workspaceHexKey = DIAGNOSTIC_PLACEHOLDER.WORKSPACE;
+
+// export const enum RENDER_GROUP_SET_PROPERTY {
+//     TYPE = 0x1001,
+//     SELECTIONCOUNT = 0x1002,
+//     DIAGNOSTIC = 0x1003,
+// }
+
+// export const renderGroupType = RENDER_GROUP_SET_PROPERTY.TYPE
+// export const renderGroupSelection = RENDER_GROUP_SET_PROPERTY.SELECTIONCOUNT
+// export const renderGroupDiagnostic = RENDER_GROUP_SET_PROPERTY.DIAGNOSTIC
