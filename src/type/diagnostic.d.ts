@@ -134,10 +134,10 @@ type DiagnosticTextStateBodyStyleFunc = (config: DecorationType.DecorationTextSt
 
 
 
-type BindDiagnosticContentTextStateType = {
-    diagnosticOf: any,
-    diagnosticContentTextInfo: DiagnosticContentTextType
-}
+// type BindDiagnosticContentTextStateType = {
+//     diagnosticOf: any,
+//     diagnosticContentTextInfo: DiagnosticContentTextType
+// }
 
 type DiagonosticTextStateTextType = {
     okNotationText?: DiagonosticTextStateTextEntryType;
@@ -162,6 +162,6 @@ type ContentTextWithPositionType = {
 }
 
 
-type BuildDiagonosticDecorationType = (context: DiagnosticContext) => any[]
+// type BuildDiagonosticDecorationType = (context: DiagnosticContext) => any[]
 
 

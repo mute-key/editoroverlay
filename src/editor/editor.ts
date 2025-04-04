@@ -71,9 +71,9 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): void => {
             callList.push(selectionList[numKey]);
         }
 
-        // if (config.generalConfigInfo.diagnosticTextEnabled && diagonosticAvaliabity[numKey]) {
-        //     callList.push(diagnosticInfo);
-        // }
+        if (config.generalConfigInfo.diagnosticTextEnabled && diagonosticAvaliabity[numKey]) {
+            callList.push(diagnosticInfo);
+        }
 
         renderFnStack[numKey].push(...callList);
         Object.seal(renderFnStack[numKey]);

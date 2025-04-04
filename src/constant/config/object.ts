@@ -173,8 +173,8 @@ export const DIAGNOSTIC_CONFIG = {
 
 export const DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER = {
     [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: __0x.okEditorContentText,
-    [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: __0x.errorEditorContentText,
-    [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: __0x.warningEditorContentText,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: __0x.warningEditorContentText,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: __0x.errorEditorContentText,
 } as const;
 
 export const DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER = {
@@ -194,27 +194,27 @@ export const DIAGNOSTIC_DECORATION_TEXT_KIND = {
 };
 
 export const DECORATION_OPTION_LINKER = {
-    problemPlaceholderContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE, undefined],
     allOkPlaceholderContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE, undefined],
-    okWorkspaceContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.OK_TEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE],
-    okEditorContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.OK_TEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE],
+    problemPlaceholderContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE, undefined],
     okAllContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.OK_TEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE],
-    warningWorkspaceContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.WARNINGTEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE],
+    okEditorContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.OK_TEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE],
     warningEditorContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.WARNINGTEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE],
+    errorEditorContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_TEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE],
+    okWorkspaceContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.OK_TEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE],
+    warningWorkspaceContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.WARNINGTEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE],
     errorWorkspaceContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_TEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE],
-    errorEditorContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_TEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]
 } as const;
 
 export const DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM = {
     problemPlaceholderContentText: __0x.problemPlaceholderContentText,
     allOkPlaceholderContentText: __0x.allOkPlaceholderContentText,
-    okWorkspaceContentText: __0x.okWorkspaceContentText,
-    okEditorContentText: __0x.okEditorContentText,
     okAllContentText: __0x.okAllContentText,
-    warningWorkspaceContentText: __0x.warningWorkspaceContentText,
+    okEditorContentText: __0x.okEditorContentText,
     warningEditorContentText: __0x.warningEditorContentText,
-    errorWorkspaceContentText: __0x.errorWorkspaceContentText,
     errorEditorContentText: __0x.errorEditorContentText,
+    okWorkspaceContentText: __0x.okWorkspaceContentText,
+    warningWorkspaceContentText: __0x.warningWorkspaceContentText,
+    errorWorkspaceContentText: __0x.errorWorkspaceContentText,
 } as const;
 
 export const DIAGNOSTIC_STYLE_LIST: Type.TextList[] = [

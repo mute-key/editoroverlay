@@ -3,8 +3,32 @@ import * as Type from '../type/type';
 import { DIAGNOSTIC_SEVERITY_TO_KEY } from '../constant/config/object';
 import { DIAGNOSTIC_STATE } from '../constant/shared/object';
 import { DIAGNOSTIC_BIOME } from '../constant/config/enum';
+import { editor } from '../constant/shared/numeric';
 
-const diagnosticState: Type.DiagnosticStateType = { ...DIAGNOSTIC_STATE };
+const diagnosticState: DiagnosticState = { ...DIAGNOSTIC_STATE };
+
+export interface DiagnosticState {
+    renderSignature: number,
+    severity: number,
+    editor: {
+        warning: {
+            total: number
+        },
+        error: {
+            total: number
+        }
+    },
+    workspace: {
+        warning: {
+            source: number,
+            total: number
+        },
+        error: {
+            source: number,
+            total: number
+        },
+    }
+}
 
 const diagnosticSource: Type.DiagnosticSourceType = {};
 
@@ -20,17 +44,18 @@ const resetWorkspaceDiagnosticStatistics = (): void => {
     diagnosticState.workspace.error.total = 0;
 };
 
-const parseDiagnostic = (diagnosticState, severity, fsPath: string, activeEditorfsPath: string | undefined = undefined): void => {
+
+const parseDiagnostic = (state, severity, fsPath: string, activeEditorfsPath: string | undefined = undefined): void => {
     Object.keys(severity).forEach(severityType => {
 
         if (severity[severityType].length > 0) {
-            diagnosticState.workspace[severityType].source += 1;
-            diagnosticState.workspace[severityType].total += severity[severityType].length;
+            state.workspace[severityType].source += 1;
+            state.workspace[severityType].total += severity[severityType].length;
         }
 
         if (fsPath === activeEditorfsPath) {
-            diagnosticState.editor[severityType].total = 0;
-            diagnosticState.editor[severityType].total = severity[severityType].length;
+            state.editor[severityType].total = 0;
+            state.editor[severityType].total = severity[severityType].length;
         }
     });
 };
@@ -54,7 +79,7 @@ const buildDiagnostic = (source, diagnosticList, uri): void => {
     }
 };
 
-const maxSeverity = (state: Type.DiagnosticStateType): number => {
+const maxSeverity = (state: DiagnosticState): number => {
     const ifEditorProblem = state.editor.error.total !== 0 || state.editor.warning.total !== 0;
     const ifWorkspaceProblem = state.workspace.error.total !== 0 || state.workspace.warning.total !== 0;
 
@@ -68,7 +93,7 @@ const maxSeverity = (state: Type.DiagnosticStateType): number => {
     return Math.max(editorSeverity, workspaceSeverity);
 };
 
-const updateDiagnostic = (activeEditorUri: vscode.Uri | undefined = undefined): Type.DiagnosticStateType => {
+const updateDiagnostic = (activeEditorUri: vscode.Uri | undefined = undefined): DiagnosticState => {
 
     for (let fs in diagnosticSource) {
         delete diagnosticSource[fs];
@@ -91,6 +116,7 @@ const updateDiagnostic = (activeEditorUri: vscode.Uri | undefined = undefined): 
     }
 
     diagnosticState.severity = maxSeverity(diagnosticState);
+    // diagnosticState.renderSignature = markRenderSignature(diagnosticState);
 
     return diagnosticState;
 };

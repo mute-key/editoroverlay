@@ -57,7 +57,7 @@
     "text.ok.all.postfix.default": "",
     "text.ok.editor.prefix.default": "ACTIVE:",
     "text.ok.editor.postfix.default": "null",
-    "text.ok.workspace.prefix.default": "WARN:",
+    "text.ok.workspace.prefix.default": "ACTIVE:",
     "text.ok.workspace.postfix.default": "",
     "text.warning.editor.prefix.default": "WARN:",
     "text.warning.editor.postfix.default": "null",

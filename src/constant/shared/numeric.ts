@@ -125,23 +125,24 @@ export const enum HEX_DIAGNOSTIC_STATUS_TEXT_SPLIT {
     ALL_OK_ALL = 0x0308,
     LAYOUT_ALLOKPLACEHOLDER = 0x0309,
     LAYOUT_PROBLEMPLACEHOLDER = 0x0310,
-    EDITOR_OK_EDITOR = 0x0311,
-    EDITOR_ERROR_EDITOR = 0x0312,
-    EDITOR_WARNING_EDITOR = 0x0313,
-    WORKSPACE_OK_WORKSPACE = 0x0314,
-    WORKSPACE_WARNING_WORKSPACE = 0x0315,
-    WORKSPACE_ERROR_WORKSPACE = 0x0316,
+    EDITOR_OK = 0x0311,
+    EDITOR_WARNING = 0x0312,
+    EDITOR_ERROR = 0x0313,
+    WORKSPACE_OK = 0x0314,
+    WORKSPACE_WARNING = 0x0315,
+    WORKSPACE_ERROR = 0x0316,
 }
 
-export const okAllContentText = HEX_DIAGNOSTIC_STATUS_TEXT_SPLIT.ALL_OK_ALL;
 export const allOkPlaceholderContentText = HEX_DIAGNOSTIC_STATUS_TEXT_SPLIT.LAYOUT_ALLOKPLACEHOLDER;
 export const problemPlaceholderContentText = HEX_DIAGNOSTIC_STATUS_TEXT_SPLIT.LAYOUT_PROBLEMPLACEHOLDER;
-export const okEditorContentText = HEX_DIAGNOSTIC_STATUS_TEXT_SPLIT.EDITOR_OK_EDITOR;
-export const errorEditorContentText = HEX_DIAGNOSTIC_STATUS_TEXT_SPLIT.EDITOR_ERROR_EDITOR;
-export const warningEditorContentText = HEX_DIAGNOSTIC_STATUS_TEXT_SPLIT.EDITOR_WARNING_EDITOR;
-export const okWorkspaceContentText = HEX_DIAGNOSTIC_STATUS_TEXT_SPLIT.WORKSPACE_OK_WORKSPACE;
-export const warningWorkspaceContentText = HEX_DIAGNOSTIC_STATUS_TEXT_SPLIT.WORKSPACE_WARNING_WORKSPACE;
-export const errorWorkspaceContentText = HEX_DIAGNOSTIC_STATUS_TEXT_SPLIT.WORKSPACE_ERROR_WORKSPACE;
+export const okAllContentText = HEX_DIAGNOSTIC_STATUS_TEXT_SPLIT.ALL_OK_ALL;
+export const okEditorContentText = HEX_DIAGNOSTIC_STATUS_TEXT_SPLIT.EDITOR_OK;
+export const warningEditorContentText = HEX_DIAGNOSTIC_STATUS_TEXT_SPLIT.EDITOR_WARNING;
+export const errorEditorContentText = HEX_DIAGNOSTIC_STATUS_TEXT_SPLIT.EDITOR_ERROR;
+export const okWorkspaceContentText = HEX_DIAGNOSTIC_STATUS_TEXT_SPLIT.WORKSPACE_OK;
+export const warningWorkspaceContentText = HEX_DIAGNOSTIC_STATUS_TEXT_SPLIT.WORKSPACE_WARNING;
+export const errorWorkspaceContentText = HEX_DIAGNOSTIC_STATUS_TEXT_SPLIT.WORKSPACE_ERROR;
+
 
 export const enum DIAGNOSTIC_STATE {
     SEVERITY = 0x0317,
@@ -156,6 +157,46 @@ export const warning = DIAGNOSTIC_STATE.WARNING;
 export const total = DIAGNOSTIC_STATE.TOTAL;
 export const error = DIAGNOSTIC_STATE.ERROR;
 export const source = DIAGNOSTIC_STATE.SOURCE;
+
+export const enum DIAGNOSTIC_STATE_SIGNATURE {
+    ALL_OK_OVERRIDE         = 0b00100101, // 37
+    ALL_OK_NO_OVERRIDE      = 0b00100110,
+    E_OK_W_WARN             = 0b00101010,
+    E_OK_W_ERR              = 0b00110010, // 50
+    E_OK_W_WARN_ERR         = 0b00111010,
+    E_WARN_W_WARN           = 0b01001010,
+    E_WARN_W_ERR            = 0b01010010,
+    E_WARN_W_WARN_ERR       = 0b01011010,
+    E_ERR_W_ERR             = 0b10010010,
+    E_ERR_W_WARN_ERR        = 0b10011010,
+    E_WARN_ERR_W_WARN_ERR   = 0b11011010,
+}
+
+export const allOkOverride = DIAGNOSTIC_STATE_SIGNATURE.ALL_OK_OVERRIDE;
+export const allOkNoOverride = DIAGNOSTIC_STATE_SIGNATURE.ALL_OK_NO_OVERRIDE;
+export const editorOkWorkspaceWarn = DIAGNOSTIC_STATE_SIGNATURE.E_OK_W_WARN;
+export const editorOkWorkspaceErr = DIAGNOSTIC_STATE_SIGNATURE.E_OK_W_ERR;
+export const editorOkWorkspaceWarnErr = DIAGNOSTIC_STATE_SIGNATURE.E_OK_W_WARN_ERR;
+export const editorWarnWorkspaceWarn = DIAGNOSTIC_STATE_SIGNATURE.E_WARN_W_WARN;
+export const editorWarnWorkspaceErr = DIAGNOSTIC_STATE_SIGNATURE.E_WARN_W_ERR;
+export const editorWarnWorkspaceWarnErr = DIAGNOSTIC_STATE_SIGNATURE.E_WARN_W_WARN_ERR;
+export const editorErrWorkspaceErr = DIAGNOSTIC_STATE_SIGNATURE.E_ERR_W_ERR;
+export const editorErrWorkspaceWarnErr = DIAGNOSTIC_STATE_SIGNATURE.E_ERR_W_WARN_ERR;
+export const editorWarnErrWorkspaceWarn_err = DIAGNOSTIC_STATE_SIGNATURE.E_WARN_ERR_W_WARN_ERR;
+
+
+
+// 0b00100101 = all ok, if use all ok override
+// 0b00100110 = all ok, no all-ok override
+// 0b00101010 = eo, ww 
+// 0b00110010 = eo, wr
+// 0b00111010 = eo, ww, wr 
+
+// 0b01001010 ew, ww,
+// 0b01011010 ew, ww, wr,
+// 0b11011010 ew er, ww, wr,
+// 0b10011010 er, ww, wr,
+// 0b10010010 er, wr,
 
 //::==============================================================================
 //::[ MISC ] 0x1000, 00 is reserved.

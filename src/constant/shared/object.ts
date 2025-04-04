@@ -52,6 +52,7 @@ export const HIGHLIGHT_BORDER_POSITION_INFO = {
 } as const;
 
 export const DIAGNOSTIC_STATE = {
+    renderSignature: 0,
     severity: 0,
     editor: {
         warning: {
@@ -82,16 +83,65 @@ export const SELECTION_CONTENT_TEXT = {
 } as const;
 
 export const DIAGNOSTIC_CONTENT_TEXT = {
-    layout: {},
-    editor: {},
-    workspace: {},
-    all: {}
+    [__0x.allOkOverride]: [] as any[],
+    [__0x.editorOkWorkspaceWarn]: [] as any[],
+    [__0x.editorOkWorkspaceErr]: [] as any[],
+    [__0x.editorOkWorkspaceWarnErr]: [] as any[],
+    [__0x.editorWarnWorkspaceWarn]: [] as any[],
+    [__0x.editorWarnWorkspaceErr]: [] as any[],
+    [__0x.editorWarnWorkspaceWarnErr]: [] as any[],
+    [__0x.editorErrWorkspaceErr]: [] as any[],
+    [__0x.editorErrWorkspaceWarnErr]: [] as any[],
+    [__0x.editorWarnErrWorkspaceWarn_err]: [] as any[],
 } as const;
+
+export const DIAGNOSTIC_PROBLEM_LIST = [
+    __0x.editorOkWorkspaceWarn,
+    __0x.editorOkWorkspaceErr,
+    __0x.editorOkWorkspaceWarnErr,
+    __0x.editorWarnWorkspaceWarn,
+    __0x.editorWarnWorkspaceErr,
+    __0x.editorWarnWorkspaceWarnErr,
+    __0x.editorErrWorkspaceErr,
+    __0x.editorErrWorkspaceWarnErr,
+    __0x.editorWarnErrWorkspaceWarn_err,
+] as const;
+
+export const DIAGNOSTIC_PROBLEM_OK_LIST = [
+    __0x.editorOkWorkspaceWarn,
+    __0x.editorOkWorkspaceErr,
+    __0x.editorOkWorkspaceWarnErr,
+    __0x.editorWarnWorkspaceWarn,
+    __0x.editorWarnWorkspaceErr,
+    __0x.editorWarnWorkspaceWarnErr,
+    __0x.editorErrWorkspaceErr,
+    __0x.editorErrWorkspaceWarnErr,
+    __0x.editorWarnErrWorkspaceWarn_err,
+] as const;
+
+export const DIAGNOSTIC_PROBLEM_WARNING_LIST = [
+    __0x.editorOkWorkspaceWarn,
+    __0x.editorOkWorkspaceErr,
+    __0x.editorOkWorkspaceWarnErr,
+    __0x.editorWarnWorkspaceWarn,
+    __0x.editorWarnWorkspaceErr,
+    __0x.editorWarnWorkspaceWarnErr,
+    __0x.editorErrWorkspaceErr,
+    __0x.editorErrWorkspaceWarnErr,
+    __0x.editorWarnErrWorkspaceWarn_err,
+] as const;
+
+// export const DIAGNOSTIC_CONTENT_TEXT_PRESET = {
+//     layout: {},
+//     editor: {},
+//     workspace: {},
+//     all: {}
+// } as const;
 
 export const DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET = {
     [__0x.okContentText]: __0x.okEditorContentText,
-    [__0x.warningContentText]: __0x.errorEditorContentText,
-    [__0x.errorContentText]: __0x.warningEditorContentText
+    [__0x.warningContentText]: __0x.warningEditorContentText,
+    [__0x.errorContentText]: __0x.errorEditorContentText
 };
 
 export const DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET = {
