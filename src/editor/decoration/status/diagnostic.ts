@@ -211,6 +211,8 @@ const diagnosticInfo = (editor: vscode.TextEditor): void => {
         options.renderOptions = decorationOptionBuffer;
         editor.setDecorations(diagnosticTextBuffer[signature][idx], [options as unknown as vscode.DecorationOptions]);
     })
+
+    previousSignature = signature;
 };
 
 const bindDiagnosticContentTextState = () => {

@@ -388,8 +388,6 @@ var RENDER_GROUP_SET = {
 };
 var DECORATION_STATE = {
   appliedHighlight: [0]
-  // selectionText: undefined,
-  // diagnosticText: undefined,
 };
 var SELECTION_KIND_LIST = [
   cursorOnly,
@@ -411,7 +409,6 @@ var HIGHLIGHT_BORDER_POSITION_INFO = {
   [multiCursor]: void 0
 };
 var DIAGNOSTIC_STATE = {
-  renderSignature: 0,
   severity: 0,
   editor: {
     warning: {
@@ -453,8 +450,7 @@ var DIAGNOSTIC_CONTENT_TEXT = {
   [editorErrWorkspaceWarnErr]: [],
   [editorWarnErrWorkspaceWarn_err]: []
 };
-var DIAGNOSTIC_ENTRY_LIST = [
-  allOkOverride,
+var DIAGNOSTIC_PROBLEM_LIST = [
   editorOkWorkspaceWarn,
   editorOkWorkspaceErr,
   editorOkWorkspaceWarnErr,
@@ -464,6 +460,10 @@ var DIAGNOSTIC_ENTRY_LIST = [
   editorErrWorkspaceErr,
   editorErrWorkspaceWarnErr,
   editorWarnErrWorkspaceWarn_err
+];
+var DIAGNOSTIC_ENTRY_LIST = [
+  allOkOverride,
+  ...DIAGNOSTIC_PROBLEM_LIST
 ];
 var DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET = {
   [okContentText]: okEditorContentText,
@@ -639,12 +639,11 @@ var sealSelctionText = () => {
 };
 var clearSelectionText = () => {
   for (const hexKey of Object.keys(selectionContentText)) {
-    delete selectionContentText[hexKey];
-    selectionContentText[hexKey] = [];
-  }
-  for (const hexKey of Object.keys(selectionTextBuffer)) {
+    selectionTextBuffer[hexKey].forEach((decorationType) => decorationType.dispose());
     delete selectionTextBuffer[hexKey];
+    delete selectionContentText[hexKey];
     selectionTextBuffer[hexKey] = [];
+    selectionContentText[hexKey] = [];
   }
 };
 var columnDelta = (editor2, delta = 0) => {
@@ -993,6 +992,7 @@ var sealDiagnosticText = () => {
 };
 var reloadContentText = () => {
   DIAGNOSTIC_ENTRY_LIST.forEach((hexKey) => {
+    diagnosticTextBuffer[hexKey].forEach((decorationType) => decorationType.dispose());
     delete diagnosticContentText[hexKey];
     delete diagnosticTextBuffer[hexKey];
     diagnosticContentText[hexKey] = [];
@@ -1015,7 +1015,7 @@ var editorWarningSourceOf = {
   wrn: ({ state, line }) => {
     const upGlyph = "\u2B06\uFE0E";
     const downGlyph = "\u2B07\uFE0E";
-    const lineNumber3 = state.editor.error.line;
+    const lineNumber3 = state.editor.warning.line;
     const direction = [];
     let length = lineNumber3.length;
     let up = true;
@@ -1032,7 +1032,7 @@ var editorWarningSourceOf = {
         break;
       }
     }
-    return String(state.editor.warning.total) + direction.join("");
+    return String(state.editor.warning.total) + "(" + direction.join("") + ")";
   }
 };
 var editorErrorCountOf = {
@@ -1143,6 +1143,7 @@ var diagnosticInfo = (editor2) => {
     options.renderOptions = decorationOptionBuffer2;
     editor2.setDecorations(diagnosticTextBuffer[signature][idx], [options]);
   });
+  previousSignature = signature;
 };
 var bindDiagnosticContentTextState = () => {
   return {
@@ -1889,7 +1890,6 @@ var applyLeftMargin = (textOf, visibility, leftMargin) => {
     return;
   }
   Object.entries(textOf).forEach(([hexKey, decoration], idx) => {
-    console.log(textOf[hexKey][0]);
     textOf[hexKey][0].after["margin"] = leftMarginToMarginString(leftMargin);
   });
 };
@@ -2006,7 +2006,7 @@ var buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style, left
       return;
     }
     const decorationType = vscode11.window.createTextEditorDecorationType(decoration);
-    DIAGNOSTIC_ENTRY_LIST.forEach((hexKey) => {
+    DIAGNOSTIC_PROBLEM_LIST.forEach((hexKey) => {
       textOftarget[hexKey].push(decoration);
       setDiagonosticTextbuffer(hexKey, [decorationType]);
     });

@@ -215,6 +215,7 @@ const multilineSelection = (editor: vscode.TextEditor, previousKey: number[]): v
         [__0x.multiLineLineCountHex]: null,
         [__0x.multiLineChararcterHex]: null
     };
+    
     selectionContentText[__0x.multiLineAnchorText]
         .contentText
         .forEach(

@@ -94,8 +94,7 @@ export const DIAGNOSTIC_CONTENT_TEXT = {
     [__0x.editorWarnErrWorkspaceWarn_err]: [] as any[],
 } as const;
 
-export const DIAGNOSTIC_ENTRY_LIST = [
-    __0x.allOkOverride,
+export const DIAGNOSTIC_PROBLEM_LIST = [
     __0x.editorOkWorkspaceWarn,
     __0x.editorOkWorkspaceErr,
     __0x.editorOkWorkspaceWarnErr,
@@ -106,6 +105,11 @@ export const DIAGNOSTIC_ENTRY_LIST = [
     __0x.editorErrWorkspaceWarnErr,
     __0x.editorWarnErrWorkspaceWarn_err,
 ] as const;
+
+export const DIAGNOSTIC_ENTRY_LIST = [
+    __0x.allOkOverride,
+    ...DIAGNOSTIC_PROBLEM_LIST
+]
 
 export const DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET = {
     [__0x.okContentText]: __0x.okEditorContentText,

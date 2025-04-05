@@ -5,7 +5,7 @@ import * as __$ from '../../constant/shared/symbol';
 import Regex from '../../util/regex.collection';
 import { CONFIG_SECTION, DECORATION_OPTION_LINKER, DIAGNOSTIC_ALL_PLACEHOLDER_LINKER, DIAGNOSTIC_CONFIG, DIAGNOSTIC_CONTENT_TEXT_LIST, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM, DIAGNOSTIC_DECORATION_STYLE, DIAGNOSTIC_DECORATION_TEXT_KIND, DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER, DIAGNOSTIC_STYLE_LIST, DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER } from '../../constant/config/object';
 import { DIAGNOSTIC_BIOME, DIAGNOSTIC_TEXT_STYLE_KEY } from '../../constant/config/enum';
-import { DIAGNOSTIC_CONTENT_TEXT, DIAGNOSTIC_ENTRY_LIST } from '../../constant/shared/object';
+import { DIAGNOSTIC_CONTENT_TEXT, DIAGNOSTIC_PROBLEM_LIST } from '../../constant/shared/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { sanitizeConfigValue } from '../shared/validation';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
@@ -21,7 +21,6 @@ const applyLeftMargin = (textOf: typeof DIAGNOSTIC_CONTENT_TEXT, visibility: Typ
         return;
     }
     Object.entries(textOf).forEach(([hexKey, decoration], idx) => {
-        console.log(textOf[hexKey][0])
         textOf[hexKey][0].after['margin'] = leftMarginToMarginString(leftMargin);
     })
 };
@@ -77,11 +76,9 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             }
             return decoration;
         }).filter(decoration => decoration.after.contentText !== undefined)
-
     }
-
+    
     preset.layout[__0x.allOkPlaceholderContentText].contentText.forEach(decoration => {
-
         if (decoration.after.contentText === __0x.allOkHexKey) {
             const ok = concatinateNotation(preset.all[__0x.okAllContentText]);
             setDiagonosticTextbuffer(__0x.allOkOverride, ok.map(decoration => vscode.window.createTextEditorDecorationType(decoration)));
@@ -90,7 +87,6 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             setDiagonosticTextbuffer(__0x.allOkOverride, [vscode.window.createTextEditorDecorationType(decoration)]);
             textOftarget[__0x.allOkOverride].push(decoration);
         }
-
     })
 
     preset.layout[__0x.problemPlaceholderContentText].contentText.forEach(decoration => {
@@ -125,6 +121,7 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             setDiagonosticTextbuffer(__0x.editorWarnErrWorkspaceWarn_err, [...warnDecoration, ...errDecoration]);
             return;
         }
+
         if (decoration.after.contentText === __0x.workspaceHexKey) {
             const ok = concatinateNotation(preset.workspace[__0x.okWorkspaceContentText]);
             const warn = concatinateNotation(preset.workspace[__0x.warningWorkspaceContentText]);
@@ -159,7 +156,7 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
 
         const decorationType = vscode.window.createTextEditorDecorationType(decoration);
 
-        DIAGNOSTIC_ENTRY_LIST.forEach(hexKey => {
+        DIAGNOSTIC_PROBLEM_LIST.forEach(hexKey => {
             textOftarget[hexKey].push(decoration);
             setDiagonosticTextbuffer(hexKey, [decorationType]);
         })
