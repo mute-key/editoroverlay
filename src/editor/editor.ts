@@ -3,7 +3,6 @@ import * as Type from '../type/type';
 import * as __0x from '../constant/shared/numeric';
 import Regex from '../util/regex.collection';
 import { DECORATION_STATE, SELECTION_KIND_LIST } from '../constant/shared/object';
-import { SELECTION_KIND } from '../constant/config/object';
 import { bindStatusContentTextState, clearSelectionTextBuffer } from './decoration/status/selection';
 import { bindDiagnosticContentTextState, diagnosticInfo } from './decoration/status/diagnostic';
 import { cursorOnlyHighlightRange, singelLineHighlightRange, multiLineHighlightRange, multiCursorHighlightRange, clearEveryHighlight } from './decoration/highlight/highlight'

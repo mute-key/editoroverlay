@@ -25,8 +25,6 @@ export const RENDER_GROUP_SET = {
 
 export const DECORATION_STATE = {
     appliedHighlight: [0],
-    // selectionText: undefined,
-    // diagnosticText: undefined,
 } as const;
 
 export const SELECTION_KIND_LIST = [
@@ -52,7 +50,6 @@ export const HIGHLIGHT_BORDER_POSITION_INFO = {
 } as const;
 
 export const DIAGNOSTIC_STATE = {
-    renderSignature: 0,
     severity: 0,
     editor: {
         warning: {
@@ -109,13 +106,6 @@ export const DIAGNOSTIC_ENTRY_LIST = [
     __0x.editorErrWorkspaceWarnErr,
     __0x.editorWarnErrWorkspaceWarn_err,
 ] as const;
-
-// export const DIAGNOSTIC_CONTENT_TEXT_PRESET = {
-//     layout: {},
-//     editor: {},
-//     workspace: {},
-//     all: {}
-// } as const;
 
 export const DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET = {
     [__0x.okContentText]: __0x.okEditorContentText,

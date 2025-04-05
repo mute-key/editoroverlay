@@ -5,7 +5,6 @@ import { workspaceProxyConfiguration } from '../shared/configuration';
 import { bindStatusContentTextState, clearSelectionText, sealSelctionText, setSelectionTextbuffer } from '../../editor/decoration/status/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 
-
 const convertPositionToDecorationRenderOption = (textPosition, SelectionDecorationStyle): void => {
     return textPosition.contentText.map((text, idx) => {
         const option = typeof text === 'string'

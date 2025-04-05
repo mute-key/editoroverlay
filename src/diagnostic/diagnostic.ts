@@ -3,12 +3,10 @@ import * as Type from '../type/type';
 import { DIAGNOSTIC_SEVERITY_TO_KEY } from '../constant/config/object';
 import { DIAGNOSTIC_STATE } from '../constant/shared/object';
 import { DIAGNOSTIC_BIOME } from '../constant/config/enum';
-import { editor } from '../constant/shared/numeric';
 
 const diagnosticState = { ...DIAGNOSTIC_STATE } as unknown as DiagnosticState;
 
 export interface DiagnosticState {
-    renderSignature: number,
     severity: number,
     editor: {
         warning: {

@@ -40,6 +40,7 @@ const sealDiagnosticText = (): void => {
 
 const reloadContentText = (): void => {
     DIAGNOSTIC_ENTRY_LIST.forEach(hexKey => {
+        diagnosticTextBuffer[hexKey].forEach(decorationType => decorationType.dispose());
         delete diagnosticContentText[hexKey];
         delete diagnosticTextBuffer[hexKey];
         diagnosticContentText[hexKey] = [];
@@ -67,7 +68,7 @@ const editorWarningSourceOf = {
     wrn: ({ state, line}) => {
         const upGlyph = '⬆︎';
         const downGlyph = '⬇︎';
-        const lineNumber = state.editor.error.line;
+        const lineNumber = state.editor.warning.line;
         const direction: any[] = [];
         let length = lineNumber.length; 
         let up = true;
@@ -84,7 +85,7 @@ const editorWarningSourceOf = {
                 break;
             }
         }
-        return String(state.editor.warning.total) + direction.join('');
+        return String(state.editor.warning.total) + '(' + direction.join('') + ')';
     }
 };
 

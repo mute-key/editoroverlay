@@ -158,18 +158,22 @@ export const total = DIAGNOSTIC_STATE.TOTAL;
 export const error = DIAGNOSTIC_STATE.ERROR;
 export const source = DIAGNOSTIC_STATE.SOURCE;
 
+//::==============================================================================
+//::[ DIAGNOSTIC STATUS ] 0x0000
+//::==============================================================================
+
 export const enum DIAGNOSTIC_STATE_SIGNATURE {
-    ALL_OK_OVERRIDE         = 0b00100101, // 37
-    ALL_OK_NO_OVERRIDE      = 0b00100110,
-    E_OK_W_WARN             = 0b00101010,
+    ALL_OK_OVERRIDE         = 0b00100101, // 37 
+    ALL_OK_NO_OVERRIDE      = 0b00100110, // 38
+    E_OK_W_WARN             = 0b00101010, // 42
     E_OK_W_ERR              = 0b00110010, // 50
-    E_OK_W_WARN_ERR         = 0b00111010,
-    E_WARN_W_WARN           = 0b01001010,
-    E_WARN_W_ERR            = 0b01010010,
-    E_WARN_W_WARN_ERR       = 0b01011010,
-    E_ERR_W_ERR             = 0b10010010,
-    E_ERR_W_WARN_ERR        = 0b10011010,
-    E_WARN_ERR_W_WARN_ERR   = 0b11011010,
+    E_OK_W_WARN_ERR         = 0b00111010, // 58
+    E_WARN_W_WARN           = 0b01001010, // 74
+    E_WARN_W_ERR            = 0b01010010, // 82
+    E_WARN_W_WARN_ERR       = 0b01011010, // 90
+    E_ERR_W_ERR             = 0b10010010, // 146
+    E_ERR_W_WARN_ERR        = 0b10011010, // 154
+    E_WARN_ERR_W_WARN_ERR   = 0b11011010, // 218
 }
 
 export const allOkOverride = DIAGNOSTIC_STATE_SIGNATURE.ALL_OK_OVERRIDE;
@@ -184,20 +188,6 @@ export const editorErrWorkspaceErr = DIAGNOSTIC_STATE_SIGNATURE.E_ERR_W_ERR;
 export const editorErrWorkspaceWarnErr = DIAGNOSTIC_STATE_SIGNATURE.E_ERR_W_WARN_ERR;
 export const editorWarnErrWorkspaceWarn_err = DIAGNOSTIC_STATE_SIGNATURE.E_WARN_ERR_W_WARN_ERR;
 
-
-
-// 0b00100101 = all ok, if use all ok override
-// 0b00100110 = all ok, no all-ok override
-// 0b00101010 = eo, ww 
-// 0b00110010 = eo, wr
-// 0b00111010 = eo, ww, wr 
-
-// 0b01001010 ew, ww,
-// 0b01011010 ew, ww, wr,
-// 0b11011010 ew er, ww, wr,
-// 0b10011010 er, ww, wr,
-// 0b10010010 er, wr,
-
 //::==============================================================================
 //::[ MISC ] 0x1000, 00 is reserved.
 //::==============================================================================
@@ -211,13 +201,3 @@ export const enum DIAGNOSTIC_PLACEHOLDER {
 export const allOkHexKey = DIAGNOSTIC_PLACEHOLDER.ALL_OK;
 export const editorHexKey = DIAGNOSTIC_PLACEHOLDER.EDITOR;
 export const workspaceHexKey = DIAGNOSTIC_PLACEHOLDER.WORKSPACE;
-
-// export const enum RENDER_GROUP_SET_PROPERTY {
-//     TYPE = 0x1001,
-//     SELECTIONCOUNT = 0x1002,
-//     DIAGNOSTIC = 0x1003,
-// }
-
-// export const renderGroupType = RENDER_GROUP_SET_PROPERTY.TYPE
-// export const renderGroupSelection = RENDER_GROUP_SET_PROPERTY.SELECTIONCOUNT
-// export const renderGroupDiagnostic = RENDER_GROUP_SET_PROPERTY.DIAGNOSTIC

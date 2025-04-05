@@ -45,12 +45,11 @@ const sealSelctionText = () => {
 
 const clearSelectionText = () => {
     for (const hexKey of Object.keys(selectionContentText)) {
-        delete selectionContentText[hexKey]
-        selectionContentText[hexKey] = [];
-    }
-    for (const hexKey of Object.keys(selectionTextBuffer)) {
+        selectionTextBuffer[hexKey].forEach(decorationType => decorationType.dispose());
         delete selectionTextBuffer[hexKey]; 
+        delete selectionContentText[hexKey]
         selectionTextBuffer[hexKey] = [];
+        selectionContentText[hexKey] = [];
     }
 }
 
