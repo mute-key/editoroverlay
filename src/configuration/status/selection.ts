@@ -2,7 +2,7 @@ import * as Type from '../../type/type';
 import Regex from '../../util/regex.collection';
 import { CONFIG_SECTION, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_NUMLINK, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE } from '../../constant/config/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
-import { bindStatusContentTextState, setSelectionTextbuffer } from '../../editor/decoration/status/selection';
+import { bindStatusContentTextState, clearSelectionText, sealSelctionText, setSelectionTextbuffer } from '../../editor/decoration/status/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 
 
@@ -54,7 +54,7 @@ const buildSelectionTextDecorationRenderOption = (config: Type.SelectionDecorati
     });
 };
 
-const updateSelectionTextConfig = (configReady: Type.ConfigInfoReadyType) => {
+const updateSelectionTextConfig = (configReady: Type.ConfigInfoReadyType, configuratioChange: boolean = false) => {
 
     const SelectionDecorationConfig = { ...SELECTION_DECORAITON_CONFIG } as Type.SelectionDecorationConfigType;
     const SelectionDecorationStyle = { ...SELECTION_DECORATION_STYLE } as Type.SelectionDecorationStyleType;
@@ -65,11 +65,14 @@ const updateSelectionTextConfig = (configReady: Type.ConfigInfoReadyType) => {
         textOf: {}
     };
 
+    if (configuratioChange) {
+        clearSelectionText();
+    }
     // hm ...
     workspaceProxyConfiguration(SelectionDecorationConfig, configReady.name + '.' + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST, bindToBuffer, Regex.statusContentText);
     buildSelectionTextDecorationRenderOption(SelectionDecorationConfig, SelectionDecorationStyle);
     buildStatusTextState(bindTo.textOf, bindToBuffer.textOf, SelectionDecorationStyle, SelectionDecorationConfig.leftMargin);
-    
+    sealSelctionText();
     delete bindTo.functionOf;
     delete bindTo.infoOf;
     delete bindTo.textOf;

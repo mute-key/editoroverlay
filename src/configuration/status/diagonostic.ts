@@ -4,42 +4,26 @@ import * as __0x from '../../constant/shared/numeric';
 import * as __$ from '../../constant/shared/symbol';
 import Regex from '../../util/regex.collection';
 import { CONFIG_SECTION, DECORATION_OPTION_LINKER, DIAGNOSTIC_ALL_PLACEHOLDER_LINKER, DIAGNOSTIC_CONFIG, DIAGNOSTIC_CONTENT_TEXT_LIST, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM, DIAGNOSTIC_DECORATION_STYLE, DIAGNOSTIC_DECORATION_TEXT_KIND, DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER, DIAGNOSTIC_STYLE_LIST, DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER } from '../../constant/config/object';
+import { DIAGNOSTIC_BIOME, DIAGNOSTIC_TEXT_STYLE_KEY } from '../../constant/config/enum';
+import { DIAGNOSTIC_CONTENT_TEXT, DIAGNOSTIC_ENTRY_LIST } from '../../constant/shared/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { sanitizeConfigValue } from '../shared/validation';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
-import { bindDiagnosticContentTextState, sealDiagnosticTextBuffer, setDiagonosticTextbuffer } from '../../editor/decoration/status/diagnostic';
+import { bindDiagnosticContentTextState, reloadContentText, sealDiagnosticText, setDiagonosticTextbuffer } from '../../editor/decoration/status/diagnostic';
 import { hexToRgbaStringLiteral, readBits } from '../../util/util';
-import { DIAGNOSTIC_BIOME, DIAGNOSTIC_TEXT_STYLE_KEY } from '../../constant/config/enum';
-import { DIAGNOSTIC_PROBLEM_LIST } from '../../constant/shared/object';
-
-const dignosticContentTextPreset = {
-    layout: {},
-    editor: {},
-    workspace: {},
-    all: {}
-}
 
 const positionKeyList = ['pre', 'post'] as const;
 
 const positionKeyToPlaceholderName = { pre: 'prefix', post: 'postfix', } as const;
 
-const applyLeftMargin = (textOf: any, visibility: Type.DiagnosticVisibilityType, leftMargin: string | undefined) => {
-
+const applyLeftMargin = (textOf: typeof DIAGNOSTIC_CONTENT_TEXT, visibility: Type.DiagnosticVisibilityType, leftMargin: string | undefined) => {
     if (!leftMargin || leftMargin === '0px' || leftMargin === '0em') {
         return;
     }
-
-    [__0x.allOkPlaceholderContentText, __0x.problemPlaceholderContentText].forEach(placeholderKind => {
-        if (typeof textOf.layout[placeholderKind].contentText[0].contentText === 'number') {
-            const marginDecoration = { ...textOf.layout[placeholderKind].contentText[0].contentText, };
-            marginDecoration.after = { ...textOf.layout[placeholderKind].contentText[0].contentText.after, };
-            marginDecoration.contentText = '';
-            marginDecoration.margin = leftMarginToMarginString(leftMargin);
-            textOf.layout[placeholderKind].contentText[0].unshift(marginDecoration);
-        } else {
-            textOf.layout[placeholderKind].contentText[0].after['margin'] = leftMarginToMarginString(leftMargin);
-        }
-    });
+    Object.entries(textOf).forEach(([hexKey, decoration], idx) => {
+        console.log(textOf[hexKey][0])
+        textOf[hexKey][0].after['margin'] = leftMarginToMarginString(leftMargin);
+    })
 };
 
 const convertPositionDecorationRenderOption = ({ textPosition, primaryStyle, secondaryStyle, notation, leftMargin }) => {
@@ -52,16 +36,13 @@ const convertPositionDecorationRenderOption = ({ textPosition, primaryStyle, sec
             }
             decorationStyle = secondaryStyle;
         }
-
         return setContentTextOnDecorationRenderOption(decorationStyle, text);
     }).filter(decorationOption => decorationOption !== undefined);
 };
 
 const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Type.DiagonosticDecorationStyle, leftMargin: string = '') => {
-
     const convertPositionWrapper = (context, target, propertyName, contentTextHeyKey) => {
         if (Object.hasOwn(target[propertyName], contentTextHeyKey)) {
-
             if (target[propertyName][contentTextHeyKey].notation) {
                 context.notation = target[propertyName][contentTextHeyKey].notation;
             }
@@ -89,22 +70,20 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
     const concatinateNotation = (text) => {
         return text.contentText.map(decoration => {
             if (decoration.after.contentText === __$.prefixSymbol) {
-                console.log('notation', decoration.after.contentText, text.notation)
                 decoration.after.contentText = text.notation.prefix ? text.notation.prefix : undefined;
             }
             if (decoration.after.contentText === __$.postfixSymbol) {
-                console.log('notation', decoration.after.contentText, text.notation)
                 decoration.after.contentText = text.notation.postfix ? text.notation.postfix : undefined;
             }
             return decoration;
         }).filter(decoration => decoration.after.contentText !== undefined)
-        
+
     }
 
     preset.layout[__0x.allOkPlaceholderContentText].contentText.forEach(decoration => {
-        
+
         if (decoration.after.contentText === __0x.allOkHexKey) {
-            const ok = concatinateNotation(preset.all[__0x.okAllContentText]);    
+            const ok = concatinateNotation(preset.all[__0x.okAllContentText]);
             setDiagonosticTextbuffer(__0x.allOkOverride, ok.map(decoration => vscode.window.createTextEditorDecorationType(decoration)));
             textOftarget[__0x.allOkOverride].push(...ok);
         } else {
@@ -180,7 +159,7 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
 
         const decorationType = vscode.window.createTextEditorDecorationType(decoration);
 
-        DIAGNOSTIC_PROBLEM_LIST.forEach(hexKey => {
+        DIAGNOSTIC_ENTRY_LIST.forEach(hexKey => {
             textOftarget[hexKey].push(decoration);
             setDiagonosticTextbuffer(hexKey, [decorationType]);
         })
@@ -365,7 +344,7 @@ const decorationStyleFromBiome = (diagnosticBiome: number): string[] =>
     DIAGNOSTIC_TEXT_STYLE_KEY.DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE];
 
 const clearOverrideState = (stateOf) => {
-    const textOf = stateOf.textOf as typeof dignosticContentTextPreset;
+    const textOf = stateOf.textOf as any;
     for (const placeholder in textOf.layout) {
         if (placeholder['override']) {
             delete placeholder['override'];
@@ -374,35 +353,31 @@ const clearOverrideState = (stateOf) => {
 };
 
 const updateDiagnosticTextConfig = (configReady: Type.ConfigInfoReadyType, configuratioChange: boolean = false) => {
-
-
-
     const diagnosticConfig = { ...DIAGNOSTIC_CONFIG } as Type.DiagnosticConfigType;
-
     const diagnosticDecorationStyle = { ...DIAGNOSTIC_DECORATION_STYLE } as unknown as Type.DiagonosticDecorationStyle;
-
+    const dignosticContentTextPreset = {
+        layout: {},
+        editor: {},
+        workspace: {},
+        all: {}
+    }
     const bindTo: any = bindDiagnosticContentTextState();
     let bindToBuffer: any = {
         functionOf: bindTo.functionOf,
         textOf: {}
     };
-
     if (configuratioChange) {
         clearOverrideState(bindTo);
+        reloadContentText();
     }
-
     workspaceProxyConfiguration(diagnosticConfig, configReady.name + '.' + CONFIG_SECTION.diagnosticText, DIAGNOSTIC_CONTENT_TEXT_LIST, bindToBuffer, Regex.diagnosticText);
-
     const diagnosticBiome = diagnosticVisibilityBiome(diagnosticConfig.visibility);
     const decorationStyleList = decorationStyleFromBiome(diagnosticBiome.workspace | diagnosticBiome.editor);
-
     Object.assign(dignosticContentTextPreset, buildDiagnosticStyle(diagnosticConfig, diagnosticDecorationStyle, decorationStyleList, diagnosticConfig.visibility, diagnosticBiome));
     Object.assign(bindTo.configOf, diagnosticConfig.visibility);
-
     buildDiagnosticTextPreset(dignosticContentTextPreset, bindTo.textOf, bindToBuffer.textOf, diagnosticDecorationStyle, diagnosticConfig.leftMargin);
-    // applyLeftMargin(bindTo, diagnosticConfig.visibility, diagnosticConfig.leftMargin);
-
-    // release refernce 
+    applyLeftMargin(bindTo.textOf, diagnosticConfig.visibility, diagnosticConfig.leftMargin);
+    sealDiagnosticText();
     delete bindTo.functionOf;
     delete bindTo.textOf;
     delete bindTo.configOf;

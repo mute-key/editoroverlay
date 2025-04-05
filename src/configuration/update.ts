@@ -21,7 +21,7 @@ const sectionChanged = () => {
         [CONFIG_SECTION_KEY.SINGLE_LINE]: (config) => updateHighlightStyleConfiguration(config, __0x.singleLine),
         [CONFIG_SECTION_KEY.MULTI_LINE]: (config) => updateHighlightStyleConfiguration(config, __0x.multiLine),
         [CONFIG_SECTION_KEY.MULTI_CURSOR]: (config) => updateHighlightStyleConfiguration(config, __0x.multiCursor),
-        [CONFIG_SECTION_KEY.SELECTION_TEXT]: (config) => updateSelectionTextConfig(config),
+        [CONFIG_SECTION_KEY.SELECTION_TEXT]: (config) => updateSelectionTextConfig(config, true),
         [CONFIG_SECTION_KEY.DIAGNOSTIC_TEXT]: (config) => updateDiagnosticTextConfig(config, true),
     };
 };

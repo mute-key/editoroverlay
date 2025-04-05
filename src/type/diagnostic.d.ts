@@ -128,17 +128,6 @@ type DiagnosticConfigType = {
 
 type DiagnosticTextStateBodyStyleFunc = (config: DecorationType.DecorationTextStyleConfig) => void
 
-
-
-
-
-
-
-// type BindDiagnosticContentTextStateType = {
-//     diagnosticOf: any,
-//     diagnosticContentTextInfo: DiagnosticContentTextType
-// }
-
 type DiagonosticTextStateTextType = {
     okNotationText?: DiagonosticTextStateTextEntryType;
     warningNotationText?: DiagonosticTextStateTextEntryType;

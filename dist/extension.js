@@ -415,9 +415,11 @@ var DIAGNOSTIC_STATE = {
   severity: 0,
   editor: {
     warning: {
+      line: [],
       total: 0
     },
     error: {
+      line: [],
       total: 0
     }
   },
@@ -451,7 +453,8 @@ var DIAGNOSTIC_CONTENT_TEXT = {
   [editorErrWorkspaceWarnErr]: [],
   [editorWarnErrWorkspaceWarn_err]: []
 };
-var DIAGNOSTIC_PROBLEM_LIST = [
+var DIAGNOSTIC_ENTRY_LIST = [
+  allOkOverride,
   editorOkWorkspaceWarn,
   editorOkWorkspaceErr,
   editorOkWorkspaceWarnErr,
@@ -628,6 +631,21 @@ var setSelectionTextbuffer = (hexKey, size) => {
     return vscode3.window.createTextEditorDecorationType(decorationOption);
   }));
   Object.seal(selectionTextBuffer[hexKey]);
+};
+var sealSelctionText = () => {
+  for (const hexKey of Object.keys(selectionContentText)) {
+    Object.seal(selectionContentText[hexKey].contentText);
+  }
+};
+var clearSelectionText = () => {
+  for (const hexKey of Object.keys(selectionContentText)) {
+    delete selectionContentText[hexKey];
+    selectionContentText[hexKey] = [];
+  }
+  for (const hexKey of Object.keys(selectionTextBuffer)) {
+    delete selectionTextBuffer[hexKey];
+    selectionTextBuffer[hexKey] = [];
+  }
 };
 var columnDelta = (editor2, delta = 0) => {
   const col = editor2.selection.active.character + delta;
@@ -874,6 +892,8 @@ var vscode4 = __toESM(require("vscode"));
 var diagnosticState = { ...DIAGNOSTIC_STATE };
 var diagnosticSource = {};
 var resetEditorDiagnosticStatistics = () => {
+  diagnosticState.editor.warning.line.splice(0);
+  diagnosticState.editor.error.line.splice(0);
   diagnosticState.editor.warning.total = 0;
   diagnosticState.editor.error.total = 0;
 };
@@ -890,6 +910,12 @@ var parseDiagnostic = (state, severity, fsPath, activeEditorfsPath = void 0) => 
       state.workspace[severityType].total += severity[severityType].length;
     }
     if (fsPath === activeEditorfsPath) {
+      state.editor[severityType].line = [
+        .../* @__PURE__ */ new Set([
+          ...state.editor[severityType].line,
+          ...severity[severityType].map((problem) => problem.range.start.line)
+        ])
+      ];
       state.editor[severityType].total = 0;
       state.editor[severityType].total = severity[severityType].length;
     }
@@ -959,6 +985,20 @@ var decorationOptionBuffer2 = { ...DECORATION_OPTION_CONFIG };
 var setDiagonosticTextbuffer = (hexKey, decorationType) => {
   diagnosticTextBuffer[hexKey].push(...decorationType);
 };
+var sealDiagnosticText = () => {
+  DIAGNOSTIC_ENTRY_LIST.forEach((hexKey) => {
+    Object.seal(diagnosticTextBuffer[hexKey]);
+    Object.seal(diagnosticContentText[hexKey]);
+  });
+};
+var reloadContentText = () => {
+  DIAGNOSTIC_ENTRY_LIST.forEach((hexKey) => {
+    delete diagnosticContentText[hexKey];
+    delete diagnosticTextBuffer[hexKey];
+    diagnosticContentText[hexKey] = [];
+    diagnosticTextBuffer[hexKey] = [];
+  });
+};
 var diagnosticVisibility = { ...DIAGNOSTIC_VISIBILITY_CONFIG };
 var allOkOf = {
   allok: allOkHexKey
@@ -972,16 +1012,58 @@ var notationOf = {
   post: postfixSymbol
 };
 var editorWarningSourceOf = {
-  wrn: ({ state }) => String(state.editor.warning.total)
+  wrn: ({ state, line }) => {
+    const upGlyph = "\u2B06\uFE0E";
+    const downGlyph = "\u2B07\uFE0E";
+    const lineNumber3 = state.editor.error.line;
+    const direction = [];
+    let length = lineNumber3.length;
+    let up = true;
+    let down = true;
+    while (length--) {
+      if (lineNumber3[length] > line && down === true) {
+        direction.push(downGlyph);
+        down = false;
+      } else if (lineNumber3[length] < line && up === true) {
+        direction.push(upGlyph);
+        up = false;
+      }
+      if (direction.length === 2) {
+        break;
+      }
+    }
+    return String(state.editor.warning.total) + direction.join("");
+  }
 };
-var worksSacewarningSourceOf = {
+var editorErrorCountOf = {
+  err: ({ state, line }) => {
+    const upGlyph = "\u2B06\uFE0E";
+    const downGlyph = "\u2B07\uFE0E";
+    const lineNumber3 = state.editor.error.line;
+    const direction = [];
+    let length = lineNumber3.length;
+    let up = true;
+    let down = true;
+    while (length--) {
+      if (lineNumber3[length] > line && down === true) {
+        direction.push(downGlyph);
+        down = false;
+      } else if (lineNumber3[length] < line && up === true) {
+        direction.push(upGlyph);
+        up = false;
+      }
+      if (direction.length === 2) {
+        break;
+      }
+    }
+    return String(state.editor.error.total) + "(" + direction.join("") + ")";
+  }
+};
+var workspaceWarningSourceOf = {
   src: ({ state }) => String(state.workspace.warning.source)
 };
 var workspaceWarningCountOf = {
   wrn: ({ state }) => String(state.workspace.warning.total)
-};
-var editorErrorSourceOf = {
-  err: ({ state }) => String(state.editor.error.total)
 };
 var workspaceErrorSourceOf = {
   src: ({ state }) => String(state.workspace.error.source)
@@ -1001,12 +1083,12 @@ var diagnosticOf = {
   },
   ["warningWorkspaceContentText" /* WARNING_WORKSPACE_CONTENT_TEXT */]: {
     ...notationOf,
-    ...worksSacewarningSourceOf,
+    ...workspaceWarningSourceOf,
     ...workspaceWarningCountOf
   },
   ["errorEditorContentText" /* ERROR_EDITOR_CONTENT_TEXT */]: {
     ...notationOf,
-    ...editorErrorSourceOf
+    ...editorErrorCountOf
   },
   ["errorWorkspaceContentText" /* ERROR_WORKSPACE_CONTENT_TEXT */]: {
     ...notationOf,
@@ -1035,21 +1117,20 @@ var diagnosticRenderSignature = (state) => {
   if (wmask === 0) {
     wmask = 1;
   }
-  console.log(emask, wmask);
   return emask === 1 && wmask === 1 ? 37 : emask << 5 | wmask << 2 | 2;
 };
 var previousSignature = 37;
 var diagnosticInfo = (editor2) => {
   const diagnosticState2 = updateDiagnostic(editor2.document.uri);
   const signature = diagnosticRenderSignature(diagnosticState2);
-  console.log("signature", signature);
-  console.log("diagnosticState", diagnosticState2);
+  const range = createCursorRange(editor2);
   const decorationOptionGrid2 = {
-    range: createCursorRange(editor2),
+    range,
     renderOptions: {}
   };
   const context = {
-    state: diagnosticState2
+    state: diagnosticState2,
+    line: editor2.selection.active.line
   };
   diagnosticTextBuffer[previousSignature]?.forEach((decoration) => editor2.setDecorations(decoration, blankRange));
   diagnosticContentText[signature].forEach((decoration, idx) => {
@@ -1777,7 +1858,7 @@ var buildSelectionTextDecorationRenderOption = (config, style) => {
     style.selectionDecorationOption[key] = convertToDecorationRenderOption(styleConfig, true);
   });
 };
-var updateSelectionTextConfig = (configReady) => {
+var updateSelectionTextConfig = (configReady, configuratioChange = false) => {
   const SelectionDecorationConfig = { ...SELECTION_DECORAITON_CONFIG };
   const SelectionDecorationStyle = { ...SELECTION_DECORATION_STYLE };
   const bindTo = bindStatusContentTextState();
@@ -1785,9 +1866,13 @@ var updateSelectionTextConfig = (configReady) => {
     functionOf: bindTo.functionOf,
     textOf: {}
   };
+  if (configuratioChange) {
+    clearSelectionText();
+  }
   workspaceProxyConfiguration(SelectionDecorationConfig, configReady.name + "." + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST, bindToBuffer, regex_collection_default.statusContentText);
   buildSelectionTextDecorationRenderOption(SelectionDecorationConfig, SelectionDecorationStyle);
   buildStatusTextState(bindTo.textOf, bindToBuffer.textOf, SelectionDecorationStyle, SelectionDecorationConfig.leftMargin);
+  sealSelctionText();
   delete bindTo.functionOf;
   delete bindTo.infoOf;
   delete bindTo.textOf;
@@ -1797,14 +1882,17 @@ var updateSelectionTextConfig = (configReady) => {
 
 // src/configuration/status/diagonostic.ts
 var vscode11 = __toESM(require("vscode"));
-var dignosticContentTextPreset = {
-  layout: {},
-  editor: {},
-  workspace: {},
-  all: {}
-};
 var positionKeyList = ["pre", "post"];
 var positionKeyToPlaceholderName = { pre: "prefix", post: "postfix" };
+var applyLeftMargin = (textOf, visibility, leftMargin) => {
+  if (!leftMargin || leftMargin === "0px" || leftMargin === "0em") {
+    return;
+  }
+  Object.entries(textOf).forEach(([hexKey, decoration], idx) => {
+    console.log(textOf[hexKey][0]);
+    textOf[hexKey][0].after["margin"] = leftMarginToMarginString(leftMargin);
+  });
+};
 var convertPositionDecorationRenderOption = ({ textPosition, primaryStyle, secondaryStyle, notation, leftMargin }) => {
   return textPosition.contentText.map((text, idx) => {
     const key = textPosition.position[idx];
@@ -1844,11 +1932,9 @@ var buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style, left
   const concatinateNotation = (text) => {
     return text.contentText.map((decoration) => {
       if (decoration.after.contentText === prefixSymbol) {
-        console.log("notation", decoration.after.contentText, text.notation);
         decoration.after.contentText = text.notation.prefix ? text.notation.prefix : void 0;
       }
       if (decoration.after.contentText === postfixSymbol) {
-        console.log("notation", decoration.after.contentText, text.notation);
         decoration.after.contentText = text.notation.postfix ? text.notation.postfix : void 0;
       }
       return decoration;
@@ -1920,7 +2006,7 @@ var buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style, left
       return;
     }
     const decorationType = vscode11.window.createTextEditorDecorationType(decoration);
-    DIAGNOSTIC_PROBLEM_LIST.forEach((hexKey) => {
+    DIAGNOSTIC_ENTRY_LIST.forEach((hexKey) => {
       textOftarget[hexKey].push(decoration);
       setDiagonosticTextbuffer(hexKey, [decorationType]);
     });
@@ -2076,6 +2162,12 @@ var clearOverrideState = (stateOf) => {
 var updateDiagnosticTextConfig = (configReady, configuratioChange = false) => {
   const diagnosticConfig = { ...DIAGNOSTIC_CONFIG };
   const diagnosticDecorationStyle = { ...DIAGNOSTIC_DECORATION_STYLE };
+  const dignosticContentTextPreset = {
+    layout: {},
+    editor: {},
+    workspace: {},
+    all: {}
+  };
   const bindTo = bindDiagnosticContentTextState();
   let bindToBuffer = {
     functionOf: bindTo.functionOf,
@@ -2083,6 +2175,7 @@ var updateDiagnosticTextConfig = (configReady, configuratioChange = false) => {
   };
   if (configuratioChange) {
     clearOverrideState(bindTo);
+    reloadContentText();
   }
   workspaceProxyConfiguration(diagnosticConfig, configReady.name + "." + CONFIG_SECTION.diagnosticText, DIAGNOSTIC_CONTENT_TEXT_LIST, bindToBuffer, regex_collection_default.diagnosticText);
   const diagnosticBiome = diagnosticVisibilityBiome(diagnosticConfig.visibility);
@@ -2090,6 +2183,8 @@ var updateDiagnosticTextConfig = (configReady, configuratioChange = false) => {
   Object.assign(dignosticContentTextPreset, buildDiagnosticStyle(diagnosticConfig, diagnosticDecorationStyle, decorationStyleList, diagnosticConfig.visibility, diagnosticBiome));
   Object.assign(bindTo.configOf, diagnosticConfig.visibility);
   buildDiagnosticTextPreset(dignosticContentTextPreset, bindTo.textOf, bindToBuffer.textOf, diagnosticDecorationStyle, diagnosticConfig.leftMargin);
+  applyLeftMargin(bindTo.textOf, diagnosticConfig.visibility, diagnosticConfig.leftMargin);
+  sealDiagnosticText();
   delete bindTo.functionOf;
   delete bindTo.textOf;
   delete bindTo.configOf;
@@ -2202,7 +2297,7 @@ var sectionChanged = () => {
     ["singleLine" /* SINGLE_LINE */]: (config) => updateHighlightStyleConfiguration(config, singleLine),
     ["multiLine" /* MULTI_LINE */]: (config) => updateHighlightStyleConfiguration(config, multiLine),
     ["multiCursor" /* MULTI_CURSOR */]: (config) => updateHighlightStyleConfiguration(config, multiCursor),
-    ["selectionText" /* SELECTION_TEXT */]: (config) => updateSelectionTextConfig(config),
+    ["selectionText" /* SELECTION_TEXT */]: (config) => updateSelectionTextConfig(config, true),
     ["diagnosticText" /* DIAGNOSTIC_TEXT */]: (config) => updateDiagnosticTextConfig(config, true)
   };
 };

@@ -5,16 +5,18 @@ import { DIAGNOSTIC_STATE } from '../constant/shared/object';
 import { DIAGNOSTIC_BIOME } from '../constant/config/enum';
 import { editor } from '../constant/shared/numeric';
 
-const diagnosticState: DiagnosticState = { ...DIAGNOSTIC_STATE };
+const diagnosticState = { ...DIAGNOSTIC_STATE } as unknown as DiagnosticState;
 
 export interface DiagnosticState {
     renderSignature: number,
     severity: number,
     editor: {
         warning: {
+            line: number[]
             total: number
         },
         error: {
+            line: number[]
             total: number
         }
     },
@@ -33,6 +35,8 @@ export interface DiagnosticState {
 const diagnosticSource: Type.DiagnosticSourceType = {};
 
 const resetEditorDiagnosticStatistics = (): void => {
+    diagnosticState.editor.warning.line.splice(0);
+    diagnosticState.editor.error.line.splice(0);
     diagnosticState.editor.warning.total = 0;
     diagnosticState.editor.error.total = 0;
 };
@@ -54,6 +58,12 @@ const parseDiagnostic = (state, severity, fsPath: string, activeEditorfsPath: st
         }
 
         if (fsPath === activeEditorfsPath) {
+            state.editor[severityType].line = [
+                ...new Set([
+                    ...state.editor[severityType].line,
+                    ...severity[severityType].map((problem: vscode.Diagnostic) => problem.range.start.line)
+                ])
+            ];
             state.editor[severityType].total = 0;
             state.editor[severityType].total = severity[severityType].length;
         }

@@ -37,6 +37,23 @@ const setSelectionTextbuffer = (hexKey: number, size: number): void => {
     Object.seal(selectionTextBuffer[hexKey]);
 };
 
+const sealSelctionText = () => {
+    for (const hexKey of Object.keys(selectionContentText)) {
+        Object.seal(selectionContentText[hexKey].contentText)
+    }
+}
+
+const clearSelectionText = () => {
+    for (const hexKey of Object.keys(selectionContentText)) {
+        delete selectionContentText[hexKey]
+        selectionContentText[hexKey] = [];
+    }
+    for (const hexKey of Object.keys(selectionTextBuffer)) {
+        delete selectionTextBuffer[hexKey]; 
+        selectionTextBuffer[hexKey] = [];
+    }
+}
+
 const columnDelta = (editor, delta = 0): string => {
     const col = editor.selection.active.character + delta;
     const end = editor.document.lineAt(editor.selection.active.line).text.length + delta;
@@ -309,4 +326,6 @@ export {
     singleLineSelection,
     multilineSelection,
     multiCursorSelection,
+    clearSelectionText,
+    sealSelctionText
 };

@@ -486,7 +486,7 @@
                     },
                     "cursorlinehighlight.diagnosticText.leftMargin": {
                         "type": "string",
-                        "default": "10px",
+                        "default": "18px",
                         "markdownDescription": "%placeholder",
                         "order": 2
                     },

@@ -56,9 +56,11 @@ export const DIAGNOSTIC_STATE = {
     severity: 0,
     editor: {
         warning: {
+            line: [],
             total: 0
         },
         error: {
+            line: [],
             total: 0
         }
     },
@@ -95,31 +97,8 @@ export const DIAGNOSTIC_CONTENT_TEXT = {
     [__0x.editorWarnErrWorkspaceWarn_err]: [] as any[],
 } as const;
 
-export const DIAGNOSTIC_PROBLEM_LIST = [
-    __0x.editorOkWorkspaceWarn,
-    __0x.editorOkWorkspaceErr,
-    __0x.editorOkWorkspaceWarnErr,
-    __0x.editorWarnWorkspaceWarn,
-    __0x.editorWarnWorkspaceErr,
-    __0x.editorWarnWorkspaceWarnErr,
-    __0x.editorErrWorkspaceErr,
-    __0x.editorErrWorkspaceWarnErr,
-    __0x.editorWarnErrWorkspaceWarn_err,
-] as const;
-
-export const DIAGNOSTIC_PROBLEM_OK_LIST = [
-    __0x.editorOkWorkspaceWarn,
-    __0x.editorOkWorkspaceErr,
-    __0x.editorOkWorkspaceWarnErr,
-    __0x.editorWarnWorkspaceWarn,
-    __0x.editorWarnWorkspaceErr,
-    __0x.editorWarnWorkspaceWarnErr,
-    __0x.editorErrWorkspaceErr,
-    __0x.editorErrWorkspaceWarnErr,
-    __0x.editorWarnErrWorkspaceWarn_err,
-] as const;
-
-export const DIAGNOSTIC_PROBLEM_WARNING_LIST = [
+export const DIAGNOSTIC_ENTRY_LIST = [
+    __0x.allOkOverride,
     __0x.editorOkWorkspaceWarn,
     __0x.editorOkWorkspaceErr,
     __0x.editorOkWorkspaceWarnErr,
