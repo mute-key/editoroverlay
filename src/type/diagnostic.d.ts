@@ -146,7 +146,7 @@ type DiagonosticStateDecorationType = {
 }
 
 type ContentTextWithPositionType = {
-    contentText?: (string | symbol | StatusType.ContentTextFuncSignature)[],
+    contentText?: (string | symbol | number | StatusType.ContentTextFuncSignature)[],
     position: {}
 }
 

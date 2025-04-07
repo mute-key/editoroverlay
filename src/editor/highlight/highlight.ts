@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
-import * as Type from '../../../type/type';
-import * as __0x from '../../../constant/shared/numeric';
-import { HIGHLIGHT_BORDER_POSITION_INFO, HIGHLIGHT_STYLE_LIST } from '../../../constant/shared/object';
-import { createLineRange, createRangeNNNN, createRangeSPEP, blankRange } from '../../range';
-import { applyDecoration } from '../../editor';
+import * as Type from '../../type/type';
+import * as __0x from '../../constant/shared/numeric';
+import { HIGHLIGHT_BORDER_POSITION_INFO, HIGHLIGHT_STYLE_LIST } from '../../constant/shared/object';
+import { createLineRange, createRangeNNNN, createRangeSPEP, blankRange } from '../range';
+import { applyDecoration } from '../editor';
 
 const highlightStyleList = {
     ...HIGHLIGHT_STYLE_LIST

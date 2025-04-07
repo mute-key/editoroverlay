@@ -46,7 +46,7 @@ const loadConfiguration = (context?: vscode.ExtensionContext): Type.InitialisedC
             updateDiagnosticTextConfig(configReady);
         }
 
-        Object.seal(decorationState.appliedHighlight);
+        // Object.seal(decorationState.appliedHighlight);
 
         return {
             config: configReady,

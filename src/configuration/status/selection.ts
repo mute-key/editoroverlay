@@ -2,7 +2,7 @@ import * as Type from '../../type/type';
 import Regex from '../../util/regex.collection';
 import { CONFIG_SECTION, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_NUMLINK, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE } from '../../constant/config/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
-import { bindStatusContentTextState, clearSelectionText, sealSelctionText, setSelectionTextbuffer } from '../../editor/decoration/status/selection';
+import { bindStatusContentTextState, setSelectionTextbuffer } from '../../editor/status/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 
 const convertPositionToDecorationRenderOption = (textPosition, SelectionDecorationStyle): void => {
@@ -17,25 +17,6 @@ const convertPositionToDecorationRenderOption = (textPosition, SelectionDecorati
         }
         return contentTextRenderOption;
     }).filter(decorationOption => decorationOption !== undefined);
-};
-
-const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentTextBufferType,SelectionDecorationStyle,  leftMargin): void => {
-    Object.entries(textOfSource).forEach(([key, textPosition], idx) => {
-        const contentTextStyled = convertPositionToDecorationRenderOption(textPosition, SelectionDecorationStyle);;
-        const hexKey = SELECTION_CONTENT_TEXT_NUMLINK[key];
-        textOftarget[hexKey] = {
-            contentText: contentTextStyled,
-            position: Object.entries(textPosition.position)
-        };
-
-        if (leftMargin && leftMargin !== '0px' || leftMargin !== '0em') {
-            if (textOftarget[hexKey].contentText[0]) {
-                textOftarget[hexKey].contentText[0].after['margin'] = leftMarginToMarginString(leftMargin);
-            }
-        }
-
-        setSelectionTextbuffer(hexKey, textOftarget[hexKey].contentText.length);
-    });
 };
 
 const buildSelectionTextDecorationRenderOption = (config: Type.SelectionDecorationConfigType, style: Type.SelectionDecorationStyleType) => {
@@ -53,8 +34,27 @@ const buildSelectionTextDecorationRenderOption = (config: Type.SelectionDecorati
     });
 };
 
-const updateSelectionTextConfig = (configReady: Type.ConfigInfoReadyType, configuratioChange: boolean = false) => {
 
+const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentTextBufferType,SelectionDecorationStyle,  leftMargin): void => {
+    Object.entries(textOfSource).forEach(([key, textPosition], idx) => {
+        const contentTextStyled = convertPositionToDecorationRenderOption(textPosition, SelectionDecorationStyle);;
+        const hexKey = SELECTION_CONTENT_TEXT_NUMLINK[key];
+        textOftarget[hexKey] = {
+            contentText: contentTextStyled,
+            position: Object.entries(textPosition.position)
+        };
+
+        if (leftMargin && leftMargin !== '0px' || leftMargin !== '0em') {
+            if (textOftarget[hexKey].contentText[0]) {
+                textOftarget[hexKey].contentText[0].after['margin'] = leftMarginToMarginString(leftMargin);
+            }
+        }
+        setSelectionTextbuffer(hexKey, textOftarget[hexKey].contentText.length);
+    });
+};
+
+
+const updateSelectionTextConfig = (configReady: Type.ConfigInfoReadyType, configuratioChange: boolean = false): boolean => {
     const SelectionDecorationConfig = { ...SELECTION_DECORAITON_CONFIG } as Type.SelectionDecorationConfigType;
     const SelectionDecorationStyle = { ...SELECTION_DECORATION_STYLE } as Type.SelectionDecorationStyleType;
     
@@ -64,19 +64,18 @@ const updateSelectionTextConfig = (configReady: Type.ConfigInfoReadyType, config
         textOf: {}
     };
 
-    if (configuratioChange) {
-        clearSelectionText();
-    }
     // hm ...
     workspaceProxyConfiguration(SelectionDecorationConfig, configReady.name + '.' + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST, bindToBuffer, Regex.statusContentText);
     buildSelectionTextDecorationRenderOption(SelectionDecorationConfig, SelectionDecorationStyle);
     buildStatusTextState(bindTo.textOf, bindToBuffer.textOf, SelectionDecorationStyle, SelectionDecorationConfig.leftMargin);
-    sealSelctionText();
-    delete bindTo.functionOf;
-    delete bindTo.infoOf;
-    delete bindTo.textOf;
-    delete bindToBuffer.textOf;
-    delete bindToBuffer.functionOf;
+    
+    // sealSelctionText();
+    // delete bindTo.functionOf;
+    // delete bindTo.infoOf;
+    // delete bindTo.textOf;
+    // delete bindToBuffer.textOf;
+    // delete bindToBuffer.functionOf;
+    return true;
 };
 
 export {

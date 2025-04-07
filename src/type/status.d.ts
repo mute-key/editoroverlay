@@ -17,7 +17,7 @@ type SelectionDecorationStyleType = {
 }
 
 type StatusContentTextPositionType = {
-    contentText?: (string | symbol | ContentTextFuncSignature)[],
+    contentText?: (string | number | number | ContentTextFuncSignature)[],
     position: {
         [key: number]: string
     }
@@ -188,11 +188,11 @@ type ContentTextStateType = {
 
 type SplitFuncType = {
     position: number,
-    array: (string | symbol | ContentTextFuncSignature)[]
+    array: (string | symbol | number | ContentTextFuncSignature)[]
 }
 
 type SearchObjectType = {
-    nextSearchString: string | symbol | (ContentTextFuncSignature),
+    nextSearchString: string | symbol | number | (ContentTextFuncSignature),
     lastPosition: number
 }
 

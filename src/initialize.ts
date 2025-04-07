@@ -25,7 +25,7 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
         const configInfo: Type.ConfigInfoReadyType = loadConfig.config;
         const activeEditor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
 
-        clearDecorationState(loadConfig.decoration);
+        
 
         const eventContext: Type.EventContext = {
             configInfo: configInfo,
@@ -35,6 +35,7 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
         prepareRenderGroup(configInfo);
 
         if (activeEditor) {
+            clearDecorationState(loadConfig.decoration);
             loadConfig.decoration.appliedHighlight[0] = renderGroupIs(activeEditor, [__0x.cursorOnly]);
         }
 

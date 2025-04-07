@@ -148,10 +148,19 @@ export const DIAGNOSTIC_VISIBILITY_CONFIG = {
     hideWarning: undefined
 } as const;
 
+export const DIAGNOSTIC_GLYPH = {
+    problemLineUp: undefined,
+    problemLineDown: undefined,
+    problemLineEqual: undefined,
+    problemLineStartBracket: undefined,
+    problemLineEndBracket: undefined,
+} as const
+
 export const DIAGNOSTIC_CONFIG = {
     enabled: undefined,
     leftMargin: undefined,
     visibility: DIAGNOSTIC_VISIBILITY_CONFIG,
+    glyphList: DIAGNOSTIC_GLYPH,
     problemPlaceholderContentText: undefined,
     allOkPlaceholderContentText: undefined,
     [DIAGNOSTIC_TEXT_STYLE_KEY.DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE]: undefined,

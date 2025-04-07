@@ -107,6 +107,8 @@ const convertToDecorationRenderOption = (config: Type.DecorationTextStyleConfig 
     } else {
         delete decorationOption.after.fontStyle;
     }
+
+    
     delete decorationOption.after.margin;
     delete decorationOption.after.textDecoration;
     return decorationOption;

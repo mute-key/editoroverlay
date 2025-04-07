@@ -9,12 +9,15 @@ import { DIAGNOSTIC_CONTENT_TEXT, DIAGNOSTIC_PROBLEM_LIST } from '../../constant
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { sanitizeConfigValue } from '../shared/validation';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
-import { bindDiagnosticContentTextState, reloadContentText, sealDiagnosticText, setDiagonosticTextbuffer } from '../../editor/decoration/status/diagnostic';
+import { bindDiagnosticContentTextState, reloadContentText, sealDiagnosticText, setDiagonosticTextbuffer } from '../../editor/status/diagnostic';
 import { hexToRgbaStringLiteral, readBits } from '../../util/util';
+import { createCursorRangeNextLine, createCursorRangePreviousLine } from '../../editor/range';
 
 const positionKeyList = ['pre', 'post'] as const;
 
 const positionKeyToPlaceholderName = { pre: 'prefix', post: 'postfix', } as const;
+
+
 
 const applyLeftMargin = (textOf: typeof DIAGNOSTIC_CONTENT_TEXT, visibility: Type.DiagnosticVisibilityType, leftMargin: string | undefined) => {
     if (!leftMargin || leftMargin === '0px' || leftMargin === '0em') {
@@ -77,7 +80,7 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             return decoration;
         }).filter(decoration => decoration.after.contentText !== undefined)
     }
-    
+
     preset.layout[__0x.allOkPlaceholderContentText].contentText.forEach(decoration => {
         if (decoration.after.contentText === __0x.allOkHexKey) {
             const ok = concatinateNotation(preset.all[__0x.okAllContentText]);
@@ -349,8 +352,28 @@ const clearOverrideState = (stateOf) => {
     }
 };
 
-const updateDiagnosticTextConfig = (configReady: Type.ConfigInfoReadyType, configuratioChange: boolean = false) => {
-    const diagnosticConfig = { ...DIAGNOSTIC_CONFIG } as Type.DiagnosticConfigType;
+// "disabled",
+// "IfOutOfVisibleRange",
+// "previousLine",
+// "nextLine"
+
+const setAdditionalOption = (bindTo, config) => {
+    bindTo.textOf.glyphList[__0x.problemLineUp] = config.glyphList.problemLineUp;
+    bindTo.textOf.glyphList[__0x.problemLineDown] = config.glyphList.problemLineDown;
+    bindTo.textOf.glyphList[__0x.problemLineEqual] = config.glyphList.problemLineEqual;
+    bindTo.textOf.glyphList[__0x.problemLineStartBracket] = config.glyphList.problemLineStartBracket;
+    bindTo.textOf.glyphList[__0x.problemLineEndBracket] = config.glyphList.problemLineEndBracket;
+
+    if (config.visibility.placeTextOnPreviousOrNextLine === "previousLine") {
+        bindTo.functionOf.rangeFunction = createCursorRangePreviousLine
+    }
+    if (config.visibility.placeTextOnPreviousOrNextLine === "nextLine") {
+        bindTo.functionOf.rangeFunction = createCursorRangeNextLine
+    }
+};
+
+const updateDiagnosticTextConfig = (configReady: Type.ConfigInfoReadyType, configuratioChange: boolean = false): boolean => {
+    const diagnosticConfig = { ...DIAGNOSTIC_CONFIG } as typeof DIAGNOSTIC_CONFIG;
     const diagnosticDecorationStyle = { ...DIAGNOSTIC_DECORATION_STYLE } as unknown as Type.DiagonosticDecorationStyle;
     const dignosticContentTextPreset = {
         layout: {},
@@ -367,19 +390,26 @@ const updateDiagnosticTextConfig = (configReady: Type.ConfigInfoReadyType, confi
         clearOverrideState(bindTo);
         reloadContentText();
     }
+
     workspaceProxyConfiguration(diagnosticConfig, configReady.name + '.' + CONFIG_SECTION.diagnosticText, DIAGNOSTIC_CONTENT_TEXT_LIST, bindToBuffer, Regex.diagnosticText);
     const diagnosticBiome = diagnosticVisibilityBiome(diagnosticConfig.visibility);
     const decorationStyleList = decorationStyleFromBiome(diagnosticBiome.workspace | diagnosticBiome.editor);
     Object.assign(dignosticContentTextPreset, buildDiagnosticStyle(diagnosticConfig, diagnosticDecorationStyle, decorationStyleList, diagnosticConfig.visibility, diagnosticBiome));
     Object.assign(bindTo.configOf, diagnosticConfig.visibility);
-    buildDiagnosticTextPreset(dignosticContentTextPreset, bindTo.textOf, bindToBuffer.textOf, diagnosticDecorationStyle, diagnosticConfig.leftMargin);
-    applyLeftMargin(bindTo.textOf, diagnosticConfig.visibility, diagnosticConfig.leftMargin);
-    sealDiagnosticText();
+    // Object.assign(bindTo.textOf.glyphList, diagnosticConfig.glyphList);
+    buildDiagnosticTextPreset(dignosticContentTextPreset, bindTo.textOf.contentText, bindToBuffer.textOf, diagnosticDecorationStyle, diagnosticConfig.leftMargin);
+    applyLeftMargin(bindTo.textOf.contentText, diagnosticConfig.visibility, diagnosticConfig.leftMargin);
+    setAdditionalOption(bindTo, diagnosticConfig);
+
+    delete bindTo.visibilityOf
     delete bindTo.functionOf;
-    delete bindTo.textOf;
+    delete bindTo.textOf.contentText;
+    delete bindTo.textOf.glyphList;
+    delete bindTo.textof;
     delete bindTo.configOf;
     delete bindToBuffer.textof;
     delete bindToBuffer.functionOf;
+    return true;
 };
 
 export {

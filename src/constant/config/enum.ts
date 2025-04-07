@@ -8,7 +8,7 @@ export const enum SELECTION_TYPE {
     MULTI_LINE = 'MULTI_LINE',
     MULTI_CURSOR = 'MULTI_CURSOR',
 }
-export declare const enum SYSTEM_MESSAGE {
+export const enum SYSTEM_MESSAGE {
     RELOADING_CONFIG = 'Config has been changed. Reloading configuration. (Messaage Dismiss in 2 second.)'
 }
 /**

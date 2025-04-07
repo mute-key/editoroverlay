@@ -5,27 +5,15 @@ import * as __0x from './numeric';
 // ==============================================================================
 
 export const INDENT_INFO = {
-    size: undefined,
-    type: undefined,
-    regex: undefined
+    [__0x.size]: undefined,
+    [__0x.type]: undefined,
+    [__0x.regex]: undefined
 } as const;
-
-export const RENDER_GROUP_SET_PROPERTY = {
-    highlight: undefined,
-    selectionCount: undefined,
-    diagnostic: undefined
-} as const;
-
-export const RENDER_GROUP_SET = {
-    [__0x.cursorOnly]: RENDER_GROUP_SET_PROPERTY,
-    [__0x.singleLine]: RENDER_GROUP_SET_PROPERTY,
-    [__0x.multiLine]: RENDER_GROUP_SET_PROPERTY,
-    [__0x.multiCursor]: RENDER_GROUP_SET_PROPERTY
-};
 
 export const DECORATION_STATE = {
     appliedHighlight: [0],
-} as const;
+    diagnosticSignature: [0],
+};
 
 export const SELECTION_KIND_LIST = [
     __0x.cursorOnly,
@@ -53,11 +41,11 @@ export const DIAGNOSTIC_STATE = {
     severity: 0,
     editor: {
         warning: {
-            line: [],
+            line: [1],
             total: 0
         },
         error: {
-            line: [],
+            line: [1],
             total: 0
         }
     },
@@ -105,6 +93,14 @@ export const DIAGNOSTIC_PROBLEM_LIST = [
     __0x.editorErrWorkspaceWarnErr,
     __0x.editorWarnErrWorkspaceWarn_err,
 ] as const;
+
+export const DIAGNOSTIC_GLYPH = {
+    [__0x.problemLineUp]: undefined,
+    [__0x.problemLineDown]: undefined,
+    [__0x.problemLineEqual]: undefined,
+    [__0x.problemLineStartBracket]: undefined,
+    [__0x.problemLineEndBracket]: undefined,    
+} as const
 
 export const DIAGNOSTIC_ENTRY_LIST = [
     __0x.allOkOverride,

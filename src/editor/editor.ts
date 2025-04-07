@@ -3,15 +3,33 @@ import * as Type from '../type/type';
 import * as __0x from '../constant/shared/numeric';
 import Regex from '../util/regex.collection';
 import { DECORATION_STATE, SELECTION_KIND_LIST } from '../constant/shared/object';
-import { bindStatusContentTextState, clearSelectionTextBuffer } from './decoration/status/selection';
-import { bindDiagnosticContentTextState, diagnosticInfo } from './decoration/status/diagnostic';
-import { cursorOnlyHighlightRange, singelLineHighlightRange, multiLineHighlightRange, multiCursorHighlightRange, clearEveryHighlight } from './decoration/highlight/highlight'
-import { cursorOnlySelection, singleLineSelection, multilineSelection, multiCursorSelection } from './decoration/status/selection'
+import { bindStatusContentTextState, clearSelectionTextBuffer } from './status/selection';
+import { bindDiagnosticContentTextState, clearDiagnosticText, diagnosticInfo } from './status/diagnostic';
+import { cursorOnlyHighlightRange, singelLineHighlightRange, multiLineHighlightRange, multiCursorHighlightRange, clearEveryHighlight } from './highlight/highlight'
+import { cursorOnlySelection, singleLineSelection, multilineSelection, multiCursorSelection } from './status/selection'
+import { blankRange } from './range';
 
-const decorationState = {
-    ...DECORATION_STATE,
-    __proto__: null,
-} as unknown as Type.DecorationStateType;
+const decorationState = { ...DECORATION_STATE } as unknown as Type.DecorationStateType;
+
+const createEditorDecorationType = (styleAppliedConfig: any): vscode.TextEditorDecorationType => vscode.window.createTextEditorDecorationType(styleAppliedConfig as vscode.DecorationRenderOptions);;
+
+const applyDecoration = (setDecorations: vscode.TextEditor['setDecorations'], decoraiton: vscode.TextEditorDecorationType, range: vscode.Range[]): void => setDecorations(decoraiton, range);
+
+const resetDecoration = (setDecorations: vscode.TextEditor['setDecorations']) => (decoration: vscode.TextEditorDecorationType) => setDecorations(decoration, blankRange);
+
+const clearDecorationState = (decorationState: Type.DecorationStateType) => {
+    decorationState.appliedHighlight[0] = __0x.cursorOnly;
+    decorationState.diagnosticSignature[0] = __0x.allOkOverride;
+};
+
+const resetAllDecoration = () => {
+    const clearList = (editor) => {
+        clearEveryHighlight(editor)
+        clearSelectionTextBuffer(editor);
+        clearDiagnosticText(editor.setDecorations, decorationState.diagnosticSignature);
+    }
+    vscode.window.visibleTextEditors.forEach(clearList);
+};
 
 const updateIndentOption = (editor: vscode.TextEditor): void => {
     const bindTo = bindStatusContentTextState();
@@ -22,22 +40,12 @@ const updateIndentOption = (editor: vscode.TextEditor): void => {
         : Regex.tagtAndEOLRegex;
 };
 
-const applyDecoration = (setDecorations: vscode.TextEditor['setDecorations'], decoraiton: vscode.TextEditorDecorationType, range: vscode.Range[]): void => setDecorations(decoraiton, range);
-
-const resetAllDecoration = () => {
-    vscode.window.visibleTextEditors.forEach(editor => {
-        clearEveryHighlight(editor)
-        clearSelectionTextBuffer(editor);
-    });
-};
-
-const createEditorDecorationType = (styleAppliedConfig: any): vscode.TextEditorDecorationType => vscode.window.createTextEditorDecorationType(styleAppliedConfig as vscode.DecorationRenderOptions);;
-
-const clearDecorationState = (decorationState: Type.DecorationStateType) => {
-    decorationState.appliedHighlight[0] = __0x.reset;
-};
-
 const prepareRenderGroup = (config: Type.ConfigInfoReadyType): void => {
+    renderFnStack[__0x.cursorOnly].splice(0);
+    renderFnStack[__0x.singleLine].splice(0);
+    renderFnStack[__0x.multiLine].splice(0);
+    renderFnStack[__0x.multiCursor].splice(0);
+
     const bindDiagnostic = bindDiagnosticContentTextState();
     const diagonosticAvaliabity = {
         [__0x.cursorOnly]: bindDiagnostic.configOf.displayWhenCursorOnly,
@@ -71,25 +79,12 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): void => {
         }
 
         if (config.generalConfigInfo.diagnosticTextEnabled && diagonosticAvaliabity[numKey]) {
-            callList.push(diagnosticInfo);
+            callList.push(diagnosticInfo(decorationState));
         }
 
         renderFnStack[numKey].push(...callList);
-        Object.seal(renderFnStack[numKey]);
+        // Object.seal(renderFnStack[numKey]);
     });
-
-    for (const strKey in Object.keys(bindDiagnostic)) {
-        delete bindDiagnostic[strKey];
-    }
-    for (const numKey in Object.keys(highlightList)) {
-        delete highlightList[numKey];
-    }
-    for (const numKey in Object.keys(selectionList)) {
-        delete selectionList[numKey];
-    }
-    for (const numKey in Object.keys(diagonosticAvaliabity)) {
-        delete diagonosticAvaliabity[numKey];
-    }
 };
 
 const renderFnStack = {
@@ -136,4 +131,5 @@ export {
     prepareRenderGroup,
     renderGroupIs,
     bindEditorDecoration,
+    resetDecoration
 };

@@ -397,7 +397,7 @@
                             "lc": "%color.selectionText.placeholder.text.lc%",
                             "nth": "%color.selectionText.placeholder.text.nth%",
                             "count": "%color.selectionText.placeholder.text.count%",
-                            "opacity": 0.9,
+                            "opacity": 0.8,
                             "fontStyle": "normal",
                             "fontWeight": "bold"
                         },
@@ -486,7 +486,7 @@
                     },
                     "cursorlinehighlight.diagnosticText.leftMargin": {
                         "type": "string",
-                        "default": "18px",
+                        "default": "0px",
                         "markdownDescription": "%placeholder",
                         "order": 2
                     },
@@ -559,6 +559,42 @@
                             "hideWarning": {
                                 "type": "boolean",
                                 "default": false
+                            }
+                        }
+                    },
+                    "cursorlinehighlight.diagnosticText.glyphList": {
+                        "order": 3,
+                        "type": "object",
+                        "scope": "resource",
+                        "default": {
+                            "problemLineStartBracket": "%text.problem.glyph.line.start%",
+                            "problemLineEndBracket": "%text.problem.glyph.line.end%",
+                            "problemLineEqual": "%text.problem.glyph.line.equal%",
+                            "problemLineUp": "%text.problem.glyph.line.up%",
+                            "problemLineDown": "%text.problem.glyph.line.down%"
+                        },
+                        "markdownDescription": "%placeholder",
+                        "additionalProperties": false,
+                        "properties": {
+                            "problemLineStartBracket": {
+                                "type": "string",
+                                "default": "%text.problem.glyph.line.start%"
+                            },
+                            "problemLineEndBracket": {
+                                "type": "tring",
+                                "default": "%text.problem.glyph.line.end%"
+                            },
+                            "problemLineEqual": {
+                                "type": "tring",
+                                "default": "%text.problem.glyph.line.equal%"
+                            },
+                            "problemLineUp": {
+                                "type": "tring",
+                                "default": "%text.problem.glyph.line.up%"
+                            },
+                            "problemLineDown": {
+                                "type": "tring",
+                                "default": "%text.problem.glyph.line.down%"
                             }
                         }
                     },
@@ -1181,16 +1217,16 @@
         "test": "vscode-test"
     },
     "devDependencies": {
-        "@types/vscode": "^1.96.0",
         "@types/mocha": "^10.0.10",
         "@types/node": "20.x",
+        "@types/vscode": "^1.96.0",
         "@typescript-eslint/eslint-plugin": "^8.17.0",
         "@typescript-eslint/parser": "^8.17.0",
-        "eslint": "^9.16.0",
-        "esbuild": "^0.24.0",
-        "npm-run-all": "^4.1.5",
-        "typescript": "^5.7.2",
         "@vscode/test-cli": "^0.0.10",
-        "@vscode/test-electron": "^2.4.1"
+        "@vscode/test-electron": "^2.4.1",
+        "esbuild": "^0.24.0",
+        "eslint": "^9.16.0",
+        "npm-run-all": "^4.1.5",
+        "typescript": "^5.7.2"
     }
 }

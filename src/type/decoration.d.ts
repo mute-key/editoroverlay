@@ -15,10 +15,7 @@ type AppliedHighlightType = {
 
 type DecorationStateType = {
     appliedHighlight: number[]
-    selectionText: vscode.TextEditorDecorationType[] | any[],
-    diagnosticText: vscode.TextEditorDecorationType[] | any[],
-    diagnosticInfo?: StatusType.StatusTextInfoType[] | any[],
-    selectionInfo?: StatusType.StatusTextInfoType[] | any[],
+    diagnosticSignature: number[]
 }
 
 type DecorationStyleKeyOnlyType = keyof typeof DECORATION_STYLE_PREFIX
