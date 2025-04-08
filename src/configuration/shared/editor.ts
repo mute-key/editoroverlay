@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getWorkspaceConfiguration } from '../../util/util';
+import { getWorkspaceConfiguration } from './configuration';
 
 const updateEditorConfiguration = (key: string, value: any): void => {
     const editorConfig = vscode.workspace.getConfiguration("editor");

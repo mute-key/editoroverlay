@@ -9,15 +9,13 @@ import { DIAGNOSTIC_CONTENT_TEXT, DIAGNOSTIC_PROBLEM_LIST } from '../../constant
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { sanitizeConfigValue } from '../shared/validation';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
-import { bindDiagnosticContentTextState, reloadContentText, sealDiagnosticText, setDiagonosticTextbuffer } from '../../editor/status/diagnostic';
+import { bindDiagnosticContentTextState, reloadContentText, setDiagonosticTextbuffer } from '../../editor/status/diagnostic';
 import { hexToRgbaStringLiteral, readBits } from '../../util/util';
-import { createCursorRangeNextLine, createCursorRangePreviousLine } from '../../editor/range';
+import { createCursorRange, createCursorRangeNextLine, createCursorRangePreviousLine } from '../../editor/range';
 
 const positionKeyList = ['pre', 'post'] as const;
 
 const positionKeyToPlaceholderName = { pre: 'prefix', post: 'postfix', } as const;
-
-
 
 const applyLeftMargin = (textOf: typeof DIAGNOSTIC_CONTENT_TEXT, visibility: Type.DiagnosticVisibilityType, leftMargin: string | undefined) => {
     if (!leftMargin || leftMargin === '0px' || leftMargin === '0em') {
@@ -48,7 +46,6 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             if (target[propertyName][contentTextHeyKey].notation) {
                 context.notation = target[propertyName][contentTextHeyKey].notation;
             }
-
             const contentTextList = convertPositionDecorationRenderOption(context);
             target[propertyName][contentTextHeyKey].contentText = contentTextList
         }
@@ -63,7 +60,6 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             notation: [],
             leftMargin: leftMargin
         };
-
         ['workspace', 'editor', 'all', 'layout'].forEach(biome => {
             convertPositionWrapper(context, preset, biome, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM[contentTextName]);
         });
@@ -80,7 +76,6 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             return decoration;
         }).filter(decoration => decoration.after.contentText !== undefined)
     }
-
     preset.layout[__0x.allOkPlaceholderContentText].contentText.forEach(decoration => {
         if (decoration.after.contentText === __0x.allOkHexKey) {
             const ok = concatinateNotation(preset.all[__0x.okAllContentText]);
@@ -91,14 +86,11 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             textOftarget[__0x.allOkOverride].push(decoration);
         }
     })
-
     preset.layout[__0x.problemPlaceholderContentText].contentText.forEach(decoration => {
         if (decoration.after.contentText === __0x.editorHexKey) {
-
             const ok = concatinateNotation(preset.editor[__0x.okEditorContentText]);
             const warn = concatinateNotation(preset.editor[__0x.warningEditorContentText]);
             const err = concatinateNotation(preset.editor[__0x.errorEditorContentText]);
-
             textOftarget[__0x.editorOkWorkspaceWarn].push(...ok);
             textOftarget[__0x.editorOkWorkspaceErr].push(...ok);
             textOftarget[__0x.editorOkWorkspaceWarnErr].push(...ok);
@@ -108,11 +100,9 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             textOftarget[__0x.editorErrWorkspaceErr].push(...err);
             textOftarget[__0x.editorErrWorkspaceWarnErr].push(...err);
             textOftarget[__0x.editorWarnErrWorkspaceWarn_err].push(...warn, ...err);
-
             const okDecoration = ok.map(decoration => vscode.window.createTextEditorDecorationType(decoration));
             const warnDecoration = warn.map(decoration => vscode.window.createTextEditorDecorationType(decoration))
             const errDecoration = err.map(decoration => vscode.window.createTextEditorDecorationType(decoration))
-
             setDiagonosticTextbuffer(__0x.editorOkWorkspaceWarn, okDecoration);
             setDiagonosticTextbuffer(__0x.editorOkWorkspaceErr, okDecoration);
             setDiagonosticTextbuffer(__0x.editorOkWorkspaceWarnErr, okDecoration);
@@ -124,12 +114,10 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             setDiagonosticTextbuffer(__0x.editorWarnErrWorkspaceWarn_err, [...warnDecoration, ...errDecoration]);
             return;
         }
-
         if (decoration.after.contentText === __0x.workspaceHexKey) {
             const ok = concatinateNotation(preset.workspace[__0x.okWorkspaceContentText]);
             const warn = concatinateNotation(preset.workspace[__0x.warningWorkspaceContentText]);
             const err = concatinateNotation(preset.workspace[__0x.errorWorkspaceContentText]);
-
             textOftarget[__0x.editorOkWorkspaceWarn].push(...warn);
             textOftarget[__0x.editorOkWorkspaceErr].push(...err);
             textOftarget[__0x.editorOkWorkspaceWarnErr].push(...warn, ...err);
@@ -139,11 +127,9 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             textOftarget[__0x.editorErrWorkspaceErr].push(...err);
             textOftarget[__0x.editorErrWorkspaceWarnErr].push(...warn, ...err);
             textOftarget[__0x.editorWarnErrWorkspaceWarn_err].push(...warn, ...err);
-
             const okDecoration = ok.map(decoration => vscode.window.createTextEditorDecorationType(decoration));
             const warnDecoration = warn.map(decoration => vscode.window.createTextEditorDecorationType(decoration))
             const errDecoration = err.map(decoration => vscode.window.createTextEditorDecorationType(decoration))
-
             setDiagonosticTextbuffer(__0x.editorOkWorkspaceWarn, warnDecoration);
             setDiagonosticTextbuffer(__0x.editorOkWorkspaceErr, errDecoration);
             setDiagonosticTextbuffer(__0x.editorOkWorkspaceWarnErr, [...warnDecoration, ...errDecoration]);
@@ -155,10 +141,7 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             setDiagonosticTextbuffer(__0x.editorWarnErrWorkspaceWarn_err, [...warnDecoration, ...errDecoration]);
             return;
         }
-
-
         const decorationType = vscode.window.createTextEditorDecorationType(decoration);
-
         DIAGNOSTIC_PROBLEM_LIST.forEach(hexKey => {
             textOftarget[hexKey].push(decoration);
             setDiagonosticTextbuffer(hexKey, [decorationType]);
@@ -170,7 +153,6 @@ const ifNoationNotNull = (property: string, str: string) => {
     if (str !== 'null' && str.length > 0 && !Regex.resourceScope.test(str)) {
         return {
             [property]: str,
-
         };
     }
     return {};
@@ -185,7 +167,6 @@ const createNotation = (biome: symbol, prefix: string, postfix: string) => {
                 ...ifNoationNotNull('postfix', postfix),
 
             },
-
         }
     };
 };
@@ -199,10 +180,8 @@ const ifNoation = (config, key: string, biome: string, linker: any) => {
 };
 
 const overrideStyle = (config, overrideBiome) => {
-
     const allOkOverrideColor = {};
     const problemOverrideColor = {};
-
     const overrideStyleDescription = {
         [DIAGNOSTIC_BIOME.OK]: {
             styleName: DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE,
@@ -217,7 +196,6 @@ const overrideStyle = (config, overrideBiome) => {
             target: [problemOverrideColor],
         }
     };
-
     Object.entries(overrideStyleDescription).forEach(([biome, override]) => {
         if (overrideBiome & Number(biome) && config[override.styleName]) {
             override.target.forEach(color => {
@@ -227,7 +205,6 @@ const overrideStyle = (config, overrideBiome) => {
             });
         }
     });
-
     return {
         [__0x.problemPlaceholderContentText]: {
             override: Object.keys(problemOverrideColor).length > 0 ? problemOverrideColor : undefined,
@@ -235,13 +212,11 @@ const overrideStyle = (config, overrideBiome) => {
         },
         [__0x.allOkPlaceholderContentText]: {
             override: Object.keys(allOkOverrideColor).length > 0 ? allOkOverrideColor : undefined,
-
         },
     };
 };
 
 const buildDiagnosticStyle = (config: Type.DiagnosticConfigType, style: Type.DiagonosticDecorationStyle, diagnosticStyleList: string[], visibility: Type.DiagnosticVisibilityType, diagnosticBiome) => {
-
     const result = {
         workspace: {},
         editor: {},
@@ -251,15 +226,11 @@ const buildDiagnosticStyle = (config: Type.DiagnosticConfigType, style: Type.Dia
             [__0x.allOkPlaceholderContentText]: {}
         },
     };
-
     if (config.leftMargin) {
         style.leftMargin = config.leftMargin;
     }
-
     diagnosticStyleList.forEach(styleName => {
-
-        // this is due to syle config values are in proxy object.
-        const styleConfig: Type.DecorationTextStyleConfig = {
+        const styleConfig: Type.DecorationTextStyleConfig = {   // this is due to syle config values are in proxy object.
             color: sanitizeConfigValue(config[styleName].color),
             colorOpacity: config[styleName].colorOpacity,
             backgroundColor: sanitizeConfigValue(config[styleName].backgroundColor),
@@ -267,25 +238,20 @@ const buildDiagnosticStyle = (config: Type.DiagnosticConfigType, style: Type.Dia
             fontStyle: sanitizeConfigValue(config[styleName].fontStyle),
             fontWeight: sanitizeConfigValue(config[styleName].fontWeight),
         };
-
         style.diagonosticDecorationOption[styleName] = convertToDecorationRenderOption(styleConfig, true);
-
         result.workspace = {
             ...result.workspace,
             ...ifNoation(config, styleName, "workspace", DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER)
         };
-
         result.editor = {
             ...result.editor,
             ...ifNoation(config, styleName, "editor", DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER)
         };
-
         result.all = {
             ...result.all,
             ...ifNoation(config, styleName, "all", DIAGNOSTIC_ALL_PLACEHOLDER_LINKER)
         };
     });
-
     const overrideBiome = diagnosticBiome.workspace | diagnosticBiome.editor;
     const ifOverrride = visibility.overrideLayoutPlaceholderColorToHighestSeverity ? overrideStyle(config, overrideBiome) : undefined;
     return {
@@ -314,17 +280,14 @@ type DiagnosticBiomeType = {
 const diagnosticVisibilityBiome = (visibility: Type.DiagnosticVisibilityType): DiagnosticBiomeType => {
     let workspacMask: number = DIAGNOSTIC_BIOME.ALL;
     let editorMask: number = DIAGNOSTIC_BIOME.ALL;
-
     if (visibility.DiagnosticKind === "workspace Only") {
         editorMask = DIAGNOSTIC_BIOME.NONE;
         workspacMask &= hideMkask(visibility.hideOk, visibility.hideWarning);
     }
-
     if (visibility.DiagnosticKind === "editor Only") {
         workspacMask = DIAGNOSTIC_BIOME.NONE;
         editorMask &= hideMkask(visibility.hideOk, visibility.hideWarning);
     }
-
     return {
         workspace: workspacMask,
         editor: editorMask
@@ -352,24 +315,25 @@ const clearOverrideState = (stateOf) => {
     }
 };
 
-// "disabled",
-// "IfOutOfVisibleRange",
-// "previousLine",
-// "nextLine"
+const setGlyph =(glyphList, config) => {
+    glyphList[__0x.openningBracket] = config.openningBracket
+    glyphList[__0x.closingBracket] = config.closingBracket
+    glyphList[__0x.lineEqual] = config.lineEqual
+    glyphList[__0x.lineUp] = config.lineUp
+    glyphList[__0x.lineDown] = config.lineDown
+}
 
-const setAdditionalOption = (bindTo, config) => {
-    bindTo.textOf.glyphList[__0x.problemLineUp] = config.glyphList.problemLineUp;
-    bindTo.textOf.glyphList[__0x.problemLineDown] = config.glyphList.problemLineDown;
-    bindTo.textOf.glyphList[__0x.problemLineEqual] = config.glyphList.problemLineEqual;
-    bindTo.textOf.glyphList[__0x.problemLineStartBracket] = config.glyphList.problemLineStartBracket;
-    bindTo.textOf.glyphList[__0x.problemLineEndBracket] = config.glyphList.problemLineEndBracket;
-
-    if (config.visibility.placeTextOnPreviousOrNextLine === "previousLine") {
-        bindTo.functionOf.rangeFunction = createCursorRangePreviousLine
+const setCursorLine = (bindTo, visibility) => {    
+    if (visibility.placeTextOnPreviousOrNextLine === "previousLine") {
+        bindTo.rangeFunction = createCursorRangePreviousLine
+        return;
     }
-    if (config.visibility.placeTextOnPreviousOrNextLine === "nextLine") {
-        bindTo.functionOf.rangeFunction = createCursorRangeNextLine
-    }
+    if (visibility.placeTextOnPreviousOrNextLine === "nextLine") {
+        bindTo.rangeFunction = createCursorRangeNextLine
+        return;
+    } 
+    bindTo.rangeFunction = createCursorRange;
+    return;
 };
 
 const updateDiagnosticTextConfig = (configReady: Type.ConfigInfoReadyType, configuratioChange: boolean = false): boolean => {
@@ -390,17 +354,15 @@ const updateDiagnosticTextConfig = (configReady: Type.ConfigInfoReadyType, confi
         clearOverrideState(bindTo);
         reloadContentText();
     }
-
     workspaceProxyConfiguration(diagnosticConfig, configReady.name + '.' + CONFIG_SECTION.diagnosticText, DIAGNOSTIC_CONTENT_TEXT_LIST, bindToBuffer, Regex.diagnosticText);
     const diagnosticBiome = diagnosticVisibilityBiome(diagnosticConfig.visibility);
     const decorationStyleList = decorationStyleFromBiome(diagnosticBiome.workspace | diagnosticBiome.editor);
     Object.assign(dignosticContentTextPreset, buildDiagnosticStyle(diagnosticConfig, diagnosticDecorationStyle, decorationStyleList, diagnosticConfig.visibility, diagnosticBiome));
     Object.assign(bindTo.configOf, diagnosticConfig.visibility);
-    // Object.assign(bindTo.textOf.glyphList, diagnosticConfig.glyphList);
     buildDiagnosticTextPreset(dignosticContentTextPreset, bindTo.textOf.contentText, bindToBuffer.textOf, diagnosticDecorationStyle, diagnosticConfig.leftMargin);
     applyLeftMargin(bindTo.textOf.contentText, diagnosticConfig.visibility, diagnosticConfig.leftMargin);
-    setAdditionalOption(bindTo, diagnosticConfig);
-
+    setGlyph(bindTo.textOf.glyphList, diagnosticConfig.glyphList)
+    setCursorLine(bindTo.functionOf, diagnosticConfig.visibility);
     delete bindTo.visibilityOf
     delete bindTo.functionOf;
     delete bindTo.textOf.contentText;

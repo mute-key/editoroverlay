@@ -159,18 +159,18 @@ export const editorHexKey = DIAGNOSTIC_PLACEHOLDER.EDITOR;
 export const workspaceHexKey = DIAGNOSTIC_PLACEHOLDER.WORKSPACE;
 
 export const enum DIAGNOSTIC_PROBLEM_LINE_GLYPH {
-    PROBLEM_LINE_UP = 0x0319,           // 793
-    PROBLEM_LINE_DOWN = 0x031A,         // 794
-    PROBLEM_LINE_EQUAL = 0x031B,        // 795
-    PROBLEM_LINE_STARTBRACKET = 0x031C, // 796
-    PROBLEM_LINE_ENDBRACKET = 0x031D,   // 797
+    OPENNING_BRACKET = 0x0319,
+    CLOSING_BRACKET = 0x031A,
+    LINE_EQUAL = 0x031B,
+    LINE_UP = 0x031C,
+    LINE_DOWN = 0x031D,
 }
 
-export const problemLineUp = DIAGNOSTIC_PROBLEM_LINE_GLYPH.PROBLEM_LINE_UP;
-export const problemLineDown = DIAGNOSTIC_PROBLEM_LINE_GLYPH.PROBLEM_LINE_DOWN;
-export const problemLineEqual = DIAGNOSTIC_PROBLEM_LINE_GLYPH.PROBLEM_LINE_EQUAL;
-export const problemLineStartBracket = DIAGNOSTIC_PROBLEM_LINE_GLYPH.PROBLEM_LINE_STARTBRACKET;
-export const problemLineEndBracket = DIAGNOSTIC_PROBLEM_LINE_GLYPH.PROBLEM_LINE_ENDBRACKET;
+export const openningBracket = DIAGNOSTIC_PROBLEM_LINE_GLYPH.OPENNING_BRACKET;
+export const closingBracket = DIAGNOSTIC_PROBLEM_LINE_GLYPH.CLOSING_BRACKET;
+export const lineEqual = DIAGNOSTIC_PROBLEM_LINE_GLYPH.LINE_EQUAL;
+export const lineUp = DIAGNOSTIC_PROBLEM_LINE_GLYPH.LINE_UP;
+export const lineDown = DIAGNOSTIC_PROBLEM_LINE_GLYPH.LINE_DOWN;
 
 //::==============================================================================
 //::[ DIAGNOSTIC STATUS ] 0x00, 37 -> 218
@@ -205,6 +205,3 @@ export const editorWarnErrWorkspaceWarn_err = DIAGNOSTIC_STATE_SIGNATURE.E_WARN_
 //::==============================================================================
 //::[ MISC ] 0x1000, 00 is reserved.
 //::==============================================================================
-
-
-

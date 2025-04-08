@@ -31,18 +31,8 @@ const diagnosticTextBuffer = {
     [__0x.editorWarnErrWorkspaceWarn_err]: [] as any[],
 }
 
-const decorationOptionBuffer = { ...DECORATION_OPTION_CONFIG } as Type.DecorationRenderOptionType
-
-// 이거 바뀌면 dispose 하고 새로 만드는거 필요함 
 const setDiagonosticTextbuffer = (hexKey: number, decorationType) => {
     diagnosticTextBuffer[hexKey].push(...decorationType);
-}
-
-const sealDiagnosticText = (): void => {
-    DIAGNOSTIC_ENTRY_LIST.forEach(hexKey => {
-        // Object.seal(diagnosticTextBuffer[hexKey])
-        // Object.seal(diagnosticContentText[hexKey])
-    })
 }
 
 const reloadContentText = (): void => {
@@ -91,11 +81,11 @@ const problemLineGlyph = (lineNumber: number[], line: number) => {
         }
     }
     linePosition.push(
-        lineGlyph[__0x.problemLineStartBracket],
-        equal ? lineGlyph[__0x.problemLineEqual] : '',
-        up ? lineGlyph[__0x.problemLineUp] : '',
-        down ? lineGlyph[__0x.problemLineDown] : '',
-        lineGlyph[__0x.problemLineEndBracket]);
+        lineGlyph[__0x.openningBracket],
+        equal ? lineGlyph[__0x.lineEqual] : "",
+        up ? lineGlyph[__0x.lineUp] : "",
+        down ? lineGlyph[__0x.lineDown] : "",
+        lineGlyph[__0x.closingBracket]);
     return linePosition.join('');
 }
 
@@ -150,36 +140,32 @@ const diagnosticOf = {
 };
 
 const diagnosticRenderSignature = (state: DiagnosticState): number => {
-    let emask = 0;
-    let wmask = 0;
-    if (state.editor.warning.total) {
-        emask |= 1 << 1
-    }
-    if (state.editor.error.total) {
-        emask |= 1 << 2
-    }
-
-    if (emask === 0) {
-        emask = 1;
-    }
-
-    if (state.workspace.warning.total) {
-        wmask |= 1 << 1
-    }
-    if (state.workspace.error.total) {
-        wmask |= 1 << 2
-    }
-
-    if (wmask === 0) {
-        wmask = 1;
-    }
-
-    return (emask === 1 && wmask === 1) ? __0x.allOkOverride : emask << 5 | wmask << 2 | 0b10;
+    const emask = (state.editor.warning.total ? 1 << 1 : 0) | (state.editor.error.total ? 1 << 2 : 0);
+    const wmask = (state.workspace.warning.total ? 1 << 1 : 0) | (state.workspace.error.total ? 1 << 2 : 0);
+    return (emask === 0 && wmask === 0) ? __0x.allOkOverride : ((emask ? emask << 5 : 1 << 5) | (wmask ? wmask << 2 : 1 << 2) | 0b10);
 }
 
 const clearDiagnosticText = (setDecorations: vscode.TextEditor['setDecorations'], previousSignature: number[]): void => {
-    diagnosticTextBuffer[previousSignature[0]].forEach(resetDecoration(setDecorations));
+    diagnosticTextBuffer[previousSignature[0]]?.forEach(resetDecoration(setDecorations));
 }
+type DecorationRenderAfterOption = {
+    contentText?: string | any,
+    color?: string,
+    backgroundColor?: string,
+    fontWeight?: string,
+    fontStyle?: string,
+    textDecoration?: string,
+    margin?: string
+} & {}
+
+type RenderOption = {
+    isWholeLine?: boolean,
+    rangeBehavior?: any,
+    after: {
+    } & DecorationRenderAfterOption
+}
+
+const decorationOptionBuffer: RenderOption = { ...DECORATION_OPTION_CONFIG };
 
 const renderDiagnosticText = (editor: vscode.TextEditor, signature: number, options, context) => (decoration: any, idx: number) => {
     decorationOptionBuffer.after = { ...decoration.after }
@@ -226,7 +212,6 @@ export {
     diagnosticInfo,
     bindDiagnosticContentTextState,
     setDiagonosticTextbuffer,
-    sealDiagnosticText,
     reloadContentText,
     clearDiagnosticText
 };

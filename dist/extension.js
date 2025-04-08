@@ -72,11 +72,11 @@ var errorWorkspaceContentText = 784 /* WORKSPACE_ERROR */;
 var allOkHexKey = 790 /* ALL_OK */;
 var editorHexKey = 791 /* EDITOR */;
 var workspaceHexKey = 792 /* WORKSPACE */;
-var problemLineUp = 793 /* PROBLEM_LINE_UP */;
-var problemLineDown = 794 /* PROBLEM_LINE_DOWN */;
-var problemLineEqual = 795 /* PROBLEM_LINE_EQUAL */;
-var problemLineStartBracket = 796 /* PROBLEM_LINE_STARTBRACKET */;
-var problemLineEndBracket = 797 /* PROBLEM_LINE_ENDBRACKET */;
+var openningBracket = 793 /* OPENNING_BRACKET */;
+var closingBracket = 794 /* CLOSING_BRACKET */;
+var lineEqual = 795 /* LINE_EQUAL */;
+var lineUp = 796 /* LINE_UP */;
+var lineDown = 797 /* LINE_DOWN */;
 var allOkOverride = 37 /* ALL_OK_OVERRIDE */;
 var editorOkWorkspaceWarn = 42 /* E_OK_W_WARN */;
 var editorOkWorkspaceErr = 50 /* E_OK_W_ERR */;
@@ -101,7 +101,6 @@ var CONFIG_SECTION = {
 var CONFIG_INFO = {
   name: void 0,
   renderLimiter: void 0,
-  rendered: [0, 0],
   generalConfigInfo: {
     borderOpacity: void 0,
     backgroundOpacity: void 0,
@@ -223,11 +222,11 @@ var DIAGNOSTIC_VISIBILITY_CONFIG = {
   hideWarning: void 0
 };
 var DIAGNOSTIC_GLYPH = {
-  problemLineUp: void 0,
-  problemLineDown: void 0,
-  problemLineEqual: void 0,
-  problemLineStartBracket: void 0,
-  problemLineEndBracket: void 0
+  openningBracket: void 0,
+  closingBracket: void 0,
+  lineEqual: void 0,
+  lineUp: void 0,
+  lineDown: void 0
 };
 var DIAGNOSTIC_CONFIG = {
   enabled: void 0,
@@ -468,11 +467,11 @@ var DIAGNOSTIC_PROBLEM_LIST = [
   editorWarnErrWorkspaceWarn_err
 ];
 var DIAGNOSTIC_GLYPH2 = {
-  [problemLineUp]: void 0,
-  [problemLineDown]: void 0,
-  [problemLineEqual]: void 0,
-  [problemLineStartBracket]: void 0,
-  [problemLineEndBracket]: void 0
+  [openningBracket]: void 0,
+  [closingBracket]: void 0,
+  [lineEqual]: void 0,
+  [lineUp]: void 0,
+  [lineDown]: void 0
 };
 var DIAGNOSTIC_ENTRY_LIST = [
   allOkOverride,
@@ -991,7 +990,6 @@ var diagnosticTextBuffer = {
   [editorErrWorkspaceWarnErr]: [],
   [editorWarnErrWorkspaceWarn_err]: []
 };
-var decorationOptionBuffer2 = { ...DECORATION_OPTION_CONFIG };
 var setDiagonosticTextbuffer = (hexKey, decorationType) => {
   diagnosticTextBuffer[hexKey].push(...decorationType);
 };
@@ -1036,11 +1034,11 @@ var problemLineGlyph = (lineNumber3, line) => {
     }
   }
   linePosition.push(
-    lineGlyph[problemLineStartBracket],
-    equal ? lineGlyph[problemLineEqual] : "",
-    up ? lineGlyph[problemLineUp] : "",
-    down ? lineGlyph[problemLineDown] : "",
-    lineGlyph[problemLineEndBracket]
+    lineGlyph[openningBracket],
+    equal ? lineGlyph[lineEqual] : "",
+    up ? lineGlyph[lineUp] : "",
+    down ? lineGlyph[lineDown] : "",
+    lineGlyph[closingBracket]
   );
   return linePosition.join("");
 };
@@ -1089,31 +1087,14 @@ var diagnosticOf = {
   }
 };
 var diagnosticRenderSignature = (state) => {
-  let emask = 0;
-  let wmask = 0;
-  if (state.editor.warning.total) {
-    emask |= 1 << 1;
-  }
-  if (state.editor.error.total) {
-    emask |= 1 << 2;
-  }
-  if (emask === 0) {
-    emask = 1;
-  }
-  if (state.workspace.warning.total) {
-    wmask |= 1 << 1;
-  }
-  if (state.workspace.error.total) {
-    wmask |= 1 << 2;
-  }
-  if (wmask === 0) {
-    wmask = 1;
-  }
-  return emask === 1 && wmask === 1 ? allOkOverride : emask << 5 | wmask << 2 | 2;
+  const emask = (state.editor.warning.total ? 1 << 1 : 0) | (state.editor.error.total ? 1 << 2 : 0);
+  const wmask = (state.workspace.warning.total ? 1 << 1 : 0) | (state.workspace.error.total ? 1 << 2 : 0);
+  return emask === 0 && wmask === 0 ? allOkOverride : (emask ? emask << 5 : 1 << 5) | (wmask ? wmask << 2 : 1 << 2) | 2;
 };
 var clearDiagnosticText = (setDecorations, previousSignature) => {
-  diagnosticTextBuffer[previousSignature[0]].forEach(resetDecoration(setDecorations));
+  diagnosticTextBuffer[previousSignature[0]]?.forEach(resetDecoration(setDecorations));
 };
+var decorationOptionBuffer2 = { ...DECORATION_OPTION_CONFIG };
 var renderDiagnosticText = (editor2, signature, options, context2) => (decoration, idx) => {
   decorationOptionBuffer2.after = { ...decoration.after };
   if (typeof decoration.after.contentText !== "string") {
@@ -1313,82 +1294,120 @@ var bindHighlightStyleState = () => {
   };
 };
 
+// src/configuration/shared/configuration.ts
+var vscode9 = __toESM(require("vscode"));
+
 // src/util/error.ts
 var vscode6 = __toESM(require("vscode"));
 var ErrorDecription = class {
   #configurationSection;
   #errorMessage;
-  // #betterConfigurationSectionName: string;
   constructor(configurationSection, errorMessage) {
     this.#configurationSection = configurationSection;
     this.#errorMessage = errorMessage;
   }
-  get = () => {
+  get() {
     return {
       section: this.#configurationSection,
       message: this.#errorMessage
     };
-  };
+  }
 };
 var ErrorHelper = class {
-  static errorList = [];
+  static ignored = false;
+  static notified = false;
   static packageName;
-  static configurationSectionList = () => {
+  static errorList = [];
+  static configurationSectionList() {
     return this.errorList.map((error2) => error2.get().section);
-  };
-  // protected static configurationMessageList = (): string[] => {
-  //     return this.errorList.map(error => error.get().message);
-  // };
-  static ifExtensionName = (section) => {
-    if (section.indexOf(this.packageName) && section.split(".").length > 2) {
+  }
+  static ifExtensionName(section) {
+    if (section.indexOf(this.packageName) !== -1 && section.split(".").length > 2) {
       return section.replace(this.packageName + ".", "");
     } else {
       return section;
     }
-  };
+  }
+  static pushErrorMessage() {
+    return vscode6.window.showErrorMessage(
+      "Please revise invalid values in configuration." /* CONFIGURATION_ERROR */,
+      ...["Fix Configuration", "Ignore"]
+    );
+  }
+  static userSelect(configurationList) {
+    return function(selected) {
+      if (selected === "Fix Configuration") {
+        vscode6.commands.executeCommand("workbench.action.openSettings", configurationList);
+        return false;
+      } else if (selected === "Ignore") {
+        return true;
+      }
+      return true;
+    };
+  }
+  static fixConfiguration() {
+    return async () => {
+      this.ignored = await this.pushErrorMessage().then(this.userSelect(this.configurationSectionList().join(" ")));
+    };
+  }
+  static pushMessage(message) {
+    return () => vscode6.window.showInformationMessage(message)?.then(() => {
+    });
+  }
 };
 var Error2 = class extends ErrorHelper {
-  static #ignored = false;
-  static #notified = false;
-  static #fixConfiguration = () => {
-    vscode6.window.showErrorMessage(
-      "Please fix invalid values in configuration.",
-      ...["Fix Configuration", "Ignore"]
-    ).then(this.userSelect);
-  };
-  static userSelect = (selected) => {
-    if (selected === "Fix Configuration") {
-      vscode6.commands.executeCommand("workbench.action.openSettings", this.configurationSectionList().join(" "));
-    } else if (selected === "Ignore") {
-      this.#ignored = true;
-    }
-  };
-  static setPackageName = (packageName) => {
+  static configurationUpdated() {
+    this.notified = false;
+    this.ignored = false;
+  }
+  static setPackageName(packageName) {
     this.packageName = packageName;
-  };
-  static check = () => {
+  }
+  static check() {
     return this.errorList.length > 0;
-  };
-  static register = (configurationSection, errorMessage) => {
+  }
+  static register(configurationSection, errorMessage) {
     return this.errorList.push(new ErrorDecription(configurationSection, errorMessage));
-  };
-  static clear = () => {
+  }
+  static clear() {
     this.errorList.splice(0);
-  };
-  static notify = (timer = 0) => {
-    if (this.check() && !this.#ignored && !this.#notified) {
-      this.#notified = true;
-      this.#fixConfiguration();
+  }
+  static notify(timer = 0) {
+    if (this.check() && !this.notified && !this.ignored) {
+      this.notified = true;
+      setTimeout(this.fixConfiguration(), timer);
+      return;
     }
-  };
+    setTimeout(this.pushMessage("Config has been updated succeefully. Configuration Reloaded... (Messaage Dismiss in 2 second.)" /* CONFIURATION_RELOADED */), timer);
+  }
 };
 
 // src/configuration/shared/editor.ts
-var vscode8 = __toESM(require("vscode"));
+var vscode7 = __toESM(require("vscode"));
+var writeEditorConfiguration = () => {
+  const editorConfig = getWorkspaceConfiguration("editor");
+  editorConfig.update("renderLineHighlight", "gutter", vscode7.ConfigurationTarget.Global);
+  editorConfig.update("roundedSelection", false, vscode7.ConfigurationTarget.Global);
+};
+
+// src/configuration/shared/validation.ts
+var sanitizeConfigValue = (value) => {
+  if (!value || value === "null" || value.length === 0 || regex_collection_default.resourceScope.test(value)) {
+    return void 0;
+  }
+  return value;
+};
+var sanitizeContentText = (contentText) => {
+  return contentText.filter((text) => text !== void 0 && text.length > 0 || typeof text !== "string");
+};
+var convertNullStringToNull = (value) => {
+  if (value === "null" || value.length === 0) {
+    return null;
+  }
+  return value;
+};
 
 // src/util/util.ts
-var vscode7 = __toESM(require("vscode"));
-var getWorkspaceConfiguration = (section) => vscode7.workspace.getConfiguration(section);
 var readBits = (value, trueValue, falseValue, bitLength) => {
   let idx = bitLength ? bitLength : 4;
   const array = [];
@@ -1443,32 +1462,8 @@ var hexToRgbaStringLiteral = (hex, opacity = 0.6, defaultValue, opacityDefault) 
   return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 };
 
-// src/configuration/shared/editor.ts
-var writeEditorConfiguration = () => {
-  const editorConfig = getWorkspaceConfiguration("editor");
-  editorConfig.update("renderLineHighlight", "gutter", vscode8.ConfigurationTarget.Global);
-  editorConfig.update("roundedSelection", false, vscode8.ConfigurationTarget.Global);
-};
-
-// src/configuration/shared/validation.ts
-var sanitizeConfigValue = (value) => {
-  if (!value || value === "null" || value.length === 0 || regex_collection_default.resourceScope.test(value)) {
-    return void 0;
-  }
-  return value;
-};
-var sanitizeContentText = (contentText) => {
-  return contentText.filter((text) => text !== void 0 && text.length > 0 || typeof text !== "string");
-};
-var convertNullStringToNull = (value) => {
-  if (value === "null" || value.length === 0) {
-    return null;
-  }
-  return value;
-};
-
 // src/configuration/shared/decoration.ts
-var vscode9 = __toESM(require("vscode"));
+var vscode8 = __toESM(require("vscode"));
 var leftMarginToMarginString = (leftMargin) => `0 0 0 ${leftMargin}`;
 var castToFuncSignature = (result) => {
   if (result) {
@@ -1540,7 +1535,7 @@ var parseContentText = (contentText, sectionKey, bindTo, regexObject, sectionNam
 var convertToDecorationRenderOption = (config, isWholeLine = true, contentText = void 0) => {
   const decorationOption2 = { ...DECORATION_OPTION_CONFIG };
   decorationOption2.isWholeLine = isWholeLine;
-  decorationOption2.rangeBehavior = vscode9.DecorationRangeBehavior.ClosedOpen;
+  decorationOption2.rangeBehavior = vscode8.DecorationRangeBehavior.ClosedOpen;
   decorationOption2.after = { ...DECORATION_OPTION_AFTER_CONFIG };
   if (contentText) {
     decorationOption2.after.contentText = contentText;
@@ -1571,6 +1566,7 @@ var convertToDecorationRenderOption = (config, isWholeLine = true, contentText =
 };
 
 // src/configuration/shared/configuration.ts
+var getWorkspaceConfiguration = (section) => vscode9.workspace.getConfiguration(section);
 var colorConfigTransform = {
   borderColor: {
     of: "borderOpacity",
@@ -1767,7 +1763,7 @@ var legacyConfig = {
   statusTextColor: "selectionText.color",
   statusTextBackgroundColor: "selectionText.backgroundColor",
   statusTextOpacity: "selectionText.opacity",
-  statusTextFontStyle: "statusTselectionTextext.fontStyle",
+  statusTextFontStyle: "selectionText.fontStyle",
   statusTextFontWeight: "selectionText.fontWeight",
   cursorOnlyBorderColor: "cursorOnly.borderColor",
   cursorOnlyBackgroundColor: "cursorOnly.backgroundColor",
@@ -1861,6 +1857,11 @@ var updateSelectionTextConfig = (configReady, configuratioChange = false) => {
   workspaceProxyConfiguration(SelectionDecorationConfig, configReady.name + "." + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST, bindToBuffer, regex_collection_default.statusContentText);
   buildSelectionTextDecorationRenderOption(SelectionDecorationConfig, SelectionDecorationStyle);
   buildStatusTextState(bindTo.textOf, bindToBuffer.textOf, SelectionDecorationStyle, SelectionDecorationConfig.leftMargin);
+  delete bindTo.functionOf;
+  delete bindTo.infoOf;
+  delete bindTo.textOf;
+  delete bindToBuffer.textOf;
+  delete bindToBuffer.functionOf;
   return true;
 };
 
@@ -2071,6 +2072,7 @@ var buildDiagnosticStyle = (config, style, diagnosticStyleList, visibility, diag
   }
   diagnosticStyleList.forEach((styleName) => {
     const styleConfig = {
+      // this is due to syle config values are in proxy object.
       color: sanitizeConfigValue(config[styleName].color),
       colorOpacity: config[styleName].colorOpacity,
       backgroundColor: sanitizeConfigValue(config[styleName].backgroundColor),
@@ -2142,18 +2144,24 @@ var clearOverrideState = (stateOf) => {
     }
   }
 };
-var setAdditionalOption = (bindTo, config) => {
-  bindTo.textOf.glyphList[problemLineUp] = config.glyphList.problemLineUp;
-  bindTo.textOf.glyphList[problemLineDown] = config.glyphList.problemLineDown;
-  bindTo.textOf.glyphList[problemLineEqual] = config.glyphList.problemLineEqual;
-  bindTo.textOf.glyphList[problemLineStartBracket] = config.glyphList.problemLineStartBracket;
-  bindTo.textOf.glyphList[problemLineEndBracket] = config.glyphList.problemLineEndBracket;
-  if (config.visibility.placeTextOnPreviousOrNextLine === "previousLine") {
-    bindTo.functionOf.rangeFunction = createCursorRangePreviousLine;
+var setGlyph = (glyphList, config) => {
+  glyphList[openningBracket] = config.openningBracket;
+  glyphList[closingBracket] = config.closingBracket;
+  glyphList[lineEqual] = config.lineEqual;
+  glyphList[lineUp] = config.lineUp;
+  glyphList[lineDown] = config.lineDown;
+};
+var setCursorLine = (bindTo, visibility) => {
+  if (visibility.placeTextOnPreviousOrNextLine === "previousLine") {
+    bindTo.rangeFunction = createCursorRangePreviousLine;
+    return;
   }
-  if (config.visibility.placeTextOnPreviousOrNextLine === "nextLine") {
-    bindTo.functionOf.rangeFunction = createCursorRangeNextLine;
+  if (visibility.placeTextOnPreviousOrNextLine === "nextLine") {
+    bindTo.rangeFunction = createCursorRangeNextLine;
+    return;
   }
+  bindTo.rangeFunction = createCursorRange;
+  return;
 };
 var updateDiagnosticTextConfig = (configReady, configuratioChange = false) => {
   const diagnosticConfig = { ...DIAGNOSTIC_CONFIG };
@@ -2180,7 +2188,8 @@ var updateDiagnosticTextConfig = (configReady, configuratioChange = false) => {
   Object.assign(bindTo.configOf, diagnosticConfig.visibility);
   buildDiagnosticTextPreset(dignosticContentTextPreset, bindTo.textOf.contentText, bindToBuffer.textOf, diagnosticDecorationStyle, diagnosticConfig.leftMargin);
   applyLeftMargin(bindTo.textOf.contentText, diagnosticConfig.visibility, diagnosticConfig.leftMargin);
-  setAdditionalOption(bindTo, diagnosticConfig);
+  setGlyph(bindTo.textOf.glyphList, diagnosticConfig.glyphList);
+  setCursorLine(bindTo.functionOf, diagnosticConfig.visibility);
   delete bindTo.visibilityOf;
   delete bindTo.functionOf;
   delete bindTo.textOf.contentText;
@@ -2207,7 +2216,6 @@ var loadConfiguration = (context2) => {
   }
   const configReady = configInfo;
   const decorationState2 = bindEditorDecoration().stateOf;
-  ;
   if (!configReady.configError) {
     configReady.configError = [];
     updateLegacyConfig(configReady);
@@ -2248,7 +2256,8 @@ var windowStateChanged = ({ decorationState: decorationState2 }) => {
 var activeEditorChanged = ({ configInfo: configInfo2, decorationState: decorationState2 }) => {
   return vscode12.window.onDidChangeActiveTextEditor(async (editor2) => {
     if (editor2) {
-      if (configInfo2.configError.length > 0) {
+      if (Error2.check()) {
+        Error2.notify(1500);
       }
       resetAllDecoration();
       if (configInfo2.generalConfigInfo.diagnosticTextEnabled) {
@@ -2257,9 +2266,6 @@ var activeEditorChanged = ({ configInfo: configInfo2, decorationState: decoratio
       }
       updateIndentOption(editor2);
       decorationState2.appliedHighlight[0] = renderGroupIs(editor2, [cursorOnly]);
-      if (Error2.check() && editor2) {
-        Error2.notify(2e3);
-      }
     }
   });
 };
@@ -2285,29 +2291,32 @@ var configChanged = ({ configInfo: configInfo2, decorationState: decorationState
         return event.affectsConfiguration(configInfo2.name + "." + section);
       });
       if (sectionName) {
-        const sectionChanged = {
-          ["general" /* GENERAL */]: () => updateGeneralConfig(configInfo2),
-          ["cursorOnly" /* CURSOR_ONLY */]: () => updateHighlightStyleConfiguration(configInfo2, cursorOnly),
-          ["singleLine" /* SINGLE_LINE */]: () => updateHighlightStyleConfiguration(configInfo2, singleLine),
-          ["multiLine" /* MULTI_LINE */]: () => updateHighlightStyleConfiguration(configInfo2, multiLine),
-          ["multiCursor" /* MULTI_CURSOR */]: () => updateHighlightStyleConfiguration(configInfo2, multiCursor),
-          ["selectionText" /* SELECTION_TEXT */]: () => {
-            updateDiagnosticTextConfig(configInfo2, true);
-            updateSelectionTextConfig(configInfo2, true);
-          },
-          ["diagnosticText" /* DIAGNOSTIC_TEXT */]: () => {
-            updateSelectionTextConfig(configInfo2, true);
-            updateDiagnosticTextConfig(configInfo2, true);
-          }
-        };
-        sectionChanged[sectionName]();
-        sectionChanged["general" /* GENERAL */]();
-        prepareRenderGroup(configInfo2);
-        clearDecorationState(decorationState2);
-        resetAllDecoration();
-      }
-      if (Error2.check()) {
-        Error2.notify(2e3);
+        Error2.configurationUpdated();
+        try {
+          const sectionChanged = {
+            ["general" /* GENERAL */]: () => updateGeneralConfig(configInfo2),
+            ["cursorOnly" /* CURSOR_ONLY */]: () => updateHighlightStyleConfiguration(configInfo2, cursorOnly),
+            ["singleLine" /* SINGLE_LINE */]: () => updateHighlightStyleConfiguration(configInfo2, singleLine),
+            ["multiLine" /* MULTI_LINE */]: () => updateHighlightStyleConfiguration(configInfo2, multiLine),
+            ["multiCursor" /* MULTI_CURSOR */]: () => updateHighlightStyleConfiguration(configInfo2, multiCursor),
+            ["selectionText" /* SELECTION_TEXT */]: () => {
+              updateDiagnosticTextConfig(configInfo2, true);
+              updateSelectionTextConfig(configInfo2, true);
+            },
+            ["diagnosticText" /* DIAGNOSTIC_TEXT */]: () => {
+              updateSelectionTextConfig(configInfo2, true);
+              updateDiagnosticTextConfig(configInfo2, true);
+            }
+          };
+          sectionChanged[sectionName]();
+          sectionChanged["general" /* GENERAL */]();
+        } catch (e) {
+          console.log("confugration update failed. Will notify user.", e);
+        } finally {
+          prepareRenderGroup(configInfo2);
+          clearDecorationState(decorationState2);
+          resetAllDecoration();
+        }
       }
     }
   });

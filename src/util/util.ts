@@ -1,14 +1,4 @@
-import * as vscode from 'vscode';
 import * as Type from '../type/type.d';
-
-const getWorkspaceConfiguration = (section: string): vscode.WorkspaceConfiguration => vscode.workspace.getConfiguration(section);
-
-const sendAutoDismissMessage = (text: string, dismiss: number) => {
-    const message = vscode.window.showInformationMessage(text);
-    setTimeout(() => {
-        message?.then(() => { });
-    }, dismiss);
-};
 
 /**
  * 
@@ -115,7 +105,5 @@ export {
     readBits,
     hrtimeToMS,
     splitAndPosition,
-    hexToRgbaStringLiteral,
-    sendAutoDismissMessage,
-    getWorkspaceConfiguration
+    hexToRgbaStringLiteral
 };

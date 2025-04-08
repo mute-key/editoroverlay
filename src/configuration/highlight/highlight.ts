@@ -5,9 +5,9 @@ import { BORDER_WIDTH_DEFINITION, CONFIG_KEY_LINKER_SECTION, CONFIG_SECTION, DEC
 import { CONFIG_KEY_LINKER } from '../../constant/config/enum';
 import { SELECTION_KIND_LIST } from '../../constant/shared/object';
 import { bindHighlightStyleState } from '../../editor/highlight/highlight';
-import { colorConfigTransform, getConfigValue } from '../shared/configuration';
+import { colorConfigTransform, getConfigValue, getWorkspaceConfiguration } from '../shared/configuration';
 import { createEditorDecorationType } from '../../editor/editor';
-import { getWorkspaceConfiguration, readBits } from '../../util/util';
+import { readBits } from '../../util/util';
 
 const checkConfigKeyAndCast = <T extends Type.DecorationStyleConfigNameType | Type.GeneralConfigNameOnlyType>(key: string): T => {
     return key as T;

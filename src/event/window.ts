@@ -28,10 +28,10 @@ const windowStateChanged: Type.DecorationEventFunc = ({ decorationState }): vsco
 const activeEditorChanged: Type.DecorationEventFunc = ({ configInfo, decorationState }): vscode.Disposable => {
     return vscode.window.onDidChangeActiveTextEditor(async (editor: vscode.TextEditor | undefined) => {
         if (editor) {
-            if (configInfo.configError.length > 0) {
-                // fixConfiguration(configInfo.configError);
+            if (Error.check()) {
+                Error.notify(1500);
             }
-
+            
             resetAllDecoration();
 
             if (configInfo.generalConfigInfo.diagnosticTextEnabled) {
@@ -42,10 +42,6 @@ const activeEditorChanged: Type.DecorationEventFunc = ({ configInfo, decorationS
             updateIndentOption(editor);
             
             decorationState.appliedHighlight[0] = renderGroupIs(editor, [__0x.cursorOnly]);
-
-            if (Error.check() && editor) {
-                Error.notify(2000);
-            }
         }
     });
 };

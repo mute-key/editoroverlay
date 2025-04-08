@@ -16,7 +16,6 @@ export const CONFIG_SECTION = {
 export const CONFIG_INFO = {
     name: undefined,
     renderLimiter: undefined,
-    rendered: [0, 0],
     generalConfigInfo: {
         borderOpacity: undefined,
         backgroundOpacity: undefined,
@@ -149,11 +148,11 @@ export const DIAGNOSTIC_VISIBILITY_CONFIG = {
 } as const;
 
 export const DIAGNOSTIC_GLYPH = {
-    problemLineUp: undefined,
-    problemLineDown: undefined,
-    problemLineEqual: undefined,
-    problemLineStartBracket: undefined,
-    problemLineEndBracket: undefined,
+    openningBracket: undefined,
+    closingBracket: undefined,
+    lineEqual: undefined,
+    lineUp: undefined,
+    lineDown: undefined,
 } as const
 
 export const DIAGNOSTIC_CONFIG = {

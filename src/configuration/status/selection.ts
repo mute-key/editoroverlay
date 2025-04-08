@@ -10,7 +10,6 @@ const convertPositionToDecorationRenderOption = (textPosition, SelectionDecorati
         const option = typeof text === 'string'
             ? SelectionDecorationStyle.placeholderDecorationOption
             : SelectionDecorationStyle.selectionDecorationOption[textPosition.position[idx]];
-
         const contentTextRenderOption = setContentTextOnDecorationRenderOption(option as Type.DecorationRenderOptionType, text);
         if (typeof text === 'symbol') {
             textPosition.position[idx] = contentTextRenderOption.after.contentText;
@@ -20,9 +19,7 @@ const convertPositionToDecorationRenderOption = (textPosition, SelectionDecorati
 };
 
 const buildSelectionTextDecorationRenderOption = (config: Type.SelectionDecorationConfigType, style: Type.SelectionDecorationStyleType) => {
-
     style.placeholderDecorationOption = convertToDecorationRenderOption(config, true);
-
     Object.keys(style.selectionDecorationOption).forEach((key, idx) => {
         const styleConfig: Type.DecorationTextStyleConfig = {
             color: config.selectionCountTextStyle[key],
@@ -34,8 +31,7 @@ const buildSelectionTextDecorationRenderOption = (config: Type.SelectionDecorati
     });
 };
 
-
-const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentTextBufferType,SelectionDecorationStyle,  leftMargin): void => {
+const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentTextBufferType, SelectionDecorationStyle, leftMargin): void => {
     Object.entries(textOfSource).forEach(([key, textPosition], idx) => {
         const contentTextStyled = convertPositionToDecorationRenderOption(textPosition, SelectionDecorationStyle);;
         const hexKey = SELECTION_CONTENT_TEXT_NUMLINK[key];
@@ -43,7 +39,6 @@ const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentText
             contentText: contentTextStyled,
             position: Object.entries(textPosition.position)
         };
-
         if (leftMargin && leftMargin !== '0px' || leftMargin !== '0em') {
             if (textOftarget[hexKey].contentText[0]) {
                 textOftarget[hexKey].contentText[0].after['margin'] = leftMarginToMarginString(leftMargin);
@@ -57,24 +52,21 @@ const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentText
 const updateSelectionTextConfig = (configReady: Type.ConfigInfoReadyType, configuratioChange: boolean = false): boolean => {
     const SelectionDecorationConfig = { ...SELECTION_DECORAITON_CONFIG } as Type.SelectionDecorationConfigType;
     const SelectionDecorationStyle = { ...SELECTION_DECORATION_STYLE } as Type.SelectionDecorationStyleType;
-    
     const bindTo: any = bindStatusContentTextState();
     const bindToBuffer: any = {
         functionOf: bindTo.functionOf,
         textOf: {}
     };
-
     // hm ...
     workspaceProxyConfiguration(SelectionDecorationConfig, configReady.name + '.' + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST, bindToBuffer, Regex.statusContentText);
     buildSelectionTextDecorationRenderOption(SelectionDecorationConfig, SelectionDecorationStyle);
     buildStatusTextState(bindTo.textOf, bindToBuffer.textOf, SelectionDecorationStyle, SelectionDecorationConfig.leftMargin);
-    
     // sealSelctionText();
-    // delete bindTo.functionOf;
-    // delete bindTo.infoOf;
-    // delete bindTo.textOf;
-    // delete bindToBuffer.textOf;
-    // delete bindToBuffer.functionOf;
+    delete bindTo.functionOf;
+    delete bindTo.infoOf;
+    delete bindTo.textOf;
+    delete bindToBuffer.textOf;
+    delete bindToBuffer.functionOf;
     return true;
 };
 

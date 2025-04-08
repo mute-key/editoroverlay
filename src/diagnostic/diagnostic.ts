@@ -46,15 +46,12 @@ const resetWorkspaceDiagnosticStatistics = (): void => {
     diagnosticState.workspace.error.total = 0;
 };
 
-
 const parseDiagnostic = (state, severity, fsPath: string, activeEditorfsPath: string | undefined = undefined): void => {
     Object.keys(severity).forEach(severityType => {
-
         if (severity[severityType].length > 0) {
             state.workspace[severityType].source += 1;
             state.workspace[severityType].total += severity[severityType].length;
         }
-
         if (fsPath === activeEditorfsPath) {
             state.editor[severityType].line = [
                 ...new Set([
@@ -71,17 +68,13 @@ const parseDiagnostic = (state, severity, fsPath: string, activeEditorfsPath: st
 const buildDiagnostic = (source, diagnosticList, uri): void => {
     for (const diagnostic of diagnosticList) {
         if (diagnostic.severity <= vscode.DiagnosticSeverity.Warning) {
-
             if (typeof source[uri.fsPath] !== 'object') {
                 source[uri.fsPath] = {};
             }
-
             const sevKey = DIAGNOSTIC_SEVERITY_TO_KEY[diagnostic.severity];
-
             if (!Array.isArray(source[uri.fsPath][sevKey])) {
                 source[uri.fsPath][sevKey] = [];
             }
-
             source[uri.fsPath][sevKey].push(diagnostic);
         }
     }
@@ -90,42 +83,30 @@ const buildDiagnostic = (source, diagnosticList, uri): void => {
 const maxSeverity = (state: DiagnosticState): number => {
     const ifEditorProblem = state.editor.error.total !== 0 || state.editor.warning.total !== 0;
     const ifWorkspaceProblem = state.workspace.error.total !== 0 || state.workspace.warning.total !== 0;
-
     if (!ifEditorProblem && !ifWorkspaceProblem) {
         return DIAGNOSTIC_BIOME.OK;
     }
-
     const editorSeverity = (state.editor.warning.total <= state.editor.error.total) && ifEditorProblem ? DIAGNOSTIC_BIOME.ERR : DIAGNOSTIC_BIOME.WARN;
     const workspaceSeverity = (state.workspace.warning.total <= state.workspace.error.total) && ifWorkspaceProblem ? DIAGNOSTIC_BIOME.ERR : DIAGNOSTIC_BIOME.WARN;
-
     return Math.max(editorSeverity, workspaceSeverity);
 };
 
 const updateDiagnostic = (activeEditorUri: vscode.Uri | undefined = undefined): DiagnosticState => {
-
     for (let fs in diagnosticSource) {
         delete diagnosticSource[fs];
     }
-
     resetWorkspaceDiagnosticStatistics();
-
     const diagnostics = vscode.languages.getDiagnostics();
-
     for (const [uri, diagnosticList] of diagnostics) {
         buildDiagnostic(diagnosticSource, diagnosticList, uri);
     }
-
     for (const [fsPath, severity] of Object.entries(diagnosticSource)) {
         parseDiagnostic(diagnosticState, severity, fsPath, activeEditorUri?.fsPath);
     };
-
     if (activeEditorUri && !Object.hasOwn(diagnosticSource, activeEditorUri.fsPath)) {
         resetEditorDiagnosticStatistics();
     }
-
     diagnosticState.severity = maxSeverity(diagnosticState);
-    // diagnosticState.renderSignature = markRenderSignature(diagnosticState);
-
     return diagnosticState;
 };
 

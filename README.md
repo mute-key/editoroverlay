@@ -237,3 +237,62 @@ null
 #52b100
 #5aaf10
 
+
+
+Configuration of visibility of the diagnostic status. Confuration item name should be sufficent enough as it is self-explanatory.
+
+Text Style configuration for the designnated placeholders. Each Placeholder shares the same configuration across the board of different selection type.
+| Item | Description |
+| --------------- | ------- |
+| __```ln```__ | Designated color for the __```${ln}```__ (line number) |
+| __```col```__ | Designated color for the __```${col}```__  (column position)|
+| __```zCol```__ | Designated color for the __```${zCol}```__ (zero column position)|
+| __```char```__ | Designated color for the __```${char}```__ (character count in selection)|
+| __```lc```__ | Designated color for the __```${lc}```__ (line count in selection)|
+| __```nth```__ | Designated color for the __```${nth}```__ (nth of selections: multi-cursor)|
+| __```count```__ | Designated color for the __```${count}```__ (count of of selections: multi-cursor)|
+| __```opacity```__ | Shared opacity for the placeholder text only |
+| __```fontStyle```__ | Shared font style for the placeholder text only |
+| __```fontWeight```__ | Shared font weight for the placeholder text only |
+
+
+These glyphs will be displayed next to probblems of _'Editor'_ if there is any. \n\n
+Only lineEqual glyph will be displayed When the cursor is on the problem line, \n\n
+Otherwise problem line indicator for both up or down. \n\n
+
+Format of diagnostic text for when if problem is visible.\n\n| Item | Description |\n| --------------- | ------- |\n| __```editor```__ | Current editor problem information collections |\n| __```workspace```__ | Current workspace problem information collections |\n
+
+| __```displayWhenCursorOnly```__ | 
+| __```displayWhenSingleLine```__ | 
+| __```displayWhenMultiLine```__ | 
+| __```displayWhenMultiCursor```__ | 
+| __```DiagnosticKind```__ | 
+| __```placeTextOnPreviousOrNextLine```__ | 
+| __```overrideLayoutPlaceholderColorToHighestSeverity```__ | 
+| __```overrideAllOk```__ | 
+| __```hideOk```__ | 
+| __```hideWarning```__ | 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

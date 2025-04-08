@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as Type from '../../type/type';
-import { getWorkspaceConfiguration } from '../../util/util';
+import { getWorkspaceConfiguration } from '../shared/configuration';
 
 const legacyConfig = {
     borderOpacity: 'general.borderOpacity',
@@ -10,7 +10,7 @@ const legacyConfig = {
     statusTextColor: 'selectionText.color',
     statusTextBackgroundColor: 'selectionText.backgroundColor',
     statusTextOpacity: 'selectionText.opacity',
-    statusTextFontStyle: 'statusTselectionTextext.fontStyle',
+    statusTextFontStyle: 'selectionText.fontStyle',
     statusTextFontWeight: 'selectionText.fontWeight',
     cursorOnlyBorderColor: 'cursorOnly.borderColor',
     cursorOnlyBackgroundColor: 'cursorOnly.backgroundColor',

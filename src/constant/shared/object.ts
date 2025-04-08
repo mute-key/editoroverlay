@@ -95,11 +95,11 @@ export const DIAGNOSTIC_PROBLEM_LIST = [
 ] as const;
 
 export const DIAGNOSTIC_GLYPH = {
-    [__0x.problemLineUp]: undefined,
-    [__0x.problemLineDown]: undefined,
-    [__0x.problemLineEqual]: undefined,
-    [__0x.problemLineStartBracket]: undefined,
-    [__0x.problemLineEndBracket]: undefined,    
+    [__0x.openningBracket]: undefined,
+    [__0x.closingBracket]: undefined,    
+    [__0x.lineEqual]: undefined,
+    [__0x.lineUp]: undefined,
+    [__0x.lineDown]: undefined,
 } as const
 
 export const DIAGNOSTIC_ENTRY_LIST = [

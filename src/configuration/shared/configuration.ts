@@ -2,8 +2,10 @@ import * as vscode from 'vscode';
 import * as Type from '../../type/type';
 import Error from '../../util/error';
 import { convertNullStringToNull } from './validation';
-import { getWorkspaceConfiguration, hexToRgbaStringLiteral, } from '../../util/util';
+import { hexToRgbaStringLiteral, } from '../../util/util';
 import { parseContentText } from '../shared/decoration';
+
+const getWorkspaceConfiguration = (section: string): vscode.WorkspaceConfiguration => vscode.workspace.getConfiguration(section);
 
 const colorConfigTransform: Record<string, Type.ColourConfigTransformType> = {
     borderColor: {
@@ -60,5 +62,6 @@ const workspaceProxyConfiguration = (config: any, workspaceConfigSectionName: st
 export {
     getConfigValue,
     colorConfigTransform,
-    workspaceProxyConfiguration
+    workspaceProxyConfiguration,
+    getWorkspaceConfiguration
 };

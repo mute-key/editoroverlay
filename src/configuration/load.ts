@@ -14,40 +14,27 @@ const configInfo = {
 
 const loadConfiguration = (context?: vscode.ExtensionContext): Type.InitialisedConfigType | undefined => {
     const name = context?.extension.packageJSON.name;
-
     if (!name) {
         return;
     }
-
     configInfo.name = name;
-
     if (!configInfo.name) {
         return;
     }
-
     const configReady = configInfo as Type.ConfigInfoReadyType;
-
     const decorationState = bindEditorDecoration().stateOf;
-;
     if (!configReady.configError) {
         configReady.configError = [];
         updateLegacyConfig(configReady);
     }
-
     writeEditorConfiguration();
-
     if (generateHighlightDecoration(configReady)) {
-        
         if (configReady.generalConfigInfo.selectionTextEnabled) {
             updateSelectionTextConfig(configReady);
         }
-
         if (configReady.generalConfigInfo.diagnosticTextEnabled) {
             updateDiagnosticTextConfig(configReady);
         }
-
-        // Object.seal(decorationState.appliedHighlight);
-
         return {
             config: configReady,
             decoration: decorationState
