@@ -1,19 +1,9 @@
+
+
+
 ## MUST READ
 
-If you install this extension and drag mouse updown rapidly, you will see the spikes in CPU usage.
-I advice you to check the increment of cpu usage before installing it.
-
-right click on statusbar and hide 'editor selection' which displays line number, cursor posiion and character count. (it is enabled by default and i don't think it is that accurate, thus it is very heavy )
-
-that feature alone took 10% of my cpu usage when i did same action with this extension on. (i will add more detail what is going on and what has been improvement, etc before update)
-
-
-
-
-
-
-
-
+README not complete.
 
 # Introduction
 
