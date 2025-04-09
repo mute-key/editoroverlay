@@ -40,7 +40,7 @@ class ErrorHelper {
     protected static pushErrorMessage() {
         return vscode.window.showErrorMessage(
             SYSTEM_MESSAGE.CONFIGURATION_ERROR, ...['Fix Configuration', 'Ignore']
-        )
+        );
     };
 
     protected static userSelect(configurationList: string) {
@@ -52,17 +52,17 @@ class ErrorHelper {
                 return true;
             }
             return true;
-        }
+        };
     };
 
     protected static fixConfiguration() {
         return async () => {
-            this.ignored = await this.pushErrorMessage().then(this.userSelect(this.configurationSectionList().join(' ')))
-        }
+            this.ignored = await this.pushErrorMessage().then(this.userSelect(this.configurationSectionList().join(' ')));
+        };
     }
 
     protected static pushMessage(message: string) {
-        return () => vscode.window.showInformationMessage(message)?.then(() => {})
+        return () => vscode.window.showInformationMessage(message)?.then(() => {});
     }
 }
 
@@ -91,9 +91,9 @@ export default abstract class Error extends ErrorHelper {
     public static notify(timer: number = 0): void {
         if (this.check() && !this.notified && !this.ignored) {
             this.notified = true;
-            setTimeout(this.fixConfiguration(), timer)
+            setTimeout(this.fixConfiguration(), timer);
             return;
         }
-        setTimeout(this.pushMessage(SYSTEM_MESSAGE.CONFIURATION_RELOADED), timer)
+        setTimeout(this.pushMessage(SYSTEM_MESSAGE.CONFIURATION_RELOADED), timer);
     };
 }

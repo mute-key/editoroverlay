@@ -16,7 +16,7 @@ const diagnosticContentText = {
 
 const lineGlyph = {
     ...DIAGNOSTIC_GLYPH
-}
+};
 
 const diagnosticTextBuffer = {
     [__0x.allOkOverride]: [] as any[],
@@ -30,19 +30,19 @@ const diagnosticTextBuffer = {
     [__0x.editorErrWorkspaceErr]: [] as any[],
     [__0x.editorErrWorkspaceWarnErr]: [] as any[],
     [__0x.editorWarnErrWorkspaceWarn_err]: [] as any[],
-}
+};
 
 const setDiagonosticTextbuffer = (hexKey: number, decorationType) => {
     diagnosticTextBuffer[hexKey].push(...decorationType);
-}
+};
 
 const reloadContentText = (): void => {
     DIAGNOSTIC_ENTRY_LIST.forEach(hexKey => {
         diagnosticTextBuffer[hexKey].forEach(decorationType => decorationType.dispose());
         diagnosticContentText[hexKey].splice(0);
         diagnosticTextBuffer[hexKey].splice(0);
-    })
-}
+    });
+};
 
 const diagnosticVisibility = { ...DIAGNOSTIC_VISIBILITY_CONFIG } as Type.DiagnosticVisibilityType;
 
@@ -88,7 +88,7 @@ const problemLineGlyph = (lineNumber: number[], line: number) => {
         down ? lineGlyph[__0x.lineDown] : "",
         lineGlyph[__0x.closingBracket]);
     return linePosition.join('');
-}
+};
 
 const editorWarningSourceOf = {
     wrn: ({ state, line }) => String(state.editor.warning.total) + problemLineGlyph(state.editor.warning.line, line)
@@ -143,11 +143,11 @@ const diagnosticRenderSignature = (state: DiagnosticState): number => {
     const emask = (state.editor.warning.total ? 1 << 1 : 0) | (state.editor.error.total ? 1 << 2 : 0);
     const wmask = (state.workspace.warning.total ? 1 << 1 : 0) | (state.workspace.error.total ? 1 << 2 : 0);
     return (emask === 0 && wmask === 0) ? state.override : ((emask ? emask << 5 : 1 << 5) | (wmask ? wmask << 2 : 1 << 2) | 0b10);
-}
+};
 
 const clearDiagnosticText = (setDecorations: vscode.TextEditor['setDecorations'], previousSignature: number[]): void => {
     diagnosticTextBuffer[previousSignature[0]]?.forEach(resetDecoration(setDecorations));
-}
+};
 type DecorationRenderAfterOption = {
     contentText?: string | any,
     color?: string,
@@ -168,18 +168,18 @@ type RenderOption = {
 const decorationOptionBuffer: RenderOption = { ...DECORATION_OPTION_CONFIG };
 
 const renderDiagnosticText = (editor: vscode.TextEditor, signature: number, options, context) => (decoration: any, idx: number) => {
-    decorationOptionBuffer.after = { ...decoration.after }
+    decorationOptionBuffer.after = { ...decoration.after };
     if (typeof decoration.after.contentText !== 'string') {
-        decorationOptionBuffer.after.contentText = decoration.after.contentText(context)
+        decorationOptionBuffer.after.contentText = decoration.after.contentText(context);
     };
     options.renderOptions = decorationOptionBuffer;
     editor.setDecorations(diagnosticTextBuffer[signature][idx], [options]);
-}
+};
 
 const decorationOption = {
     range: {},
     renderOptions: {}
-}
+};
 
 const context = {
     state: {},

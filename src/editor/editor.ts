@@ -5,8 +5,8 @@ import * as regex from '../util/regex.collection';
 import { DECORATION_STATE, SELECTION_KIND_LIST } from '../constant/shared/object';
 import { bindStatusContentTextState, clearSelectionTextBuffer } from './status/selection';
 import { bindDiagnosticContentTextState, clearDiagnosticText, diagnosticInfo } from './status/diagnostic';
-import { cursorOnlyHighlightRange, singelLineHighlightRange, multiLineHighlightRange, multiCursorHighlightRange, clearEveryHighlight } from './highlight/highlight'
-import { cursorOnlySelection, singleLineSelection, multilineSelection, multiCursorSelection } from './status/selection'
+import { cursorOnlyHighlightRange, singelLineHighlightRange, multiLineHighlightRange, multiCursorHighlightRange, clearEveryHighlight } from './highlight/highlight';
+import { cursorOnlySelection, singleLineSelection, multilineSelection, multiCursorSelection } from './status/selection';
 import { blankRange } from './range';
 
 const decorationState = { ...DECORATION_STATE } as unknown as Type.DecorationStateType;
@@ -24,10 +24,10 @@ const clearDecorationState = (decorationState: Type.DecorationStateType) => {
 
 const resetAllDecoration = () => {
     const clearList = (editor) => {
-        clearEveryHighlight(editor)
+        clearEveryHighlight(editor);
         clearSelectionTextBuffer(editor);
         clearDiagnosticText(editor.setDecorations, decorationState.diagnosticSignature);
-    }
+    };
     vscode.window.visibleTextEditors.forEach(clearList);
 };
 
@@ -111,7 +111,7 @@ const renderGroupIs = (editor: vscode.TextEditor, numKey: number[]): number => {
             return __0x.singleLine;
         }
     } else {
-        renderFnStack[__0x.multiCursor].forEach(fnBind)
+        renderFnStack[__0x.multiCursor].forEach(fnBind);
         return __0x.multiCursor;
     }
 };

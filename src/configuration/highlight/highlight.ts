@@ -130,7 +130,7 @@ const updateGeneralConfig = (configReady: Type.ConfigInfoReadyType) => {
 const updateHighlightStyleConfiguration = (configReady: Type.ConfigInfoReadyType, selectionType: number) => {
     let bindTo: any = bindHighlightStyleState();
     if (bindTo.styleOf[selectionType]) {
-        bindTo.styleOf[selectionType].forEach(decoration => decoration.dispose())
+        bindTo.styleOf[selectionType].forEach(decoration => decoration.dispose());
     }
     const configSet: Type.DecorationStyleConfigType = getConfigSet(configReady, selectionType);
     const parsed = borderPositionParser(selectionType, String(configSet.borderPosition));

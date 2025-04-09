@@ -102,12 +102,12 @@ export const DIAGNOSTIC_GLYPH = {
     [__0x.lineEqual]: undefined,
     [__0x.lineUp]: undefined,
     [__0x.lineDown]: undefined,
-} as const
+} as const;
 
 export const DIAGNOSTIC_ENTRY_LIST = [
     __0x.allOkOverride,
     ...DIAGNOSTIC_PROBLEM_LIST
-]
+];
 
 export const DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET = {
     [__0x.okContentText]: __0x.okEditorContentText,

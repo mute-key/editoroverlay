@@ -151,7 +151,7 @@ export const DIAGNOSTIC_GLYPH = {
     lineEqual: undefined,
     lineUp: undefined,
     lineDown: undefined,
-} as const
+} as const;
 
 export const DIAGNOSTIC_CONFIG = {
     enabled: undefined,
