@@ -1,285 +1,139 @@
-
-
-
-## MUST READ
-
-README not complete.
-
 # Introduction
 
-cursor/selection range highlight extension.
+Highly customizable cursor/selection highlight extension.
+This extension will also display selection status text which is equivelant of 'Editor Selection' in status bar as well as diagnostic count of editor/workspace same as in 'Problem view'.
+You can enabled/disabled only the feetures you want if you don't need them all. Here are the examples of this extension with default confuguration as out of the box.
 
-* cursor only: no selection range, only cursor on line.
-* single line: when selection range is 1 line.
-* multi line: when you select multiple lines in single selection.
-* multi cursor: when selection is more than 1, meaning when you use multi cursor editing.
+#### ___Cursor Only Highlight___
+https://github.com/mute-key/cursorlinehighlight/blob/main/resouce
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/cursorOnly.png" alt ="GIF" style=""><br>
 
-this extension will also display status text where the selection is.
+#### ___SingleLine Highlight___
 
-## Setting Guide
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/singleLine.png" alt ="GIF" style=""><br>
 
-`ctrl + shift + p` and search/open Settign UI, then search 'cursorline'
+#### ___MultiLine Highlight___
 
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/multiLine.png" alt ="GIF" style=""><br>
 
-## Table of contents 
-0. tl;dr
-1. General
-2. Status (Selection Status)
-3. Cursor Only 
-4. Single Line
-5. Multi Line
-6. Multi Cursor 
-7. Diagnostic (Workspace Problems)
-    - Bind to Current Editor 
-    - Bind To workspace 
+#### ___MultiCursor Highlight___
 
-## 0. tl;dr
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/multiCursor.png" alt ="GIF" style=""><br>
 
+#### ___Diagnostic___
 
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/diagnostic.png" alt ="GIF" style=""><br>
 
+> So this extension will display the diagnostic status of current editor/workspace.
+You can confugure visibily, fixtures, position, format or text/glyph/emoji.
 
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/linePosition.png" alt ="GIF" style=""><br>
 
-## 1. General
+> And Editor diagonotic will direct where the problem lines are based on current cursor position. <br>
 
-`General -> borderOpacity`
-> Opacity of decoration border in __```%```__. __```1```__ is no opacity.
 
-`General -> backgroundOpacity`
-> Opacity of background color of selection in __```%```__. __```1```__ is no opacity.
+So far, everythign in the examples are on default configuration.<br><br>
 
-## 2. Status (Selection)
+There are no apply preset features yet, which i will add soon in future iteration.<br>
+Also, feel free to leave feedback or comment if you like.<br>
 
-`selectionText -> enabled`
-> Enable inline status text.
+# Feature Guide
 
-`selectionText -> color`
-> Change the Inline Status Text color. <br>Must be in format of hex color representation as __```#RRGGBB```__.
+`ctrl + shift + p` and search/open Settign UI, then search 'cursorline'<br>
 
-`selectionText -> backgroundColor`
-> Change the Inline Status Text background color. <br>Must be in format of hex color representation as __```#RRGGBB```__, __```null```__ or __```""```__ (No background).
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/setting.png" alt ="GIF" style=""><br>
+Most of configraions are should be self-explantory, so i will detail the ones that are not so much straight-forward.<br>
 
-`selectionText -> opacity`
-> Opacity of background color of selection in __```%```__. __```1```__ is no opacity.
+1. Cursor/selection highlight
+2. Selection Status
+3. Diagnostic Status
 
-`selectionText -> fontStyle`
-> Font style of status text.
+## Cursor/selection highlight
 
-`selectionText -> fontWeight`
-> Font weight of status text.
+As the examples in the introduction, you can apply the borders and background to selection lines.
+The confugrations are very clear to understand, the only thing that you need to know is that highlight color values shares
+same opacity value from 'General.' You can also use string literal 'null' to disable the color for border and background.
 
-`selectionText -> cursorOnlyText`
-> Status Text for Cursor Only Selection.<br>Example: `< Editing ... At (idx ${zCol}, zero-based)`
+## Selection Status
 
-| Placeholder       | Description                                   |
-| ----------------- | --------------------------------------------- |
-| __```${col}```__  | Current position of cursor (as on status bar) |
-| __```${zCol}```__ | count of characters in line (Zero based)      |
-| __```${ln}```__   | current line number                           |
+You can disable this feature if not necessary.
 
-`selectionText -> singleLineText`
-> Status Text for Single Line Selection.<br>Example: `< Selection ... Of (${char} Characters)`
+This feature is probably the main reason that i made this extension. The status bar is too small to read from distance, and it is even more inconvient
+if you are using wide display as the editor selection is on bottom right side of vscode. It also does not tells you how many lines are i selection.
+The value 'Col' in status bar 'Editor selection' is not zero based, as it refers to the actaully column grid of the editor.
 
-| Placeholder       | Description                  |
-| ----------------- | ---------------------------- |
-| __```${char}```__ | character count of selection |
-| __```${ln}```__   | current line number          |
+Most of configurations are quite straight foword and they are well explained in configuration section.
 
-`selectionText -> multiLineCursorText`
-> Status Text for _'Multi Line Selection (Active Cursor)'_.<br>Example: `< Selection Cursor ... Of (${lc} Lines, ${char} Characters, Indent/EOL Ignored)`
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/pinned.png" alt ="GIF" style=""><br>
 
-| Placeholder       | Description                  |
-| ----------------- | ---------------------------- |
-| __```${ln}```__   | selection cursor line number |
-| __```${lc}```__   | line count of selection      |
-| __```${char}```__ | character count of selection |
+You will see cpu usage spike when you repeatly/rapidly drag up and down while you are on multi-line selection.
+This is due to the selection change event interface being triggered at average rate at 1000 per second.
+The event even could reach 0.3ms between the event call. I would like to implement throttling features to reduce the cpu usage of event calls in the next iterations.
+I tried optimise the performace of multi-line selection and cpu usage, and it is better than past versions of the extensions but it still can spike some.
+It is not so much of the code, but it is the rendering cost but this is my specularation as the vscode API doc advices to keep the decoration object as light as possible.
+Perhaps that is the reason but it is only my assumption.
 
-`selectionText -> multiLineAnchorText`
-> Status Text for _'Multi Line Selection (Anchor)'_.<br>Example: `< Selection Anchor ... Of (${lc} Lines, ${char} Characters, Indent/EOL Ignored)`
+It is the only multi-line selection with high frequant change of seleciton and it should be ok once if throttling is imlemented so if the rendering rate of multi-line decoration is reduced (e.g. 10ms).
 
-| Placeholder       | Description                  |
-| ----------------- | ---------------------------- |
-| __```${ln}```__   | selection anchor line number |
-| __```${lc}```__   | line count of selection      |
-| __```${char}```__ | character count of selection |
+If there is a problem with your configruation or if you want to revert to the default, find a Cog button next to configuration section and click 'Reset Setting'.
+⚙️ is hidden but it will appear when you click on the section itself.
 
-`selectionText -> multiCursorText`
-> Status Text for _'Multi Cursor Selection'_.<br>Example: `< Multi Selection ... Of (${nth} of ${count}, with Total ${lc} Lines ${char} Characters)`
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/reset.png" alt ="GIF" style=""><br>
 
-| Placeholder        | Description                        |
-| ------------------ | ---------------------------------- |
-| __```${nth}```__   | position of selection              |
-| __```${count}```__ | count of selection                 |
-| __```${lc}```__    | total line count of selection      |
-| __```${ln}```__    | selection line number of last line |
-| __```${char}```__  | total character count of selection |
+## Diagnostic status
 
-## 3. Cursor Only
+You can disable this feature if not necessary.
 
-`cursorOnly -> borderColor`
-> Change the border color. <br>Must be in format of hex color representation as __```#RRGGBB```__.
+Diagnostic status indicate the same entry in probelm view as the screenshot.
 
-`cursorOnly -> backgroundColor`
-> Change the background color. <br>Must be in format of hex color representation as __```#RRGGBB```__, __```null```__ or __```""```__ (No background).
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/problem.png" alt ="GIF" style=""><br>
 
-`cursorOnly -> borderPosition`
-> Border position on current selection.
+The configurations are some what complicated, due to complexcity of customizability of status block.
 
-`cursorOnly -> borderWidth`
-> Border width, should use unit of __```'px'```__ or __```'em'```__.
+It kinda over-extend when selection status is enabled too, especially if you use horizontally split editors. 
+I would advice to change the position of diagnostics from setting 'Visibilty' 
 
-`cursorOnly -> borderStyle`
-> Main Border style on current line.
 
-<!-- (not working yet) Use this border style only when [bottom | after Cursor]. this is border style for `cursorOnly.borderStyleWithafterCursor`
-> previous range. -->
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/nextLine.png" alt ="GIF" style=""><br>
 
-## 4. Single Line
+Setting to next line put diagnostic on the line bellow where the cursor is.
 
-`singleLine -> borderColor`
-> Change the border color. <br>Must be in format of hex color representation as __```#RRGGBB```__.
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/nextLine2.png" alt ="GIF" style=""><br>
 
-`singleLine -> backgroundColor`
-> Change the background color. <br>Must be in format of hex color representation as __```#RRGGBB```__, __```null```__ or __```""```__ (No background).
-
-`singleLine -> borderPosition`
-> Border position on current selection.
-
-`singleLine -> borderWidth`
-> Border width, should use unit of __```'px'```__ or __```'em'```__.
-
-`singleLine -> borderStyle`
-> Border style on current selection.
-
-## 5. Multi Line
-
-`multiLine -> borderColor`
-> Change the border color. <br>Must be in format of hex color representation as __```#RRGGBB```__.
-
-`multiLine -> backgroundColor`
-> Change the background color. <br>Must be in format of hex color representation as __```#RRGGBB```__, __```null```__ or __```""```__ (No background).
-
-`multiLine -> borderPosition`
-> Border position on current selection.
-
-`multiLine -> borderWidth`
-> Border width, should use unit of __```'px'```__ or __```'em'```__.
-
-`multiLine -> borderStyle`
-> Border style on current selection.
-
-## 6. Multi Cursor
-
-`multiCursor -> borderColor`
-> Change the border color. <br>Must be in format of hex color representation as __```#RRGGBB```__.
-
-`multiCursor -> backgroundColor`
-> Change the background color. <br>Must be in format of hex color representation as __```#RRGGBB```__, __```null```__ or __```""```__ (No background).
-
-`multiCursor -> borderPosition`
-> Border position on current selection.
-
-`multiCursor -> borderWidth`
-> Border width, should use unit of __```'px'```__ or __```'em'```__.
-
-`multiCursor -> borderStyle`
-> Border style on current selection
-
-## 7. Diagnostic (Workspace problems) 
-
-
-
-
-## Extra 
-
-#### Color code 
-<!-- 
-#5eccff
-#19b4fd // blue 
-#009FFF
-#52b100 // dark green 
-#8ae71d // green
-#b3b3b3 // grey
-#fdf6e3 // white
-#c2c0b9
-#dc322e // red
-#ff5755 // red
-#ff706e // red
-#eb5856
-#ffd200
-#ff6b69
-#ff5b58
-#a3d900
-#89e71d
-
-#d0ff438e
-
-#FFD200
-#c49600
-
-#a3d900 -->
-
-#8ae71d
-#c49600
-#909CB5
-null
-#8ae71d
-null
-#52b100
-#5aaf10
-
-
-
-Configuration of visibility of the diagnostic status. Confuration item name should be sufficent enough as it is self-explanatory.
-
-Text Style configuration for the designnated placeholders. Each Placeholder shares the same configuration across the board of different selection type.
-| Item | Description |
-| --------------- | ------- |
-| __```ln```__ | Designated color for the __```${ln}```__ (line number) |
-| __```col```__ | Designated color for the __```${col}```__  (column position)|
-| __```zCol```__ | Designated color for the __```${zCol}```__ (zero column position)|
-| __```char```__ | Designated color for the __```${char}```__ (character count in selection)|
-| __```lc```__ | Designated color for the __```${lc}```__ (line count in selection)|
-| __```nth```__ | Designated color for the __```${nth}```__ (nth of selections: multi-cursor)|
-| __```count```__ | Designated color for the __```${count}```__ (count of of selections: multi-cursor)|
-| __```opacity```__ | Shared opacity for the placeholder text only |
-| __```fontStyle```__ | Shared font style for the placeholder text only |
-| __```fontWeight```__ | Shared font weight for the placeholder text only |
-
-
-These glyphs will be displayed next to probblems of _'Editor'_ if there is any. \n\n
-Only lineEqual glyph will be displayed When the cursor is on the problem line, \n\n
-Otherwise problem line indicator for both up or down. \n\n
-
-Format of diagnostic text for when if problem is visible.\n\n| Item | Description |\n| --------------- | ------- |\n| __```editor```__ | Current editor problem information collections |\n| __```workspace```__ | Current workspace problem information collections |\n
-
-| __```displayWhenCursorOnly```__ | 
-| __```displayWhenSingleLine```__ | 
-| __```displayWhenMultiLine```__ | 
-| __```displayWhenMultiCursor```__ | 
-| __```DiagnosticKind```__ | 
-| __```placeTextOnPreviousOrNextLine```__ | 
-| __```overrideLayoutPlaceholderColorToHighestSeverity```__ | 
-| __```overrideAllOk```__ | 
-| __```hideOk```__ | 
-| __```hideWarning```__ | 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Currently, There aren't many styles for diagnostic block but those will be in future update definitely such as background color, border radious and etc,
+so the diagnotic block is more  visibly distint from others on the display.
+
+I would like to kindly advice to read the pinned description thoroughly and try it youself.
+i will try to list the template strucutre briefly.
+
+- All Ok Placeholder ContentText
+  - Template Fixture + [body]
+    - body: [prefix] + All Ok ContentText + [postfix]
+- Problem Placeholder ContentText
+  - Template Fixture + [body: Editor + workspace]
+    - Editor
+      - [prefix] + ok ContentText + [postfix]
+      - [prefix] + warning ContentText + [postfix]
+      - [prefix] + error ContentText + [postfix]
+    - workspace
+      - [prefix] + ok ContentText + [postfix]
+      - [prefix] + warning ContentText + [postfix]
+      - [prefix] + error ContentText + [postfix]
+
+## Lastly
+
+Next update will include configuration preset, that will auto apply with command execution and more style configruations.
+configuration code is not very polished, so i might need to spend some time with it as well as types and interface declarations.
+
+I only used glyphs because you can apply the color of your choice.
+Of course, you can use emoji to replace the glyps as well.
+Or, if you use glyph fonts such as pwoerline or nerdfont, those can be used to customize the contentText.
+
+I may add font family configuration in the future.
+
+Feel free to open isseus if you find one, or any feedback or comment is more than welcome.
+
+Thank you for reading.
 
 
 

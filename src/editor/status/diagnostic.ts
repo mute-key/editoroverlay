@@ -20,6 +20,7 @@ const lineGlyph = {
 
 const diagnosticTextBuffer = {
     [__0x.allOkOverride]: [] as any[],
+    [__0x.allOkNoOverride]: [] as any[],
     [__0x.editorOkWorkspaceWarn]: [] as any[],
     [__0x.editorOkWorkspaceErr]: [] as any[],
     [__0x.editorOkWorkspaceWarnErr]: [] as any[],
@@ -136,13 +137,12 @@ const diagnosticOf = {
         ...workspaceErrorSourceOf,
         ...workspaceErrorCountOf
     },
-
 };
 
 const diagnosticRenderSignature = (state: DiagnosticState): number => {
     const emask = (state.editor.warning.total ? 1 << 1 : 0) | (state.editor.error.total ? 1 << 2 : 0);
     const wmask = (state.workspace.warning.total ? 1 << 1 : 0) | (state.workspace.error.total ? 1 << 2 : 0);
-    return (emask === 0 && wmask === 0) ? __0x.allOkOverride : ((emask ? emask << 5 : 1 << 5) | (wmask ? wmask << 2 : 1 << 2) | 0b10);
+    return (emask === 0 && wmask === 0) ? state.override : ((emask ? emask << 5 : 1 << 5) | (wmask ? wmask << 2 : 1 << 2) | 0b10);
 }
 
 const clearDiagnosticText = (setDecorations: vscode.TextEditor['setDecorations'], previousSignature: number[]): void => {
@@ -191,7 +191,7 @@ const diagnosticInfo = (decorationState) => (editor: vscode.TextEditor) => {
     const diagnosticState = updateDiagnostic(editor.document.uri);
     const signature = diagnosticRenderSignature(diagnosticState);
     context.state = diagnosticState;
-    context.line = editor.selection.active.line;
+    context.line = editor.selection.start.line;
     decorationOption.range = diagnosticOf.rangeFunction(editor);
     diagnosticContentText[signature].forEach(renderDiagnosticText(editor, signature, { ...decorationOption }, context));
     decorationState.diagnosticSignature[0] = signature;

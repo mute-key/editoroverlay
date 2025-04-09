@@ -38,6 +38,7 @@ export const HIGHLIGHT_BORDER_POSITION_INFO = {
 } as const;
 
 export const DIAGNOSTIC_STATE = {
+    override: 0,
     severity: 0,
     editor: {
         warning: {
@@ -71,6 +72,7 @@ export const SELECTION_CONTENT_TEXT = {
 
 export const DIAGNOSTIC_CONTENT_TEXT = {
     [__0x.allOkOverride]: [] as any[],
+    [__0x.allOkNoOverride]: [] as any[],
     [__0x.editorOkWorkspaceWarn]: [] as any[],
     [__0x.editorOkWorkspaceErr]: [] as any[],
     [__0x.editorOkWorkspaceWarnErr]: [] as any[],

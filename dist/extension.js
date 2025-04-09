@@ -62,7 +62,7 @@ var warningContentText = 770 /* WARNING_CONTENT_TEXT */;
 var errorContentText = 771 /* ERROR_CONTENT_TEXT */;
 var allOkPlaceholderContentText = 777 /* LAYOUT_ALLOKPLACEHOLDER */;
 var problemPlaceholderContentText = 778 /* LAYOUT_PROBLEMPLACEHOLDER */;
-var okAllContentText = 776 /* ALL_OK_ALL */;
+var allOkContentText = 776 /* ALL_OK_ALL */;
 var okEditorContentText = 779 /* EDITOR_OK */;
 var warningEditorContentText = 780 /* EDITOR_WARNING */;
 var errorEditorContentText = 781 /* EDITOR_ERROR */;
@@ -78,6 +78,7 @@ var lineEqual = 795 /* LINE_EQUAL */;
 var lineUp = 796 /* LINE_UP */;
 var lineDown = 797 /* LINE_DOWN */;
 var allOkOverride = 37 /* ALL_OK_OVERRIDE */;
+var allOkNoOverride = 38 /* ALL_OK_NO_OVERRIDE */;
 var editorOkWorkspaceWarn = 42 /* E_OK_W_WARN */;
 var editorOkWorkspaceErr = 50 /* E_OK_W_ERR */;
 var editorOkWorkspaceWarnErr = 58 /* E_OK_W_WARN_ERR */;
@@ -217,9 +218,7 @@ var DIAGNOSTIC_VISIBILITY_CONFIG = {
   DiagnosticKind: void 0,
   placeTextOnPreviousOrNextLine: void 0,
   overrideLayoutPlaceholderColorToHighestSeverity: void 0,
-  overrideAllOk: void 0,
-  hideOk: void 0,
-  hideWarning: void 0
+  overrideAllOk: void 0
 };
 var DIAGNOSTIC_GLYPH = {
   openningBracket: void 0,
@@ -235,12 +234,12 @@ var DIAGNOSTIC_CONFIG = {
   glyphList: DIAGNOSTIC_GLYPH,
   problemPlaceholderContentText: void 0,
   allOkPlaceholderContentText: void 0,
+  allOkContentText: void 0,
   ["diagnosticPlaceholderTextStyle" /* DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE */]: void 0,
   ["okNotationTextStyle" /* OK_NOTATION_TEXT_STYLE */]: void 0,
   ["okTextStyle" /* OK_TEXT_STYLE */]: void 0,
   okWorkspaceContentText: void 0,
   okEditorContentText: void 0,
-  okAllContentText: void 0,
   ["warningNotationTextStyle" /* WARNING_NOTATION_TEXT_STYLE */]: void 0,
   ["warningTextStyle" /* WARNINGTEXT_STYLE */]: void 0,
   warningWorkspaceContentText: void 0,
@@ -261,7 +260,7 @@ var DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER = {
   ["errorNotationTextStyle" /* ERROR_NOTATION_TEXT_STYLE */]: errorWorkspaceContentText
 };
 var DIAGNOSTIC_ALL_PLACEHOLDER_LINKER = {
-  ["okNotationTextStyle" /* OK_NOTATION_TEXT_STYLE */]: okAllContentText
+  ["okNotationTextStyle" /* OK_NOTATION_TEXT_STYLE */]: allOkContentText
 };
 var DIAGNOSTIC_DECORATION_TEXT_KIND = {
   contentText: void 0,
@@ -269,8 +268,8 @@ var DIAGNOSTIC_DECORATION_TEXT_KIND = {
 };
 var DECORATION_OPTION_LINKER = {
   allOkPlaceholderContentText: ["diagnosticPlaceholderTextStyle" /* DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE */, void 0],
+  allOkContentText: ["okTextStyle" /* OK_TEXT_STYLE */, "okNotationTextStyle" /* OK_NOTATION_TEXT_STYLE */],
   problemPlaceholderContentText: ["diagnosticPlaceholderTextStyle" /* DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE */, void 0],
-  okAllContentText: ["okTextStyle" /* OK_TEXT_STYLE */, "okNotationTextStyle" /* OK_NOTATION_TEXT_STYLE */],
   okEditorContentText: ["okTextStyle" /* OK_TEXT_STYLE */, "okNotationTextStyle" /* OK_NOTATION_TEXT_STYLE */],
   warningEditorContentText: ["warningTextStyle" /* WARNINGTEXT_STYLE */, "warningNotationTextStyle" /* WARNING_NOTATION_TEXT_STYLE */],
   errorEditorContentText: ["errorTextStyle" /* ERROR_TEXT_STYLE */, "errorNotationTextStyle" /* ERROR_NOTATION_TEXT_STYLE */],
@@ -281,7 +280,7 @@ var DECORATION_OPTION_LINKER = {
 var DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM = {
   problemPlaceholderContentText,
   allOkPlaceholderContentText,
-  okAllContentText,
+  allOkContentText,
   okEditorContentText,
   warningEditorContentText,
   errorEditorContentText,
@@ -299,7 +298,7 @@ var DIAGNOSTIC_CONTENT_TEXT_LIST = [
   "allOkPlaceholderContentText",
   "okWorkspaceContentText",
   "okEditorContentText",
-  "okAllContentText",
+  "allOkContentText",
   "warningWorkspaceContentText",
   "warningEditorContentText",
   "errorWorkspaceContentText",
@@ -414,6 +413,7 @@ var HIGHLIGHT_BORDER_POSITION_INFO = {
   [multiCursor]: void 0
 };
 var DIAGNOSTIC_STATE = {
+  override: 0,
   severity: 0,
   editor: {
     warning: {
@@ -445,6 +445,7 @@ var SELECTION_CONTENT_TEXT = {
 };
 var DIAGNOSTIC_CONTENT_TEXT = {
   [allOkOverride]: [],
+  [allOkNoOverride]: [],
   [editorOkWorkspaceWarn]: [],
   [editorOkWorkspaceErr]: [],
   [editorOkWorkspaceWarnErr]: [],
@@ -547,7 +548,7 @@ var errorTotalRegex = {
 var diagnosticTextRegex = {
   ["problemPlaceholderContentText" /* PLACEHOLDER_PROBLEM_CONTENT_TEXT */]: problemRegex,
   ["allOkPlaceholderContentText" /* PLACEHOLDER_ALL_OK_CONTENT_TEXT */]: okRegex,
-  ["okAllContentText" /* OK_ALL_CONTENT_TEXT */]: notationRegex,
+  ["allOkContentText" /* OK_ALL_CONTENT_TEXT */]: notationRegex,
   ["okWorkspaceContentText" /* OK_WORKSPACE_CONTENT_TEXT */]: notationRegex,
   ["okEditorContentText" /* OK_EDITOR_CONTENT_TEXT */]: notationRegex,
   ["warningWorkspaceContentText" /* WARNING_WORKSPACE_CONTENT_TEXT */]: {
@@ -909,6 +910,9 @@ var resetWorkspaceDiagnosticStatistics = () => {
   diagnosticState.workspace.error.source = 0;
   diagnosticState.workspace.error.total = 0;
 };
+var setOverrideSignature = (digit) => {
+  diagnosticState.override = digit;
+};
 var parseDiagnostic = (state, severity, fsPath, activeEditorfsPath = void 0) => {
   Object.keys(severity).forEach((severityType) => {
     if (severity[severityType].length > 0) {
@@ -980,6 +984,7 @@ var lineGlyph = {
 };
 var diagnosticTextBuffer = {
   [allOkOverride]: [],
+  [allOkNoOverride]: [],
   [editorOkWorkspaceWarn]: [],
   [editorOkWorkspaceErr]: [],
   [editorOkWorkspaceWarnErr]: [],
@@ -1064,7 +1069,7 @@ var diagnosticOf = {
   rangeFunction: createCursorRange,
   ["problemPlaceholderContentText" /* PLACEHOLDER_PROBLEM_CONTENT_TEXT */]: problemOf,
   ["allOkPlaceholderContentText" /* PLACEHOLDER_ALL_OK_CONTENT_TEXT */]: allOkOf,
-  ["okAllContentText" /* OK_ALL_CONTENT_TEXT */]: notationOf,
+  ["allOkContentText" /* OK_ALL_CONTENT_TEXT */]: notationOf,
   ["okWorkspaceContentText" /* OK_WORKSPACE_CONTENT_TEXT */]: notationOf,
   ["okEditorContentText" /* OK_EDITOR_CONTENT_TEXT */]: notationOf,
   ["warningEditorContentText" /* WARNING_EDITOR_CONTENT_TEXT */]: {
@@ -1089,7 +1094,7 @@ var diagnosticOf = {
 var diagnosticRenderSignature = (state) => {
   const emask = (state.editor.warning.total ? 1 << 1 : 0) | (state.editor.error.total ? 1 << 2 : 0);
   const wmask = (state.workspace.warning.total ? 1 << 1 : 0) | (state.workspace.error.total ? 1 << 2 : 0);
-  return emask === 0 && wmask === 0 ? allOkOverride : (emask ? emask << 5 : 1 << 5) | (wmask ? wmask << 2 : 1 << 2) | 2;
+  return emask === 0 && wmask === 0 ? state.override : (emask ? emask << 5 : 1 << 5) | (wmask ? wmask << 2 : 1 << 2) | 2;
 };
 var clearDiagnosticText = (setDecorations, previousSignature) => {
   diagnosticTextBuffer[previousSignature[0]]?.forEach(resetDecoration(setDecorations));
@@ -1117,7 +1122,7 @@ var diagnosticInfo = (decorationState2) => (editor2) => {
   const diagnosticState2 = updateDiagnostic(editor2.document.uri);
   const signature = diagnosticRenderSignature(diagnosticState2);
   context.state = diagnosticState2;
-  context.line = editor2.selection.active.line;
+  context.line = editor2.selection.start.line;
   decorationOption.range = diagnosticOf.rangeFunction(editor2);
   diagnosticContentText[signature].forEach(renderDiagnosticText(editor2, signature, { ...decorationOption }, context));
   decorationState2.diagnosticSignature[0] = signature;
@@ -1924,9 +1929,10 @@ var buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style, left
       return decoration;
     }).filter((decoration) => decoration.after.contentText !== void 0);
   };
+  console.log(textOfSource);
   preset.layout[allOkPlaceholderContentText].contentText.forEach((decoration) => {
     if (decoration.after.contentText === allOkHexKey) {
-      const ok = concatinateNotation(preset.all[okAllContentText]);
+      const ok = concatinateNotation(preset.all[allOkContentText]);
       setDiagonosticTextbuffer(allOkOverride, ok.map((decoration2) => vscode11.window.createTextEditorDecorationType(decoration2)));
       textOftarget[allOkOverride].push(...ok);
     } else {
@@ -1939,6 +1945,7 @@ var buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style, left
       const ok = concatinateNotation(preset.editor[okEditorContentText]);
       const warn = concatinateNotation(preset.editor[warningEditorContentText]);
       const err = concatinateNotation(preset.editor[errorEditorContentText]);
+      textOftarget[allOkNoOverride].push(...ok);
       textOftarget[editorOkWorkspaceWarn].push(...ok);
       textOftarget[editorOkWorkspaceErr].push(...ok);
       textOftarget[editorOkWorkspaceWarnErr].push(...ok);
@@ -1951,6 +1958,7 @@ var buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style, left
       const okDecoration = ok.map((decoration2) => vscode11.window.createTextEditorDecorationType(decoration2));
       const warnDecoration = warn.map((decoration2) => vscode11.window.createTextEditorDecorationType(decoration2));
       const errDecoration = err.map((decoration2) => vscode11.window.createTextEditorDecorationType(decoration2));
+      setDiagonosticTextbuffer(allOkNoOverride, okDecoration);
       setDiagonosticTextbuffer(editorOkWorkspaceWarn, okDecoration);
       setDiagonosticTextbuffer(editorOkWorkspaceErr, okDecoration);
       setDiagonosticTextbuffer(editorOkWorkspaceWarnErr, okDecoration);
@@ -1966,6 +1974,7 @@ var buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style, left
       const ok = concatinateNotation(preset.workspace[okWorkspaceContentText]);
       const warn = concatinateNotation(preset.workspace[warningWorkspaceContentText]);
       const err = concatinateNotation(preset.workspace[errorWorkspaceContentText]);
+      textOftarget[allOkNoOverride].push(...ok);
       textOftarget[editorOkWorkspaceWarn].push(...warn);
       textOftarget[editorOkWorkspaceErr].push(...err);
       textOftarget[editorOkWorkspaceWarnErr].push(...warn, ...err);
@@ -1978,6 +1987,7 @@ var buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style, left
       const okDecoration = ok.map((decoration2) => vscode11.window.createTextEditorDecorationType(decoration2));
       const warnDecoration = warn.map((decoration2) => vscode11.window.createTextEditorDecorationType(decoration2));
       const errDecoration = err.map((decoration2) => vscode11.window.createTextEditorDecorationType(decoration2));
+      setDiagonosticTextbuffer(allOkNoOverride, okDecoration);
       setDiagonosticTextbuffer(editorOkWorkspaceWarn, warnDecoration);
       setDiagonosticTextbuffer(editorOkWorkspaceErr, errDecoration);
       setDiagonosticTextbuffer(editorOkWorkspaceWarnErr, [...warnDecoration, ...errDecoration]);
@@ -2190,14 +2200,15 @@ var updateDiagnosticTextConfig = (configReady, configuratioChange = false) => {
   applyLeftMargin(bindTo.textOf.contentText, diagnosticConfig.visibility, diagnosticConfig.leftMargin);
   setGlyph(bindTo.textOf.glyphList, diagnosticConfig.glyphList);
   setCursorLine(bindTo.functionOf, diagnosticConfig.visibility);
+  setOverrideSignature(diagnosticConfig.visibility.overrideAllOk ? allOkOverride : allOkNoOverride);
+  delete bindToBuffer.textof;
+  delete bindToBuffer.functionOf;
   delete bindTo.visibilityOf;
   delete bindTo.functionOf;
   delete bindTo.textOf.contentText;
   delete bindTo.textOf.glyphList;
   delete bindTo.textof;
   delete bindTo.configOf;
-  delete bindToBuffer.textof;
-  delete bindToBuffer.functionOf;
   return true;
 };
 

@@ -142,9 +142,7 @@ export const DIAGNOSTIC_VISIBILITY_CONFIG = {
     DiagnosticKind: undefined,
     placeTextOnPreviousOrNextLine: undefined,
     overrideLayoutPlaceholderColorToHighestSeverity: undefined,
-    overrideAllOk: undefined,
-    hideOk: undefined,
-    hideWarning: undefined
+    overrideAllOk: undefined
 } as const;
 
 export const DIAGNOSTIC_GLYPH = {
@@ -162,12 +160,12 @@ export const DIAGNOSTIC_CONFIG = {
     glyphList: DIAGNOSTIC_GLYPH,
     problemPlaceholderContentText: undefined,
     allOkPlaceholderContentText: undefined,
+    allOkContentText: undefined,
     [DIAGNOSTIC_TEXT_STYLE_KEY.DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE]: undefined,
     [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: undefined,
     [DIAGNOSTIC_TEXT_STYLE_KEY.OK_TEXT_STYLE]: undefined,
     okWorkspaceContentText: undefined,
     okEditorContentText: undefined,
-    okAllContentText: undefined,
     [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: undefined,
     [DIAGNOSTIC_TEXT_STYLE_KEY.WARNINGTEXT_STYLE]: undefined,
     warningWorkspaceContentText: undefined,
@@ -193,7 +191,7 @@ export const DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER = {
 
 
 export const DIAGNOSTIC_ALL_PLACEHOLDER_LINKER = {
-    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: __0x.okAllContentText,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: __0x.allOkContentText,
 } as const;
 
 export const DIAGNOSTIC_DECORATION_TEXT_KIND = {
@@ -203,8 +201,8 @@ export const DIAGNOSTIC_DECORATION_TEXT_KIND = {
 
 export const DECORATION_OPTION_LINKER = {
     allOkPlaceholderContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE, undefined],
+    allOkContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.OK_TEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE],
     problemPlaceholderContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE, undefined],
-    okAllContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.OK_TEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE],
     okEditorContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.OK_TEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE],
     warningEditorContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.WARNINGTEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE],
     errorEditorContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_TEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE],
@@ -216,7 +214,7 @@ export const DECORATION_OPTION_LINKER = {
 export const DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM = {
     problemPlaceholderContentText: __0x.problemPlaceholderContentText,
     allOkPlaceholderContentText: __0x.allOkPlaceholderContentText,
-    okAllContentText: __0x.okAllContentText,
+    allOkContentText: __0x.allOkContentText,
     okEditorContentText: __0x.okEditorContentText,
     warningEditorContentText: __0x.warningEditorContentText,
     errorEditorContentText: __0x.errorEditorContentText,
@@ -236,7 +234,7 @@ export const DIAGNOSTIC_CONTENT_TEXT_LIST: Type.TextList = [
     "allOkPlaceholderContentText",
     "okWorkspaceContentText",
     "okEditorContentText",
-    "okAllContentText",
+    "allOkContentText",
     "warningWorkspaceContentText",
     "warningEditorContentText",
     "errorWorkspaceContentText",

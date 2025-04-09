@@ -7,6 +7,7 @@ import { DIAGNOSTIC_BIOME } from '../constant/config/enum';
 const diagnosticState = { ...DIAGNOSTIC_STATE } as unknown as DiagnosticState;
 
 export interface DiagnosticState {
+    override: number,
     severity: number,
     editor: {
         warning: {
@@ -45,6 +46,10 @@ const resetWorkspaceDiagnosticStatistics = (): void => {
     diagnosticState.workspace.error.source = 0;
     diagnosticState.workspace.error.total = 0;
 };
+
+const setOverrideSignature = (digit: number) => {
+    diagnosticState.override = digit; 
+}
 
 const parseDiagnostic = (state, severity, fsPath: string, activeEditorfsPath: string | undefined = undefined): void => {
     Object.keys(severity).forEach(severityType => {
@@ -112,5 +117,6 @@ const updateDiagnostic = (activeEditorUri: vscode.Uri | undefined = undefined): 
 
 export {
     updateDiagnostic,
-    resetEditorDiagnosticStatistics
+    resetEditorDiagnosticStatistics,
+    setOverrideSignature
 };

@@ -123,7 +123,7 @@ export const enum DIAGNOSTIC_CONTENT_TEXT_KEY {
     PLACEHOLDER_ALL_OK_CONTENT_TEXT = "allOkPlaceholderContentText",
     OK_WORKSPACE_CONTENT_TEXT = "okWorkspaceContentText",
     OK_EDITOR_CONTENT_TEXT = "okEditorContentText",
-    OK_ALL_CONTENT_TEXT = "okAllContentText",
+    OK_ALL_CONTENT_TEXT = "allOkContentText",
     WARNING_WORKSPACE_CONTENT_TEXT = "warningWorkspaceContentText",
     WARNING_EDITOR_CONTENT_TEXT = "warningEditorContentText",
     ERROR_WORKSPACE_CONTENT_TEXT = "errorWorkspaceContentText",

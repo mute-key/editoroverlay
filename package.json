@@ -478,7 +478,7 @@
                     },
                     "cursorlinehighlight.diagnosticText.leftMargin": {
                         "type": "string",
-                        "default": "0px",
+                        "default": "10px",
                         "markdownDescription": "%description.diagnosticText.leftMargin%",
                         "order": 2
                     },
@@ -494,9 +494,7 @@
                             "DiagnosticKind": "editor | workspace",
                             "placeTextOnPreviousOrNextLine": "currentLine",
                             "overrideLayoutPlaceholderColorToHighestSeverity": false,
-                            "overrideAllOk": true,
-                            "hideOk": false,
-                            "hideWarning": false
+                            "overrideAllOk": true
                         },
                         "markdownDescription": "%description.diagnosticText.visibility%",
                         "additionalProperties": false,
@@ -589,8 +587,35 @@
                             }
                         }
                     },
-                    "cursorlinehighlight.diagnosticText.diagnosticPlaceholderTextStyle": {
+                    "cursorlinehighlight.diagnosticText.allOkPlaceholderContentText": {
                         "order": 5,
+                        "type": "string",
+                        "default": "%placeholder.diagnostic.allOk.placeholder.default%",
+                        "pattern": "(\t|[\r\n]+)*$",
+                        "patternErrorMessage": "Must be a single line text",
+                        "markdownDescription": "%description.diagnosticText.allOkPlaceholderContentText%",
+                        "editPresentation": "singlelineText"
+                    },
+                    "cursorlinehighlight.diagnosticText.allOkContentText": {
+                        "order": 6,
+                        "type": "string",
+                        "default": "%placeholder.diagnostic.ok.all.default%",
+                        "pattern": "(\t|[\r\n]+)*$",
+                        "patternErrorMessage": "Must be a single line text",
+                        "markdownDescription": "%description.diagnosticText.allOkContentText%",
+                        "editPresentation": "singlelineText"
+                    },          
+                    "cursorlinehighlight.diagnosticText.problemPlaceholderContentText": {
+                        "order": 7,
+                        "type": "string",
+                        "default": "%placeholder.diagnostic.problem.placeholder.default%",
+                        "pattern": "(\t|[\r\n]+)*$",
+                        "patternErrorMessage": "Must be a single line text",
+                        "markdownDescription": "%description.diagnosticText.problemPlaceholderContentText%",
+                        "editPresentation": "singlelineText"
+                    },
+                    "cursorlinehighlight.diagnosticText.diagnosticPlaceholderTextStyle": {
+                        "order": 8,
                         "type": "object",
                         "scope": "resource",
                         "default": {
@@ -649,26 +674,8 @@
                             }
                         }
                     },
-                    "cursorlinehighlight.diagnosticText.problemPlaceholderContentText": {
-                        "order": 6,
-                        "type": "string",
-                        "default": "%placeholder.diagnostic.problem.placeholder.default%",
-                        "pattern": "(\t|[\r\n]+)*$",
-                        "patternErrorMessage": "Must be a single line text",
-                        "markdownDescription": "%description.diagnosticText.problemPlaceholderContentText%",
-                        "editPresentation": "singlelineText"
-                    },
-                    "cursorlinehighlight.diagnosticText.allOkPlaceholderContentText": {
-                        "order": 7,
-                        "type": "string",
-                        "default": "%placeholder.diagnostic.allOk.placeholder.default%",
-                        "pattern": "(\t|[\r\n]+)*$",
-                        "patternErrorMessage": "Must be a single line text",
-                        "markdownDescription": "%description.diagnosticText.allOkPlaceholderContentText%",
-                        "editPresentation": "singlelineText"
-                    },
                     "cursorlinehighlight.diagnosticText.okWorkspaceContentText": {
-                        "order": 8,
+                        "order": 9,
                         "type": "string",
                         "default": "%placeholder.diagnostic.ok.workspace.default%",
                         "pattern": "(\t|[\r\n]+)*$",
@@ -677,21 +684,12 @@
                         "editPresentation": "singlelineText"
                     },
                     "cursorlinehighlight.diagnosticText.okEditorContentText": {
-                        "order": 9,
+                        "order": 10,
                         "type": "string",
                         "default": "%placeholder.diagnostic.ok.editor.default%",
                         "pattern": "(\t|[\r\n]+)*$",
                         "patternErrorMessage": "Must be a single line text",
                         "markdownDescription": "%description.diagnosticText.okEditorContentText%",
-                        "editPresentation": "singlelineText"
-                    },
-                    "cursorlinehighlight.diagnosticText.okAllContentText": {
-                        "order": 10,
-                        "type": "string",
-                        "default": "%placeholder.diagnostic.ok.all.default%",
-                        "pattern": "(\t|[\r\n]+)*$",
-                        "patternErrorMessage": "Must be a single line text",
-                        "markdownDescription": "%description.diagnosticText.okAllContentText%",
                         "editPresentation": "singlelineText"
                     },
                     "cursorlinehighlight.diagnosticText.okNotationTextStyle": {

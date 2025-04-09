@@ -115,7 +115,7 @@ type DiagnosticConfigType = {
     problemPlaceholderContentText?: string
     allOkPlaceholderContentText?: string
     okEditorContentText?: string
-    okAllContentText?: string
+    allOkContentText?: string
     warningNotationTextStyle?: DecorationType.DecorationTextPrePostFixStyleConfig
     warningTextStyle?: DecorationType.DecorationTextStyleConfig
     warningWorkspaceContentText?: string

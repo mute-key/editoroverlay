@@ -12,6 +12,7 @@ import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTe
 import { bindDiagnosticContentTextState, reloadContentText, setDiagonosticTextbuffer } from '../../editor/status/diagnostic';
 import { hexToRgbaStringLiteral, readBits } from '../../util/util';
 import { createCursorRange, createCursorRangeNextLine, createCursorRangePreviousLine } from '../../editor/range';
+import { setOverrideSignature } from '../../diagnostic/diagnostic';
 
 const positionKeyList = ['pre', 'post'] as const;
 
@@ -76,9 +77,10 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             return decoration;
         }).filter(decoration => decoration.after.contentText !== undefined)
     }
+    console.log(textOfSource)
     preset.layout[__0x.allOkPlaceholderContentText].contentText.forEach(decoration => {
         if (decoration.after.contentText === __0x.allOkHexKey) {
-            const ok = concatinateNotation(preset.all[__0x.okAllContentText]);
+            const ok = concatinateNotation(preset.all[__0x.allOkContentText]);
             setDiagonosticTextbuffer(__0x.allOkOverride, ok.map(decoration => vscode.window.createTextEditorDecorationType(decoration)));
             textOftarget[__0x.allOkOverride].push(...ok);
         } else {
@@ -91,6 +93,7 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             const ok = concatinateNotation(preset.editor[__0x.okEditorContentText]);
             const warn = concatinateNotation(preset.editor[__0x.warningEditorContentText]);
             const err = concatinateNotation(preset.editor[__0x.errorEditorContentText]);
+            textOftarget[__0x.allOkNoOverride].push(...ok); 
             textOftarget[__0x.editorOkWorkspaceWarn].push(...ok);
             textOftarget[__0x.editorOkWorkspaceErr].push(...ok);
             textOftarget[__0x.editorOkWorkspaceWarnErr].push(...ok);
@@ -103,6 +106,7 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             const okDecoration = ok.map(decoration => vscode.window.createTextEditorDecorationType(decoration));
             const warnDecoration = warn.map(decoration => vscode.window.createTextEditorDecorationType(decoration))
             const errDecoration = err.map(decoration => vscode.window.createTextEditorDecorationType(decoration))
+            setDiagonosticTextbuffer(__0x.allOkNoOverride, okDecoration);
             setDiagonosticTextbuffer(__0x.editorOkWorkspaceWarn, okDecoration);
             setDiagonosticTextbuffer(__0x.editorOkWorkspaceErr, okDecoration);
             setDiagonosticTextbuffer(__0x.editorOkWorkspaceWarnErr, okDecoration);
@@ -118,6 +122,7 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             const ok = concatinateNotation(preset.workspace[__0x.okWorkspaceContentText]);
             const warn = concatinateNotation(preset.workspace[__0x.warningWorkspaceContentText]);
             const err = concatinateNotation(preset.workspace[__0x.errorWorkspaceContentText]);
+            textOftarget[__0x.allOkNoOverride].push(...ok); 
             textOftarget[__0x.editorOkWorkspaceWarn].push(...warn);
             textOftarget[__0x.editorOkWorkspaceErr].push(...err);
             textOftarget[__0x.editorOkWorkspaceWarnErr].push(...warn, ...err);
@@ -130,6 +135,7 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             const okDecoration = ok.map(decoration => vscode.window.createTextEditorDecorationType(decoration));
             const warnDecoration = warn.map(decoration => vscode.window.createTextEditorDecorationType(decoration))
             const errDecoration = err.map(decoration => vscode.window.createTextEditorDecorationType(decoration))
+            setDiagonosticTextbuffer(__0x.allOkNoOverride, okDecoration);
             setDiagonosticTextbuffer(__0x.editorOkWorkspaceWarn, warnDecoration);
             setDiagonosticTextbuffer(__0x.editorOkWorkspaceErr, errDecoration);
             setDiagonosticTextbuffer(__0x.editorOkWorkspaceWarnErr, [...warnDecoration, ...errDecoration]);
@@ -315,7 +321,7 @@ const clearOverrideState = (stateOf) => {
     }
 };
 
-const setGlyph =(glyphList, config) => {
+const setGlyph = (glyphList, config) => {
     glyphList[__0x.openningBracket] = config.openningBracket
     glyphList[__0x.closingBracket] = config.closingBracket
     glyphList[__0x.lineEqual] = config.lineEqual
@@ -323,7 +329,7 @@ const setGlyph =(glyphList, config) => {
     glyphList[__0x.lineDown] = config.lineDown
 }
 
-const setCursorLine = (bindTo, visibility) => {    
+const setCursorLine = (bindTo, visibility) => {
     if (visibility.placeTextOnPreviousOrNextLine === "previousLine") {
         bindTo.rangeFunction = createCursorRangePreviousLine
         return;
@@ -331,7 +337,7 @@ const setCursorLine = (bindTo, visibility) => {
     if (visibility.placeTextOnPreviousOrNextLine === "nextLine") {
         bindTo.rangeFunction = createCursorRangeNextLine
         return;
-    } 
+    }
     bindTo.rangeFunction = createCursorRange;
     return;
 };
@@ -363,14 +369,15 @@ const updateDiagnosticTextConfig = (configReady: Type.ConfigInfoReadyType, confi
     applyLeftMargin(bindTo.textOf.contentText, diagnosticConfig.visibility, diagnosticConfig.leftMargin);
     setGlyph(bindTo.textOf.glyphList, diagnosticConfig.glyphList)
     setCursorLine(bindTo.functionOf, diagnosticConfig.visibility);
+    setOverrideSignature(diagnosticConfig.visibility.overrideAllOk ? __0x.allOkOverride : __0x.allOkNoOverride);
+    delete bindToBuffer.textof;
+    delete bindToBuffer.functionOf;
     delete bindTo.visibilityOf
     delete bindTo.functionOf;
     delete bindTo.textOf.contentText;
     delete bindTo.textOf.glyphList;
     delete bindTo.textof;
     delete bindTo.configOf;
-    delete bindToBuffer.textof;
-    delete bindToBuffer.functionOf;
     return true;
 };
 
