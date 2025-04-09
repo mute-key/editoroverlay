@@ -5,29 +5,30 @@ This extension will also display selection status text which is equivelant of 'E
 You can enabled/disabled only the feetures you want if you don't need them all. Here are the examples of this extension with default confuguration as out of the box.
 
 #### ___Cursor Only Highlight___
-https://github.com/mute-key/cursorlinehighlight/blob/main/resouce
-<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/cursorOnly.png" alt ="GIF" style=""><br>
+
+
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resource/cursorOnly.png" alt ="GIF" style=""><br>
 
 #### ___SingleLine Highlight___
 
-<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/singleLine.png" alt ="GIF" style=""><br>
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resource/singleLine.png" alt ="GIF" style=""><br>
 
 #### ___MultiLine Highlight___
 
-<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/multiLine.png" alt ="GIF" style=""><br>
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resource/multiLine.png" alt ="GIF" style=""><br>
 
 #### ___MultiCursor Highlight___
 
-<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/multiCursor.png" alt ="GIF" style=""><br>
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resource/multiCursor.png" alt ="GIF" style=""><br>
 
 #### ___Diagnostic___
 
-<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/diagnostic.png" alt ="GIF" style=""><br>
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resource/diagnostic.png" alt ="GIF" style=""><br>
 
 > So this extension will display the diagnostic status of current editor/workspace.
 You can confugure visibily, fixtures, position, format or text/glyph/emoji.
 
-<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/linePosition.png" alt ="GIF" style=""><br>
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resource/linePosition.png" alt ="GIF" style=""><br>
 
 > And Editor diagonotic will direct where the problem lines are based on current cursor position. <br>
 
@@ -41,7 +42,7 @@ Also, feel free to leave feedback or comment if you like.<br>
 
 `ctrl + shift + p` and search/open Settign UI, then search 'cursorline'<br>
 
-<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/setting.png" alt ="GIF" style=""><br>
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resource/setting.png" alt ="GIF" style=""><br>
 Most of configraions are should be self-explantory, so i will detail the ones that are not so much straight-forward.<br>
 
 1. Cursor/selection highlight
@@ -64,7 +65,7 @@ The value 'Col' in status bar 'Editor selection' is not zero based, as it refers
 
 Most of configurations are quite straight foword and they are well explained in configuration section.
 
-<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/pinned.png" alt ="GIF" style=""><br>
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resource/pinned.png" alt ="GIF" style=""><br>
 
 You will see cpu usage spike when you repeatly/rapidly drag up and down while you are on multi-line selection.
 This is due to the selection change event interface being triggered at average rate at 1000 per second.
@@ -78,7 +79,7 @@ It is the only multi-line selection with high frequant change of seleciton and i
 If there is a problem with your configruation or if you want to revert to the default, find a Cog button next to configuration section and click 'Reset Setting'.
 ⚙️ is hidden but it will appear when you click on the section itself.
 
-<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/reset.png" alt ="GIF" style=""><br>
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resource/reset.png" alt ="GIF" style=""><br>
 
 ## Diagnostic status
 
@@ -86,7 +87,7 @@ You can disable this feature if not necessary.
 
 Diagnostic status indicate the same entry in probelm view as the screenshot.
 
-<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/problem.png" alt ="GIF" style=""><br>
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resource/problem.png" alt ="GIF" style=""><br>
 
 The configurations are some what complicated, due to complexcity of customizability of status block.
 
@@ -94,11 +95,11 @@ It kinda over-extend when selection status is enabled too, especially if you use
 I would advice to change the position of diagnostics from setting 'Visibilty' 
 
 
-<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/nextLine.png" alt ="GIF" style=""><br>
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resource/nextLine.png" alt ="GIF" style=""><br>
 
 Setting to next line put diagnostic on the line bellow where the cursor is.
 
-<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resouce/nextLine2.png" alt ="GIF" style=""><br>
+<img src="https://github.com/mute-key/cursorlinehighlight/blob/main/resource/nextLine2.png" alt ="GIF" style=""><br>
 
 Currently, There aren't many styles for diagnostic block but those will be in future update definitely such as background color, border radious and etc,
 so the diagnotic block is more  visibly distint from others on the display.
