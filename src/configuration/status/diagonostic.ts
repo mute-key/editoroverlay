@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as Type from '../../type/type';
 import * as __0x from '../../constant/shared/numeric';
 import * as __$ from '../../constant/shared/symbol';
-import Regex from '../../util/regex.collection';
+import * as regex from '../../util/regex.collection';
 import { CONFIG_SECTION, DECORATION_OPTION_LINKER, DIAGNOSTIC_ALL_PLACEHOLDER_LINKER, DIAGNOSTIC_CONFIG, DIAGNOSTIC_CONTENT_TEXT_LIST, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM, DIAGNOSTIC_DECORATION_STYLE, DIAGNOSTIC_DECORATION_TEXT_KIND, DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER, DIAGNOSTIC_STYLE_LIST, DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER } from '../../constant/config/object';
 import { DIAGNOSTIC_BIOME, DIAGNOSTIC_TEXT_STYLE_KEY } from '../../constant/config/enum';
 import { DIAGNOSTIC_CONTENT_TEXT, DIAGNOSTIC_PROBLEM_LIST } from '../../constant/shared/object';
@@ -156,7 +156,7 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
 };
 
 const ifNoationNotNull = (property: string, str: string) => {
-    if (str !== 'null' && str.length > 0 && !Regex.resourceScope.test(str)) {
+    if (str !== 'null' && str.length > 0 && !regex.ifStringIsResourceScope.test(str)) {
         return {
             [property]: str,
         };
@@ -360,7 +360,7 @@ const updateDiagnosticTextConfig = (configReady: Type.ConfigInfoReadyType, confi
         clearOverrideState(bindTo);
         reloadContentText();
     }
-    workspaceProxyConfiguration(diagnosticConfig, configReady.name + '.' + CONFIG_SECTION.diagnosticText, DIAGNOSTIC_CONTENT_TEXT_LIST, bindToBuffer, Regex.diagnosticText);
+    workspaceProxyConfiguration(diagnosticConfig, configReady.name + '.' + CONFIG_SECTION.diagnosticText, DIAGNOSTIC_CONTENT_TEXT_LIST, bindToBuffer, regex.diagnosticTextRegex);
     const diagnosticBiome = diagnosticVisibilityBiome(diagnosticConfig.visibility);
     const decorationStyleList = decorationStyleFromBiome(diagnosticBiome.workspace | diagnosticBiome.editor);
     Object.assign(dignosticContentTextPreset, buildDiagnosticStyle(diagnosticConfig, diagnosticDecorationStyle, decorationStyleList, diagnosticConfig.visibility, diagnosticBiome));

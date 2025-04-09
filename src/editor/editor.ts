@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as Type from '../type/type';
 import * as __0x from '../constant/shared/numeric';
-import Regex from '../util/regex.collection';
+import * as regex from '../util/regex.collection';
 import { DECORATION_STATE, SELECTION_KIND_LIST } from '../constant/shared/object';
 import { bindStatusContentTextState, clearSelectionTextBuffer } from './status/selection';
 import { bindDiagnosticContentTextState, clearDiagnosticText, diagnosticInfo } from './status/diagnostic';
@@ -36,8 +36,8 @@ const updateIndentOption = (editor: vscode.TextEditor): void => {
     bindTo.infoOf.size = Number(editor.options.tabSize ?? editor.options.indentSize ?? 4);
     bindTo.infoOf.type = editor.options.insertSpaces ? '\n' : '\t';
     bindTo.infoOf.regex = editor.options.insertSpaces
-        ? Regex.indentAndEOLRegex(bindTo.infoOf.size)
-        : Regex.tagtAndEOLRegex;
+        ? regex.indentAndEOLRegex(bindTo.infoOf.size)
+        : regex.tagtAndEOLRegex;
 };
 
 const prepareRenderGroup = (config: Type.ConfigInfoReadyType): void => {

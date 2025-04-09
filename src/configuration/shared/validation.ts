@@ -1,11 +1,11 @@
 import * as Type from '../../type/type';
-import Regex from '../../util/regex.collection';
+import * as regex from '../../util/regex.collection';
 import { updateEditorConfiguration } from './editor';
 
 const configCondition: Type.ConfigCondition = <T extends string | number | boolean | null>(configReady: Type.ConfigInfoReadyType, configKeyWithScope: string, value: T, defaultValue: T) => {
     return {
         "bordercolor": () => {
-            if (!Regex.isValidHexColor.test(String(value))) {
+            if (!regex.isValidHexColor.test(String(value))) {
                 configReady.configError.push(configKeyWithScope);
             }
             return defaultValue;
@@ -16,13 +16,13 @@ const configCondition: Type.ConfigCondition = <T extends string | number | boole
                 return null;
             }
 
-            if (!Regex.isValidHexColor.test(String(value))) {
+            if (!regex.isValidHexColor.test(String(value))) {
                 configReady.configError.push(configKeyWithScope);
             }
             return defaultValue;
         },
         "borderwidth": () => {
-            if (!Regex.isValidWidth.test(String(value))) {
+            if (!regex.isValidWidth.test(String(value))) {
                 configReady.configError.push(configKeyWithScope);
             }
             return defaultValue;
@@ -37,7 +37,7 @@ const configCondition: Type.ConfigCondition = <T extends string | number | boole
 };
 
 const sanitizeConfigValue = (value: string | undefined): string | undefined => {
-    if (!value || value === 'null' || value.length === 0 || Regex.resourceScope.test(value)) {
+    if (!value || value === 'null' || value.length === 0 || regex.ifStringIsResourceScope.test(value)) {
         return undefined;
     }
     return value;

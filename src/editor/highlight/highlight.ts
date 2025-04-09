@@ -51,8 +51,7 @@ const singelLineHighlightRange = (editor: vscode.TextEditor, previousKey: number
 };
 
 const multiLineHighlightRange = (editor: vscode.TextEditor, previousKey: number[]) => {
-    // highlightStyleList[previousKey[0]].forEach(resetHighlight(editor.setDecorations, resetRange));
-    clearHighlight(editor.setDecorations, previousKey, blankRange);
+    __0x.multiLine !== previousKey[0] && clearHighlight(editor.setDecorations, previousKey, blankRange);
     // index 0 - top border
     // index 1 - bottom border
     // index 2 - background color only for the range inbetween 0 and 1.

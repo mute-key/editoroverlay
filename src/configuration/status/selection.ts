@@ -1,5 +1,5 @@
 import * as Type from '../../type/type';
-import Regex from '../../util/regex.collection';
+import * as regex from '../../util/regex.collection';
 import { CONFIG_SECTION, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_NUMLINK, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE } from '../../constant/config/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { bindStatusContentTextState, setSelectionTextbuffer } from '../../editor/status/selection';
@@ -58,7 +58,7 @@ const updateSelectionTextConfig = (configReady: Type.ConfigInfoReadyType, config
         textOf: {}
     };
     // hm ...
-    workspaceProxyConfiguration(SelectionDecorationConfig, configReady.name + '.' + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST, bindToBuffer, Regex.statusContentText);
+    workspaceProxyConfiguration(SelectionDecorationConfig, configReady.name + '.' + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST, bindToBuffer, regex.SelectionTextRegex);
     buildSelectionTextDecorationRenderOption(SelectionDecorationConfig, SelectionDecorationStyle);
     buildStatusTextState(bindTo.textOf, bindToBuffer.textOf, SelectionDecorationStyle, SelectionDecorationConfig.leftMargin);
     // sealSelctionText();

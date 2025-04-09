@@ -126,16 +126,14 @@ const ifContentTextHasPlaceholder = /(\${[A-z]*})/g;
 
 const contentTextKeysOnly = /\${([^{}]+)}/s;
 
-const Regex: Type.RegexType = {
-    indentAndEOLRegex: indentAndEOLRegex,
-    resourceScope: ifStringIsResourceScope,
-    tagtAndEOLRegex: tagtAndEOLRegex,
-    isValidHexColor: isValidHexColor,
-    isValidWidth: isValidWidth,
-    ifContentTextHasPlaceholder: ifContentTextHasPlaceholder,
-    contentTextKeysOnly: contentTextKeysOnly,
-    statusContentText: SelectionTextRegex,
-    diagnosticText: diagnosticTextRegex
+export {
+    indentAndEOLRegex,
+    ifStringIsResourceScope,
+    tagtAndEOLRegex,
+    isValidHexColor,
+    isValidWidth,
+    ifContentTextHasPlaceholder,
+    contentTextKeysOnly,
+    SelectionTextRegex,
+    diagnosticTextRegex
 };
-
-export default Regex;

@@ -609,22 +609,8 @@ var indentAndEOLRegex = (indentSize) => new RegExp(`^( {${indentSize}}|[\r
 ]+)*$`, "gm");
 var ifStringIsResourceScope = /^[%\.].*[%\.]$/s;
 var tagtAndEOLRegex = /(\t|[\r\n]+)*$/gm;
-var isValidHexColor = /^#[A-Fa-f0-9]{6}$/;
-var isValidWidth = /^[0-9]px$|^[0-9]em$/;
 var ifContentTextHasPlaceholder = /(\${[A-z]*})/g;
 var contentTextKeysOnly = /\${([^{}]+)}/s;
-var Regex = {
-  indentAndEOLRegex,
-  resourceScope: ifStringIsResourceScope,
-  tagtAndEOLRegex,
-  isValidHexColor,
-  isValidWidth,
-  ifContentTextHasPlaceholder,
-  contentTextKeysOnly,
-  statusContentText: SelectionTextRegex,
-  diagnosticText: diagnosticTextRegex
-};
-var regex_collection_default = Regex;
 
 // src/editor/status/selection.ts
 var vscode3 = __toESM(require("vscode"));
@@ -792,7 +778,7 @@ var decorationOptionGrid = {
   __proto__: null
 };
 var multilineSelection = (editor2, previousKey) => {
-  clearBufferOfhexkey(editor2.setDecorations, previousKey);
+  multiLine !== previousKey[0] && clearBufferOfhexkey(editor2.setDecorations, previousKey);
   const multiLineBuffer = {
     [multiLineLineCountHex]: null,
     [multiLineChararcterHex]: null
@@ -1159,7 +1145,7 @@ var updateIndentOption = (editor2) => {
   const bindTo = bindStatusContentTextState();
   bindTo.infoOf.size = Number(editor2.options.tabSize ?? editor2.options.indentSize ?? 4);
   bindTo.infoOf.type = editor2.options.insertSpaces ? "\n" : "	";
-  bindTo.infoOf.regex = editor2.options.insertSpaces ? regex_collection_default.indentAndEOLRegex(bindTo.infoOf.size) : regex_collection_default.tagtAndEOLRegex;
+  bindTo.infoOf.regex = editor2.options.insertSpaces ? indentAndEOLRegex(bindTo.infoOf.size) : tagtAndEOLRegex;
 };
 var prepareRenderGroup = (config) => {
   renderFnStack[cursorOnly].splice(0);
@@ -1245,7 +1231,7 @@ var singelLineHighlightRange = (editor2, previousKey) => {
   applyDecoration(editor2.setDecorations, highlightStyleList[singleLine][0], [createRangeSPEP(editor2.selection.start, editor2.selection.end)]);
 };
 var multiLineHighlightRange = (editor2, previousKey) => {
-  clearHighlight(editor2.setDecorations, previousKey, blankRange);
+  multiLine !== previousKey[0] && clearHighlight(editor2.setDecorations, previousKey, blankRange);
   applyDecoration(editor2.setDecorations, highlightStyleList[multiLine][0], [createLineRange(editor2.selection.start)]);
   applyDecoration(editor2.setDecorations, highlightStyleList[multiLine][1], [createLineRange(editor2.selection.end)]);
   applyDecoration(editor2.setDecorations, highlightStyleList[multiLine][2], [editor2.selection]);
@@ -1397,7 +1383,7 @@ var writeEditorConfiguration = () => {
 
 // src/configuration/shared/validation.ts
 var sanitizeConfigValue = (value) => {
-  if (!value || value === "null" || value.length === 0 || regex_collection_default.resourceScope.test(value)) {
+  if (!value || value === "null" || value.length === 0 || ifStringIsResourceScope.test(value)) {
     return void 0;
   }
   return value;
@@ -1512,7 +1498,7 @@ var searchPlaceholderPosition = (textOf, functionOf, functionKey, regex2, search
   }
 };
 var parseContentText = (contentText, sectionKey, bindTo, regexObject, sectionName) => {
-  const match = contentText.match(regex_collection_default.ifContentTextHasPlaceholder);
+  const match = contentText.match(ifContentTextHasPlaceholder);
   if (match !== null && Object.hasOwn(regexObject, sectionKey)) {
     if (match.length > Object.keys(regexObject[sectionKey]).length) {
       Error2.register(sectionName + "." + sectionKey, "numbers of placeholder exceed availability");
@@ -1523,7 +1509,7 @@ var parseContentText = (contentText, sectionKey, bindTo, regexObject, sectionNam
     };
     bindTo.textOf[sectionKey].contentText = [];
     match.forEach((search, index) => {
-      const regexKey = search.match(regex_collection_default.contentTextKeysOnly);
+      const regexKey = search.match(contentTextKeysOnly);
       if (regexKey) {
         if (Object.hasOwn(regexObject[sectionKey], regexKey[1])) {
           searchPlaceholderPosition(bindTo.textOf[sectionKey], bindTo.functionOf[sectionKey], regexKey[1], regexObject[sectionKey][regexKey[1]], searchObject, index === match.length - 1);
@@ -1859,7 +1845,7 @@ var updateSelectionTextConfig = (configReady, configuratioChange = false) => {
     functionOf: bindTo.functionOf,
     textOf: {}
   };
-  workspaceProxyConfiguration(SelectionDecorationConfig, configReady.name + "." + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST, bindToBuffer, regex_collection_default.statusContentText);
+  workspaceProxyConfiguration(SelectionDecorationConfig, configReady.name + "." + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST, bindToBuffer, SelectionTextRegex);
   buildSelectionTextDecorationRenderOption(SelectionDecorationConfig, SelectionDecorationStyle);
   buildStatusTextState(bindTo.textOf, bindToBuffer.textOf, SelectionDecorationStyle, SelectionDecorationConfig.leftMargin);
   delete bindTo.functionOf;
@@ -2007,7 +1993,7 @@ var buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style, left
   });
 };
 var ifNoationNotNull = (property, str) => {
-  if (str !== "null" && str.length > 0 && !regex_collection_default.resourceScope.test(str)) {
+  if (str !== "null" && str.length > 0 && !ifStringIsResourceScope.test(str)) {
     return {
       [property]: str
     };
@@ -2191,7 +2177,7 @@ var updateDiagnosticTextConfig = (configReady, configuratioChange = false) => {
     clearOverrideState(bindTo);
     reloadContentText();
   }
-  workspaceProxyConfiguration(diagnosticConfig, configReady.name + "." + CONFIG_SECTION.diagnosticText, DIAGNOSTIC_CONTENT_TEXT_LIST, bindToBuffer, regex_collection_default.diagnosticText);
+  workspaceProxyConfiguration(diagnosticConfig, configReady.name + "." + CONFIG_SECTION.diagnosticText, DIAGNOSTIC_CONTENT_TEXT_LIST, bindToBuffer, diagnosticTextRegex);
   const diagnosticBiome = diagnosticVisibilityBiome(diagnosticConfig.visibility);
   const decorationStyleList = decorationStyleFromBiome(diagnosticBiome.workspace | diagnosticBiome.editor);
   Object.assign(dignosticContentTextPreset, buildDiagnosticStyle(diagnosticConfig, diagnosticDecorationStyle, decorationStyleList, diagnosticConfig.visibility, diagnosticBiome));

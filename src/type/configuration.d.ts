@@ -77,18 +77,6 @@ type configErrorType = {
     currentValue: string
 }
 
-type RegexType = {
-    indentAndEOLRegex: (args: string | number) => RegExp
-    resourceScope: RegExp,
-    tagtAndEOLRegex: RegExp,
-    isValidHexColor: RegExp,
-    isValidWidth: RegExp,
-    ifContentTextHasPlaceholder: RegExp,
-    contentTextKeysOnly: RegExp,
-    statusContentText: StatusType.RegexStatusContentTextType
-    diagnosticText: DiagnosticType.RegexDiagnosticContentTextType
-}
-
 type nextSearchStringType = {
     keep: string | string[] 
     next?: string | string[]

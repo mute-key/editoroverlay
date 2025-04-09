@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as Type from '../../type/type';
-import Regex from '../../util/regex.collection';
+import * as regex from '../../util/regex.collection';
 import Error from '../../util/error';
 import { DECORATION_OPTION_AFTER_CONFIG, DECORATION_OPTION_CONFIG } from '../../constant/config/object';
 import { sanitizeContentText } from './validation';
@@ -54,7 +54,7 @@ const searchPlaceholderPosition = (textOf: Type.ContentTextWithPositionType, fun
 };
 
 const parseContentText = (contentText: string, sectionKey: string, bindTo: any, regexObject, sectionName: string): void => {
-    const match = contentText.match(Regex.ifContentTextHasPlaceholder);
+    const match = contentText.match(regex.ifContentTextHasPlaceholder);
     if (match !== null && Object.hasOwn(regexObject, sectionKey)) {
         if (match.length > Object.keys(regexObject[sectionKey]).length) {
             Error.register(sectionName + '.' +  sectionKey, "numbers of placeholder exceed availability");
@@ -65,7 +65,7 @@ const parseContentText = (contentText: string, sectionKey: string, bindTo: any, 
         };
         bindTo.textOf[sectionKey].contentText = [];
         match.forEach((search, index) => {
-            const regexKey = search.match(Regex.contentTextKeysOnly);
+            const regexKey = search.match(regex.contentTextKeysOnly);
             if (regexKey) {
                 if (Object.hasOwn(regexObject[sectionKey], regexKey[1] as string)) {
                     searchPlaceholderPosition(bindTo.textOf[sectionKey], bindTo.functionOf[sectionKey], regexKey[1], regexObject[sectionKey][regexKey[1]], searchObject, index === match.length - 1);
