@@ -1,4 +1,3 @@
-import { error } from 'console';
 import * as vscode from 'vscode';
 import { SYSTEM_MESSAGE } from '../constant/config/enum';
 

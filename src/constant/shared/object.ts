@@ -42,11 +42,11 @@ export const DIAGNOSTIC_STATE = {
     severity: 0,
     editor: {
         warning: {
-            line: [1],
+            line: [],
             total: 0
         },
         error: {
-            line: [1],
+            line: [],
             total: 0
         }
     },

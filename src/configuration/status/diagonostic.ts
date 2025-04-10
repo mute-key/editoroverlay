@@ -5,10 +5,10 @@ import * as __$ from '../../constant/shared/symbol';
 import * as regex from '../../util/regex.collection';
 import { CONFIG_SECTION, DECORATION_OPTION_LINKER, DIAGNOSTIC_ALL_PLACEHOLDER_LINKER, DIAGNOSTIC_CONFIG, DIAGNOSTIC_CONTENT_TEXT_LIST, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM, DIAGNOSTIC_DECORATION_STYLE, DIAGNOSTIC_DECORATION_TEXT_KIND, DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER, DIAGNOSTIC_STYLE_LIST, DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER } from '../../constant/config/object';
 import { DIAGNOSTIC_BIOME, DIAGNOSTIC_TEXT_STYLE_KEY } from '../../constant/config/enum';
-import { DIAGNOSTIC_CONTENT_TEXT, DIAGNOSTIC_PROBLEM_LIST } from '../../constant/shared/object';
+import { DIAGNOSTIC_PROBLEM_LIST } from '../../constant/shared/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { sanitizeConfigValue } from '../shared/validation';
-import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
+import { convertToDecorationRenderOption, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 import { bindDiagnosticContentTextState, reloadContentText, setDiagonosticTextbuffer } from '../../editor/status/diagnostic';
 import { hexToRgbaStringLiteral, readBits } from '../../util/util';
 import { createCursorRange, createCursorRangeNextLine, createCursorRangePreviousLine } from '../../editor/range';
@@ -18,13 +18,41 @@ const positionKeyList = ['pre', 'post'] as const;
 
 const positionKeyToPlaceholderName = { pre: 'prefix', post: 'postfix', } as const;
 
-const applyLeftMargin = (textOf: typeof DIAGNOSTIC_CONTENT_TEXT, visibility: Type.DiagnosticVisibilityType, leftMargin: string | undefined) => {
-    if (!leftMargin || leftMargin === '0px' || leftMargin === '0em') {
-        return;
+const applyExtraStyle = (textOf: Record<number, Type.DecorationRenderOptionType[]>, extraStyle, leftMargin: string | undefined): void => {
+    let backgroundColor;
+    const sidePadding = extraStyle.sidePadding !== 'null' ? extraStyle.sidePadding : null;
+    const topDownPadding = extraStyle.topDownPadding !== 'null' ? extraStyle.topDownPadding : null;
+    const marginLeftStr = `;margin-left:${leftMargin}`;
+
+
+    for (const contentText of Object.values(textOf)) {
+
+        if (extraStyle.borderRadius) {
+            contentText[0].after['textDecoration'] = `;border-top-left-radius:${extraStyle.borderRadius};border-bottom-left-radius:${extraStyle.borderRadius};padding-left:${sidePadding}`;
+            contentText[contentText.length - 1].after['textDecoration'] = `;border-top-right-radius:${extraStyle.borderRadius};border-bottom-right-radius:${extraStyle.borderRadius};padding-right:${sidePadding}`;
+        }
+
+        if (leftMargin !== '0px' && leftMargin !== '0em' && leftMargin) {
+            console.log(contentText[0].after.contentText);
+            contentText[0].after['textDecoration'] += `;margin-left:${leftMargin}`;
+        }
     }
-    Object.entries(textOf).forEach(([hexKey, decoration], idx) => {
-        textOf[hexKey][0].after['margin'] = leftMarginToMarginString(leftMargin);
-    });
+
+    if (extraStyle.backgroundColor !== 'null') {
+        backgroundColor = hexToRgbaStringLiteral(extraStyle.backgroundColor, extraStyle.backgroundOpacity, "#333333", 0.7);
+        Object.entries(textOf).forEach(([hexKey, contentText]: [string, any]) => {
+            contentText.forEach((text, idx) => {
+                textOf[hexKey][idx].after['backgroundColor'] = backgroundColor;
+                if (idx !== 0) {
+                    textOf[hexKey][idx].after['textDecoration'] = textOf[hexKey][idx].after['textDecoration']?.replace(marginLeftStr, '');
+                }
+                if (topDownPadding) {
+                    textOf[hexKey][idx].after['textDecoration'] += `;padding-top:${topDownPadding};padding-bottom:${topDownPadding}`;
+
+                }
+            });
+        });
+    }
 };
 
 const convertPositionDecorationRenderOption = ({ textPosition, primaryStyle, secondaryStyle, notation, leftMargin }) => {
@@ -77,23 +105,23 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             return decoration;
         }).filter(decoration => decoration.after.contentText !== undefined);
     };
-    console.log(textOfSource);
     preset.layout[__0x.allOkPlaceholderContentText].contentText.forEach(decoration => {
         if (decoration.after.contentText === __0x.allOkHexKey) {
             const ok = concatinateNotation(preset.all[__0x.allOkContentText]);
             setDiagonosticTextbuffer(__0x.allOkOverride, ok.map(decoration => vscode.window.createTextEditorDecorationType(decoration)));
-            textOftarget[__0x.allOkOverride].push(...ok);
+            textOftarget[__0x.allOkOverride].push(...[...ok]);
         } else {
             setDiagonosticTextbuffer(__0x.allOkOverride, [vscode.window.createTextEditorDecorationType(decoration)]);
-            textOftarget[__0x.allOkOverride].push(decoration);
+            textOftarget[__0x.allOkOverride].push({ ...decoration });
         }
     });
+
     preset.layout[__0x.problemPlaceholderContentText].contentText.forEach(decoration => {
         if (decoration.after.contentText === __0x.editorHexKey) {
             const ok = concatinateNotation(preset.editor[__0x.okEditorContentText]);
             const warn = concatinateNotation(preset.editor[__0x.warningEditorContentText]);
             const err = concatinateNotation(preset.editor[__0x.errorEditorContentText]);
-            textOftarget[__0x.allOkNoOverride].push(...ok); 
+            textOftarget[__0x.allOkNoOverride].push(...[...ok]);
             textOftarget[__0x.editorOkWorkspaceWarn].push(...ok);
             textOftarget[__0x.editorOkWorkspaceErr].push(...ok);
             textOftarget[__0x.editorOkWorkspaceWarnErr].push(...ok);
@@ -122,7 +150,7 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             const ok = concatinateNotation(preset.workspace[__0x.okWorkspaceContentText]);
             const warn = concatinateNotation(preset.workspace[__0x.warningWorkspaceContentText]);
             const err = concatinateNotation(preset.workspace[__0x.errorWorkspaceContentText]);
-            textOftarget[__0x.allOkNoOverride].push(...ok); 
+            textOftarget[__0x.allOkNoOverride].push(...ok);
             textOftarget[__0x.editorOkWorkspaceWarn].push(...warn);
             textOftarget[__0x.editorOkWorkspaceErr].push(...err);
             textOftarget[__0x.editorOkWorkspaceWarnErr].push(...warn, ...err);
@@ -149,7 +177,7 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
         }
         const decorationType = vscode.window.createTextEditorDecorationType(decoration);
         DIAGNOSTIC_PROBLEM_LIST.forEach(hexKey => {
-            textOftarget[hexKey].push(decoration);
+            textOftarget[hexKey].push({ ...decoration });
             setDiagonosticTextbuffer(hexKey, [decorationType]);
         });
     });
@@ -366,7 +394,8 @@ const updateDiagnosticTextConfig = (configReady: Type.ConfigInfoReadyType, confi
     Object.assign(dignosticContentTextPreset, buildDiagnosticStyle(diagnosticConfig, diagnosticDecorationStyle, decorationStyleList, diagnosticConfig.visibility, diagnosticBiome));
     Object.assign(bindTo.configOf, diagnosticConfig.visibility);
     buildDiagnosticTextPreset(dignosticContentTextPreset, bindTo.textOf.contentText, bindToBuffer.textOf, diagnosticDecorationStyle, diagnosticConfig.leftMargin);
-    applyLeftMargin(bindTo.textOf.contentText, diagnosticConfig.visibility, diagnosticConfig.leftMargin);
+    applyExtraStyle(bindTo.textOf.contentText, diagnosticConfig.diagnosticPlaceholderTextStyle, diagnosticConfig.leftMargin);
+    // applyLeftMargin(bindTo.textOf.contentText, diagnosticConfig.visibility, diagnosticConfig.leftMargin);
     setGlyph(bindTo.textOf.glyphList, diagnosticConfig.glyphList);
     setCursorLine(bindTo.functionOf, diagnosticConfig.visibility);
     setOverrideSignature(diagnosticConfig.visibility.overrideAllOk ? __0x.allOkOverride : __0x.allOkNoOverride);

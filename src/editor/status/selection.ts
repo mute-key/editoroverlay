@@ -134,7 +134,8 @@ const contentTextFunc = (buffer: vscode.TextEditorDecorationType[], context, opt
 };
 
 const cursorOnlySelection = (editor: vscode.TextEditor, previousKey: number[]): void => {
-    clearBufferOfhexkey(editor.setDecorations, previousKey);
+    clearSelectionTextBuffer(editor);
+    // clearBufferOfhexkey(editor.setDecorations, previousKey);
     const context = {
         idx: 0,
         editor: editor
@@ -196,8 +197,7 @@ const contentTextFuncBuffered = (
 
 const decorationOptionGrid = {
     range: undefined,
-    renderOptions: undefined,
-    __proto__: null
+    renderOptions: undefined
 };
 
 const multilineSelection = (editor: vscode.TextEditor, previousKey: number[]): void => {

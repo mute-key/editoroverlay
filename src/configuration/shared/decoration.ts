@@ -91,6 +91,7 @@ const convertToDecorationRenderOption = (config: Type.DecorationTextStyleConfig 
     if (!config.color) {
         return;
     }
+
     decorationOption.after.color = hexToRgbaStringLiteral(config.color as string, config.colorOpacity, '#333333', 0.7);
     if (config.backgroundColor && config.backgroundColor !== 'null' && config.backgroundColor.length > 0) {
         decorationOption.after.backgroundColor = hexToRgbaStringLiteral(config.backgroundColor as string, config.backgroundOpacity, '#333333', 0.7);;

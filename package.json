@@ -3,7 +3,7 @@
     "publisher": "mutekey",
     "displayName": "Cursor/Selection Line Highlight",
     "description": "Apply configurable decorations on cursor line and selection lines.",
-    "version": "1.2.1",
+    "version": "1.2.5",
     "icon": "./resource/icon.png",
     "engines": {
         "vscode": "^1.96.0"
@@ -459,7 +459,7 @@
                     },
                     "cursorlinehighlight.diagnosticText.leftMargin": {
                         "type": "string",
-                        "default": "10px",
+                        "default": "20px",
                         "markdownDescription": "%description.diagnosticText.leftMargin%",
                         "order": 2
                     },
@@ -604,6 +604,9 @@
                             "colorOpacity": 0.9,
                             "backgroundColor": "%color.diagnostic.placeholder.background.default%",
                             "backgroundOpacity": 0.5,
+                            "borderRadius": "2px",
+                            "sidePadding": "4px",
+                            "topDownPadding": "2px",
                             "fontStyle": "normal",
                             "fontWeight": "bold"
                         },
@@ -630,9 +633,21 @@
                             },
                             "backgroundOpacity": {
                                 "type": "number",
-                                "default": 1,
+                                "default": 0.3,
                                 "minimum": 0,
                                 "maximum": 1
+                            },
+                            "borderRadius": {
+                                "type": "string",
+                                "default": "2px"
+                            },
+                            "sidePadding": {
+                                "type": "string",
+                                "default":"4px"
+                            },
+                            "topDownPadding": {
+                                "type": "string",
+                                "default":"2px"
                             },
                             "fontStyle": {
                                 "type": "string",

@@ -13,11 +13,9 @@ const borderPositionInfo = {
     ...HIGHLIGHT_BORDER_POSITION_INFO,
 } as unknown as Type.BorderPositionInfoType;
 
-const resetHighlight = (setDecorations, range) => (highlight) => setDecorations(highlight, range);
-// const resetHighlight = (setDecorations, range) => (highlight) => setDecorations(highlight, range);
-
 const cursorOnlyHighlightRange = (editor: vscode.TextEditor, previousKey: number[]): void => {
-    clearHighlight(editor.setDecorations, previousKey, blankRange);
+    clearEveryHighlight(editor);
+    
     applyDecoration(editor.setDecorations, highlightStyleList[__0x.cursorOnly][0], [createLineRange(editor.selection.active)]);
     // const borderConfig: Type.BorderPositionParserType = borderPositionInfo[borderConfigSymlink] as Type.BorderPositionParserType;
     // highlightStyleList[previousKey[0]].forEach(resetHighlight(editor.setDecorations, resetRange));

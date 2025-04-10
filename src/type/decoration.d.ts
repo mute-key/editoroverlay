@@ -170,7 +170,7 @@ type DecorationRenderOptionType = {
     rangeBehavior?: any,
     after: {
     } & DecorationRenderAfterOptionType
-}
+};
 
 type DecorationRenderOptionReadyType = {
     isWholeLine: boolean,

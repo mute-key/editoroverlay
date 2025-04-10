@@ -57,7 +57,7 @@ const editorOptionChanged = (context): vscode.Disposable => {
 const selectionChanged: Type.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) => {
         decorationState.appliedHighlight[0] = renderGroupIs(event.textEditor, decorationState.appliedHighlight);
-    })
+    });
 };
 
 const visibleRangeChanged = (): vscode.Disposable => {
