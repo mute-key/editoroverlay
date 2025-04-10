@@ -3,7 +3,7 @@
     "publisher": "mutekey",
     "displayName": "Cursor/Selection Line Highlight",
     "description": "Apply configurable decorations on cursor line and selection lines.",
-    "version": "1.2.5",
+    "version": "1.2.6",
     "icon": "./resource/icon.png",
     "engines": {
         "vscode": "^1.96.0"
@@ -265,7 +265,7 @@
                     },
                     "cursorlinehighlight.selectionText.leftMargin": {
                         "type": "string",
-                        "default": "20px",
+                        "default": "10px",
                         "markdownDescription": "%placeholder%",
                         "order": 2
                     },

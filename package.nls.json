@@ -79,7 +79,7 @@
     "text.problem.glyph.line.equal": "⚙",
     "text.problem.glyph.line.up": "⬆︎",
     "text.problem.glyph.line.down": "⬇︎",
-    "text.ok.all.prefix.default": "EDITOR & WORKSPACE: ",
+    "text.ok.all.prefix.default": "EDITOR / WORKSPACE: ",
     "text.ok.all.postfix.default": "null",
     "text.ok.editor.prefix.default": " CURRENT ",
     "text.ok.editor.postfix.default": "null",

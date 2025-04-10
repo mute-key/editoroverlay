@@ -22,14 +22,13 @@ const clearDecorationState = (decorationState: Type.DecorationStateType) => {
     decorationState.diagnosticSignature[0] = __0x.allOkOverride;
 };
 
-const resetAllDecoration = () => {
-    const clearList = (editor) => {
-        clearEveryHighlight(editor);
-        clearSelectionTextBuffer(editor);
-        clearDiagnosticText(editor.setDecorations, decorationState.diagnosticSignature);
-    };
-    vscode.window.visibleTextEditors.forEach(clearList);
+const clearAll = (editor: vscode.TextEditor): void => {
+    clearEveryHighlight(editor);
+    clearSelectionTextBuffer(editor);
+    clearDiagnosticText(editor.setDecorations, decorationState.diagnosticSignature);
 };
+
+const resetAllDecoration = () => vscode.window.visibleTextEditors.forEach(clearAll);
 
 const updateIndentOption = (editor: vscode.TextEditor): void => {
     const bindTo = bindStatusContentTextState();
