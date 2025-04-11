@@ -458,7 +458,6 @@ var DIAGNOSTIC_CONTENT_TEXT = {
   [editorWarnWorkspaceWarnErr]: [],
   [editorErrWorkspaceErr]: [],
   [editorErrWorkspaceWarnErr]: [],
-  // [__0x.editorWarnErrWorkspaceErr]: [] as any[],
   [editorWarnErrWorkspaceWarnErr]: []
 };
 var DIAGNOSTIC_PROBLEM_LIST = [
@@ -993,7 +992,6 @@ var diagnosticTextBuffer = {
   [editorWarnWorkspaceWarnErr]: [],
   [editorErrWorkspaceErr]: [],
   [editorErrWorkspaceWarnErr]: [],
-  // [__0x.editorWarnErrWorkspaceErr]: [] as any[],
   [editorWarnErrWorkspaceWarnErr]: []
 };
 var setDiagonosticTextbuffer = (hexKey, decorationType) => {
@@ -1135,13 +1133,15 @@ var refershBuffer = (state) => {
   }
 };
 var diagnosticInfo = (decorationState2) => (editor2) => {
-  clearDiagnosticText(editor2.setDecorations, decorationState2.diagnosticSignature);
-  const diagnosticState2 = updateDiagnostic(editor2.document.uri);
-  refershBuffer(diagnosticState2);
+  if (decorationState2.eventTrigger[0] === diagnosticChanged) {
+    const diagnosticState2 = updateDiagnostic(editor2.document.uri);
+    refershBuffer(diagnosticState2);
+  }
   const signature = diagnosticRenderSignature(stateBuffer);
   decorationOption.range = diagnosticOf.rangeFunction(editor2);
   context.line = editor2.selection.start.line;
   context.state = stateBuffer;
+  clearDiagnosticText(editor2.setDecorations, decorationState2.diagnosticSignature);
   diagnosticContentText[signature].forEach(renderDiagnosticText(editor2, signature, { ...decorationOption }, context));
   decorationState2.diagnosticSignature[0] = signature;
 };

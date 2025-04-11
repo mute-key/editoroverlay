@@ -28,7 +28,6 @@ const diagnosticTextBuffer = {
     [__0x.editorWarnWorkspaceWarnErr]: [] as any[],
     [__0x.editorErrWorkspaceErr]: [] as any[],
     [__0x.editorErrWorkspaceWarnErr]: [] as any[],
-    // [__0x.editorWarnErrWorkspaceErr]: [] as any[],
     [__0x.editorWarnErrWorkspaceWarnErr]: [] as any[],
 };
 
@@ -205,19 +204,18 @@ const refershBuffer = (state) => {
     }
 };
 
-const diagnosticInfo = (decorationState) => (editor: vscode.TextEditor) => {
+const diagnosticInfo = (decorationState) => (editor: vscode.TextEditor): void => {
 
-    clearDiagnosticText(editor.setDecorations, decorationState.diagnosticSignature);
-
-    const diagnosticState = updateDiagnostic(editor.document.uri);
-    refershBuffer(diagnosticState);
-    // if (decorationState.eventTrigger[0] === __0x.diagnosticChanged) {
-    // }
+    if (decorationState.eventTrigger[0] === __0x.diagnosticChanged) {
+        const diagnosticState = updateDiagnostic(editor.document.uri);
+        refershBuffer(diagnosticState);
+    }
 
     const signature = diagnosticRenderSignature(stateBuffer);
     decorationOption.range = diagnosticOf.rangeFunction(editor);
     context.line = editor.selection.start.line;
     context.state = stateBuffer;
+    clearDiagnosticText(editor.setDecorations, decorationState.diagnosticSignature);
     diagnosticContentText[signature].forEach(renderDiagnosticText(editor, signature, { ...decorationOption }, context));
     decorationState.diagnosticSignature[0] = signature;
 };

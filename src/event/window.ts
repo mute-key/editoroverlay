@@ -61,17 +61,17 @@ const selectionChanged: Type.DecorationEventFunc = ({ decorationState }): vscode
     });
 };
 
-const visibleRangeChanged = (): vscode.Disposable => {
-    return vscode.window.onDidChangeTextEditorVisibleRanges((event: vscode.TextEditorVisibleRangesChangeEvent): void => {
-        if (event) { }
-    });
-};
+// const visibleRangeChanged = (): vscode.Disposable => {
+//     return vscode.window.onDidChangeTextEditorVisibleRanges((event: vscode.TextEditorVisibleRangesChangeEvent): void => {
+//         if (event) { }
+//     });
+// };
 
 // const documentModifified = (context): vscode.Disposable => {
 //     return vscode.workspace.onDidChangeTextDocument((event: vscode.TextDocumentChangeEvent) => {
 //         if (event) {
-//             // console.log('document changed');
-//             // context.eventTrigger = __0x.documentChanged;
+//             console.log('document changed');
+//             context.eventTrigger = __0x.documentChanged;
 //         }
 //     });
 // };
@@ -81,6 +81,6 @@ export {
     activeEditorChanged,
     editorOptionChanged,
     selectionChanged,
-    visibleRangeChanged
+    // visibleRangeChanged
     // documentModifified
 };

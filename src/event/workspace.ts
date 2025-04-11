@@ -12,10 +12,12 @@ import { updateSelectionTextConfig } from '../configuration/status/selection';
 
 const configChanged: Type.DecorationEventFunc = ({ configInfo, decorationState }): vscode.Disposable => {
     return vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
+        
         if (event) {
             const section = Object.keys(CONFIG_SECTION).find(section => {
                 return event.affectsConfiguration(configInfo.name + '.' + section);
             });
+
             if (section) {
                 Error.configurationUpdated();
                 try {

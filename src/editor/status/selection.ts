@@ -38,12 +38,6 @@ const setSelectionTextbuffer = (hexKey: number, size: number): void => {
     }));
 };
 
-// const sealSelctionText = () => {
-//     for (const hexKey of Object.keys(selectionContentText)) {
-//         Object.seal(selectionContentText[hexKey].contentText)
-//     }
-// }
-
 const columnDelta = (editor, delta = 0): string => {
     const col = editor.selection.active.character + delta;
     const end = editor.document.lineAt(editor.selection.active.line).text.length + delta;

@@ -33,7 +33,7 @@ You can confugure visibily, fixtures, position, format or text/glyph/emoji.
 > And Editor diagonotic will direct where the problem lines are based on current cursor position. <br>
 
 
-So far, everythign in the examples are on default configuration.<br><br>
+So far, everything in the examples are on default configuration.<br><br>
 
 There are no apply preset features yet, which i will add soon in future iteration.<br>
 Also, feel free to leave feedback or comment if you like.<br>
@@ -91,8 +91,8 @@ Diagnostic status indicate the same entry in probelm view as the screenshot.
 
 The configurations are some what complicated, due to complexcity of customizability of status block.
 
-It kinda over-extend when selection status is enabled too, especially if you use horizontally split editors. 
-I would advice to change the position of diagnostics from setting 'Visibilty' 
+It kinda over-extend when selection status is enabled too, especially if you use horizontally split editors.
+I would advice to change the position of diagnostics from setting 'Visibilty'
 
 
 <img src="./resource/nextLine.png" alt ="GIF" style=""><br>

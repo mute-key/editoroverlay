@@ -188,7 +188,6 @@ export const enum DIAGNOSTIC_STATE_SIGNATURE {
     E_WARN_W_WARN_ERR = 0b01011010,     // 90
     E_ERR_W_ERR = 0b10010010,           // 146
     E_ERR_W_WARN_ERR = 0b10011010,      // 154
-    // E_WARN_ERR_W_ERR = 0b11010010,      // 210
     E_WARN_ERR_W_WARN_ERR = 0b11011010, // 218
 }
 
@@ -202,7 +201,6 @@ export const editorWarnWorkspaceErr = DIAGNOSTIC_STATE_SIGNATURE.E_WARN_W_ERR;
 export const editorWarnWorkspaceWarnErr = DIAGNOSTIC_STATE_SIGNATURE.E_WARN_W_WARN_ERR;
 export const editorErrWorkspaceErr = DIAGNOSTIC_STATE_SIGNATURE.E_ERR_W_ERR;
 export const editorErrWorkspaceWarnErr = DIAGNOSTIC_STATE_SIGNATURE.E_ERR_W_WARN_ERR;
-// export const editorWarnErrWorkspaceErr = DIAGNOSTIC_STATE_SIGNATURE.E_WARN_ERR_W_ERR
 export const editorWarnErrWorkspaceWarnErr = DIAGNOSTIC_STATE_SIGNATURE.E_WARN_ERR_W_WARN_ERR;
 
 //::==============================================================================

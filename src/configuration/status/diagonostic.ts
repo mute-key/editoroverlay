@@ -130,7 +130,6 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             textOftarget[__0x.editorWarnWorkspaceWarnErr].push(...warn);
             textOftarget[__0x.editorErrWorkspaceErr].push(...err);
             textOftarget[__0x.editorErrWorkspaceWarnErr].push(...err);
-            // textOftarget[__0x.editorWarnErrWorkspaceErr].push(...warn, ...err);
             textOftarget[__0x.editorWarnErrWorkspaceWarnErr].push(...warn, ...err);
             const okDecoration = ok.map(decoration => vscode.window.createTextEditorDecorationType(decoration));
             const warnDecoration = warn.map(decoration => vscode.window.createTextEditorDecorationType(decoration));
@@ -144,7 +143,6 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             setDiagonosticTextbuffer(__0x.editorWarnWorkspaceWarnErr, warnDecoration);
             setDiagonosticTextbuffer(__0x.editorErrWorkspaceErr, errDecoration);
             setDiagonosticTextbuffer(__0x.editorErrWorkspaceWarnErr, errDecoration);
-            // setDiagonosticTextbuffer(__0x.editorWarnErrWorkspaceErr, errDecoration);
             setDiagonosticTextbuffer(__0x.editorWarnErrWorkspaceWarnErr, [...warnDecoration, ...errDecoration]);
             return;
         }
@@ -161,7 +159,6 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             textOftarget[__0x.editorWarnWorkspaceWarnErr].push(...warn, ...err);
             textOftarget[__0x.editorErrWorkspaceErr].push(...err);
             textOftarget[__0x.editorErrWorkspaceWarnErr].push(...warn, ...err);
-            // textOftarget[__0x.editorWarnErrWorkspaceErr].push(...err);
             textOftarget[__0x.editorWarnErrWorkspaceWarnErr].push(...warn, ...err);
             const okDecoration = ok.map(decoration => vscode.window.createTextEditorDecorationType(decoration));
             const warnDecoration = warn.map(decoration => vscode.window.createTextEditorDecorationType(decoration));
@@ -175,7 +172,6 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             setDiagonosticTextbuffer(__0x.editorWarnWorkspaceWarnErr, [...warnDecoration, ...errDecoration]);
             setDiagonosticTextbuffer(__0x.editorErrWorkspaceErr, errDecoration);
             setDiagonosticTextbuffer(__0x.editorErrWorkspaceWarnErr, [...warnDecoration, ...errDecoration]);
-            // setDiagonosticTextbuffer(__0x.editorWarnErrWorkspaceErr, errDecoration);
             setDiagonosticTextbuffer(__0x.editorWarnErrWorkspaceWarnErr, [...warnDecoration, ...errDecoration]);
             return;
         }

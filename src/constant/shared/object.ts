@@ -82,7 +82,6 @@ export const DIAGNOSTIC_CONTENT_TEXT = {
     [__0x.editorWarnWorkspaceWarnErr]: [] as any[],
     [__0x.editorErrWorkspaceErr]: [] as any[],
     [__0x.editorErrWorkspaceWarnErr]: [] as any[],
-    // [__0x.editorWarnErrWorkspaceErr]: [] as any[],
     [__0x.editorWarnErrWorkspaceWarnErr]: [] as any[],
 } as const;
 
@@ -95,7 +94,6 @@ export const DIAGNOSTIC_PROBLEM_LIST = [
     __0x.editorWarnWorkspaceWarnErr,
     __0x.editorErrWorkspaceErr,
     __0x.editorErrWorkspaceWarnErr,
-    // __0x.editorWarnErrWorkspaceErr,
     __0x.editorWarnErrWorkspaceWarnErr,
 ] as const;
 
