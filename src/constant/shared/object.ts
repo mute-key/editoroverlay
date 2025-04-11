@@ -13,6 +13,7 @@ export const INDENT_INFO = {
 export const DECORATION_STATE = {
     appliedHighlight: [0],
     diagnosticSignature: [0],
+    eventTrigger: [0],
 };
 
 export const SELECTION_KIND_LIST = [
@@ -81,7 +82,8 @@ export const DIAGNOSTIC_CONTENT_TEXT = {
     [__0x.editorWarnWorkspaceWarnErr]: [] as any[],
     [__0x.editorErrWorkspaceErr]: [] as any[],
     [__0x.editorErrWorkspaceWarnErr]: [] as any[],
-    [__0x.editorWarnErrWorkspaceWarn_err]: [] as any[],
+    // [__0x.editorWarnErrWorkspaceErr]: [] as any[],
+    [__0x.editorWarnErrWorkspaceWarnErr]: [] as any[],
 } as const;
 
 export const DIAGNOSTIC_PROBLEM_LIST = [
@@ -93,7 +95,8 @@ export const DIAGNOSTIC_PROBLEM_LIST = [
     __0x.editorWarnWorkspaceWarnErr,
     __0x.editorErrWorkspaceErr,
     __0x.editorErrWorkspaceWarnErr,
-    __0x.editorWarnErrWorkspaceWarn_err,
+    // __0x.editorWarnErrWorkspaceErr,
+    __0x.editorWarnErrWorkspaceWarnErr,
 ] as const;
 
 export const DIAGNOSTIC_GLYPH = {
@@ -120,4 +123,3 @@ export const DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET = {
     [__0x.warningContentText]: __0x.warningWorkspaceContentText,
     [__0x.errorContentText]: __0x.errorWorkspaceContentText
 } as const;
-

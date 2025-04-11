@@ -188,6 +188,7 @@ export const enum DIAGNOSTIC_STATE_SIGNATURE {
     E_WARN_W_WARN_ERR = 0b01011010,     // 90
     E_ERR_W_ERR = 0b10010010,           // 146
     E_ERR_W_WARN_ERR = 0b10011010,      // 154
+    // E_WARN_ERR_W_ERR = 0b11010010,      // 210
     E_WARN_ERR_W_WARN_ERR = 0b11011010, // 218
 }
 
@@ -201,9 +202,24 @@ export const editorWarnWorkspaceErr = DIAGNOSTIC_STATE_SIGNATURE.E_WARN_W_ERR;
 export const editorWarnWorkspaceWarnErr = DIAGNOSTIC_STATE_SIGNATURE.E_WARN_W_WARN_ERR;
 export const editorErrWorkspaceErr = DIAGNOSTIC_STATE_SIGNATURE.E_ERR_W_ERR;
 export const editorErrWorkspaceWarnErr = DIAGNOSTIC_STATE_SIGNATURE.E_ERR_W_WARN_ERR;
-export const editorWarnErrWorkspaceWarn_err = DIAGNOSTIC_STATE_SIGNATURE.E_WARN_ERR_W_WARN_ERR;
+// export const editorWarnErrWorkspaceErr = DIAGNOSTIC_STATE_SIGNATURE.E_WARN_ERR_W_ERR
+export const editorWarnErrWorkspaceWarnErr = DIAGNOSTIC_STATE_SIGNATURE.E_WARN_ERR_W_WARN_ERR;
 
 //::==============================================================================
 //::[ MISC ] 0x1000, 00 is reserved.
 //::==============================================================================
+
+export const enum EVENT_SIGNATURE {
+    NO_EVENT = 0x1001,
+    DIAGNOSTIC_CHANGED = 0x1002,
+    SELECTION_CHANGED = 0x1003,
+    DOCUMENT_CHANGED = 0x1004,
+}
+
+export const noEvent = EVENT_SIGNATURE.NO_EVENT;
+export const diagnosticChanged = EVENT_SIGNATURE.DIAGNOSTIC_CHANGED; // 4098
+export const selectionChanged = EVENT_SIGNATURE.SELECTION_CHANGED; // 4099
+export const documentChanged = EVENT_SIGNATURE.DOCUMENT_CHANGED; // 4100
+
+
 

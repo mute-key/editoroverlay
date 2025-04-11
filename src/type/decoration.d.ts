@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as StatusType from './status.d';
-import {DECORATION_STYLE_PREFIX} from '../constant/config/object'
+import { DECORATION_STYLE_PREFIX } from '../constant/config/object';
 import { DECORATION_STYLE_CONFIG_KEY, DECORATION_TYPE_MASK, SELECTION_TYPE } from 'src/constant/config/enum';
 import { MIMEParams } from 'util';
 
@@ -13,10 +13,7 @@ type AppliedHighlightType = {
     ofDecorationType?: vscode.TextEditorDecorationType[]
 };
 
-type DecorationStateType = {
-    appliedHighlight: number[]
-    diagnosticSignature: number[]
-}
+
 
 type DecorationStyleKeyOnlyType = keyof typeof DECORATION_STYLE_PREFIX
 
@@ -33,6 +30,12 @@ type RenderGroupSetProperty = {
 
 type RenderGroupSet = {
     [key: symbol]: RenderGroupSetProperty
+}
+
+type DecorationStateType = {
+    appliedHighlight: number[]
+    diagnosticSignature: number[]
+    eventTrigger: number[]
 }
 
 type DecorationContext = {
@@ -189,7 +192,7 @@ type ContentTextPositionType = {
 }
 
 type ContentTextCollectionType = {
-    [key: string] : ContentTextPositionType
+    [key: string]: ContentTextPositionType
 }
 
 

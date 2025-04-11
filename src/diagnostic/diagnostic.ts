@@ -32,8 +32,6 @@ export interface DiagnosticState {
     }
 }
 
-const diagnosticSource: Type.DiagnosticSourceType = {};
-
 const resetEditorDiagnosticStatistics = (): void => {
     diagnosticState.editor.warning.line.splice(0);
     diagnosticState.editor.error.line.splice(0);
@@ -48,16 +46,8 @@ const resetWorkspaceDiagnosticStatistics = (): void => {
     diagnosticState.workspace.error.total = 0;
 };
 
-const setOverrideSignature = (digit: number) => {
-    diagnosticState.override = digit; 
-}
-
 const parseDiagnostic = (state, severity, fsPath: string, activeEditorfsPath: string | undefined = undefined): void => {
     Object.keys(severity).forEach(severityType => {
-        if (severity[severityType].length > 0) {
-            state.workspace[severityType].source += 1;
-            state.workspace[severityType].total += severity[severityType].length;
-        }
         if (fsPath === activeEditorfsPath) {
             state.editor[severityType].line = [
                 ...new Set([
@@ -67,6 +57,11 @@ const parseDiagnostic = (state, severity, fsPath: string, activeEditorfsPath: st
             ];
             state.editor[severityType].total = 0;
             state.editor[severityType].total = severity[severityType].length;
+        }
+
+        if (severity[severityType].length > 0) {
+            state.workspace[severityType].source += 1;
+            state.workspace[severityType].total += severity[severityType].length;
         }
     });
 };
@@ -97,27 +92,50 @@ const maxSeverity = (state: DiagnosticState): number => {
     return Math.max(editorSeverity, workspaceSeverity);
 };
 
-const updateDiagnostic = (activeEditorUri: vscode.Uri | undefined = undefined): DiagnosticState => {
+const convertTo1DArray = (state: DiagnosticState): (number | number[])[] => [
+    state.override,
+    state.severity,
+    [...state.editor.warning.line],
+    state.editor.warning.total,
+    [...state.editor.error.line],
+    state.editor.error.total,
+    state.workspace.warning.source,
+    state.workspace.warning.total,
+    state.workspace.error.source,
+    state.workspace.error.total,
+];
+
+const diagnosticSource: Type.DiagnosticSourceType = {};
+
+const setOverrideDigit = (digit: number) => {
+    diagnosticState.override = digit;
+}
+
+const updateDiagnostic = (activeEditorUri: vscode.Uri | undefined = undefined) => {
+
     for (let fs in diagnosticSource) {
         delete diagnosticSource[fs];
     }
+
     resetWorkspaceDiagnosticStatistics();
+    resetEditorDiagnosticStatistics();
+
     const diagnostics = vscode.languages.getDiagnostics();
+
     for (const [uri, diagnosticList] of diagnostics) {
         buildDiagnostic(diagnosticSource, diagnosticList, uri);
     }
     for (const [fsPath, severity] of Object.entries(diagnosticSource)) {
         parseDiagnostic(diagnosticState, severity, fsPath, activeEditorUri?.fsPath);
     };
-    if (activeEditorUri && !Object.hasOwn(diagnosticSource, activeEditorUri.fsPath)) {
-        resetEditorDiagnosticStatistics();
-    }
+
     diagnosticState.severity = maxSeverity(diagnosticState);
-    return diagnosticState;
+    
+    return convertTo1DArray(diagnosticState);
 };
 
 export {
     updateDiagnostic,
     resetEditorDiagnosticStatistics,
-    setOverrideSignature
+    setOverrideDigit
 };

@@ -7,7 +7,6 @@ import { DIAGNOSTIC_CONTENT_TEXT, DIAGNOSTIC_ENTRY_LIST, DIAGNOSTIC_GLYPH } from
 import { DECORATION_OPTION_CONFIG, DIAGNOSTIC_VISIBILITY_CONFIG } from '../../constant/config/object';
 import { DIAGNOSTIC_CONTENT_TEXT_KEY } from '../../constant/config/enum';
 import { updateDiagnostic } from '../../diagnostic/diagnostic';
-import type { DiagnosticState } from '../../diagnostic/diagnostic';
 import { resetDecoration } from '../editor';
 
 const diagnosticContentText = {
@@ -29,7 +28,8 @@ const diagnosticTextBuffer = {
     [__0x.editorWarnWorkspaceWarnErr]: [] as any[],
     [__0x.editorErrWorkspaceErr]: [] as any[],
     [__0x.editorErrWorkspaceWarnErr]: [] as any[],
-    [__0x.editorWarnErrWorkspaceWarn_err]: [] as any[],
+    // [__0x.editorWarnErrWorkspaceErr]: [] as any[],
+    [__0x.editorWarnErrWorkspaceWarnErr]: [] as any[],
 };
 
 const setDiagonosticTextbuffer = (hexKey: number, decorationType) => {
@@ -91,25 +91,30 @@ const problemLineGlyph = (lineNumber: number[], line: number) => {
 };
 
 const editorWarningSourceOf = {
-    wrn: ({ state, line }) => String(state.editor.warning.total) + problemLineGlyph(state.editor.warning.line, line)
+    wrn: ({ state, line }) =>
+        String(state[3])                    // state.editor.warning.total
+        + problemLineGlyph(state[2], line)  // state.editor.warning.line
 };
 
 const editorErrorCountOf = {
-    err: ({ state, line }) => String(state.editor.error.total) + problemLineGlyph(state.editor.error.line, line)
+    err: ({ state, line }) =>
+        String(state[5])                    // state.editor.error.total 
+        + problemLineGlyph(state[4], line)  // state.editor.error.line
 };
 
 const workspaceWarningSourceOf = {
-    src: ({ state }) => String(state.workspace.warning.source)
+    src: ({ state }) => String(state[6])    // state.workspace.warning.source
 };
+
 const workspaceWarningCountOf = {
-    wrn: ({ state }) => String(state.workspace.warning.total)
+    wrn: ({ state }) => String(state[7])    // state.workspace.warning.total
 };
 
 const workspaceErrorSourceOf = {
-    src: ({ state }) => String(state.workspace.error.source)
+    src: ({ state }) => String(state[8])    // state.workspace.error.source
 };
 const workspaceErrorCountOf = {
-    err: ({ state }) => String(state.workspace.error.total)
+    err: ({ state }) => String(state[9])    // state.workspace.error.total
 };
 
 const diagnosticOf = {
@@ -139,15 +144,10 @@ const diagnosticOf = {
     },
 };
 
-const diagnosticRenderSignature = (state: DiagnosticState): number => {
-    const emask = (state.editor.warning.total ? 1 << 1 : 0) | (state.editor.error.total ? 1 << 2 : 0);
-    const wmask = (state.workspace.warning.total ? 1 << 1 : 0) | (state.workspace.error.total ? 1 << 2 : 0);
-    return (emask === 0 && wmask === 0) ? state.override : ((emask ? emask << 5 : 1 << 5) | (wmask ? wmask << 2 : 1 << 2) | 0b10);
-};
-
 const clearDiagnosticText = (setDecorations: vscode.TextEditor['setDecorations'], previousSignature: number[]): void => {
     diagnosticTextBuffer[previousSignature[0]]?.forEach(resetDecoration(setDecorations));
 };
+
 type DecorationRenderAfterOption = {
     contentText?: string | any,
     color?: string,
@@ -186,13 +186,38 @@ const context = {
     line: {}
 };
 
+const stateBuffer: (number | number[])[] = [0, 0, [], 0, [], 0, 0, 0, 0, 0];
+
+const initializeStateBuffer = (digit: number) => {
+    stateBuffer[0] = digit;
+};
+
+const diagnosticRenderSignature = (state: typeof stateBuffer): number => {
+    const emask = (state[3] ? 1 << 1 : 0) | (state[5] ? 1 << 2 : 0);
+    const wmask = (state[7] ? 1 << 1 : 0) | (state[9] ? 1 << 2 : 0);
+    return (emask === 0 && wmask === 0) ? state[0] as number : ((emask ? emask << 5 : 1 << 5) | (wmask ? wmask << 2 : 1 << 2) | 0b10);
+};
+
+const refershBuffer = (state) => {
+    let idx = state.length;
+    while (idx--) {
+        stateBuffer[idx] = state[idx];
+    }
+};
+
 const diagnosticInfo = (decorationState) => (editor: vscode.TextEditor) => {
+
     clearDiagnosticText(editor.setDecorations, decorationState.diagnosticSignature);
+
     const diagnosticState = updateDiagnostic(editor.document.uri);
-    const signature = diagnosticRenderSignature(diagnosticState);
-    context.state = diagnosticState;
-    context.line = editor.selection.start.line;
+    refershBuffer(diagnosticState);
+    // if (decorationState.eventTrigger[0] === __0x.diagnosticChanged) {
+    // }
+
+    const signature = diagnosticRenderSignature(stateBuffer);
     decorationOption.range = diagnosticOf.rangeFunction(editor);
+    context.line = editor.selection.start.line;
+    context.state = stateBuffer;
     diagnosticContentText[signature].forEach(renderDiagnosticText(editor, signature, { ...decorationOption }, context));
     decorationState.diagnosticSignature[0] = signature;
 };
@@ -213,5 +238,6 @@ export {
     bindDiagnosticContentTextState,
     setDiagonosticTextbuffer,
     reloadContentText,
-    clearDiagnosticText
+    clearDiagnosticText,
+    initializeStateBuffer
 };

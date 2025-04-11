@@ -37,6 +37,16 @@
     ],
     "main": "./dist/extension.js",
     "contributes": {
+        "commands": [
+            {
+                "command": "cursorlinehighlight.resetUserConfiguration",
+                "title": "Cursor Highlight: Reset User Configuration"
+            },
+            {
+                "command": "cursorlinehighlight.applyPresetConfiguration",
+                "title": "Cursor Highlight: Apply Preset Configuration"
+            }
+        ],
         "configuration": [
             {
                 "title": "%title.general%",
@@ -585,7 +595,7 @@
                         "patternErrorMessage": "Must be a single line text",
                         "markdownDescription": "%description.diagnosticText.allOkContentText%",
                         "editPresentation": "singlelineText"
-                    },          
+                    },
                     "cursorlinehighlight.diagnosticText.problemPlaceholderContentText": {
                         "order": 7,
                         "type": "string",
@@ -643,11 +653,11 @@
                             },
                             "sidePadding": {
                                 "type": "string",
-                                "default":"4px"
+                                "default": "4px"
                             },
                             "topDownPadding": {
                                 "type": "string",
-                                "default":"2px"
+                                "default": "2px"
                             },
                             "fontStyle": {
                                 "type": "string",
@@ -1149,7 +1159,6 @@
                             }
                         }
                     }
-                    
                 }
             }
         ]

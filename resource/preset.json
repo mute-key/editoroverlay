@@ -1,0 +1,37 @@
+{
+    "emoji": {
+        "cursorlinehighlight.selectionText.cursorOnlyText": "✒️ ... At (idx ${zCol}, zero-based)",
+        "cursorlinehighlight.selectionText.singleLineText": "📏 ... Of (${char} Characters)",
+        "cursorlinehighlight.selectionText.multiLineCursorText": "✂️ Cursor ... Of (${lc} Lines, ${char} Characters, Indent/EOL Ignored)",
+        "cursorlinehighlight.selectionText.multiLineAnchorText": "✂️ Anchor ... Of (${lc} Lines, ${char} Characters, Indent/EOL Ignored)",
+        "cursorlinehighlight.selectionText.multiCursorText": "🔗 ... Of (${nth} of ${count}, with Total ${lc} Lines ${char} Characters)",
+        "cursorlinehighlight.diagnosticText.allOkPlaceholderContentText": "- 🛠️ 『 ${allok} 』",
+        "cursorlinehighlight.diagnosticText.problemPlaceholderContentText": "- 🛠️ 『 📑:${editor} / 🗄️:${workspace} 』",
+        "cursorlinehighlight.diagnosticText.okWorkspaceContentText": "${pre}✅${post}",
+        "cursorlinehighlight.diagnosticText.okEditorContentText": "${pre}✅${post}",
+        "cursorlinehighlight.diagnosticText.warningWorkspaceContentText": "${pre}⚠️${src}|${wrn}${post}",
+        "cursorlinehighlight.diagnosticText.warningEditorContentText": "${pre}⚠️${wrn}${post}",
+        "cursorlinehighlight.diagnosticText.errorWorkspaceContentText": "${pre}⛔${src}|${err}${post}",
+        "cursorlinehighlight.diagnosticText.errorEditorContentText": "${pre}⛔${err}${post}",
+        "cursorlinehighlight.diagnosticText.okNotationTextStyle": {
+            "workspacePrefix": "null",
+            "workspacePostfix": "null",
+            "editorPrefix": "null",
+            "editorPostfix": "null",
+            "allPrefix": "📑 / 🗄️:",
+            "allPostfix": "null"
+        },
+        "cursorlinehighlight.diagnosticText.warningNotationTextStyle": {
+            "workspacePrefix": "null",
+            "workspacePostfix": "null",
+            "editorPrefix": "null",
+            "editorPostfix": "null"
+        },
+        "cursorlinehighlight.diagnosticText.errorNotationTextStyle": {
+            "workspacePrefix": "null",
+            "workspacePostfix": "null",
+            "editorPrefix": "null",
+            "editorPostfix": "null"
+        }
+    }
+}

@@ -9,10 +9,10 @@ import { DIAGNOSTIC_PROBLEM_LIST } from '../../constant/shared/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { sanitizeConfigValue } from '../shared/validation';
 import { convertToDecorationRenderOption, setContentTextOnDecorationRenderOption } from '../shared/decoration';
-import { bindDiagnosticContentTextState, reloadContentText, setDiagonosticTextbuffer } from '../../editor/status/diagnostic';
+import { bindDiagnosticContentTextState, initializeStateBuffer, reloadContentText, setDiagonosticTextbuffer } from '../../editor/status/diagnostic';
 import { hexToRgbaStringLiteral, readBits } from '../../util/util';
-import { createCursorRange, createCursorRangeNextLine, createCursorRangePreviousLine } from '../../editor/range';
-import { setOverrideSignature } from '../../diagnostic/diagnostic';
+import { createCursorRange, createCursorRangeNextLine, createCursorRangePreviousLine } from '../../editor/range';import { setOverrideDigit } from '../../diagnostic/diagnostic';
+;
 
 const positionKeyList = ['pre', 'post'] as const;
 
@@ -130,7 +130,8 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             textOftarget[__0x.editorWarnWorkspaceWarnErr].push(...warn);
             textOftarget[__0x.editorErrWorkspaceErr].push(...err);
             textOftarget[__0x.editorErrWorkspaceWarnErr].push(...err);
-            textOftarget[__0x.editorWarnErrWorkspaceWarn_err].push(...warn, ...err);
+            // textOftarget[__0x.editorWarnErrWorkspaceErr].push(...warn, ...err);
+            textOftarget[__0x.editorWarnErrWorkspaceWarnErr].push(...warn, ...err);
             const okDecoration = ok.map(decoration => vscode.window.createTextEditorDecorationType(decoration));
             const warnDecoration = warn.map(decoration => vscode.window.createTextEditorDecorationType(decoration));
             const errDecoration = err.map(decoration => vscode.window.createTextEditorDecorationType(decoration));
@@ -143,7 +144,8 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             setDiagonosticTextbuffer(__0x.editorWarnWorkspaceWarnErr, warnDecoration);
             setDiagonosticTextbuffer(__0x.editorErrWorkspaceErr, errDecoration);
             setDiagonosticTextbuffer(__0x.editorErrWorkspaceWarnErr, errDecoration);
-            setDiagonosticTextbuffer(__0x.editorWarnErrWorkspaceWarn_err, [...warnDecoration, ...errDecoration]);
+            // setDiagonosticTextbuffer(__0x.editorWarnErrWorkspaceErr, errDecoration);
+            setDiagonosticTextbuffer(__0x.editorWarnErrWorkspaceWarnErr, [...warnDecoration, ...errDecoration]);
             return;
         }
         if (decoration.after.contentText === __0x.workspaceHexKey) {
@@ -159,7 +161,8 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             textOftarget[__0x.editorWarnWorkspaceWarnErr].push(...warn, ...err);
             textOftarget[__0x.editorErrWorkspaceErr].push(...err);
             textOftarget[__0x.editorErrWorkspaceWarnErr].push(...warn, ...err);
-            textOftarget[__0x.editorWarnErrWorkspaceWarn_err].push(...warn, ...err);
+            // textOftarget[__0x.editorWarnErrWorkspaceErr].push(...err);
+            textOftarget[__0x.editorWarnErrWorkspaceWarnErr].push(...warn, ...err);
             const okDecoration = ok.map(decoration => vscode.window.createTextEditorDecorationType(decoration));
             const warnDecoration = warn.map(decoration => vscode.window.createTextEditorDecorationType(decoration));
             const errDecoration = err.map(decoration => vscode.window.createTextEditorDecorationType(decoration));
@@ -172,7 +175,8 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             setDiagonosticTextbuffer(__0x.editorWarnWorkspaceWarnErr, [...warnDecoration, ...errDecoration]);
             setDiagonosticTextbuffer(__0x.editorErrWorkspaceErr, errDecoration);
             setDiagonosticTextbuffer(__0x.editorErrWorkspaceWarnErr, [...warnDecoration, ...errDecoration]);
-            setDiagonosticTextbuffer(__0x.editorWarnErrWorkspaceWarn_err, [...warnDecoration, ...errDecoration]);
+            // setDiagonosticTextbuffer(__0x.editorWarnErrWorkspaceErr, errDecoration);
+            setDiagonosticTextbuffer(__0x.editorWarnErrWorkspaceWarnErr, [...warnDecoration, ...errDecoration]);
             return;
         }
         const decorationType = vscode.window.createTextEditorDecorationType(decoration);
@@ -395,10 +399,11 @@ const updateDiagnosticTextConfig = (configReady: Type.ConfigInfoReadyType, confi
     Object.assign(bindTo.configOf, diagnosticConfig.visibility);
     buildDiagnosticTextPreset(dignosticContentTextPreset, bindTo.textOf.contentText, bindToBuffer.textOf, diagnosticDecorationStyle, diagnosticConfig.leftMargin);
     applyExtraStyle(bindTo.textOf.contentText, diagnosticConfig.diagnosticPlaceholderTextStyle, diagnosticConfig.leftMargin);
-    // applyLeftMargin(bindTo.textOf.contentText, diagnosticConfig.visibility, diagnosticConfig.leftMargin);
     setGlyph(bindTo.textOf.glyphList, diagnosticConfig.glyphList);
     setCursorLine(bindTo.functionOf, diagnosticConfig.visibility);
-    setOverrideSignature(diagnosticConfig.visibility.overrideAllOk ? __0x.allOkOverride : __0x.allOkNoOverride);
+    const placeholderDigit = diagnosticConfig.visibility.overrideAllOk ? __0x.allOkOverride : __0x.allOkNoOverride;
+    setOverrideDigit(placeholderDigit);
+    initializeStateBuffer(placeholderDigit);
     delete bindToBuffer.textof;
     delete bindToBuffer.functionOf;
     delete bindTo.visibilityOf;

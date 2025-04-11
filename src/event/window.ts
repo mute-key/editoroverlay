@@ -9,7 +9,6 @@ import { resetEditorDiagnosticStatistics, updateDiagnostic } from '../diagnostic
 const windowStateChanged: Type.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
     return vscode.window.onDidChangeWindowState((event: vscode.WindowState): void => {
         if (event.focused) {
-
             if (vscode.window.activeTextEditor) {
                 decorationState.appliedHighlight[0] = renderGroupIs(vscode.window.activeTextEditor, [__0x.cursorOnly]);
             }
@@ -31,7 +30,7 @@ const activeEditorChanged: Type.DecorationEventFunc = ({ configInfo, decorationS
             if (Error.check()) {
                 Error.notify(1500);
             }
-            
+
             resetAllDecoration();
 
             if (configInfo.generalConfigInfo.diagnosticTextEnabled) {
@@ -40,7 +39,7 @@ const activeEditorChanged: Type.DecorationEventFunc = ({ configInfo, decorationS
             }
 
             updateIndentOption(editor);
-            
+
             decorationState.appliedHighlight[0] = renderGroupIs(editor, [__0x.cursorOnly]);
         }
     });
@@ -56,15 +55,26 @@ const editorOptionChanged = (context): vscode.Disposable => {
 
 const selectionChanged: Type.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) => {
+        console.log('selection changed');
+        decorationState.eventTrigger[0] = __0x.selectionChanged;
         decorationState.appliedHighlight[0] = renderGroupIs(event.textEditor, decorationState.appliedHighlight);
     });
 };
 
 const visibleRangeChanged = (): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorVisibleRanges((event: vscode.TextEditorVisibleRangesChangeEvent): void => {
-        if (event) {}
+        if (event) { }
     });
 };
+
+// const documentModifified = (context): vscode.Disposable => {
+//     return vscode.workspace.onDidChangeTextDocument((event: vscode.TextDocumentChangeEvent) => {
+//         if (event) {
+//             // console.log('document changed');
+//             // context.eventTrigger = __0x.documentChanged;
+//         }
+//     });
+// };
 
 export {
     windowStateChanged,
@@ -72,4 +82,5 @@ export {
     editorOptionChanged,
     selectionChanged,
     visibleRangeChanged
+    // documentModifified
 };

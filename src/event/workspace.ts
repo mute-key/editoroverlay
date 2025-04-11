@@ -5,7 +5,7 @@ import Error from '../util/error';
 import { CONFIG_SECTION } from '../constant/config/object';
 import { CONFIG_SECTION_KEY } from '../constant/config/enum';
 import { prepareRenderGroup } from '../editor/editor';
-import { clearDecorationState, resetAllDecoration } from '../editor/editor';
+import { resetAllDecoration } from '../editor/editor';
 import { updateGeneralConfig, updateHighlightStyleConfiguration } from '../configuration/highlight/highlight';
 import { updateDiagnosticTextConfig } from '../configuration/status/diagonostic';
 import { updateSelectionTextConfig } from '../configuration/status/selection';
@@ -13,10 +13,10 @@ import { updateSelectionTextConfig } from '../configuration/status/selection';
 const configChanged: Type.DecorationEventFunc = ({ configInfo, decorationState }): vscode.Disposable => {
     return vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
         if (event) {
-            const sectionName = Object.keys(CONFIG_SECTION).find(section => {
+            const section = Object.keys(CONFIG_SECTION).find(section => {
                 return event.affectsConfiguration(configInfo.name + '.' + section);
             });
-            if (sectionName) {
+            if (section) {
                 Error.configurationUpdated();
                 try {
                     const sectionChanged = {
@@ -34,14 +34,13 @@ const configChanged: Type.DecorationEventFunc = ({ configInfo, decorationState }
                             updateDiagnosticTextConfig(configInfo, true);
                         }
                     };
-                    sectionChanged[sectionName]();
+                    sectionChanged[section]();
                     sectionChanged[CONFIG_SECTION_KEY.GENERAL]();
                 } catch (e) {
                     console.log('confugration update failed. Will notify user.', e);
                 } finally {
-                    prepareRenderGroup(configInfo);
-                    clearDecorationState(decorationState);
                     resetAllDecoration();
+                    prepareRenderGroup(configInfo);
                 }
             }
         }

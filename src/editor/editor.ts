@@ -9,7 +9,7 @@ import { cursorOnlyHighlightRange, singelLineHighlightRange, multiLineHighlightR
 import { cursorOnlySelection, singleLineSelection, multilineSelection, multiCursorSelection } from './status/selection';
 import { blankRange } from './range';
 
-const decorationState = { ...DECORATION_STATE } as unknown as Type.DecorationStateType;
+const decorationState = { ...DECORATION_STATE } as unknown as DecorationStateType;
 
 const createEditorDecorationType = (styleAppliedConfig: any): vscode.TextEditorDecorationType => vscode.window.createTextEditorDecorationType(styleAppliedConfig as vscode.DecorationRenderOptions);;
 
@@ -17,9 +17,10 @@ const applyDecoration = (setDecorations: vscode.TextEditor['setDecorations'], de
 
 const resetDecoration = (setDecorations: vscode.TextEditor['setDecorations']) => (decoration: vscode.TextEditorDecorationType) => setDecorations(decoration, blankRange);
 
-const clearDecorationState = (decorationState: Type.DecorationStateType) => {
+const clearDecorationState = (decorationState: DecorationStateType) => {
     decorationState.appliedHighlight[0] = __0x.cursorOnly;
     decorationState.diagnosticSignature[0] = __0x.allOkOverride;
+    decorationState.appliedHighlight[0] = __0x.noEvent;
 };
 
 const clearAll = (editor: vscode.TextEditor): void => {
@@ -82,7 +83,6 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): void => {
         }
 
         renderFnStack[numKey].push(...callList);
-        // Object.seal(renderFnStack[numKey]);
     });
 };
 

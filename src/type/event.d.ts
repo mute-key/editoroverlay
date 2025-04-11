@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
-import * as StatusType from './status.d';
-import * as ConfigType from './configuration';
-import * as DecorationType from './decoration.d';
+import * as ConfigType from '../type/configuration';
+import * as DecorationType from '../type/decoration';
 
 type EventContext = {
     editor?: vscode.TextEditor
