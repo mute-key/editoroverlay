@@ -1,0 +1,45 @@
+{
+    "glyph-shorten": {
+        "cursorlinehighlight.selectionText.cursorOnlyText": "< Editing ... At (idx ${zCol})",
+        "cursorlinehighlight.selectionText.singleLineText": "< Selection ... Of (${char} char)",
+        "cursorlinehighlight.selectionText.multiLineCursorText": "< Selection Cursor ... Of (${lc} ln, ${char} char)",
+        "cursorlinehighlight.selectionText.multiLineAnchorText": "< Selection Anchor ... Of (${lc} ln, ${char} char)",
+        "cursorlinehighlight.selectionText.multiCursorText": "< Multi Selection ... Of (${nth} of ${count}, with Total ${lc} ln ${char} char)",
+        "cursorlinehighlight.diagnosticText.allOkPlaceholderContentText": "- 🛠️ 『 ${allok} 』",
+        "cursorlinehighlight.diagnosticText.problemPlaceholderContentText": "- 🛠️ 『 📑:${editor} / 🗄️:${workspace} 』",
+        "cursorlinehighlight.diagnosticText.okWorkspaceContentText": "✅",
+        "cursorlinehighlight.diagnosticText.okEditorContentText": "✅",
+        "cursorlinehighlight.diagnosticText.warningWorkspaceContentText": "⚠️${src}/${wrn}",
+        "cursorlinehighlight.diagnosticText.warningEditorContentText": "⚠️${wrn}",
+        "cursorlinehighlight.diagnosticText.errorWorkspaceContentText": "⛔${src}/${err}",
+        "cursorlinehighlight.diagnosticText.errorEditorContentText": "⛔${err}",
+        "cursorlinehighlight.diagnosticText.okNotationTextStyle": {
+            "allPrefix": "📑 / 🗄️:"
+        }
+    },
+    "emoji-simple": {
+        "cursorlinehighlight.selectionText.cursorOnlyText": "✒️ ... At (idx ${zCol})",
+        "cursorlinehighlight.selectionText.singleLineText": "📏 ... Of (${char} char)",
+        "cursorlinehighlight.selectionText.multiLineCursorText": "✂️ Cursor ... Of (${lc} lc, ${char} char)",
+        "cursorlinehighlight.selectionText.multiLineAnchorText": "✂️ Anchor ... Of (${lc} lc, ${char} char)",
+        "cursorlinehighlight.selectionText.multiCursorText": "🔗 ... Of (${nth} of ${count}, with Total ${lc} ln ${char} char)",
+        "cursorlinehighlight.diagnosticText.allOkPlaceholderContentText": "- 🛠️ 『 ${allok} 』",
+        "cursorlinehighlight.diagnosticText.problemPlaceholderContentText": "- 🛠️ 『 📑:${editor} / 🗄️:${workspace} 』",
+        "cursorlinehighlight.diagnosticText.okWorkspaceContentText": "✅",
+        "cursorlinehighlight.diagnosticText.okEditorContentText": "✅",
+        "cursorlinehighlight.diagnosticText.warningWorkspaceContentText": "⚠️${src}/${wrn}",
+        "cursorlinehighlight.diagnosticText.warningEditorContentText": "⚠️${wrn}",
+        "cursorlinehighlight.diagnosticText.errorWorkspaceContentText": "⛔${src}/${err}",
+        "cursorlinehighlight.diagnosticText.errorEditorContentText": "⛔${err}",
+        "cursorlinehighlight.diagnosticText.okNotationTextStyle": {
+            "allPrefix": "📑 / 🗄️:"
+        }
+    },
+    "nextLine": {
+        
+    },
+    "previousLine": {
+        
+    }
+    
+}

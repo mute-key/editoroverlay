@@ -24,7 +24,15 @@
         "line",
         "highlight",
         "selection",
-        "range"
+        "range",
+        "count",
+        "word",
+        "diagnostic",
+        "problem",
+        "editor",
+        "workspace",
+        "background",
+        "decorations"
     ],
     "categories": [
         "Themes",
@@ -39,12 +47,16 @@
     "contributes": {
         "commands": [
             {
-                "command": "cursorlinehighlight.resetUserConfiguration",
-                "title": "Cursor Highlight: Reset User Configuration"
+                "command": "cursorlinehighlight.applyStatusTextPreset",
+                "title": "Cursor Highlight: Apply Preset Configuration"
             },
             {
-                "command": "cursorlinehighlight.applyPresetConfiguration",
+                "command": "cursorlinehighlight.applyStylePreset",
                 "title": "Cursor Highlight: Apply Preset Configuration"
+            },
+            {
+                "command": "cursorlinehighlight.resetUserConfiguration",
+                "title": "Cursor Highlight: Reset User Configuration"
             }
         ],
         "configuration": [

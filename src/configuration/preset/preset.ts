@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import preset from './preset.json' assert { type: 'json' };
-import { getWorkspaceConfiguration } from '../configuration/shared/configuration';
-// import { readFileSync } from 'fs';
+import { getWorkspaceConfiguration } from '../shared/configuration';
 
 const writeUserConfiguration = () => {
 

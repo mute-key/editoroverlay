@@ -47,7 +47,6 @@ const applyExtraStyle = (textOf: Record<number, Type.DecorationRenderOptionType[
                 }
                 if (topDownPadding) {
                     textOf[hexKey][idx].after['textDecoration'] += `;padding-top:${topDownPadding};padding-bottom:${topDownPadding}`;
-
                 }
             });
         });
