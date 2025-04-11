@@ -135,10 +135,6 @@ export const SELECTION_KIND: Type.DecorationInfoType = {
 } as const;
 
 export const DIAGNOSTIC_VISIBILITY_CONFIG = {
-    displayWhenCursorOnly: undefined,
-    displayWhenSingleLine: undefined,
-    displayWhenMultiLine: undefined,
-    displayWhenMultiCursor: undefined,
     DiagnosticKind: undefined,
     placeTextOnPreviousOrNextLine: undefined,
     overrideLayoutPlaceholderColorToHighestSeverity: undefined,

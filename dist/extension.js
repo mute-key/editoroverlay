@@ -214,10 +214,6 @@ var SELECTION_KIND = {
   }
 };
 var DIAGNOSTIC_VISIBILITY_CONFIG = {
-  displayWhenCursorOnly: void 0,
-  displayWhenSingleLine: void 0,
-  displayWhenMultiLine: void 0,
-  displayWhenMultiCursor: void 0,
   DiagnosticKind: void 0,
   placeTextOnPreviousOrNextLine: void 0,
   overrideLayoutPlaceholderColorToHighestSeverity: void 0,
@@ -395,7 +391,8 @@ var INDENT_INFO = {
 var DECORATION_STATE = {
   appliedHighlight: [0],
   diagnosticSignature: [0],
-  eventTrigger: [0]
+  eventTrigger: [0],
+  previousLine: [0]
 };
 var SELECTION_KIND_LIST = [
   cursorOnly,
@@ -1126,7 +1123,7 @@ var diagnosticRenderSignature = (state) => {
   const wmask = (state[7] ? 1 << 1 : 0) | (state[9] ? 1 << 2 : 0);
   return emask === 0 && wmask === 0 ? state[0] : (emask ? emask << 5 : 1 << 5) | (wmask ? wmask << 2 : 1 << 2) | 2;
 };
-var refershBuffer = (state) => {
+var refreshBuffer = (state) => {
   let idx = state.length;
   while (idx--) {
     stateBuffer[idx] = state[idx];
@@ -1135,7 +1132,7 @@ var refershBuffer = (state) => {
 var diagnosticInfo = (decorationState2) => (editor2) => {
   if (decorationState2.eventTrigger[0] === diagnosticChanged) {
     const diagnosticState2 = updateDiagnostic(editor2.document.uri);
-    refershBuffer(diagnosticState2);
+    refreshBuffer(diagnosticState2);
   }
   const signature = diagnosticRenderSignature(stateBuffer);
   decorationOption.range = diagnosticOf.rangeFunction(editor2);
@@ -1162,9 +1159,9 @@ var createEditorDecorationType = (styleAppliedConfig) => vscode5.window.createTe
 var applyDecoration = (setDecorations, decoraiton, range) => setDecorations(decoraiton, range);
 var resetDecoration = (setDecorations) => (decoration) => setDecorations(decoration, blankRange);
 var clearDecorationState = (decorationState2) => {
+  decorationState2.eventTrigger[0] = noEvent;
   decorationState2.appliedHighlight[0] = cursorOnly;
   decorationState2.diagnosticSignature[0] = allOkOverride;
-  decorationState2.appliedHighlight[0] = noEvent;
 };
 var clearAll = (editor2) => {
   clearEveryHighlight(editor2);
@@ -1183,13 +1180,6 @@ var prepareRenderGroup = (config) => {
   renderFnStack[singleLine].splice(0);
   renderFnStack[multiLine].splice(0);
   renderFnStack[multiCursor].splice(0);
-  const bindDiagnostic = bindDiagnosticContentTextState();
-  const diagonosticAvaliabity = {
-    [cursorOnly]: bindDiagnostic.configOf.displayWhenCursorOnly,
-    [singleLine]: bindDiagnostic.configOf.displayWhenSingleLine,
-    [multiLine]: bindDiagnostic.configOf.displayWhenMultiLine,
-    [multiCursor]: bindDiagnostic.configOf.displayWhenMultiCursor
-  };
   const highlightList = {
     [cursorOnly]: cursorOnlyHighlightRange,
     [singleLine]: singelLineHighlightRange,
@@ -1208,11 +1198,19 @@ var prepareRenderGroup = (config) => {
     if (config.generalConfigInfo.selectionTextEnabled) {
       callList.push(selectionList[numKey]);
     }
-    if (config.generalConfigInfo.diagnosticTextEnabled && diagonosticAvaliabity[numKey]) {
+    if (config.generalConfigInfo.diagnosticTextEnabled && (numKey === cursorOnly || numKey === singleLine)) {
+      callList.push(editModeCheck);
+    } else {
       callList.push(diagnosticInfo(decorationState));
     }
     renderFnStack[numKey].push(...callList);
   });
+};
+var editModeCheck = (editor2) => {
+  if (editor2.selections[0].start.line !== decorationState.previousLine[0]) {
+    diagnosticInfo(decorationState)(editor2);
+  }
+  decorationState.previousLine[0] = editor2.selections[0].start.line;
 };
 var renderFnStack = {
   [cursorOnly]: [],
@@ -1902,7 +1900,6 @@ var applyExtraStyle = (textOf, extraStyle, leftMargin) => {
       contentText[contentText.length - 1].after["textDecoration"] = `;border-top-right-radius:${extraStyle.borderRadius};border-bottom-right-radius:${extraStyle.borderRadius};padding-right:${sidePadding}`;
     }
     if (leftMargin !== "0px" && leftMargin !== "0em" && leftMargin) {
-      console.log(contentText[0].after.contentText);
       contentText[0].after["textDecoration"] += `;margin-left:${leftMargin}`;
     }
   }
@@ -2329,7 +2326,6 @@ var editorOptionChanged = (context2) => {
 };
 var selectionChanged2 = ({ decorationState: decorationState2 }) => {
   return vscode12.window.onDidChangeTextEditorSelection((event) => {
-    console.log("selection changed");
     decorationState2.eventTrigger[0] = selectionChanged;
     decorationState2.appliedHighlight[0] = renderGroupIs(event.textEditor, decorationState2.appliedHighlight);
   });

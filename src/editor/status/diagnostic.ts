@@ -197,7 +197,7 @@ const diagnosticRenderSignature = (state: typeof stateBuffer): number => {
     return (emask === 0 && wmask === 0) ? state[0] as number : ((emask ? emask << 5 : 1 << 5) | (wmask ? wmask << 2 : 1 << 2) | 0b10);
 };
 
-const refershBuffer = (state) => {
+const refreshBuffer = (state) => {
     let idx = state.length;
     while (idx--) {
         stateBuffer[idx] = state[idx];
@@ -208,7 +208,7 @@ const diagnosticInfo = (decorationState) => (editor: vscode.TextEditor): void =>
 
     if (decorationState.eventTrigger[0] === __0x.diagnosticChanged) {
         const diagnosticState = updateDiagnostic(editor.document.uri);
-        refershBuffer(diagnosticState);
+        refreshBuffer(diagnosticState);
     }
 
     const signature = diagnosticRenderSignature(stateBuffer);

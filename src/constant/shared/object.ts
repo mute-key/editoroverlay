@@ -14,6 +14,7 @@ export const DECORATION_STATE = {
     appliedHighlight: [0],
     diagnosticSignature: [0],
     eventTrigger: [0],
+    previousLine: [0],
 };
 
 export const SELECTION_KIND_LIST = [

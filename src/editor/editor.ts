@@ -9,7 +9,7 @@ import { cursorOnlyHighlightRange, singelLineHighlightRange, multiLineHighlightR
 import { cursorOnlySelection, singleLineSelection, multilineSelection, multiCursorSelection } from './status/selection';
 import { blankRange } from './range';
 
-const decorationState = { ...DECORATION_STATE } as unknown as DecorationStateType;
+const decorationState = { ...DECORATION_STATE };
 
 const createEditorDecorationType = (styleAppliedConfig: any): vscode.TextEditorDecorationType => vscode.window.createTextEditorDecorationType(styleAppliedConfig as vscode.DecorationRenderOptions);;
 
@@ -17,10 +17,10 @@ const applyDecoration = (setDecorations: vscode.TextEditor['setDecorations'], de
 
 const resetDecoration = (setDecorations: vscode.TextEditor['setDecorations']) => (decoration: vscode.TextEditorDecorationType) => setDecorations(decoration, blankRange);
 
-const clearDecorationState = (decorationState: DecorationStateType) => {
+const clearDecorationState = (decorationState: typeof DECORATION_STATE) => {
+    decorationState.eventTrigger[0] = __0x.noEvent;
     decorationState.appliedHighlight[0] = __0x.cursorOnly;
     decorationState.diagnosticSignature[0] = __0x.allOkOverride;
-    decorationState.appliedHighlight[0] = __0x.noEvent;
 };
 
 const clearAll = (editor: vscode.TextEditor): void => {
@@ -46,14 +46,6 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): void => {
     renderFnStack[__0x.multiLine].splice(0);
     renderFnStack[__0x.multiCursor].splice(0);
 
-    const bindDiagnostic = bindDiagnosticContentTextState();
-    const diagonosticAvaliabity = {
-        [__0x.cursorOnly]: bindDiagnostic.configOf.displayWhenCursorOnly,
-        [__0x.singleLine]: bindDiagnostic.configOf.displayWhenSingleLine,
-        [__0x.multiLine]: bindDiagnostic.configOf.displayWhenMultiLine,
-        [__0x.multiCursor]: bindDiagnostic.configOf.displayWhenMultiCursor
-    };
-
     const highlightList = {
         [__0x.cursorOnly]: cursorOnlyHighlightRange,
         [__0x.singleLine]: singelLineHighlightRange,
@@ -78,12 +70,22 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): void => {
             callList.push(selectionList[numKey]);
         }
 
-        if (config.generalConfigInfo.diagnosticTextEnabled && diagonosticAvaliabity[numKey]) {
+        if (config.generalConfigInfo.diagnosticTextEnabled && (numKey === __0x.cursorOnly || numKey === __0x.singleLine)) {
+            callList.push(editModeCheck);
+        } else {
             callList.push(diagnosticInfo(decorationState));
         }
 
         renderFnStack[numKey].push(...callList);
     });
+};
+
+
+const editModeCheck = (editor: vscode.TextEditor) => {
+    if (editor.selections[0].start.line !== decorationState.previousLine[0]) {
+        diagnosticInfo(decorationState)(editor);
+    }
+    decorationState.previousLine[0] = editor.selections[0].start.line;
 };
 
 const renderFnStack = {

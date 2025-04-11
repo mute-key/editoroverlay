@@ -3,7 +3,7 @@
     "publisher": "mutekey",
     "displayName": "Cursor/Selection Line Highlight",
     "description": "Apply configurable decorations on cursor line and selection lines.",
-    "version": "1.2.9",
+    "version": "1.2.92",
     "icon": "./resource/icon.png",
     "engines": {
         "vscode": "^1.96.0"
@@ -478,10 +478,6 @@
                         "type": "object",
                         "scope": "resource",
                         "default": {
-                            "displayWhenCursorOnly": true,
-                            "displayWhenSingleLine": true,
-                            "displayWhenMultiLine": true,
-                            "displayWhenMultiCursor": true,
                             "DiagnosticKind": "editor | workspace",
                             "placeTextOnPreviousOrNextLine": "currentLine",
                             "overrideLayoutPlaceholderColorToHighestSeverity": false,

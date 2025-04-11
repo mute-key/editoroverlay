@@ -33,7 +33,6 @@ const applyExtraStyle = (textOf: Record<number, Type.DecorationRenderOptionType[
         }
 
         if (leftMargin !== '0px' && leftMargin !== '0em' && leftMargin) {
-            console.log(contentText[0].after.contentText);
             contentText[0].after['textDecoration'] += `;margin-left:${leftMargin}`;
         }
     }

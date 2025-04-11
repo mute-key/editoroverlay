@@ -39,7 +39,7 @@ const activeEditorChanged: Type.DecorationEventFunc = ({ configInfo, decorationS
             }
 
             updateIndentOption(editor);
-
+            
             decorationState.appliedHighlight[0] = renderGroupIs(editor, [__0x.cursorOnly]);
         }
     });
@@ -55,7 +55,6 @@ const editorOptionChanged = (context): vscode.Disposable => {
 
 const selectionChanged: Type.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) => {
-        console.log('selection changed');
         decorationState.eventTrigger[0] = __0x.selectionChanged;
         decorationState.appliedHighlight[0] = renderGroupIs(event.textEditor, decorationState.appliedHighlight);
     });

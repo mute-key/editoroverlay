@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
-import * as preset from './preset';
+import * as preset from './function';
+import { loadPreset } from './function';
 
 const resetUserConfiguration = (): vscode.Disposable => {
     return vscode.commands.registerCommand("cursorlinehighlight.resetConfiguration", () => {
@@ -7,9 +8,9 @@ const resetUserConfiguration = (): vscode.Disposable => {
     });
 };
 
-const applyPresetConfiguration = (): vscode.Disposable => {
+const applyPresetConfiguration = (context): vscode.Disposable => {
     return vscode.commands.registerCommand("cursorlinehighlight.applyPreset", () => {
-        
+        loadPreset(context);
     });
 };
 
@@ -17,3 +18,5 @@ export {
     resetUserConfiguration,
     applyPresetConfiguration
 };
+
+
