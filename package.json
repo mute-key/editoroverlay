@@ -3,7 +3,7 @@
     "publisher": "mutekey",
     "displayName": "Cursor/Selection Line Highlight",
     "description": "Apply configurable decorations on cursor line and selection lines.",
-    "version": "1.2.92",
+    "version": "1.2.96",
     "icon": "./resource/icon.png",
     "engines": {
         "vscode": "^1.96.0"
@@ -32,7 +32,11 @@
         "editor",
         "workspace",
         "background",
-        "decorations"
+        "decorations",
+        "border",
+        "underline",
+        "text",
+        "style"
     ],
     "categories": [
         "Themes",
@@ -47,16 +51,12 @@
     "contributes": {
         "commands": [
             {
-                "command": "cursorlinehighlight.applyStatusTextPreset",
-                "title": "Cursor Highlight: Apply Preset Configuration"
-            },
-            {
-                "command": "cursorlinehighlight.applyStylePreset",
-                "title": "Cursor Highlight: Apply Preset Configuration"
+                "command": "cursorlinehighlight.applyPreset",
+                "title": "CursorLine Highlight: Apply Preset Configuration"
             },
             {
                 "command": "cursorlinehighlight.resetUserConfiguration",
-                "title": "Cursor Highlight: Reset User Configuration"
+                "title": "CursorLine Highlight: Reset User Configuration"
             }
         ],
         "configuration": [
@@ -622,7 +622,7 @@
                             "colorOpacity": 0.9,
                             "backgroundColor": "%color.diagnostic.placeholder.background.default%",
                             "backgroundOpacity": 0.5,
-                            "borderRadius": "2px",
+                            "borderRadius": "3px",
                             "sidePadding": "4px",
                             "topDownPadding": "2px",
                             "fontStyle": "normal",
@@ -657,7 +657,7 @@
                             },
                             "borderRadius": {
                                 "type": "string",
-                                "default": "2px"
+                                "default": "3px"
                             },
                             "sidePadding": {
                                 "type": "string",

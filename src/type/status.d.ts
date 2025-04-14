@@ -163,9 +163,8 @@ type StatusTextInfoType = {
     range: vscode.Range
 }
 
-
 type ContentTextFuncContext = {
-    idx: number,
+    idx: number | string,
     editor: vscode.TextEditor,
     // indent: IndentReadyType,
 }

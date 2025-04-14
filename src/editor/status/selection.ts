@@ -6,6 +6,7 @@ import { SELECTION_CONTENT_TEXT_CONFIG_KEY } from '../../constant/config/enum';
 import { DECORATION_OPTION_CONFIG } from '../../constant/config/object';
 import { createLineRange, blankRange, createStartEndRangeOfSelection } from '../range';
 import { resetDecoration } from '../editor';
+import { compareNumbers } from '../../util/util';
 
 const selectionContentText = {
     ...SELECTION_CONTENT_TEXT
@@ -72,7 +73,7 @@ const multilineFunctionSymLink = {
 };
 
 const multiCursorOf = {
-    nth: ({ idx }) => idx + 1,
+    nth: ({ idx }) => idx,
     count: ({ editor }) => editor.selections.length,
     ln: ({ idx, editor }) => editor.selections[idx].end.line + 1,
     lc: ({ editor }) => {
@@ -225,19 +226,50 @@ const multiCursorSelection = (editor: vscode.TextEditor, previousKey: number[]):
     const statusLine: number[] = [];
     const selectionText = selectionContentText[__0x.multiCursorText].contentText;
     const context: Type.ContentTextFuncContext = {
-        idx: editor.selections.length,
+        idx: 0,
         editor: editor
     };
-    while (context.idx--) {
+
+    const selectionReorder = {};
+
+    let idx = 0;
+    while (idx < editor.selections.length) {
+        const lineNo = editor.selections[idx].start.line;
+        if (!Object.hasOwn(selectionReorder, lineNo)) {
+            selectionReorder[lineNo] = [0, undefined];
+        }
+
         const lineSet = new Set(statusLine);
-        if (lineSet.has(editor.selections[context.idx].end.line)) {
+        if (lineSet.has(editor.selections[idx].end.line)) {
+            selectionReorder[editor.selections[idx].start.line][0] += 1;
+            idx++;
             continue;
         }
+
+        selectionReorder[editor.selections[idx].start.line][0] += 1;
+        selectionReorder[editor.selections[idx].start.line][1] = editor.selections[idx];
+        statusLine.push(editor.selections[idx].end.line);
+        idx++;
+    }
+
+    idx = 1;
+
+    for (const lineKey of Object.keys(selectionReorder).map(line => Number(line)).sort(compareNumbers)) {
+
         const selectionTextInfo: vscode.TextEditorDecorationType[] = selectionText.map(selection => vscode.window.createTextEditorDecorationType(selection));
         const option = {
-            range: createStartEndRangeOfSelection(editor.selections[context.idx]),
+            range: createStartEndRangeOfSelection(selectionReorder[lineKey][1]),
             renderOptions: {}
         };
+
+        const idxBuffer: number[] = [];
+
+        for (let pos = idx; pos < idx + selectionReorder[lineKey][0]; pos++) {
+            idxBuffer.push(pos);
+        }
+
+        context.idx = idxBuffer.join(',');
+
         selectionText
             .forEach(
                 contentTextFunc(
@@ -245,14 +277,12 @@ const multiCursorSelection = (editor: vscode.TextEditor, previousKey: number[]):
                     context,
                     option));
         selectionTextBuffer[__0x.multiCursorText].push(selectionTextInfo);
-        statusLine.push(editor.selections[context.idx].end.line);
+        idx += selectionReorder[lineKey][0];
     }
 };
 
 const clearSelectionTextBuffer = (editor: vscode.TextEditor): void => {
-    for (const hexKey of SELECTION_KIND_LIST) {
-        clearBufferOfhexkey(editor.setDecorations, [hexKey]);
-    }
+    SELECTION_KIND_LIST.forEach(hexKey => clearBufferOfhexkey(editor.setDecorations, [hexKey]));
 };
 
 const clearDisposeBuffer = (setDecorations: vscode.TextEditor["setDecorations"]) =>
@@ -274,9 +304,14 @@ const clearBufferOfhexkey = (setDecorations: vscode.TextEditor["setDecorations"]
             selectionTextBuffer[__0x.multiLineCursorText].forEach(resetDecoration(setDecorations));
             break;
         case __0x.multiCursor:
-            for (const selection of selectionTextBuffer[__0x.multiCursorText]) {
-                selection.forEach(clearDisposeBuffer(setDecorations));
+            // console.log(selectionTextBuffer[__0x.multiCursorText]);
+            for (let idx = 0; idx < selectionTextBuffer[__0x.multiCursorText].length; idx++) {
+                selectionTextBuffer[__0x.multiCursorText][idx].forEach(clearDisposeBuffer(setDecorations));
             }
+            // for (const selection of selectionTextBuffer[__0x.multiCursorText]) {
+            // console.log(selection);
+
+            // }
             selectionTextBuffer[__0x.multiCursorText].splice(0);
             break;
         default:

@@ -1,0 +1,29 @@
+{
+    "recommanded": {
+        "cursorlinehighlight.selectionText.cursorOnlyText": "< Editing ... At (z.Col ${zCol})",
+        "cursorlinehighlight.selectionText.singleLineText": "< Selection ... Of (${char} Char)",
+        "cursorlinehighlight.selectionText.multiLineCursorText": "< Selection Cursor ... Of (${lc} Lc, ${char} Char)",
+        "cursorlinehighlight.selectionText.multiLineAnchorText": "< Selection Anchor ... Of (${lc} Lc, ${char} Char)",
+        "cursorlinehighlight.selectionText.multiCursorText": "< Multi Selection ... Of (${nth} of ${count}, with Total ${lc} Ln ${char} Char)"
+    },
+    "glyph-shorten": {
+        "cursorlinehighlight.selectionText.cursorOnlyText": "< Editing ... At (z.Col ${zCol})",
+        "cursorlinehighlight.selectionText.singleLineText": "< Selection ... Of (${char} Char)",
+        "cursorlinehighlight.selectionText.multiLineCursorText": "< Selection Cursor ... Of (${lc} Lc, ${char} Char)",
+        "cursorlinehighlight.selectionText.multiLineAnchorText": "< Selection Anchor ... Of (${lc} Lc, ${char} Char)",
+        "cursorlinehighlight.selectionText.multiCursorText": "< Multi Selection ... Of (${nth} of ${count}, with Total ${lc} Ln ${char} Char)"
+    },
+    "emoji-simple": {
+        "cursorlinehighlight.selectionText.cursorOnlyText": "✒️ ... At (z.Col ${zCol})",
+        "cursorlinehighlight.selectionText.singleLineText": "📏 ... Of (${char} Char)",
+        "cursorlinehighlight.selectionText.multiLineCursorText": "✂️ Cursor ... Of (${lc} Lc, ${char} Char)",
+        "cursorlinehighlight.selectionText.multiLineAnchorText": "✂️ Anchor ... Of (${lc} Lc, ${char} Char)",
+        "cursorlinehighlight.selectionText.multiCursorText": "🔗 ... Of (${nth} of ${count}, with Total ${lc} Ln ${char} Char)"
+    },
+    "nextLine": {
+        
+    },
+    "previousLine": {
+        
+    }   
+}

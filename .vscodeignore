@@ -4,6 +4,7 @@ out/**
 node_modules/**
 src/**
 src/command/**
+src/configuration/preset/**
 .gitignore
 .yarnrc
 esbuild.js

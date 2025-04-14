@@ -1,50 +1,22 @@
 import * as vscode from 'vscode';
-import * as preset from '../configuration/preset/preset';
-import { loadPreset } from '../configuration/preset/preset';
-import { getWorkspaceConfiguration } from '../configuration/shared/configuration';
+import { promptQuickPick, userSelectedPreset } from '../configuration/preset/preset';
 
-const resetUserConfiguration = (): vscode.Disposable => {
+
+
+const resetUserConfiguration = (context: vscode.ExtensionContext): vscode.Disposable => {
     return vscode.commands.registerCommand("cursorlinehighlight.resetConfiguration", () => {
-        const editorConfig = getWorkspaceConfiguration("editor");
+        resetUserConfiguration(context);
     });
 };
 
-const applyStatusTextPreset = (context): vscode.Disposable => {
+const applyPresetConfiguration = (context: vscode.ExtensionContext): vscode.Disposable => {
     return vscode.commands.registerCommand("cursorlinehighlight.applyPreset", () => {
-        const quickPickItem = [];
-        // loadPreset(context);
-
-        // const items = ['옵션1', '옵션2', '옵션3'];
-        // vscode.window.showQuickPick(items, {
-        //     placeHolder: '옵션을 선택하세요',
-        // }).then(selected => {
-        //     if (selected) {
-        //         vscode.window.showInformationMessage(`선택한 옵션: ${selected}`);
-        //     }
-        // });
-    });
-};
-
-const applyStylePreset = (context): vscode.Disposable => {
-    return vscode.commands.registerCommand("cursorlinehighlight.applyPreset", () => {
-        const quickPickItem = [];
-        // loadPreset(context);
-
-        // const items = ['옵션1', '옵션2', '옵션3'];
-        // vscode.window.showQuickPick(items, {
-        //     placeHolder: '옵션을 선택하세요',
-        // }).then(selected => {
-        //     if (selected) {
-        //         vscode.window.showInformationMessage(`선택한 옵션: ${selected}`);
-        //     }
-        // });
-
+        promptQuickPick().then(userSelectedPreset(context));
     });
 };
 
 export {
-    applyStatusTextPreset,
-    applyStylePreset,
+    applyPresetConfiguration,
     resetUserConfiguration
 };
 

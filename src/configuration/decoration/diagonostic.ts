@@ -11,7 +11,7 @@ import { sanitizeConfigValue } from '../shared/validation';
 import { convertToDecorationRenderOption, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 import { bindDiagnosticContentTextState, initializeStateBuffer, reloadContentText, setDiagonosticTextbuffer } from '../../editor/status/diagnostic';
 import { hexToRgbaStringLiteral, readBits } from '../../util/util';
-import { createCursorRange, createCursorRangeNextLine, createCursorRangePreviousLine } from '../../editor/range';import { setOverrideDigit } from '../../diagnostic/diagnostic';
+import { createCursorRange, createCursorRangeNextLine, createCursorRangePreviousLine } from '../../editor/range'; import { setOverrideDigit } from '../../diagnostic/diagnostic';
 ;
 
 const positionKeyList = ['pre', 'post'] as const;
@@ -103,11 +103,12 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             return decoration;
         }).filter(decoration => decoration.after.contentText !== undefined);
     };
+    
     preset.layout[__0x.allOkPlaceholderContentText].contentText.forEach(decoration => {
         if (decoration.after.contentText === __0x.allOkHexKey) {
             const ok = concatinateNotation(preset.all[__0x.allOkContentText]);
             setDiagonosticTextbuffer(__0x.allOkOverride, ok.map(decoration => vscode.window.createTextEditorDecorationType(decoration)));
-            textOftarget[__0x.allOkOverride].push(...[...ok]);
+            textOftarget[__0x.allOkOverride].push(...ok);
         } else {
             setDiagonosticTextbuffer(__0x.allOkOverride, [vscode.window.createTextEditorDecorationType(decoration)]);
             textOftarget[__0x.allOkOverride].push({ ...decoration });
@@ -119,7 +120,7 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             const ok = concatinateNotation(preset.editor[__0x.okEditorContentText]);
             const warn = concatinateNotation(preset.editor[__0x.warningEditorContentText]);
             const err = concatinateNotation(preset.editor[__0x.errorEditorContentText]);
-            textOftarget[__0x.allOkNoOverride].push(...[...ok]);
+            textOftarget[__0x.allOkNoOverride].push(...ok);
             textOftarget[__0x.editorOkWorkspaceWarn].push(...ok);
             textOftarget[__0x.editorOkWorkspaceErr].push(...ok);
             textOftarget[__0x.editorOkWorkspaceWarnErr].push(...ok);
@@ -387,6 +388,7 @@ const updateDiagnosticTextConfig = (configReady: Type.ConfigInfoReadyType, confi
         reloadContentText();
     }
     workspaceProxyConfiguration(diagnosticConfig, configReady.name + '.' + CONFIG_SECTION.diagnosticText, DIAGNOSTIC_CONTENT_TEXT_LIST, bindToBuffer, regex.diagnosticTextRegex);
+    const placeholderDigit = diagnosticConfig.visibility.overrideAllOk ? __0x.allOkOverride : __0x.allOkNoOverride;
     const diagnosticBiome = diagnosticVisibilityBiome(diagnosticConfig.visibility);
     const decorationStyleList = decorationStyleFromBiome(diagnosticBiome.workspace | diagnosticBiome.editor);
     Object.assign(dignosticContentTextPreset, buildDiagnosticStyle(diagnosticConfig, diagnosticDecorationStyle, decorationStyleList, diagnosticConfig.visibility, diagnosticBiome));
@@ -395,7 +397,6 @@ const updateDiagnosticTextConfig = (configReady: Type.ConfigInfoReadyType, confi
     applyExtraStyle(bindTo.textOf.contentText, diagnosticConfig.diagnosticPlaceholderTextStyle, diagnosticConfig.leftMargin);
     setGlyph(bindTo.textOf.glyphList, diagnosticConfig.glyphList);
     setCursorLine(bindTo.functionOf, diagnosticConfig.visibility);
-    const placeholderDigit = diagnosticConfig.visibility.overrideAllOk ? __0x.allOkOverride : __0x.allOkNoOverride;
     setOverrideDigit(placeholderDigit);
     initializeStateBuffer(placeholderDigit);
     delete bindToBuffer.textof;

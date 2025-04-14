@@ -143,9 +143,7 @@ const diagnosticOf = {
     },
 };
 
-const clearDiagnosticText = (setDecorations: vscode.TextEditor['setDecorations'], previousSignature: number[]): void => {
-    diagnosticTextBuffer[previousSignature[0]]?.forEach(resetDecoration(setDecorations));
-};
+
 
 type DecorationRenderAfterOption = {
     contentText?: string | any,
@@ -204,6 +202,10 @@ const refreshBuffer = (state) => {
     }
 };
 
+const clearDiagnosticText = (setDecorations: vscode.TextEditor['setDecorations'], previousSignature: number[]): void => {
+    diagnosticTextBuffer[previousSignature[0]]?.forEach(resetDecoration(setDecorations));
+};
+
 const diagnosticInfo = (decorationState) => (editor: vscode.TextEditor): void => {
 
     if (decorationState.eventTrigger[0] === __0x.diagnosticChanged) {
@@ -215,7 +217,7 @@ const diagnosticInfo = (decorationState) => (editor: vscode.TextEditor): void =>
     decorationOption.range = diagnosticOf.rangeFunction(editor);
     context.line = editor.selection.start.line;
     context.state = stateBuffer;
-    clearDiagnosticText(editor.setDecorations, decorationState.diagnosticSignature);
+    signature !== decorationState.diagnosticSignature[0] && clearDiagnosticText(editor.setDecorations, decorationState.diagnosticSignature);
     diagnosticContentText[signature].forEach(renderDiagnosticText(editor, signature, { ...decorationOption }, context));
     decorationState.diagnosticSignature[0] = signature;
 };

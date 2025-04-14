@@ -14,7 +14,7 @@ const borderPositionInfo = {
 } as unknown as Type.BorderPositionInfoType;
 
 const cursorOnlyHighlightRange = (editor: vscode.TextEditor, previousKey: number[]): void => {
-    clearEveryHighlight(editor);
+    __0x.cursorOnly !== previousKey[0] && clearEveryHighlight(editor);
     
     applyDecoration(editor.setDecorations, highlightStyleList[__0x.cursorOnly][0], [createLineRange(editor.selection.active)]);
     // const borderConfig: Type.BorderPositionParserType = borderPositionInfo[borderConfigSymlink] as Type.BorderPositionParserType;
@@ -44,7 +44,7 @@ const singelLineHighlightRange = (editor: vscode.TextEditor, previousKey: number
     // applyDecoration(editor, highlightStyleList[__0x.singleLine][0], [createRangeSPEP(editor.selection.start, editor.selection.end)]);
     // highlightStyleList[previousKey[0]].forEach(resetHighlight(editor.setDecorations, resetRange));
     // editor.setDecorations(highlightStyleList[__0x.singleLine][0], [createRangeSPEP(editor.selection.start, editor.selection.end)]);
-    clearHighlight(editor.setDecorations, previousKey, blankRange);
+    __0x.singleLine !== previousKey[0] && clearHighlight(editor.setDecorations, previousKey, blankRange);
     applyDecoration(editor.setDecorations, highlightStyleList[__0x.singleLine][0], [createRangeSPEP(editor.selection.start, editor.selection.end)]);
 };
 

@@ -6,9 +6,9 @@ import { CONFIG_SECTION } from '../constant/config/object';
 import { CONFIG_SECTION_KEY } from '../constant/config/enum';
 import { prepareRenderGroup } from '../editor/editor';
 import { resetAllDecoration } from '../editor/editor';
-import { updateGeneralConfig, updateHighlightStyleConfiguration } from '../configuration/highlight/highlight';
-import { updateDiagnosticTextConfig } from '../configuration/status/diagonostic';
-import { updateSelectionTextConfig } from '../configuration/status/selection';
+import { updateGeneralConfig, updateHighlightStyleConfiguration } from '../configuration/decoration/highlight';
+import { updateDiagnosticTextConfig } from '../configuration/decoration/diagonostic';
+import { updateSelectionTextConfig } from '../configuration/decoration/selection';
 
 const configChanged: Type.DecorationEventFunc = ({ configInfo, decorationState }): vscode.Disposable => {
     return vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
@@ -28,8 +28,8 @@ const configChanged: Type.DecorationEventFunc = ({ configInfo, decorationState }
                         [CONFIG_SECTION_KEY.MULTI_LINE]: () => updateHighlightStyleConfiguration(configInfo, __0x.multiLine),
                         [CONFIG_SECTION_KEY.MULTI_CURSOR]: () => updateHighlightStyleConfiguration(configInfo, __0x.multiCursor),
                         [CONFIG_SECTION_KEY.SELECTION_TEXT]: () => {
-                            updateDiagnosticTextConfig(configInfo, true);
                             updateSelectionTextConfig(configInfo, true);
+                            updateDiagnosticTextConfig(configInfo, true);
                         },
                         [CONFIG_SECTION_KEY.DIAGNOSTIC_TEXT]: () => {
                             updateSelectionTextConfig(configInfo, true);

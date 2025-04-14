@@ -1,7 +1,7 @@
 import * as Type from './type/type';
 import * as vscode from 'vscode';
 import * as config from './configuration/load';
-// import * as commands from './command/command';
+import * as commands from './command/command';
 import * as windowEvent from './event/window';
 import * as workspaceEvent from './event/workspace';
 import * as languagesEvent from './event/language';
@@ -9,7 +9,6 @@ import * as __0x from './constant/shared/numeric';
 import Error from './util/error';
 import { clearDecorationState } from './editor/editor';
 import { prepareRenderGroup, renderGroupIs } from './editor/editor';
-
 
 const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vscode.Disposable[] | void> => {
     try {
@@ -40,8 +39,8 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
         }
 
         return [
-            // commands.applyPresetConfiguration(),
-            // commands.resetUserConfiguration(),
+            commands.applyPresetConfiguration(extensionContext),
+            commands.resetUserConfiguration(extensionContext),
             windowEvent.windowStateChanged(eventContext),
             windowEvent.activeEditorChanged(eventContext),
             windowEvent.selectionChanged(eventContext),

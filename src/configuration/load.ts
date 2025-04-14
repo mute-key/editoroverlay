@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 import * as Type from '../type/type';
 import { CONFIG_INFO } from '../constant/config/object';
-import { generateHighlightDecoration } from './highlight/highlight';
+import { generateHighlightDecoration } from './decoration/highlight';
 import { updateLegacyConfig } from './collection/patch';
-import { updateSelectionTextConfig } from './status/selection';
-import { updateDiagnosticTextConfig } from './status/diagonostic';
+import { updateSelectionTextConfig } from './decoration/selection';
+import { updateDiagnosticTextConfig } from './decoration/diagonostic';
 import { writeEditorConfiguration } from './shared/editor';
 import { bindEditorDecoration } from '../editor/editor';
 

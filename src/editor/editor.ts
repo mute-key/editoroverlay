@@ -4,7 +4,7 @@ import * as __0x from '../constant/shared/numeric';
 import * as regex from '../util/regex.collection';
 import { DECORATION_STATE, SELECTION_KIND_LIST } from '../constant/shared/object';
 import { bindStatusContentTextState, clearSelectionTextBuffer } from './status/selection';
-import { bindDiagnosticContentTextState, clearDiagnosticText, diagnosticInfo } from './status/diagnostic';
+import { clearDiagnosticText, diagnosticInfo } from './status/diagnostic';
 import { cursorOnlyHighlightRange, singelLineHighlightRange, multiLineHighlightRange, multiCursorHighlightRange, clearEveryHighlight } from './highlight/highlight';
 import { cursorOnlySelection, singleLineSelection, multilineSelection, multiCursorSelection } from './status/selection';
 import { blankRange } from './range';
@@ -17,7 +17,7 @@ const applyDecoration = (setDecorations: vscode.TextEditor['setDecorations'], de
 
 const resetDecoration = (setDecorations: vscode.TextEditor['setDecorations']) => (decoration: vscode.TextEditorDecorationType) => setDecorations(decoration, blankRange);
 
-const clearDecorationState = (decorationState: typeof DECORATION_STATE) => {
+const clearDecorationState = (decorationState) => {
     decorationState.eventTrigger[0] = __0x.noEvent;
     decorationState.appliedHighlight[0] = __0x.cursorOnly;
     decorationState.diagnosticSignature[0] = __0x.allOkOverride;
@@ -79,7 +79,6 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): void => {
         renderFnStack[numKey].push(...callList);
     });
 };
-
 
 const editModeCheck = (editor: vscode.TextEditor) => {
     if (editor.selections[0].start.line !== decorationState.previousLine[0]) {

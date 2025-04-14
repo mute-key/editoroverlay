@@ -36,7 +36,7 @@ __export(extension_exports, {
 module.exports = __toCommonJS(extension_exports);
 
 // src/initialize.ts
-var vscode15 = __toESM(require("vscode"));
+var vscode17 = __toESM(require("vscode"));
 
 // src/constant/config/object.ts
 var vscode = __toESM(require("vscode"));
@@ -615,6 +615,66 @@ var contentTextKeysOnly = /\${([^{}]+)}/s;
 
 // src/editor/status/selection.ts
 var vscode3 = __toESM(require("vscode"));
+
+// src/util/util.ts
+var readBits = (value, trueValue, falseValue, bitLength) => {
+  let idx = bitLength ? bitLength : 4;
+  const array = [];
+  while (idx--) {
+    if (value >> idx & 1) {
+      array.push(Array.isArray(trueValue) ? trueValue[idx] : trueValue);
+    } else {
+      array.push(falseValue);
+    }
+  }
+  return array;
+};
+var splitAndPosition = (str, regex2) => {
+  const match = str.match(regex2);
+  let split = [];
+  if (match && match.index !== void 0) {
+    split = str.split(regex2);
+    if (split[0].length === 0) {
+      delete split[0];
+      return {
+        position: 0,
+        array: [...split]
+      };
+    } else if (split[2].length === 0) {
+      delete split[2];
+      return {
+        position: 1,
+        array: [...split]
+      };
+    } else {
+      return {
+        position: 1,
+        array: split
+      };
+    }
+  }
+  return;
+};
+var hexToRgbaStringLiteral = (hex, opacity = 0.6, defaultValue, opacityDefault) => {
+  hex = hex.replace(/^#/, "");
+  if (hex.length === 3) {
+    hex = hex.split("").map((x) => x + x).join("");
+  }
+  const regex2 = /^[0-9A-Fa-f]{6}$/;
+  if (!regex2.test(hex)) {
+    hex = defaultValue.replace(/^#/, "");
+    opacity = opacityDefault;
+  }
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+};
+var compareNumbers = (a, b) => {
+  return a - b;
+};
+
+// src/editor/status/selection.ts
 var selectionContentText = {
   ...SELECTION_CONTENT_TEXT
 };
@@ -669,7 +729,7 @@ var multilineFunctionSymLink = {
   [multiLineChararcterHex]: (editor2) => editor2.document.getText(editor2.selection).replace(indentInfo[regex], "").length
 };
 var multiCursorOf = {
-  nth: ({ idx }) => idx + 1,
+  nth: ({ idx }) => idx,
   count: ({ editor: editor2 }) => editor2.selections.length,
   ln: ({ idx, editor: editor2 }) => editor2.selections[idx].end.line + 1,
   lc: ({ editor: editor2 }) => {
@@ -807,19 +867,39 @@ var multiCursorSelection = (editor2, previousKey) => {
   const statusLine = [];
   const selectionText = selectionContentText[multiCursorText].contentText;
   const context2 = {
-    idx: editor2.selections.length,
+    idx: 0,
     editor: editor2
   };
-  while (context2.idx--) {
+  const selectionReorder = {};
+  let idx = 0;
+  while (idx < editor2.selections.length) {
+    const lineNo = editor2.selections[idx].start.line;
+    if (!Object.hasOwn(selectionReorder, lineNo)) {
+      selectionReorder[lineNo] = [0, void 0];
+    }
     const lineSet = new Set(statusLine);
-    if (lineSet.has(editor2.selections[context2.idx].end.line)) {
+    if (lineSet.has(editor2.selections[idx].end.line)) {
+      selectionReorder[editor2.selections[idx].start.line][0] += 1;
+      idx++;
       continue;
     }
+    selectionReorder[editor2.selections[idx].start.line][0] += 1;
+    selectionReorder[editor2.selections[idx].start.line][1] = editor2.selections[idx];
+    statusLine.push(editor2.selections[idx].end.line);
+    idx++;
+  }
+  idx = 1;
+  for (const lineKey of Object.keys(selectionReorder).map((line) => Number(line)).sort(compareNumbers)) {
     const selectionTextInfo = selectionText.map((selection) => vscode3.window.createTextEditorDecorationType(selection));
     const option = {
-      range: createStartEndRangeOfSelection(editor2.selections[context2.idx]),
+      range: createStartEndRangeOfSelection(selectionReorder[lineKey][1]),
       renderOptions: {}
     };
+    const idxBuffer = [];
+    for (let pos = idx; pos < idx + selectionReorder[lineKey][0]; pos++) {
+      idxBuffer.push(pos);
+    }
+    context2.idx = idxBuffer.join(",");
     selectionText.forEach(
       contentTextFunc(
         selectionTextInfo,
@@ -828,13 +908,11 @@ var multiCursorSelection = (editor2, previousKey) => {
       )
     );
     selectionTextBuffer[multiCursorText].push(selectionTextInfo);
-    statusLine.push(editor2.selections[context2.idx].end.line);
+    idx += selectionReorder[lineKey][0];
   }
 };
 var clearSelectionTextBuffer = (editor2) => {
-  for (const hexKey of SELECTION_KIND_LIST) {
-    clearBufferOfhexkey(editor2.setDecorations, [hexKey]);
-  }
+  SELECTION_KIND_LIST.forEach((hexKey) => clearBufferOfhexkey(editor2.setDecorations, [hexKey]));
 };
 var clearDisposeBuffer = (setDecorations) => (buffer) => {
   setDecorations(buffer, blankRange);
@@ -853,8 +931,8 @@ var clearBufferOfhexkey = (setDecorations, previousKey) => {
       selectionTextBuffer[multiLineCursorText].forEach(resetDecoration(setDecorations));
       break;
     case multiCursor:
-      for (const selection of selectionTextBuffer[multiCursorText]) {
-        selection.forEach(clearDisposeBuffer(setDecorations));
+      for (let idx = 0; idx < selectionTextBuffer[multiCursorText].length; idx++) {
+        selectionTextBuffer[multiCursorText][idx].forEach(clearDisposeBuffer(setDecorations));
       }
       selectionTextBuffer[multiCursorText].splice(0);
       break;
@@ -1093,9 +1171,6 @@ var diagnosticOf = {
     ...workspaceErrorCountOf
   }
 };
-var clearDiagnosticText = (setDecorations, previousSignature) => {
-  diagnosticTextBuffer[previousSignature[0]]?.forEach(resetDecoration(setDecorations));
-};
 var decorationOptionBuffer2 = { ...DECORATION_OPTION_CONFIG };
 var renderDiagnosticText = (editor2, signature, options, context2) => (decoration, idx) => {
   decorationOptionBuffer2.after = { ...decoration.after };
@@ -1129,6 +1204,9 @@ var refreshBuffer = (state) => {
     stateBuffer[idx] = state[idx];
   }
 };
+var clearDiagnosticText = (setDecorations, previousSignature) => {
+  diagnosticTextBuffer[previousSignature[0]]?.forEach(resetDecoration(setDecorations));
+};
 var diagnosticInfo = (decorationState2) => (editor2) => {
   if (decorationState2.eventTrigger[0] === diagnosticChanged) {
     const diagnosticState2 = updateDiagnostic(editor2.document.uri);
@@ -1138,7 +1216,7 @@ var diagnosticInfo = (decorationState2) => (editor2) => {
   decorationOption.range = diagnosticOf.rangeFunction(editor2);
   context.line = editor2.selection.start.line;
   context.state = stateBuffer;
-  clearDiagnosticText(editor2.setDecorations, decorationState2.diagnosticSignature);
+  signature !== decorationState2.diagnosticSignature[0] && clearDiagnosticText(editor2.setDecorations, decorationState2.diagnosticSignature);
   diagnosticContentText[signature].forEach(renderDiagnosticText(editor2, signature, { ...decorationOption }, context));
   decorationState2.diagnosticSignature[0] = signature;
 };
@@ -1252,11 +1330,11 @@ var borderPositionInfo = {
   ...HIGHLIGHT_BORDER_POSITION_INFO
 };
 var cursorOnlyHighlightRange = (editor2, previousKey) => {
-  clearEveryHighlight(editor2);
+  cursorOnly !== previousKey[0] && clearEveryHighlight(editor2);
   applyDecoration(editor2.setDecorations, highlightStyleList[cursorOnly][0], [createLineRange(editor2.selection.active)]);
 };
 var singelLineHighlightRange = (editor2, previousKey) => {
-  clearHighlight(editor2.setDecorations, previousKey, blankRange);
+  singleLine !== previousKey[0] && clearHighlight(editor2.setDecorations, previousKey, blankRange);
   applyDecoration(editor2.setDecorations, highlightStyleList[singleLine][0], [createRangeSPEP(editor2.selection.start, editor2.selection.end)]);
 };
 var multiLineHighlightRange = (editor2, previousKey) => {
@@ -1427,61 +1505,6 @@ var convertNullStringToNull = (value) => {
   return value;
 };
 
-// src/util/util.ts
-var readBits = (value, trueValue, falseValue, bitLength) => {
-  let idx = bitLength ? bitLength : 4;
-  const array = [];
-  while (idx--) {
-    if (value >> idx & 1) {
-      array.push(Array.isArray(trueValue) ? trueValue[idx] : trueValue);
-    } else {
-      array.push(falseValue);
-    }
-  }
-  return array;
-};
-var splitAndPosition = (str, regex2) => {
-  const match = str.match(regex2);
-  let split = [];
-  if (match && match.index !== void 0) {
-    split = str.split(regex2);
-    if (split[0].length === 0) {
-      delete split[0];
-      return {
-        position: 0,
-        array: [...split]
-      };
-    } else if (split[2].length === 0) {
-      delete split[2];
-      return {
-        position: 1,
-        array: [...split]
-      };
-    } else {
-      return {
-        position: 1,
-        array: split
-      };
-    }
-  }
-  return;
-};
-var hexToRgbaStringLiteral = (hex, opacity = 0.6, defaultValue, opacityDefault) => {
-  hex = hex.replace(/^#/, "");
-  if (hex.length === 3) {
-    hex = hex.split("").map((x) => x + x).join("");
-  }
-  const regex2 = /^[0-9A-Fa-f]{6}$/;
-  if (!regex2.test(hex)) {
-    hex = defaultValue.replace(/^#/, "");
-    opacity = opacityDefault;
-  }
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-};
-
 // src/configuration/shared/decoration.ts
 var vscode8 = __toESM(require("vscode"));
 var leftMarginToMarginString = (leftMargin) => `0 0 0 ${leftMargin}`;
@@ -1636,7 +1659,7 @@ var workspaceProxyConfiguration = (config, workspaceConfigSectionName, ifContent
   });
 };
 
-// src/configuration/highlight/highlight.ts
+// src/configuration/decoration/highlight.ts
 var checkConfigKeyAndCast = (key) => {
   return key;
 };
@@ -1826,7 +1849,7 @@ var updateLegacyConfig = async (configReady) => {
   });
 };
 
-// src/configuration/status/selection.ts
+// src/configuration/decoration/selection.ts
 var convertPositionToDecorationRenderOption = (textPosition, SelectionDecorationStyle) => {
   return textPosition.contentText.map((text, idx) => {
     const option = typeof text === "string" ? SelectionDecorationStyle.placeholderDecorationOption : SelectionDecorationStyle.selectionDecorationOption[textPosition.position[idx]];
@@ -1885,7 +1908,7 @@ var updateSelectionTextConfig = (configReady, configuratioChange = false) => {
   return true;
 };
 
-// src/configuration/status/diagonostic.ts
+// src/configuration/decoration/diagonostic.ts
 var vscode11 = __toESM(require("vscode"));
 var positionKeyList = ["pre", "post"];
 var positionKeyToPlaceholderName = { pre: "prefix", post: "postfix" };
@@ -1969,7 +1992,7 @@ var buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style, left
     if (decoration.after.contentText === allOkHexKey) {
       const ok = concatinateNotation(preset.all[allOkContentText]);
       setDiagonosticTextbuffer(allOkOverride, ok.map((decoration2) => vscode11.window.createTextEditorDecorationType(decoration2)));
-      textOftarget[allOkOverride].push(...[...ok]);
+      textOftarget[allOkOverride].push(...ok);
     } else {
       setDiagonosticTextbuffer(allOkOverride, [vscode11.window.createTextEditorDecorationType(decoration)]);
       textOftarget[allOkOverride].push({ ...decoration });
@@ -1980,7 +2003,7 @@ var buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style, left
       const ok = concatinateNotation(preset.editor[okEditorContentText]);
       const warn = concatinateNotation(preset.editor[warningEditorContentText]);
       const err = concatinateNotation(preset.editor[errorEditorContentText]);
-      textOftarget[allOkNoOverride].push(...[...ok]);
+      textOftarget[allOkNoOverride].push(...ok);
       textOftarget[editorOkWorkspaceWarn].push(...ok);
       textOftarget[editorOkWorkspaceErr].push(...ok);
       textOftarget[editorOkWorkspaceWarnErr].push(...ok);
@@ -2227,6 +2250,7 @@ var updateDiagnosticTextConfig = (configReady, configuratioChange = false) => {
     reloadContentText();
   }
   workspaceProxyConfiguration(diagnosticConfig, configReady.name + "." + CONFIG_SECTION.diagnosticText, DIAGNOSTIC_CONTENT_TEXT_LIST, bindToBuffer, diagnosticTextRegex);
+  const placeholderDigit = diagnosticConfig.visibility.overrideAllOk ? allOkOverride : allOkNoOverride;
   const diagnosticBiome = diagnosticVisibilityBiome(diagnosticConfig.visibility);
   const decorationStyleList = decorationStyleFromBiome(diagnosticBiome.workspace | diagnosticBiome.editor);
   Object.assign(dignosticContentTextPreset, buildDiagnosticStyle(diagnosticConfig, diagnosticDecorationStyle, decorationStyleList, diagnosticConfig.visibility, diagnosticBiome));
@@ -2235,7 +2259,6 @@ var updateDiagnosticTextConfig = (configReady, configuratioChange = false) => {
   applyExtraStyle(bindTo.textOf.contentText, diagnosticConfig.diagnosticPlaceholderTextStyle, diagnosticConfig.leftMargin);
   setGlyph(bindTo.textOf.glyphList, diagnosticConfig.glyphList);
   setCursorLine(bindTo.functionOf, diagnosticConfig.visibility);
-  const placeholderDigit = diagnosticConfig.visibility.overrideAllOk ? allOkOverride : allOkNoOverride;
   setOverrideDigit(placeholderDigit);
   initializeStateBuffer(placeholderDigit);
   delete bindToBuffer.textof;
@@ -2284,13 +2307,93 @@ var loadConfiguration = (context2) => {
   return;
 };
 
-// src/event/window.ts
+// src/command/command.ts
+var vscode13 = __toESM(require("vscode"));
+
+// src/configuration/preset/preset.ts
 var vscode12 = __toESM(require("vscode"));
+var import_path = __toESM(require("path"));
+var import_promises = require("node:fs/promises");
+var readPreset = async (context2) => {
+  try {
+    const jsonPath = context2.asAbsolutePath(import_path.default.join("resource", "preset.json"));
+    const content = await (0, import_promises.readFile)(jsonPath, { encoding: "utf-8" });
+    const data = JSON.parse(content);
+    return data;
+  } catch (error2) {
+    console.error("Failed to load preset JSON:", error2);
+  }
+};
+var overrideConfiguration = (context2) => (selected) => {
+  if (selected = "Yes" /* YES */) {
+    readPreset(context2);
+  }
+};
+var checkDuplciateOverride = (context2, selected) => {
+  if (true) {
+    actionConfirm().then(overrideConfiguration(context2));
+  } else {
+    overrideConfiguration(context2)(selected);
+  }
+};
+var actionConfirm = () => {
+  return vscode12.window.showWarningMessage("duplicate", ...["Yes" /* YES */, "No" /* NO */]);
+};
+var userSelectedPreset = (context2) => (selected) => {
+  checkDuplciateOverride(context2, selected);
+  (selected2) => {
+    switch (selected2) {
+      case "Recommended - Horizontal" /* RECOMMNEDED_H */:
+        break;
+      case "Recommended - Vertical" /* RECOMMNEDED_V */:
+        break;
+      case "No Glpyph - Detailed" /* NO_GLYPH_D */:
+        break;
+      case "No Glpyph - Simple" /* NO_GLYPH_S */:
+        break;
+      case "Emoji - Detailed" /* EMOJI_D */:
+        break;
+      case "Emoji - Simple" /* EMOJI_S */:
+        break;
+      default:
+        break;
+    }
+  };
+  vscode12.window.showInformationMessage(`Preset: ${selected} has been applied`);
+};
+var promptQuickPick = () => {
+  const presetList = [
+    "Recommended - Horizontal" /* RECOMMNEDED_H */,
+    "Recommended - Vertical" /* RECOMMNEDED_V */,
+    "No Glpyph - Detailed" /* NO_GLYPH_D */,
+    "No Glpyph - Simple" /* NO_GLYPH_S */,
+    "Emoji - Detailed" /* EMOJI_D */,
+    "Emoji - Simple" /* EMOJI_S */
+  ];
+  return vscode12.window.showQuickPick(presetList, {
+    placeHolder: " ... Select the Preset" /* SELECT_PRESET */
+  });
+};
+
+// src/command/command.ts
+var resetUserConfiguration = (context2) => {
+  return vscode13.commands.registerCommand("cursorlinehighlight.resetConfiguration", () => {
+    resetUserConfiguration(context2);
+  });
+};
+var applyPresetConfiguration = (context2) => {
+  return vscode13.commands.registerCommand("cursorlinehighlight.applyPreset", () => {
+    promptQuickPick().then(userSelectedPreset(context2));
+  });
+};
+
+// src/event/window.ts
+var vscode14 = __toESM(require("vscode"));
 var windowStateChanged = ({ decorationState: decorationState2 }) => {
-  return vscode12.window.onDidChangeWindowState((event) => {
+  return vscode14.window.onDidChangeWindowState((event) => {
     if (event.focused) {
-      if (vscode12.window.activeTextEditor) {
-        decorationState2.appliedHighlight[0] = renderGroupIs(vscode12.window.activeTextEditor, [cursorOnly]);
+      if (vscode14.window.activeTextEditor) {
+        decorationState2.appliedHighlight[0] = renderGroupIs(vscode14.window.activeTextEditor, [cursorOnly]);
       }
     } else {
       resetAllDecoration();
@@ -2302,7 +2405,7 @@ var windowStateChanged = ({ decorationState: decorationState2 }) => {
   });
 };
 var activeEditorChanged = ({ configInfo: configInfo2, decorationState: decorationState2 }) => {
-  return vscode12.window.onDidChangeActiveTextEditor(async (editor2) => {
+  return vscode14.window.onDidChangeActiveTextEditor(async (editor2) => {
     if (editor2) {
       if (Error2.check()) {
         Error2.notify(1500);
@@ -2318,23 +2421,23 @@ var activeEditorChanged = ({ configInfo: configInfo2, decorationState: decoratio
   });
 };
 var editorOptionChanged = (context2) => {
-  return vscode12.window.onDidChangeTextEditorOptions((event) => {
+  return vscode14.window.onDidChangeTextEditorOptions((event) => {
     if (event.textEditor) {
       updateIndentOption(event.textEditor);
     }
   });
 };
 var selectionChanged2 = ({ decorationState: decorationState2 }) => {
-  return vscode12.window.onDidChangeTextEditorSelection((event) => {
+  return vscode14.window.onDidChangeTextEditorSelection((event) => {
     decorationState2.eventTrigger[0] = selectionChanged;
     decorationState2.appliedHighlight[0] = renderGroupIs(event.textEditor, decorationState2.appliedHighlight);
   });
 };
 
 // src/event/workspace.ts
-var vscode13 = __toESM(require("vscode"));
+var vscode15 = __toESM(require("vscode"));
 var configChanged = ({ configInfo: configInfo2, decorationState: decorationState2 }) => {
-  return vscode13.workspace.onDidChangeConfiguration((event) => {
+  return vscode15.workspace.onDidChangeConfiguration((event) => {
     if (event) {
       const section = Object.keys(CONFIG_SECTION).find((section2) => {
         return event.affectsConfiguration(configInfo2.name + "." + section2);
@@ -2349,8 +2452,8 @@ var configChanged = ({ configInfo: configInfo2, decorationState: decorationState
             ["multiLine" /* MULTI_LINE */]: () => updateHighlightStyleConfiguration(configInfo2, multiLine),
             ["multiCursor" /* MULTI_CURSOR */]: () => updateHighlightStyleConfiguration(configInfo2, multiCursor),
             ["selectionText" /* SELECTION_TEXT */]: () => {
-              updateDiagnosticTextConfig(configInfo2, true);
               updateSelectionTextConfig(configInfo2, true);
+              updateDiagnosticTextConfig(configInfo2, true);
             },
             ["diagnosticText" /* DIAGNOSTIC_TEXT */]: () => {
               updateSelectionTextConfig(configInfo2, true);
@@ -2371,10 +2474,10 @@ var configChanged = ({ configInfo: configInfo2, decorationState: decorationState
 };
 
 // src/event/language.ts
-var vscode14 = __toESM(require("vscode"));
+var vscode16 = __toESM(require("vscode"));
 var diagnosticChanged2 = ({ decorationState: decorationState2 }) => {
-  return vscode14.languages.onDidChangeDiagnostics(async (event) => {
-    const editor2 = vscode14.window.activeTextEditor;
+  return vscode16.languages.onDidChangeDiagnostics(async (event) => {
+    const editor2 = vscode16.window.activeTextEditor;
     if (editor2 && event) {
       decorationState2.eventTrigger[0] = diagnosticChanged;
       diagnosticInfo(decorationState2)(editor2);
@@ -2393,7 +2496,7 @@ var initialize = async (extensionContext) => {
       return;
     }
     const configInfo2 = loadConfig.config;
-    const activeEditor = vscode15.window.activeTextEditor;
+    const activeEditor = vscode17.window.activeTextEditor;
     const eventContext = {
       configInfo: configInfo2,
       decorationState: loadConfig.decoration
@@ -2404,8 +2507,8 @@ var initialize = async (extensionContext) => {
       loadConfig.decoration.appliedHighlight[0] = renderGroupIs(activeEditor, [cursorOnly]);
     }
     return [
-      // commands.applyPresetConfiguration(),
-      // commands.resetUserConfiguration(),
+      applyPresetConfiguration(extensionContext),
+      resetUserConfiguration(extensionContext),
       windowStateChanged(eventContext),
       activeEditorChanged(eventContext),
       selectionChanged2(eventContext),
@@ -2415,7 +2518,7 @@ var initialize = async (extensionContext) => {
     ];
   } catch (err) {
     console.error("Error during extension initialization: ", err);
-    vscode15.window.showErrorMessage("Extension initialization failed!", err);
+    vscode17.window.showErrorMessage("Extension initialization failed!", err);
   }
 };
 

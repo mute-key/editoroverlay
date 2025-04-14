@@ -7,28 +7,28 @@ You can enabled/disabled only the feetures you want if you don't need them all. 
 #### ___Cursor Only Highlight___
 
 
-<img src="./resource/cursorOnly.png" alt ="GIF" style=""><br>
+<img src="./resource/doc/cursorOnly.png" alt ="GIF" style=""><br>
 
 #### ___SingleLine Highlight___
 
-<img src="./resource/singleLine.png" alt ="GIF" style=""><br>
+<img src="./resource/doc/singleLine.png" alt ="GIF" style=""><br>
 
 #### ___MultiLine Highlight___
 
-<img src="./resource/multiLine.png" alt ="GIF" style=""><br>
+<img src="./resource/doc/multiLine.png" alt ="GIF" style=""><br>
 
 #### ___MultiCursor Highlight___
 
-<img src="./resource/multiCursor.png" alt ="GIF" style=""><br>
+<img src="./resource/doc/multiCursor.png" alt ="GIF" style=""><br>
 
 #### ___Diagnostic___
 
-<img src="./resource/diagnostic.png" alt ="GIF" style=""><br>
+<img src="./resource/doc/diagnostic.png" alt ="GIF" style=""><br>
 
 > So this extension will display the diagnostic status of current editor/workspace.
 You can confugure visibily, fixtures, position, format or text/glyph/emoji.
 
-<img src="./resource/linePosition.png" alt ="GIF" style=""><br>
+<img src="./resource/doc/linePosition.png" alt ="GIF" style=""><br>
 
 > And Editor diagonotic will direct where the problem lines are based on current cursor position. <br>
 
@@ -42,7 +42,7 @@ Also, feel free to leave feedback or comment if you like.<br>
 
 `ctrl + shift + p` and search/open Settign UI, then search 'cursorline'<br>
 
-<img src="./resource/setting.png" alt ="GIF" style=""><br>
+<img src="./resource/doc/setting.png" alt ="GIF" style=""><br>
 Most of configraions are should be self-explantory, so i will detail the ones that are not so much straight-forward.<br>
 
 1. Cursor/selection highlight
@@ -65,7 +65,7 @@ The value 'Col' in status bar 'Editor selection' is not zero based, as it refers
 
 Most of configurations are quite straight foword and they are well explained in configuration section.
 
-<img src="./resource/pinned.png" alt ="GIF" style=""><br>
+<img src="./resource/doc/pinned.png" alt ="GIF" style=""><br>
 
 You will see cpu usage spike when you repeatly/rapidly drag up and down while you are on multi-line selection.
 This is due to the selection change event interface being triggered at average rate at 1000 per second.
@@ -79,7 +79,7 @@ It is the only multi-line selection with high frequant change of seleciton and i
 If there is a problem with your configruation or if you want to revert to the default, find a Cog button next to configuration section and click 'Reset Setting'.
 ⚙️ is hidden but it will appear when you click on the section itself.
 
-<img src="./resource/reset.png" alt ="GIF" style=""><br>
+<img src="./resource/doc/reset.png" alt ="GIF" style=""><br>
 
 ## Diagnostic status
 
@@ -87,7 +87,7 @@ You can disable this feature if not necessary.
 
 Diagnostic status indicate the same entry in probelm view as the screenshot.
 
-<img src="./resource/problem.png" alt ="GIF" style=""><br>
+<img src="./resource/doc/problem.png" alt ="GIF" style=""><br>
 
 The configurations are some what complicated, due to complexcity of customizability of status block.
 
@@ -95,16 +95,16 @@ It kinda over-extend when selection status is enabled too, especially if you use
 I would advice to change the position of diagnostics from setting 'Visibilty'
 
 
-<img src="./resource/nextLine.png" alt ="GIF" style=""><br>
+<img src="./resource/doc/nextLine.png" alt ="GIF" style=""><br>
 
 Setting to next line put diagnostic on the line bellow where the cursor is.
 
-<img src="./resource/nextLine2.png" alt ="GIF" style=""><br>
+<img src="./resource/doc/nextLine2.png" alt ="GIF" style=""><br>
 
 Currently, There aren't many styles for diagnostic block but those will be in future update definitely such as background color, border radious and etc,
 so the diagnotic block is more  visibly distint from others on the display.
 
-I would like to kindly advice to read the pinned description thoroughly and try it youself.
+I would like to kindly advice to read the 📌 pinned description thoroughly and try it youself.
 i will try to list the template strucutre briefly.
 
 - All Ok Placeholder ContentText
