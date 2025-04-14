@@ -3,18 +3,25 @@
 // ==============================================================================
 
 export const enum PRESET {
-    RECOMMNEDED_H = "Recommended - Horizontal",
-    RECOMMNEDED_V = "Recommended - Vertical",
+    RECOMMNEDED = "Recommended",
     NO_GLYPH_D = "No Glpyph - Detailed",
     NO_GLYPH_S = "No Glpyph - Simple",
     EMOJI_D = "Emoji - Detailed",
     EMOJI_S = "Emoji - Simple",
 }
 
+export const enum PRESET_ORIENTATION {
+    VERTICAL = "Vertical",
+    HORIZONTAL = "Horizontal",
+}
+
 export const enum SYSTEM_MESSAGE {
     CONFIURATION_RELOADED = "Config has been updated succeefully. Configuration Reloaded... (Messaage Dismiss in 2 second.)",
     CONFIGURATION_ERROR = "Please revise invalid values in configuration.",
-    SELECT_PRESET = " ... Select the Preset"
+    RESTORE_DEFAULT = "Are you sure to restore to default?",
+    RESTORE_DEFAULT_COMPLETE = "Configuration has been restored to default.",
+    PRESET_SELCT = " ... Select the Preset",
+    PRESET_SELCT_ORIENTATION = " ... Select the Preset Orientation"
 }
 
 export const enum SELECTION_TYPE {

@@ -39,8 +39,9 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
         }
 
         return [
-            commands.applyPresetConfiguration(extensionContext),
-            commands.resetUserConfiguration(extensionContext),
+            commands.setPreset(extensionContext),
+            commands.setOrientation(extensionContext),
+            commands.resetConfiguration(extensionContext),
             windowEvent.windowStateChanged(eventContext),
             windowEvent.activeEditorChanged(eventContext),
             windowEvent.selectionChanged(eventContext),

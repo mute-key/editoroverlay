@@ -1,19 +1,31 @@
 import * as vscode from 'vscode';
-import { getWorkspaceConfiguration } from '../shared/configuration';
 import path from 'path';
+import { CONFIRM, PRESET, PRESET_ORIENTATION, SYSTEM_MESSAGE } from '../../constant/config/enum';
+import { CONFIG_SECTION } from '../../constant/config/object';
+import { getWorkspaceConfiguration } from '../shared/configuration';
 import { readFile } from 'node:fs/promises';
-import { CONFIRM, PRESET, SYSTEM_MESSAGE } from '../../constant/config/enum';
 
-// RECOMMNEDED_H = "Recommended - Horizontal",
-// RECOMMNEDED_V = "Recommended - Vertical",
-// NO_GLYPH_D = "No Glpyph - Detailed",
-// NO_GLYPH_S = "No Glpyph - Simple",
-// EMOJI_D = "Emoji - Detailed",
-// EMOJI_S = "Emoji - Simple",
+const clearConfiguration = (packageName: string) => (value: string | undefined): void => {
+    if (value === CONFIRM.YES) {
+        for (const section of Object.values(CONFIG_SECTION)) {
+            const config = getWorkspaceConfiguration(packageName + "." + section);
+            for (const key of Object.keys(config)) {
+                if (typeof config[key] !== "function" && key.length > 0) {
+                    config.update(key, undefined, true);
+                }
+            }
+        }
+        vscode.window.showInformationMessage(SYSTEM_MESSAGE.RESTORE_DEFAULT_COMPLETE);
+    }
+};
 
-const readPreset = async (context: vscode.ExtensionContext) => {
+const restoreToDefault = (): Thenable<string | undefined> => {
+    return vscode.window.showWarningMessage(SYSTEM_MESSAGE.RESTORE_DEFAULT, ...[CONFIRM.YES as string, CONFIRM.NO as string]);
+};
+
+const readPreset = async (context: vscode.ExtensionContext, presetFilename): Promise<object | undefined> => {
     try {
-        const jsonPath = context.asAbsolutePath(path.join('resource', 'preset.json'));
+        const jsonPath = context.asAbsolutePath(path.join('resource/preset/', presetFilename));
         const content = await readFile(jsonPath, { encoding: 'utf-8' });
         const data = JSON.parse(content);
         return data;
@@ -22,74 +34,82 @@ const readPreset = async (context: vscode.ExtensionContext) => {
     }
 };
 
-const overrideConfiguration = (context: vscode.ExtensionContext) => (selected) => {
-    if (selected = CONFIRM.YES) {
-        readPreset(context);
-
-
-    } 
-};
-
-const checkDuplciateOverride = (context: vscode.ExtensionContext, selected) => {
-
-    // const extensionConfig = getWorkspaceConfiguration('editor');
-    // vscode.workspace.getConfiguration('editor')
-
-    if (true) {
-        actionConfirm().then(overrideConfiguration(context));
-    } else {
-        overrideConfiguration(context)(selected);   
+const overrideConfiguration = (packageName: string, json: object) => (selected: string | undefined): void => {
+    if (selected === CONFIRM.YES) {
+        writeSelectedPreset(packageName, json);
     }
 };
 
-const actionConfirm = () => {
+const actionConfirm = (): Thenable<string | undefined> => {
     return vscode.window.showWarningMessage('duplicate', ...[CONFIRM.YES, CONFIRM.NO]);
 };
 
-const userSelectedPreset = (context: vscode.ExtensionContext) => (selected: string | undefined) => {
-
-    checkDuplciateOverride(context, selected);
-
-    selected => {
-        switch (selected) {
-            case PRESET.RECOMMNEDED_H:
-                break;
-            case PRESET.RECOMMNEDED_V:
-                break;
-            case PRESET.NO_GLYPH_D:
-                break;
-            case PRESET.NO_GLYPH_S:
-                break;
-            case PRESET.EMOJI_D:
-                break;
-            case PRESET.EMOJI_S:
-                break;
-            default:
-                break;
-        }
-    };
-
-    vscode.window.showInformationMessage(`Preset: ${selected} has been applied`);
+const writeSelectedPreset = (packageName: string, json: object): void => {
+    const config = getWorkspaceConfiguration(packageName);
+    for (const section of Object.keys(json)) {
+        config.update(section, json[section]);
+    }
 };
 
-const promptQuickPick = (): Thenable<string | undefined> => {
+const promptOientationList = async (context: vscode.ExtensionContext): Promise<void> => {
+    const orientationList = [
+        PRESET_ORIENTATION.HORIZONTAL,
+        PRESET_ORIENTATION.VERTICAL
+    ];
+
+    const orientation = await vscode.window.showQuickPick(orientationList, {
+        placeHolder: SYSTEM_MESSAGE.PRESET_SELCT_ORIENTATION,
+    });
+};
+
+const checkDuplciateOverride = (packageName: string, json: any): boolean => {
+    const config = getWorkspaceConfiguration(packageName);
+    for (const section of Object.keys(json)) {
+        const inspected = config.inspect<string>(section);
+        if (inspected?.globalValue) {
+            return true;
+        }
+    }
+    return false;
+};
+
+const promptPresetList = async (context: vscode.ExtensionContext): Promise<void> => {
 
     const presetList = [
-        PRESET.RECOMMNEDED_H,
-        PRESET.RECOMMNEDED_V,
+        PRESET.RECOMMNEDED,
         PRESET.NO_GLYPH_D,
         PRESET.NO_GLYPH_S,
         PRESET.EMOJI_D,
         PRESET.EMOJI_S
     ];
 
-    return vscode.window.showQuickPick(presetList, {
-        placeHolder: SYSTEM_MESSAGE.SELECT_PRESET,
+    const preset = await vscode.window.showQuickPick(presetList, {
+        placeHolder: SYSTEM_MESSAGE.PRESET_SELCT,
     });
+
+    const fileList = {
+        [PRESET.RECOMMNEDED]: "recommended.json",
+        [PRESET.NO_GLYPH_D]: "no-glyph-detailed.json",
+        [PRESET.NO_GLYPH_S]: "no-glyph-simple.json",
+        [PRESET.EMOJI_D]: "emoji-detailed.json",
+        [PRESET.EMOJI_S]: "emoji-simple.json",
+    };
+
+    if (preset && Object.hasOwn(fileList, preset)) {
+        const json = await readPreset(context, fileList[preset]);
+        const packageName = context.extension.packageJSON.name;
+        if (checkDuplciateOverride(context.extension.packageJSON.name, json)) {
+            actionConfirm().then(overrideConfiguration(packageName, json ? json : {}));
+        } else {
+            writeSelectedPreset(packageName, json ? json : {});
+        }
+    }
 };
 
 export {
     readPreset,
-    promptQuickPick,
-    userSelectedPreset
+    promptPresetList,
+    promptOientationList,
+    restoreToDefault,
+    clearConfiguration,
 };

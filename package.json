@@ -55,7 +55,7 @@
                 "title": "CursorLine Highlight: Apply Preset Configuration"
             },
             {
-                "command": "cursorlinehighlight.resetUserConfiguration",
+                "command": "cursorlinehighlight.restoreToDefaultConfiguration",
                 "title": "CursorLine Highlight: Reset User Configuration"
             }
         ],

@@ -1,23 +1,20 @@
 import * as vscode from 'vscode';
-import { promptQuickPick, userSelectedPreset } from '../configuration/preset/preset';
+import { clearConfiguration, promptOientationList, promptPresetList, restoreToDefault } from '../configuration/preset/preset';
 
-
-
-const resetUserConfiguration = (context: vscode.ExtensionContext): vscode.Disposable => {
-    return vscode.commands.registerCommand("cursorlinehighlight.resetConfiguration", () => {
-        resetUserConfiguration(context);
-    });
+const setPreset = (context: vscode.ExtensionContext): vscode.Disposable => {
+    return vscode.commands.registerCommand("cursorlinehighlight.applyPreset", () => promptPresetList(context));
 };
 
-const applyPresetConfiguration = (context: vscode.ExtensionContext): vscode.Disposable => {
-    return vscode.commands.registerCommand("cursorlinehighlight.applyPreset", () => {
-        promptQuickPick().then(userSelectedPreset(context));
-    });
+const setOrientation = (context: vscode.ExtensionContext) => {
+    return vscode.commands.registerCommand("cursorlinehighlight.changeOrientation", () => promptOientationList(context));
+};
+
+const resetConfiguration = (context: vscode.ExtensionContext): vscode.Disposable => {
+    return vscode.commands.registerCommand("cursorlinehighlight.restoreToDefaultConfiguration", () => restoreToDefault().then(clearConfiguration(context.extension.packageJSON.name)));
 };
 
 export {
-    applyPresetConfiguration,
-    resetUserConfiguration
+    setPreset,
+    setOrientation,
+    resetConfiguration
 };
-
-

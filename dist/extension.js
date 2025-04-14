@@ -871,24 +871,24 @@ var multiCursorSelection = (editor2, previousKey) => {
     editor: editor2
   };
   const selectionReorder = {};
-  let idx = 0;
-  while (idx < editor2.selections.length) {
-    const lineNo = editor2.selections[idx].start.line;
+  let lineIdx = 0;
+  while (lineIdx < editor2.selections.length) {
+    const lineNo = editor2.selections[lineIdx].start.line;
     if (!Object.hasOwn(selectionReorder, lineNo)) {
       selectionReorder[lineNo] = [0, void 0];
     }
     const lineSet = new Set(statusLine);
-    if (lineSet.has(editor2.selections[idx].end.line)) {
-      selectionReorder[editor2.selections[idx].start.line][0] += 1;
-      idx++;
+    if (lineSet.has(editor2.selections[lineIdx].end.line)) {
+      selectionReorder[editor2.selections[lineIdx].start.line][0] += 1;
+      lineIdx++;
       continue;
     }
-    selectionReorder[editor2.selections[idx].start.line][0] += 1;
-    selectionReorder[editor2.selections[idx].start.line][1] = editor2.selections[idx];
-    statusLine.push(editor2.selections[idx].end.line);
-    idx++;
+    selectionReorder[editor2.selections[lineIdx].start.line][0] += 1;
+    selectionReorder[editor2.selections[lineIdx].start.line][1] = editor2.selections[lineIdx];
+    statusLine.push(editor2.selections[lineIdx].end.line);
+    lineIdx++;
   }
-  idx = 1;
+  let cursorIdx = 1;
   for (const lineKey of Object.keys(selectionReorder).map((line) => Number(line)).sort(compareNumbers)) {
     const selectionTextInfo = selectionText.map((selection) => vscode3.window.createTextEditorDecorationType(selection));
     const option = {
@@ -896,7 +896,7 @@ var multiCursorSelection = (editor2, previousKey) => {
       renderOptions: {}
     };
     const idxBuffer = [];
-    for (let pos = idx; pos < idx + selectionReorder[lineKey][0]; pos++) {
+    for (let pos = cursorIdx; pos < cursorIdx + selectionReorder[lineKey][0]; pos++) {
       idxBuffer.push(pos);
     }
     context2.idx = idxBuffer.join(",");
@@ -908,7 +908,7 @@ var multiCursorSelection = (editor2, previousKey) => {
       )
     );
     selectionTextBuffer[multiCursorText].push(selectionTextInfo);
-    idx += selectionReorder[lineKey][0];
+    cursorIdx += selectionReorder[lineKey][0];
   }
 };
 var clearSelectionTextBuffer = (editor2) => {
@@ -931,8 +931,8 @@ var clearBufferOfhexkey = (setDecorations, previousKey) => {
       selectionTextBuffer[multiLineCursorText].forEach(resetDecoration(setDecorations));
       break;
     case multiCursor:
-      for (let idx = 0; idx < selectionTextBuffer[multiCursorText].length; idx++) {
-        selectionTextBuffer[multiCursorText][idx].forEach(clearDisposeBuffer(setDecorations));
+      for (const selection of selectionTextBuffer[multiCursorText]) {
+        selection.forEach(clearDisposeBuffer(setDecorations));
       }
       selectionTextBuffer[multiCursorText].splice(0);
       break;
@@ -2314,9 +2314,25 @@ var vscode13 = __toESM(require("vscode"));
 var vscode12 = __toESM(require("vscode"));
 var import_path = __toESM(require("path"));
 var import_promises = require("node:fs/promises");
-var readPreset = async (context2) => {
+var clearConfiguration = (packageName) => (value) => {
+  if (value === "Yes" /* YES */) {
+    for (const section of Object.values(CONFIG_SECTION)) {
+      const config = getWorkspaceConfiguration(packageName + "." + section);
+      for (const key of Object.keys(config)) {
+        if (typeof config[key] !== "function" && key.length > 0) {
+          config.update(key, void 0, true);
+        }
+      }
+    }
+    vscode12.window.showInformationMessage("Configuration has been restored to default." /* RESTORE_DEFAULT_COMPLETE */);
+  }
+};
+var restoreToDefault = () => {
+  return vscode12.window.showWarningMessage("Are you sure to restore to default?" /* RESTORE_DEFAULT */, ...["Yes" /* YES */, "No" /* NO */]);
+};
+var readPreset = async (context2, presetFilename) => {
   try {
-    const jsonPath = context2.asAbsolutePath(import_path.default.join("resource", "preset.json"));
+    const jsonPath = context2.asAbsolutePath(import_path.default.join("resource/preset/", presetFilename));
     const content = await (0, import_promises.readFile)(jsonPath, { encoding: "utf-8" });
     const data = JSON.parse(content);
     return data;
@@ -2324,67 +2340,77 @@ var readPreset = async (context2) => {
     console.error("Failed to load preset JSON:", error2);
   }
 };
-var overrideConfiguration = (context2) => (selected) => {
-  if (selected = "Yes" /* YES */) {
-    readPreset(context2);
-  }
-};
-var checkDuplciateOverride = (context2, selected) => {
-  if (true) {
-    actionConfirm().then(overrideConfiguration(context2));
-  } else {
-    overrideConfiguration(context2)(selected);
+var overrideConfiguration = (packageName, json) => (selected) => {
+  if (selected === "Yes" /* YES */) {
+    writeSelectedPreset(packageName, json);
   }
 };
 var actionConfirm = () => {
   return vscode12.window.showWarningMessage("duplicate", ...["Yes" /* YES */, "No" /* NO */]);
 };
-var userSelectedPreset = (context2) => (selected) => {
-  checkDuplciateOverride(context2, selected);
-  (selected2) => {
-    switch (selected2) {
-      case "Recommended - Horizontal" /* RECOMMNEDED_H */:
-        break;
-      case "Recommended - Vertical" /* RECOMMNEDED_V */:
-        break;
-      case "No Glpyph - Detailed" /* NO_GLYPH_D */:
-        break;
-      case "No Glpyph - Simple" /* NO_GLYPH_S */:
-        break;
-      case "Emoji - Detailed" /* EMOJI_D */:
-        break;
-      case "Emoji - Simple" /* EMOJI_S */:
-        break;
-      default:
-        break;
-    }
-  };
-  vscode12.window.showInformationMessage(`Preset: ${selected} has been applied`);
+var writeSelectedPreset = (packageName, json) => {
+  const config = getWorkspaceConfiguration(packageName);
+  for (const section of Object.keys(json)) {
+    config.update(section, json[section]);
+  }
 };
-var promptQuickPick = () => {
+var promptOientationList = async (context2) => {
+  const orientationList = [
+    "Horizontal" /* HORIZONTAL */,
+    "Vertical" /* VERTICAL */
+  ];
+  const orientation = await vscode12.window.showQuickPick(orientationList, {
+    placeHolder: " ... Select the Preset Orientation" /* PRESET_SELCT_ORIENTATION */
+  });
+};
+var checkDuplciateOverride = (packageName, json) => {
+  const config = getWorkspaceConfiguration(packageName);
+  for (const section of Object.keys(json)) {
+    const inspected = config.inspect(section);
+    if (inspected?.globalValue) {
+      return true;
+    }
+  }
+  return false;
+};
+var promptPresetList = async (context2) => {
   const presetList = [
-    "Recommended - Horizontal" /* RECOMMNEDED_H */,
-    "Recommended - Vertical" /* RECOMMNEDED_V */,
+    "Recommended" /* RECOMMNEDED */,
     "No Glpyph - Detailed" /* NO_GLYPH_D */,
     "No Glpyph - Simple" /* NO_GLYPH_S */,
     "Emoji - Detailed" /* EMOJI_D */,
     "Emoji - Simple" /* EMOJI_S */
   ];
-  return vscode12.window.showQuickPick(presetList, {
-    placeHolder: " ... Select the Preset" /* SELECT_PRESET */
+  const preset = await vscode12.window.showQuickPick(presetList, {
+    placeHolder: " ... Select the Preset" /* PRESET_SELCT */
   });
+  const fileList = {
+    ["Recommended" /* RECOMMNEDED */]: "recommended.json",
+    ["No Glpyph - Detailed" /* NO_GLYPH_D */]: "no-glyph-detailed.json",
+    ["No Glpyph - Simple" /* NO_GLYPH_S */]: "no-glyph-simple.json",
+    ["Emoji - Detailed" /* EMOJI_D */]: "emoji-detailed.json",
+    ["Emoji - Simple" /* EMOJI_S */]: "emoji-simple.json"
+  };
+  if (preset && Object.hasOwn(fileList, preset)) {
+    const json = await readPreset(context2, fileList[preset]);
+    const packageName = context2.extension.packageJSON.name;
+    if (checkDuplciateOverride(context2.extension.packageJSON.name, json)) {
+      actionConfirm().then(overrideConfiguration(packageName, json ? json : {}));
+    } else {
+      writeSelectedPreset(packageName, json ? json : {});
+    }
+  }
 };
 
 // src/command/command.ts
-var resetUserConfiguration = (context2) => {
-  return vscode13.commands.registerCommand("cursorlinehighlight.resetConfiguration", () => {
-    resetUserConfiguration(context2);
-  });
+var setPreset = (context2) => {
+  return vscode13.commands.registerCommand("cursorlinehighlight.applyPreset", () => promptPresetList(context2));
 };
-var applyPresetConfiguration = (context2) => {
-  return vscode13.commands.registerCommand("cursorlinehighlight.applyPreset", () => {
-    promptQuickPick().then(userSelectedPreset(context2));
-  });
+var setOrientation = (context2) => {
+  return vscode13.commands.registerCommand("cursorlinehighlight.changeOrientation", () => promptOientationList(context2));
+};
+var resetConfiguration = (context2) => {
+  return vscode13.commands.registerCommand("cursorlinehighlight.restoreToDefaultConfiguration", () => restoreToDefault().then(clearConfiguration(context2.extension.packageJSON.name)));
 };
 
 // src/event/window.ts
@@ -2507,8 +2533,9 @@ var initialize = async (extensionContext) => {
       loadConfig.decoration.appliedHighlight[0] = renderGroupIs(activeEditor, [cursorOnly]);
     }
     return [
-      applyPresetConfiguration(extensionContext),
-      resetUserConfiguration(extensionContext),
+      setPreset(extensionContext),
+      setOrientation(extensionContext),
+      resetConfiguration(extensionContext),
       windowStateChanged(eventContext),
       activeEditorChanged(eventContext),
       selectionChanged2(eventContext),

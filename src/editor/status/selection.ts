@@ -232,27 +232,27 @@ const multiCursorSelection = (editor: vscode.TextEditor, previousKey: number[]):
 
     const selectionReorder = {};
 
-    let idx = 0;
-    while (idx < editor.selections.length) {
-        const lineNo = editor.selections[idx].start.line;
+    let lineIdx = 0;
+    while (lineIdx < editor.selections.length) {
+        const lineNo = editor.selections[lineIdx].start.line;
         if (!Object.hasOwn(selectionReorder, lineNo)) {
             selectionReorder[lineNo] = [0, undefined];
         }
 
         const lineSet = new Set(statusLine);
-        if (lineSet.has(editor.selections[idx].end.line)) {
-            selectionReorder[editor.selections[idx].start.line][0] += 1;
-            idx++;
+        if (lineSet.has(editor.selections[lineIdx].end.line)) {
+            selectionReorder[editor.selections[lineIdx].start.line][0] += 1;
+            lineIdx++;
             continue;
         }
 
-        selectionReorder[editor.selections[idx].start.line][0] += 1;
-        selectionReorder[editor.selections[idx].start.line][1] = editor.selections[idx];
-        statusLine.push(editor.selections[idx].end.line);
-        idx++;
+        selectionReorder[editor.selections[lineIdx].start.line][0] += 1;
+        selectionReorder[editor.selections[lineIdx].start.line][1] = editor.selections[lineIdx];
+        statusLine.push(editor.selections[lineIdx].end.line);
+        lineIdx++;
     }
 
-    idx = 1;
+    let cursorIdx = 1;
 
     for (const lineKey of Object.keys(selectionReorder).map(line => Number(line)).sort(compareNumbers)) {
 
@@ -264,7 +264,7 @@ const multiCursorSelection = (editor: vscode.TextEditor, previousKey: number[]):
 
         const idxBuffer: number[] = [];
 
-        for (let pos = idx; pos < idx + selectionReorder[lineKey][0]; pos++) {
+        for (let pos = cursorIdx; pos < cursorIdx + selectionReorder[lineKey][0]; pos++) {
             idxBuffer.push(pos);
         }
 
@@ -277,7 +277,7 @@ const multiCursorSelection = (editor: vscode.TextEditor, previousKey: number[]):
                     context,
                     option));
         selectionTextBuffer[__0x.multiCursorText].push(selectionTextInfo);
-        idx += selectionReorder[lineKey][0];
+        cursorIdx += selectionReorder[lineKey][0];
     }
 };
 
@@ -304,14 +304,9 @@ const clearBufferOfhexkey = (setDecorations: vscode.TextEditor["setDecorations"]
             selectionTextBuffer[__0x.multiLineCursorText].forEach(resetDecoration(setDecorations));
             break;
         case __0x.multiCursor:
-            // console.log(selectionTextBuffer[__0x.multiCursorText]);
-            for (let idx = 0; idx < selectionTextBuffer[__0x.multiCursorText].length; idx++) {
-                selectionTextBuffer[__0x.multiCursorText][idx].forEach(clearDisposeBuffer(setDecorations));
+            for (const selection of selectionTextBuffer[__0x.multiCursorText]) {
+                selection.forEach(clearDisposeBuffer(setDecorations));
             }
-            // for (const selection of selectionTextBuffer[__0x.multiCursorText]) {
-            // console.log(selection);
-
-            // }
             selectionTextBuffer[__0x.multiCursorText].splice(0);
             break;
         default:
