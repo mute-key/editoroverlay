@@ -3,7 +3,8 @@
 // ==============================================================================
 
 export const enum PRESET {
-    RECOMMNEDED = "Recommended",
+    DETAILED = "Detailed",
+    SHORTEN = "Shorten",
     NO_GLYPH_D = "No Glpyph - Detailed",
     NO_GLYPH_S = "No Glpyph - Simple",
     EMOJI_D = "Emoji - Detailed",
@@ -15,13 +16,20 @@ export const enum PRESET_ORIENTATION {
     HORIZONTAL = "Horizontal",
 }
 
+export const enum COLOR {
+    BLUR = "Blur",
+    SHARP = "Sharp"
+}
+
 export const enum SYSTEM_MESSAGE {
-    CONFIURATION_RELOADED = "Config has been updated succeefully. Configuration Reloaded... (Messaage Dismiss in 2 second.)",
+    CONFIGURATION_RELOADED = "Config has been updated succeefully. Configuration Reloaded... (Messaage Dismiss in 2 second.)",
     CONFIGURATION_ERROR = "Please revise invalid values in configuration.",
     RESTORE_DEFAULT = "Are you sure to restore to default?",
     RESTORE_DEFAULT_COMPLETE = "Configuration has been restored to default.",
     PRESET_SELCT = " ... Select the Preset",
-    PRESET_SELCT_ORIENTATION = " ... Select the Preset Orientation"
+    PRESET_SELCT_ORIENTATION = " ... Select the Preset Orientation",
+    PRESET_SELCT_COLOR = " ... Select the Color",
+    OVERRIDE_CONFIRM = "Configuration will be overwritten. Proceed?"
 }
 
 export const enum SELECTION_TYPE {

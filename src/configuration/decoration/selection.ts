@@ -49,7 +49,7 @@ const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentText
 };
 
 
-const updateSelectionTextConfig = (configReady: Type.ConfigInfoReadyType, configuratioChange: boolean = false): boolean => {
+const updateSelectionTextConfig = (extenionName: string, configuratioChange: boolean = false): boolean => {
     const SelectionDecorationConfig = { ...SELECTION_DECORAITON_CONFIG } as Type.SelectionDecorationConfigType;
     const SelectionDecorationStyle = { ...SELECTION_DECORATION_STYLE } as Type.SelectionDecorationStyleType;
     const bindTo: any = bindStatusContentTextState();
@@ -58,7 +58,7 @@ const updateSelectionTextConfig = (configReady: Type.ConfigInfoReadyType, config
         textOf: {}
     };
     // hm ...
-    workspaceProxyConfiguration(SelectionDecorationConfig, configReady.name + '.' + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST, bindToBuffer, regex.SelectionTextRegex);
+    workspaceProxyConfiguration(SelectionDecorationConfig, extenionName + '.' + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST, bindToBuffer, regex.SelectionTextRegex);
     buildSelectionTextDecorationRenderOption(SelectionDecorationConfig, SelectionDecorationStyle);
     buildStatusTextState(bindTo.textOf, bindToBuffer.textOf, SelectionDecorationStyle, SelectionDecorationConfig.leftMargin);
     // sealSelctionText();

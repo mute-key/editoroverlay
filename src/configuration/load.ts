@@ -39,11 +39,11 @@ const loadConfiguration = (context?: vscode.ExtensionContext): Type.InitialisedC
     if (generateHighlightDecoration(configReady)) {
 
         if (configReady.generalConfigInfo.selectionTextEnabled) {
-            updateSelectionTextConfig(configReady);
+            updateSelectionTextConfig(configReady.name);
         }
 
         if (configReady.generalConfigInfo.diagnosticTextEnabled) {
-            updateDiagnosticTextConfig(configReady);
+            updateDiagnosticTextConfig(configReady.name);
         }
         
         return {

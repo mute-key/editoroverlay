@@ -3,7 +3,7 @@
     "publisher": "mutekey",
     "displayName": "Cursor/Selection Line Highlight",
     "description": "Apply configurable decorations on cursor line and selection lines.",
-    "version": "1.2.96",
+    "version": "1.2.97",
     "icon": "./resource/icon.png",
     "engines": {
         "vscode": "^1.96.0"
@@ -53,6 +53,14 @@
             {
                 "command": "cursorlinehighlight.applyPreset",
                 "title": "CursorLine Highlight: Apply Preset Configuration"
+            },
+            {
+                "command": "cursorlinehighlight.setColor",
+                "title": "CursorLine Highlight: Apply Color Set Configuration"
+            },
+            {
+                "command": "cursorlinehighlight.setOrientation",
+                "title": "CursorLine Highlight: Set Orientation Configuration"
             },
             {
                 "command": "cursorlinehighlight.restoreToDefaultConfiguration",
@@ -539,14 +547,6 @@
                             "overrideAllOk": {
                                 "type": "boolean",
                                 "default": true
-                            },
-                            "hideOk": {
-                                "type": "boolean",
-                                "default": false
-                            },
-                            "hideWarning": {
-                                "type": "boolean",
-                                "default": false
                             }
                         }
                     },

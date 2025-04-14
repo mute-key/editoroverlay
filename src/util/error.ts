@@ -93,6 +93,6 @@ export default abstract class Error extends ErrorHelper {
             setTimeout(this.fixConfiguration(), timer);
             return;
         }
-        setTimeout(this.pushMessage(SYSTEM_MESSAGE.CONFIURATION_RELOADED), timer);
+        setTimeout(this.pushMessage(SYSTEM_MESSAGE.CONFIGURATION_RELOADED), timer);
     };
 }

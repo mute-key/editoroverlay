@@ -1,7 +1,7 @@
 import * as Type from './type/type';
 import * as vscode from 'vscode';
 import * as config from './configuration/load';
-import * as commands from './command/command';
+import * as commands from './command/register';
 import * as windowEvent from './event/window';
 import * as workspaceEvent from './event/workspace';
 import * as languagesEvent from './event/language';
@@ -9,6 +9,11 @@ import * as __0x from './constant/shared/numeric';
 import Error from './util/error';
 import { clearDecorationState } from './editor/editor';
 import { prepareRenderGroup, renderGroupIs } from './editor/editor';
+
+export interface CommandContext {
+    package: vscode.ExtensionContext,
+    configInfo: object
+}
 
 const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vscode.Disposable[] | void> => {
     try {
@@ -30,7 +35,7 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
             configInfo: configInfo,
             decorationState: loadConfig.decoration
         };
-
+        
         prepareRenderGroup(configInfo);
 
         if (activeEditor) {
@@ -38,17 +43,23 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
             loadConfig.decoration.appliedHighlight[0] = renderGroupIs(activeEditor, [__0x.cursorOnly]);
         }
 
-        return [
-            commands.setPreset(extensionContext),
-            commands.setOrientation(extensionContext),
-            commands.resetConfiguration(extensionContext),
+        const commandContext: CommandContext = {
+            package: extensionContext,
+            configInfo: configInfo
+        };
+
+        return [ // extension subscription list
+            commands.setPreset(commandContext),
+            commands.setColor(commandContext),
+            commands.setOrientation(commandContext),
+            commands.resetConfiguration(commandContext),
             windowEvent.windowStateChanged(eventContext),
             windowEvent.activeEditorChanged(eventContext),
             windowEvent.selectionChanged(eventContext),
             windowEvent.editorOptionChanged(eventContext),
             languagesEvent.diagnosticChanged(eventContext),
             workspaceEvent.configChanged(eventContext),
-        ]; // event functions
+        ]; 
     } catch (err) {
         console.error('Error during extension initialization: ', err);
         vscode.window.showErrorMessage('Extension initialization failed!', err);

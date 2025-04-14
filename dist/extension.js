@@ -1476,7 +1476,7 @@ var Error2 = class extends ErrorHelper {
       setTimeout(this.fixConfiguration(), timer);
       return;
     }
-    setTimeout(this.pushMessage("Config has been updated succeefully. Configuration Reloaded... (Messaage Dismiss in 2 second.)" /* CONFIURATION_RELOADED */), timer);
+    setTimeout(this.pushMessage("Config has been updated succeefully. Configuration Reloaded... (Messaage Dismiss in 2 second.)" /* CONFIGURATION_RELOADED */), timer);
   }
 };
 
@@ -1889,7 +1889,7 @@ var buildStatusTextState = (textOftarget, textOfSource, SelectionDecorationStyle
     setSelectionTextbuffer(hexKey, textOftarget[hexKey].contentText.length);
   });
 };
-var updateSelectionTextConfig = (configReady, configuratioChange = false) => {
+var updateSelectionTextConfig = (extenionName, configuratioChange = false) => {
   const SelectionDecorationConfig = { ...SELECTION_DECORAITON_CONFIG };
   const SelectionDecorationStyle = { ...SELECTION_DECORATION_STYLE };
   const bindTo = bindStatusContentTextState();
@@ -1897,7 +1897,7 @@ var updateSelectionTextConfig = (configReady, configuratioChange = false) => {
     functionOf: bindTo.functionOf,
     textOf: {}
   };
-  workspaceProxyConfiguration(SelectionDecorationConfig, configReady.name + "." + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST, bindToBuffer, SelectionTextRegex);
+  workspaceProxyConfiguration(SelectionDecorationConfig, extenionName + "." + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST, bindToBuffer, SelectionTextRegex);
   buildSelectionTextDecorationRenderOption(SelectionDecorationConfig, SelectionDecorationStyle);
   buildStatusTextState(bindTo.textOf, bindToBuffer.textOf, SelectionDecorationStyle, SelectionDecorationConfig.leftMargin);
   delete bindTo.functionOf;
@@ -2231,7 +2231,7 @@ var setCursorLine = (bindTo, visibility) => {
   bindTo.rangeFunction = createCursorRange;
   return;
 };
-var updateDiagnosticTextConfig = (configReady, configuratioChange = false) => {
+var updateDiagnosticTextConfig = (extenionName, configuratioChange = false) => {
   const diagnosticConfig = { ...DIAGNOSTIC_CONFIG };
   const diagnosticDecorationStyle = { ...DIAGNOSTIC_DECORATION_STYLE };
   const dignosticContentTextPreset = {
@@ -2249,7 +2249,7 @@ var updateDiagnosticTextConfig = (configReady, configuratioChange = false) => {
     clearOverrideState(bindTo);
     reloadContentText();
   }
-  workspaceProxyConfiguration(diagnosticConfig, configReady.name + "." + CONFIG_SECTION.diagnosticText, DIAGNOSTIC_CONTENT_TEXT_LIST, bindToBuffer, diagnosticTextRegex);
+  workspaceProxyConfiguration(diagnosticConfig, extenionName + "." + CONFIG_SECTION.diagnosticText, DIAGNOSTIC_CONTENT_TEXT_LIST, bindToBuffer, diagnosticTextRegex);
   const placeholderDigit = diagnosticConfig.visibility.overrideAllOk ? allOkOverride : allOkNoOverride;
   const diagnosticBiome = diagnosticVisibilityBiome(diagnosticConfig.visibility);
   const decorationStyleList = decorationStyleFromBiome(diagnosticBiome.workspace | diagnosticBiome.editor);
@@ -2294,10 +2294,10 @@ var loadConfiguration = (context2) => {
   writeEditorConfiguration();
   if (generateHighlightDecoration(configReady)) {
     if (configReady.generalConfigInfo.selectionTextEnabled) {
-      updateSelectionTextConfig(configReady);
+      updateSelectionTextConfig(configReady.name);
     }
     if (configReady.generalConfigInfo.diagnosticTextEnabled) {
-      updateDiagnosticTextConfig(configReady);
+      updateDiagnosticTextConfig(configReady.name);
     }
     return {
       config: configReady,
@@ -2307,17 +2307,17 @@ var loadConfiguration = (context2) => {
   return;
 };
 
-// src/command/command.ts
+// src/command/register.ts
 var vscode13 = __toESM(require("vscode"));
 
 // src/configuration/preset/preset.ts
 var vscode12 = __toESM(require("vscode"));
 var import_path = __toESM(require("path"));
 var import_promises = require("node:fs/promises");
-var clearConfiguration = (packageName) => (value) => {
+var clearConfiguration = (context2) => (value) => {
   if (value === "Yes" /* YES */) {
     for (const section of Object.values(CONFIG_SECTION)) {
-      const config = getWorkspaceConfiguration(packageName + "." + section);
+      const config = getWorkspaceConfiguration(context2.package.extension.packageJSON.name + "." + section);
       for (const key of Object.keys(config)) {
         if (typeof config[key] !== "function" && key.length > 0) {
           config.update(key, void 0, true);
@@ -2328,11 +2328,11 @@ var clearConfiguration = (packageName) => (value) => {
   }
 };
 var restoreToDefault = () => {
-  return vscode12.window.showWarningMessage("Are you sure to restore to default?" /* RESTORE_DEFAULT */, ...["Yes" /* YES */, "No" /* NO */]);
+  return overrideConfirm("Are you sure to restore to default?" /* RESTORE_DEFAULT */);
 };
 var readPreset = async (context2, presetFilename) => {
   try {
-    const jsonPath = context2.asAbsolutePath(import_path.default.join("resource/preset/", presetFilename));
+    const jsonPath = context2.package.asAbsolutePath(import_path.default.join("resource/preset/", presetFilename));
     const content = await (0, import_promises.readFile)(jsonPath, { encoding: "utf-8" });
     const data = JSON.parse(content);
     return data;
@@ -2340,28 +2340,10 @@ var readPreset = async (context2, presetFilename) => {
     console.error("Failed to load preset JSON:", error2);
   }
 };
-var overrideConfiguration = (packageName, json) => (selected) => {
+var writeConfiguration = (configInfo2, packageName, json) => (selected) => {
   if (selected === "Yes" /* YES */) {
-    writeSelectedPreset(packageName, json);
+    writeSelectedPreset(configInfo2, packageName, json);
   }
-};
-var actionConfirm = () => {
-  return vscode12.window.showWarningMessage("duplicate", ...["Yes" /* YES */, "No" /* NO */]);
-};
-var writeSelectedPreset = (packageName, json) => {
-  const config = getWorkspaceConfiguration(packageName);
-  for (const section of Object.keys(json)) {
-    config.update(section, json[section]);
-  }
-};
-var promptOientationList = async (context2) => {
-  const orientationList = [
-    "Horizontal" /* HORIZONTAL */,
-    "Vertical" /* VERTICAL */
-  ];
-  const orientation = await vscode12.window.showQuickPick(orientationList, {
-    placeHolder: " ... Select the Preset Orientation" /* PRESET_SELCT_ORIENTATION */
-  });
 };
 var checkDuplciateOverride = (packageName, json) => {
   const config = getWorkspaceConfiguration(packageName);
@@ -2373,44 +2355,94 @@ var checkDuplciateOverride = (packageName, json) => {
   }
   return false;
 };
-var promptPresetList = async (context2) => {
-  const presetList = [
-    "Recommended" /* RECOMMNEDED */,
-    "No Glpyph - Detailed" /* NO_GLYPH_D */,
-    "No Glpyph - Simple" /* NO_GLYPH_S */,
-    "Emoji - Detailed" /* EMOJI_D */,
-    "Emoji - Simple" /* EMOJI_S */
-  ];
-  const preset = await vscode12.window.showQuickPick(presetList, {
-    placeHolder: " ... Select the Preset" /* PRESET_SELCT */
+var writeSelectedPreset = (configInfo2, packageName, json) => {
+  const config = getWorkspaceConfiguration(packageName);
+  Object.keys(json).forEach((section) => {
+    if (typeof json[section] === "object") {
+      const proxy = config.inspect(section);
+      config.update(section, { ...proxy?.globalValue, ...json[section] }, true);
+    } else {
+      config.update(section, json[section], true);
+    }
   });
-  const fileList = {
-    ["Recommended" /* RECOMMNEDED */]: "recommended.json",
-    ["No Glpyph - Detailed" /* NO_GLYPH_D */]: "no-glyph-detailed.json",
-    ["No Glpyph - Simple" /* NO_GLYPH_S */]: "no-glyph-simple.json",
-    ["Emoji - Detailed" /* EMOJI_D */]: "emoji-detailed.json",
-    ["Emoji - Simple" /* EMOJI_S */]: "emoji-simple.json"
-  };
+  updateSelectionTextConfig(packageName, true);
+  updateDiagnosticTextConfig(packageName, true);
+  resetAllDecoration();
+  prepareRenderGroup(configInfo2);
+};
+var overrideConfirm = (message) => {
+  return vscode12.window.showWarningMessage(message, ...["Yes" /* YES */, "No" /* NO */]);
+};
+var quickPickWrapper = async (context2, presetList, fileList, placeHolder) => {
+  const preset = await vscode12.window.showQuickPick(presetList, { placeHolder });
   if (preset && Object.hasOwn(fileList, preset)) {
     const json = await readPreset(context2, fileList[preset]);
-    const packageName = context2.extension.packageJSON.name;
-    if (checkDuplciateOverride(context2.extension.packageJSON.name, json)) {
-      actionConfirm().then(overrideConfiguration(packageName, json ? json : {}));
+    const packageName = context2.package.extension.packageJSON.name;
+    const write = writeConfiguration(context2.configInfo, packageName, json ? json : {});
+    if (checkDuplciateOverride(context2.package.extension.packageJSON.name, json)) {
+      overrideConfirm("Configuration will be overwritten. Proceed?" /* OVERRIDE_CONFIRM */).then(write);
     } else {
-      writeSelectedPreset(packageName, json ? json : {});
+      write("Yes" /* YES */);
     }
   }
 };
+var quickPickPresetList = (context2) => {
+  quickPickWrapper(
+    context2,
+    [
+      "Detailed" /* DETAILED */,
+      "Shorten" /* SHORTEN */,
+      "No Glpyph - Detailed" /* NO_GLYPH_D */,
+      "No Glpyph - Simple" /* NO_GLYPH_S */,
+      "Emoji - Detailed" /* EMOJI_D */,
+      "Emoji - Simple" /* EMOJI_S */
+    ],
+    {
+      ["Detailed" /* DETAILED */]: "detailed.json",
+      ["Shorten" /* SHORTEN */]: "shorten.json",
+      ["No Glpyph - Detailed" /* NO_GLYPH_D */]: "no-glyph-detailed.json",
+      ["No Glpyph - Simple" /* NO_GLYPH_S */]: "no-glyph-simple.json",
+      ["Emoji - Detailed" /* EMOJI_D */]: "emoji-detailed.json",
+      ["Emoji - Simple" /* EMOJI_S */]: "emoji-simple.json"
+    },
+    " ... Select the Preset" /* PRESET_SELCT */
+  );
+};
+var quickPickOientationList = (context2) => {
+  quickPickWrapper(
+    context2,
+    ["Horizontal" /* HORIZONTAL */, "Vertical" /* VERTICAL */],
+    {
+      ["Horizontal" /* HORIZONTAL */]: "orientation-horizontal.json",
+      ["Vertical" /* VERTICAL */]: "orientation-vertical.json"
+    },
+    " ... Select the Preset Orientation" /* PRESET_SELCT_ORIENTATION */
+  );
+};
+var quickPickColorList = (context2) => {
+  quickPickWrapper(
+    context2,
+    ["Blur" /* BLUR */, "Sharp" /* SHARP */],
+    {
+      ["Blur" /* BLUR */]: "color-blur.json",
+      ["Sharp" /* SHARP */]: "color-sharp.json"
+    },
+    " ... Select the Color" /* PRESET_SELCT_COLOR */
+  );
+};
 
-// src/command/command.ts
+// src/command/register.ts
 var setPreset = (context2) => {
-  return vscode13.commands.registerCommand("cursorlinehighlight.applyPreset", () => promptPresetList(context2));
+  return vscode13.commands.registerCommand("cursorlinehighlight.applyPreset", () => quickPickPresetList(context2));
+};
+var setColor = (context2) => {
+  return vscode13.commands.registerCommand("cursorlinehighlight.setColor", () => quickPickColorList(context2));
 };
 var setOrientation = (context2) => {
-  return vscode13.commands.registerCommand("cursorlinehighlight.changeOrientation", () => promptOientationList(context2));
+  return vscode13.commands.registerCommand("cursorlinehighlight.setOrientation", () => quickPickOientationList(context2));
 };
 var resetConfiguration = (context2) => {
-  return vscode13.commands.registerCommand("cursorlinehighlight.restoreToDefaultConfiguration", () => restoreToDefault().then(clearConfiguration(context2.extension.packageJSON.name)));
+  return vscode13.commands.registerCommand("cursorlinehighlight.restoreToDefaultConfiguration", () => restoreToDefault().then(clearConfiguration(context2)));
 };
 
 // src/event/window.ts
@@ -2478,12 +2510,12 @@ var configChanged = ({ configInfo: configInfo2, decorationState: decorationState
             ["multiLine" /* MULTI_LINE */]: () => updateHighlightStyleConfiguration(configInfo2, multiLine),
             ["multiCursor" /* MULTI_CURSOR */]: () => updateHighlightStyleConfiguration(configInfo2, multiCursor),
             ["selectionText" /* SELECTION_TEXT */]: () => {
-              updateSelectionTextConfig(configInfo2, true);
-              updateDiagnosticTextConfig(configInfo2, true);
+              updateSelectionTextConfig(configInfo2.name, true);
+              updateDiagnosticTextConfig(configInfo2.name, true);
             },
             ["diagnosticText" /* DIAGNOSTIC_TEXT */]: () => {
-              updateSelectionTextConfig(configInfo2, true);
-              updateDiagnosticTextConfig(configInfo2, true);
+              updateSelectionTextConfig(configInfo2.name, true);
+              updateDiagnosticTextConfig(configInfo2.name, true);
             }
           };
           sectionChanged[section]();
@@ -2532,10 +2564,16 @@ var initialize = async (extensionContext) => {
       clearDecorationState(loadConfig.decoration);
       loadConfig.decoration.appliedHighlight[0] = renderGroupIs(activeEditor, [cursorOnly]);
     }
+    const commandContext = {
+      package: extensionContext,
+      configInfo: configInfo2
+    };
     return [
-      setPreset(extensionContext),
-      setOrientation(extensionContext),
-      resetConfiguration(extensionContext),
+      // extension subscription list
+      setPreset(commandContext),
+      setColor(commandContext),
+      setOrientation(commandContext),
+      resetConfiguration(commandContext),
       windowStateChanged(eventContext),
       activeEditorChanged(eventContext),
       selectionChanged2(eventContext),

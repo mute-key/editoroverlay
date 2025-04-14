@@ -32,6 +32,7 @@ const setSelectionTextbuffer = (hexKey: number, size: number): void => {
     if (hexKey === __0x.multiCursorText) {
         return;
     }
+    
     selectionTextBuffer[hexKey].splice(0);
     selectionTextBuffer[hexKey].push(...selectionContentText[hexKey].contentText.map((decorationOption, idx) => {
         decorationOptionBuffer.after = { ...decorationOption.after };
@@ -130,7 +131,6 @@ const contentTextFunc = (buffer: vscode.TextEditorDecorationType[], context, opt
 
 const cursorOnlySelection = (editor: vscode.TextEditor, previousKey: number[]): void => {
     clearSelectionTextBuffer(editor);
-    // clearBufferOfhexkey(editor.setDecorations, previousKey);
     const context = {
         idx: 0,
         editor: editor

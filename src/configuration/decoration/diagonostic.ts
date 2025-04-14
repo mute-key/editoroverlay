@@ -369,7 +369,7 @@ const setCursorLine = (bindTo, visibility) => {
     return;
 };
 
-const updateDiagnosticTextConfig = (configReady: Type.ConfigInfoReadyType, configuratioChange: boolean = false): boolean => {
+const updateDiagnosticTextConfig = (extenionName: string, configuratioChange: boolean = false): boolean => {
     const diagnosticConfig = { ...DIAGNOSTIC_CONFIG } as typeof DIAGNOSTIC_CONFIG;
     const diagnosticDecorationStyle = { ...DIAGNOSTIC_DECORATION_STYLE } as unknown as Type.DiagonosticDecorationStyle;
     const dignosticContentTextPreset = {
@@ -387,7 +387,7 @@ const updateDiagnosticTextConfig = (configReady: Type.ConfigInfoReadyType, confi
         clearOverrideState(bindTo);
         reloadContentText();
     }
-    workspaceProxyConfiguration(diagnosticConfig, configReady.name + '.' + CONFIG_SECTION.diagnosticText, DIAGNOSTIC_CONTENT_TEXT_LIST, bindToBuffer, regex.diagnosticTextRegex);
+    workspaceProxyConfiguration(diagnosticConfig, extenionName + '.' + CONFIG_SECTION.diagnosticText, DIAGNOSTIC_CONTENT_TEXT_LIST, bindToBuffer, regex.diagnosticTextRegex);
     const placeholderDigit = diagnosticConfig.visibility.overrideAllOk ? __0x.allOkOverride : __0x.allOkNoOverride;
     const diagnosticBiome = diagnosticVisibilityBiome(diagnosticConfig.visibility);
     const decorationStyleList = decorationStyleFromBiome(diagnosticBiome.workspace | diagnosticBiome.editor);

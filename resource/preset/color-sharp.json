@@ -1,0 +1,15 @@
+{
+    "diagnosticText.diagnosticPlaceholderTextStyle": {
+        "colorOpacity": 0.85,
+        "backgroundColor": "#182129",
+        "backgroundOpacity": 0.4
+    },
+    "diagnosticText.okNotationTextStyle": {
+        "color": "#8ae71d",
+        "colorOpacity": 0.5,
+        "backgroundOpacity": 1
+    },
+    "diagnosticText.okTextStyle": {
+        "color": "#8ae71d"
+    }
+}

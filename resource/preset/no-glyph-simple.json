@@ -1,0 +1,51 @@
+{
+    "selectionText.cursorOnlyText": "< Editing ... At (z.Col ${zCol})",
+    "selectionText.singleLineText": "< Selection ... Of (${char} Char)",
+    "selectionText.multiLineCursorText": "< Selection Cursor ... Of (${lc} Lc, ${char} Char)",
+    "selectionText.multiLineAnchorText": "< Selection Anchor ... Of (${lc} Lc, ${char} Char)",
+    "selectionText.multiCursorText": "< Multi Selection ... Of (${nth} of ${count}, with Total ${lc} Lc ${char} Char)",
+    "diagnosticText.allOkPlaceholderContentText": "- 🛠︎ [${allok}]",
+    "diagnosticText.problemPlaceholderContentText": "- 🛠︎ [${editor} / ${workspace}]",
+    "diagnosticText.allOkContentText": " ${pre}√OK${post} ",
+    "diagnosticText.okEditorContentText": "${pre} √OK${post}",
+    "diagnosticText.warningEditorContentText": " ${pre}⚠${wrn}${post} ",
+    "diagnosticText.warningWorkspaceContentText": "${pre}⚠${src}/${wrn}${post} ",
+    "diagnosticText.errorWorkspaceContentText": "${pre}✗${src}/${err}${post} ",
+    "diagnosticText.errorEditorContentText": " ${pre}✗${err}${post} ",
+    "cursorlinehighlight.diagnosticText.glyphList": {
+        "openningBracket": "(",
+        "closingBracket": ")",
+        "lineEqual": "AT",
+        "lineUp": "UP",
+        "lineDown": "DOWN"
+    },
+    "diagnosticText.diagnosticPlaceholderTextStyle": {
+        "colorOpacity": 0.7,
+        "backgroundColor": "#182129",
+        "backgroundOpacity": 0.5
+    },
+    "diagnosticText.okNotationTextStyle": {
+        "colorOpacity": 0.3,
+        "backgroundOpacity": 1,
+        "editorPrefix": " E:",
+        "allPrefix":"E / WS: "
+    },
+    "diagnosticText.warningTextStyle": {
+        "colorOpacity": 0.85
+    },
+    "diagnosticText.warningNotationTextStyle": {
+        "workspacePrefix": "WS.WARN:",
+        "colorOpacity": 0.4,
+        "backgroundOpacity": 1,
+        "editorPrefix": "E.WARN:"
+    },
+    "diagnosticText.errorTextStyle": {
+        "colorOpacity": 0.85
+    },
+    "diagnosticText.errorNotationTextStyle": {
+        "workspacePrefix": "WS.ERR:",
+        "colorOpacity": 0.4,
+        "backgroundOpacity": 1,
+        "editorPrefix": "E.ERR:"
+    }
+}

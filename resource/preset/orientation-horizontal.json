@@ -1,0 +1,7 @@
+{
+    "selectionText.leftMargin":"20px",
+    "diagnosticText.leftMargin": "18px",
+    "diagnosticText.visibility": {
+        "placeTextOnPreviousOrNextLine": "currentLine"
+    }
+}

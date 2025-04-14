@@ -143,8 +143,6 @@ const diagnosticOf = {
     },
 };
 
-
-
 type DecorationRenderAfterOption = {
     contentText?: string | any,
     color?: string,
