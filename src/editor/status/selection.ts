@@ -32,7 +32,7 @@ const setSelectionTextbuffer = (hexKey: number, size: number): void => {
     if (hexKey === __0x.multiCursorText) {
         return;
     }
-    
+
     selectionTextBuffer[hexKey].splice(0);
     selectionTextBuffer[hexKey].push(...selectionContentText[hexKey].contentText.map((decorationOption, idx) => {
         decorationOptionBuffer.after = { ...decorationOption.after };
@@ -223,14 +223,9 @@ const multilineSelection = (editor: vscode.TextEditor, previousKey: number[]): v
 
 const multiCursorSelection = (editor: vscode.TextEditor, previousKey: number[]): void => {
     clearBufferOfhexkey(editor.setDecorations, previousKey);
+    const selectionReorder = {};
     const statusLine: number[] = [];
     const selectionText = selectionContentText[__0x.multiCursorText].contentText;
-    const context: Type.ContentTextFuncContext = {
-        idx: 0,
-        editor: editor
-    };
-
-    const selectionReorder = {};
 
     let lineIdx = 0;
     while (lineIdx < editor.selections.length) {
@@ -253,6 +248,10 @@ const multiCursorSelection = (editor: vscode.TextEditor, previousKey: number[]):
     }
 
     let cursorIdx = 1;
+    const context: Type.ContentTextFuncContext = {
+        idx: 0,
+        editor: editor
+    };
 
     for (const lineKey of Object.keys(selectionReorder).map(line => Number(line)).sort(compareNumbers)) {
 

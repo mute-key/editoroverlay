@@ -1,4 +1,5 @@
 {
+    ".cursorOnly.backgroundColor": "null",
     "selectionText.cursorOnlyText": "< Editing ... At (z.Col ${zCol})",
     "selectionText.singleLineText": "< Selection ... Of (${char} Char)",
     "selectionText.multiLineCursorText": "< Selection Cursor ... Of (${lc} Lc, ${char} Char)",
@@ -25,16 +26,17 @@
         "backgroundOpacity": 0.4
     },
     "diagnosticText.okNotationTextStyle": {
+        "editorPrefix": " ACTIVE:",
+        "allPrefix": "ALL:",
         "color": "#8ae71d",
         "colorOpacity": 0.45,
-        "backgroundOpacity": 1,
-        "editorPrefix": " ACTIVE:",
-        "allPrefix": "ALL:"
+        "backgroundOpacity": 1
     },
     "diagnosticText.warningTextStyle": {
         "colorOpacity": 0.85
     },
     "diagnosticText.warningNotationTextStyle": {
+        "editorPrefix": " WARN:",
         "workspacePrefix": " WARN:",
         "colorOpacity": 0.4,
         "backgroundOpacity": 1
@@ -43,9 +45,9 @@
         "colorOpacity": 0.85
     },
     "diagnosticText.errorNotationTextStyle": {
+        "editorPrefix": " ERR:",
         "workspacePrefix": " ERR:",
         "colorOpacity": 0.4,
-        "backgroundOpacity": 1,
-        "editorPrefix": " ERR:"
+        "backgroundOpacity": 1
     }
 }

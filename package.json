@@ -52,19 +52,27 @@
         "commands": [
             {
                 "command": "cursorlinehighlight.applyPreset",
-                "title": "CursorLine Highlight: Apply Preset Configuration"
+                "title": "CursorLine Highlight: Apply Preset Configuration",
+                "shortTitle": "Preset",
+                "order": 0
             },
             {
                 "command": "cursorlinehighlight.setColor",
-                "title": "CursorLine Highlight: Apply Color Set Configuration"
+                "title": "CursorLine Highlight: Set Color Configuration",
+                "shortTitle": "Color",
+                "order": 1
             },
             {
                 "command": "cursorlinehighlight.setOrientation",
-                "title": "CursorLine Highlight: Set Orientation Configuration"
+                "title": "CursorLine Highlight: Set Orientation Configuration",
+                "shortTitle": "Orientation",
+                "order": 2
             },
             {
                 "command": "cursorlinehighlight.restoreToDefaultConfiguration",
-                "title": "CursorLine Highlight: Reset User Configuration"
+                "title": "CursorLine Highlight: Reset User Configuration",
+                "shortTitle": "Restore",
+                "order": 3
             }
         ],
         "configuration": [

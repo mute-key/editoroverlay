@@ -864,13 +864,9 @@ var multilineSelection = (editor2, previousKey) => {
 };
 var multiCursorSelection = (editor2, previousKey) => {
   clearBufferOfhexkey(editor2.setDecorations, previousKey);
+  const selectionReorder = {};
   const statusLine = [];
   const selectionText = selectionContentText[multiCursorText].contentText;
-  const context2 = {
-    idx: 0,
-    editor: editor2
-  };
-  const selectionReorder = {};
   let lineIdx = 0;
   while (lineIdx < editor2.selections.length) {
     const lineNo = editor2.selections[lineIdx].start.line;
@@ -889,6 +885,10 @@ var multiCursorSelection = (editor2, previousKey) => {
     lineIdx++;
   }
   let cursorIdx = 1;
+  const context2 = {
+    idx: 0,
+    editor: editor2
+  };
   for (const lineKey of Object.keys(selectionReorder).map((line) => Number(line)).sort(compareNumbers)) {
     const selectionTextInfo = selectionText.map((selection) => vscode3.window.createTextEditorDecorationType(selection));
     const option = {

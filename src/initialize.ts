@@ -47,7 +47,7 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
             package: extensionContext,
             configInfo: configInfo
         };
-
+        
         return [ // extension subscription list
             commands.setPreset(commandContext),
             commands.setColor(commandContext),
