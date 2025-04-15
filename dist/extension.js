@@ -91,6 +91,7 @@ var editorWarnErrWorkspaceWarnErr = 218 /* E_WARN_ERR_W_WARN_ERR */;
 var noEvent = 4097 /* NO_EVENT */;
 var diagnosticChanged = 4098 /* DIAGNOSTIC_CHANGED */;
 var selectionChanged = 4099 /* SELECTION_CHANGED */;
+var configruationCallerPreset = 4353 /* PRESET */;
 
 // src/constant/config/object.ts
 var CONFIG_SECTION = {
@@ -105,6 +106,7 @@ var CONFIG_SECTION = {
 var CONFIG_INFO = {
   name: void 0,
   renderLimiter: void 0,
+  updateCaller: void 0,
   generalConfigInfo: {
     borderOpacity: void 0,
     backgroundOpacity: void 0,
@@ -477,6 +479,7 @@ var DIAGNOSTIC_GLYPH2 = {
 };
 var DIAGNOSTIC_ENTRY_LIST = [
   allOkOverride,
+  allOkNoOverride,
   ...DIAGNOSTIC_PROBLEM_LIST
 ];
 var DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET = {
@@ -1073,11 +1076,11 @@ var setDiagonosticTextbuffer = (hexKey, decorationType) => {
   diagnosticTextBuffer[hexKey].push(...decorationType);
 };
 var reloadContentText = () => {
-  DIAGNOSTIC_ENTRY_LIST.forEach((hexKey) => {
+  for (const hexKey of DIAGNOSTIC_ENTRY_LIST) {
     diagnosticTextBuffer[hexKey].forEach((decorationType) => decorationType.dispose());
-    diagnosticContentText[hexKey].splice(0);
     diagnosticTextBuffer[hexKey].splice(0);
-  });
+    diagnosticContentText[hexKey].splice(0);
+  }
 };
 var diagnosticVisibility = { ...DIAGNOSTIC_VISIBILITY_CONFIG };
 var allOkOf = {
@@ -2334,8 +2337,7 @@ var readPreset = async (context2, presetFilename) => {
   try {
     const jsonPath = context2.package.asAbsolutePath(import_path.default.join("resource/preset/", presetFilename));
     const content = await (0, import_promises.readFile)(jsonPath, { encoding: "utf-8" });
-    const data = JSON.parse(content);
-    return data;
+    return JSON.parse(content);
   } catch (error2) {
     console.error("Failed to load preset JSON:", error2);
   }
@@ -2355,20 +2357,25 @@ var checkDuplciateOverride = (packageName, json) => {
   }
   return false;
 };
-var writeSelectedPreset = (configInfo2, packageName, json) => {
+var writeSelectedPreset = async (configInfo2, packageName, json) => {
+  configInfo2.updateCaller = configruationCallerPreset;
+  vscode12.commands.executeCommand("workbench.view.explorer");
   const config = getWorkspaceConfiguration(packageName);
-  Object.keys(json).forEach((section) => {
-    if (typeof json[section] === "object") {
-      const proxy = config.inspect(section);
-      config.update(section, { ...proxy?.globalValue, ...json[section] }, true);
+  const section = Object.keys(json);
+  let ridx = section.length;
+  while (ridx--) {
+    if (typeof json[section[ridx]] === "object") {
+      const proxy = config.inspect(section[ridx]);
+      await config.update(section[ridx], { ...proxy?.globalValue, ...json[section[ridx]] }, true);
     } else {
-      config.update(section, json[section], true);
+      await config.update(section[ridx], json[section[ridx]], true);
     }
-  });
-  updateSelectionTextConfig(packageName, true);
-  updateDiagnosticTextConfig(packageName, true);
+  }
   resetAllDecoration();
+  updateSelectionTextConfig(configInfo2.name, true);
+  updateDiagnosticTextConfig(configInfo2.name, true);
   prepareRenderGroup(configInfo2);
+  configInfo2.updateCaller = void 0;
 };
 var overrideConfirm = (message) => {
   return vscode12.window.showWarningMessage(message, ...["Yes" /* YES */, "No" /* NO */]);
@@ -2382,7 +2389,7 @@ var quickPickWrapper = async (context2, presetList, fileList, placeHolder) => {
     if (checkDuplciateOverride(context2.package.extension.packageJSON.name, json)) {
       overrideConfirm("Configuration will be overwritten. Proceed?" /* OVERRIDE_CONFIRM */).then(write);
     } else {
-      write("Yes" /* YES */);
+      await write("Yes" /* YES */);
     }
   }
 };
@@ -2494,38 +2501,39 @@ var selectionChanged2 = ({ decorationState: decorationState2 }) => {
 
 // src/event/workspace.ts
 var vscode15 = __toESM(require("vscode"));
+
+// src/configuration/shared/update.ts
+var configurationChanged = (configInfo2, section) => {
+  try {
+    Error2.configurationUpdated();
+    const sectionChanged = {
+      ["general" /* GENERAL */]: () => updateGeneralConfig(configInfo2),
+      ["cursorOnly" /* CURSOR_ONLY */]: () => updateHighlightStyleConfiguration(configInfo2, cursorOnly),
+      ["singleLine" /* SINGLE_LINE */]: () => updateHighlightStyleConfiguration(configInfo2, singleLine),
+      ["multiLine" /* MULTI_LINE */]: () => updateHighlightStyleConfiguration(configInfo2, multiLine),
+      ["multiCursor" /* MULTI_CURSOR */]: () => updateHighlightStyleConfiguration(configInfo2, multiCursor),
+      ["selectionText" /* SELECTION_TEXT */]: () => updateSelectionTextConfig(configInfo2.name, true),
+      ["diagnosticText" /* DIAGNOSTIC_TEXT */]: () => updateDiagnosticTextConfig(configInfo2.name, true)
+    };
+    resetAllDecoration();
+    sectionChanged[section]();
+    sectionChanged["general" /* GENERAL */]();
+  } catch (e) {
+    console.log("confugration update failed. Will notify user.", e);
+  } finally {
+    prepareRenderGroup(configInfo2);
+  }
+};
+
+// src/event/workspace.ts
 var configChanged = ({ configInfo: configInfo2, decorationState: decorationState2 }) => {
   return vscode15.workspace.onDidChangeConfiguration((event) => {
     if (event) {
-      const section = Object.keys(CONFIG_SECTION).find((section2) => {
-        return event.affectsConfiguration(configInfo2.name + "." + section2);
-      });
-      if (section) {
-        Error2.configurationUpdated();
-        try {
-          const sectionChanged = {
-            ["general" /* GENERAL */]: () => updateGeneralConfig(configInfo2),
-            ["cursorOnly" /* CURSOR_ONLY */]: () => updateHighlightStyleConfiguration(configInfo2, cursorOnly),
-            ["singleLine" /* SINGLE_LINE */]: () => updateHighlightStyleConfiguration(configInfo2, singleLine),
-            ["multiLine" /* MULTI_LINE */]: () => updateHighlightStyleConfiguration(configInfo2, multiLine),
-            ["multiCursor" /* MULTI_CURSOR */]: () => updateHighlightStyleConfiguration(configInfo2, multiCursor),
-            ["selectionText" /* SELECTION_TEXT */]: () => {
-              updateSelectionTextConfig(configInfo2.name, true);
-              updateDiagnosticTextConfig(configInfo2.name, true);
-            },
-            ["diagnosticText" /* DIAGNOSTIC_TEXT */]: () => {
-              updateSelectionTextConfig(configInfo2.name, true);
-              updateDiagnosticTextConfig(configInfo2.name, true);
-            }
-          };
-          sectionChanged[section]();
-          sectionChanged["general" /* GENERAL */]();
-        } catch (e) {
-          console.log("confugration update failed. Will notify user.", e);
-        } finally {
-          resetAllDecoration();
-          prepareRenderGroup(configInfo2);
-        }
+      if (configInfo2.updateCaller === void 0) {
+        const section = Object.keys(CONFIG_SECTION).find((section2) => {
+          return event.affectsConfiguration(configInfo2.name + "." + section2);
+        });
+        section && configurationChanged(configInfo2, section);
       }
     }
   });

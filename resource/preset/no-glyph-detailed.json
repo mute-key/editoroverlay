@@ -12,8 +12,8 @@
     "diagnosticText.warningWorkspaceContentText": "${pre}${src}/${wrn}${post}",
     "diagnosticText.errorWorkspaceContentText": "${pre}${src}/${err}${post} ",
     "diagnosticText.errorEditorContentText": " ${pre}${err}${post}",
-    "cursorlinehighlight.diagnosticText.glyphList": {
-        "openningBracket": "(",
+    "diagnosticText.glyphList": {
+        "openningBracket": " (",
         "closingBracket": ")",
         "lineEqual": "AT",
         "lineUp": "UP",

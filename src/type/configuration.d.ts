@@ -90,11 +90,8 @@ type RegexSplitType = {
 type ConfigInfoReadyType = {
     name: string
     renderLimiter: number | any,
-    rendered: any,
-    configHashKey: string,
-    borderPositionInfo: DecorationType.BorderPositionInfoType
+    updateCaller?: number,
     generalConfigInfo: GeneralConfigInfoType
-    selectionTextConfig: StatusType.StatusTextInfo,
     configError: string[],
 } & StatusType.ConfigInfoType
 

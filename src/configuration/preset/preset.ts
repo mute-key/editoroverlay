@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as __0x from '../../constant/shared/numeric';
 import path from 'path';
 import { COLOR, CONFIRM, PRESET, PRESET_ORIENTATION, SYSTEM_MESSAGE } from '../../constant/config/enum';
 import { CONFIG_SECTION } from '../../constant/config/object';
@@ -31,8 +32,7 @@ const readPreset = async (context: CommandContext, presetFilename): Promise<obje
     try {
         const jsonPath = context.package.asAbsolutePath(path.join('resource/preset/', presetFilename));
         const content = await readFile(jsonPath, { encoding: 'utf-8' });
-        const data = JSON.parse(content);
-        return data;
+        return JSON.parse(content);
     } catch (error) {
         console.error('Failed to load preset JSON:', error);
     }
@@ -55,22 +55,25 @@ const checkDuplciateOverride = (packageName: string, json: any): boolean => {
     return false;
 };
 
-const writeSelectedPreset = (configInfo: object, packageName: string, json: object): void => {
-
+const writeSelectedPreset = async (configInfo: any, packageName: string, json: object): Promise<void> => {
+    configInfo.updateCaller = __0x.configruationCallerPreset; // block all configuration change event trigger
+    vscode.commands.executeCommand("workbench.view.explorer");
     const config = getWorkspaceConfiguration(packageName);
-    Object.keys(json).forEach(section => {
-        if (typeof json[section] === 'object') { // configuration proxy object 
-            const proxy: any = config.inspect<object>(section);
-            config.update(section, { ...proxy?.globalValue, ...json[section] }, true);
+    const section = Object.keys(json);
+    let ridx = section.length;
+    while (ridx--) {
+        if (typeof json[section[ridx]] === 'object') { // configuration proxy object 
+            const proxy: any = config.inspect<object>(section[ridx]);
+            await config.update(section[ridx], { ...proxy?.globalValue, ...json[section[ridx]] }, true);
         } else {
-            config.update(section, json[section], true);
+            await config.update(section[ridx], json[section[ridx]], true);
         }
-    });
-
-    updateSelectionTextConfig(packageName, true);
-    updateDiagnosticTextConfig(packageName, true);
+    }
     resetAllDecoration();
+    updateSelectionTextConfig(configInfo.name, true);
+    updateDiagnosticTextConfig(configInfo.name, true);
     prepareRenderGroup(configInfo as any);
+    configInfo.updateCaller = undefined;
 };
 
 const overrideConfirm = (message: string): Thenable<string | undefined> => {
@@ -88,7 +91,7 @@ const quickPickWrapper = async (context: CommandContext, presetList: string[], f
         if (checkDuplciateOverride(context.package.extension.packageJSON.name, json)) {
             overrideConfirm(SYSTEM_MESSAGE.OVERRIDE_CONFIRM).then(write);
         } else {
-            write(CONFIRM.YES);
+            await write(CONFIRM.YES);
         }
     }
 };

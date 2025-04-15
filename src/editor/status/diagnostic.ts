@@ -36,11 +36,11 @@ const setDiagonosticTextbuffer = (hexKey: number, decorationType) => {
 };
 
 const reloadContentText = (): void => {
-    DIAGNOSTIC_ENTRY_LIST.forEach(hexKey => {
+    for (const hexKey of DIAGNOSTIC_ENTRY_LIST) {
         diagnosticTextBuffer[hexKey].forEach(decorationType => decorationType.dispose());
-        diagnosticContentText[hexKey].splice(0);
         diagnosticTextBuffer[hexKey].splice(0);
-    });
+        diagnosticContentText[hexKey].splice(0);
+    }
 };
 
 const diagnosticVisibility = { ...DIAGNOSTIC_VISIBILITY_CONFIG } as Type.DiagnosticVisibilityType;
