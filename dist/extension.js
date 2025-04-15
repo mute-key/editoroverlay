@@ -670,9 +670,7 @@ var hexToRgbaStringLiteral = (hex, opacity = 0.6, defaultValue, opacityDefault) 
   const b = parseInt(hex.substring(4, 6), 16);
   return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 };
-var compareNumbers = (a, b) => {
-  return a - b;
-};
+var compareNumbers = (a, b) => a - b;
 
 // src/editor/status/selection.ts
 var selectionContentText = {
@@ -2332,7 +2330,7 @@ var restoreToDefault = () => {
 };
 var readPreset = async (context2, presetFilename) => {
   try {
-    const jsonPath = context2.package.asAbsolutePath(import_path.default.join("resource/preset/", presetFilename));
+    const jsonPath = context2.package.asAbsolutePath(import_path.default.join("resource/preset/" /* PRESET_ROOT */, presetFilename));
     const content = await (0, import_promises.readFile)(jsonPath, { encoding: "utf-8" });
     const data = JSON.parse(content);
     return data;
@@ -2342,7 +2340,7 @@ var readPreset = async (context2, presetFilename) => {
 };
 var writeConfiguration = (configInfo2, packageName, json) => (selected) => {
   if (selected === "Yes" /* YES */) {
-    writeSelectedPreset(configInfo2, packageName, json);
+    return writeSelectedPreset(configInfo2, packageName, json);
   }
 };
 var checkDuplciateOverride = (packageName, json) => {
@@ -2355,20 +2353,25 @@ var checkDuplciateOverride = (packageName, json) => {
   }
   return false;
 };
-var writeSelectedPreset = (configInfo2, packageName, json) => {
+var writeSelectedPreset = async (configInfo2, packageName, json) => {
+  configInfo2.updateCaller = void 0;
+  vscode12.commands.executeCommand("workbench.view.explorer");
   const config = getWorkspaceConfiguration(packageName);
-  Object.keys(json).forEach((section) => {
-    if (typeof json[section] === "object") {
-      const proxy = config.inspect(section);
-      config.update(section, { ...proxy?.globalValue, ...json[section] }, true);
+  const section = Object.keys(json);
+  let ridx = section.length;
+  while (ridx--) {
+    if (typeof json[section[ridx]] === "object") {
+      const proxy = config.inspect(section[ridx]);
+      await config.update(section[ridx], { ...proxy?.globalValue, ...json[section[ridx]] }, true);
     } else {
       config.update(section, json[section], true);
     }
-  });
+  }
+  resetAllDecoration();
   updateSelectionTextConfig(packageName, true);
   updateDiagnosticTextConfig(packageName, true);
-  resetAllDecoration();
   prepareRenderGroup(configInfo2);
+  configInfo2.updateCaller = void 0;
 };
 var overrideConfirm = (message) => {
   return vscode12.window.showWarningMessage(message, ...["Yes" /* YES */, "No" /* NO */]);
@@ -2376,11 +2379,11 @@ var overrideConfirm = (message) => {
 var quickPickWrapper = async (context2, presetList, fileList, placeHolder) => {
   const preset = await vscode12.window.showQuickPick(presetList, { placeHolder });
   if (preset && Object.hasOwn(fileList, preset)) {
-    const json = await readPreset(context2, fileList[preset]);
     const packageName = context2.package.extension.packageJSON.name;
+    const json = await readPreset(context2, fileList[preset]);
     const write = writeConfiguration(context2.configInfo, packageName, json ? json : {});
     if (checkDuplciateOverride(context2.package.extension.packageJSON.name, json)) {
-      overrideConfirm("Configuration will be overwritten. Proceed?" /* OVERRIDE_CONFIRM */).then(write);
+      await overrideConfirm("Configuration will be overwritten. Proceed?" /* OVERRIDE_CONFIRM */).then(write);
     } else {
       write("Yes" /* YES */);
     }
@@ -2398,12 +2401,12 @@ var quickPickPresetList = (context2) => {
       "Emoji - Simple" /* EMOJI_S */
     ],
     {
-      ["Detailed" /* DETAILED */]: "detailed.json",
-      ["Shorten" /* SHORTEN */]: "shorten.json",
-      ["No Glpyph - Detailed" /* NO_GLYPH_D */]: "no-glyph-detailed.json",
-      ["No Glpyph - Simple" /* NO_GLYPH_S */]: "no-glyph-simple.json",
-      ["Emoji - Detailed" /* EMOJI_D */]: "emoji-detailed.json",
-      ["Emoji - Simple" /* EMOJI_S */]: "emoji-simple.json"
+      ["Detailed" /* DETAILED */]: "detailed.json" /* PRESET_DETAILED */,
+      ["Shorten" /* SHORTEN */]: "shorten.json" /* PRESET_SHORTEN */,
+      ["No Glpyph - Detailed" /* NO_GLYPH_D */]: "no-glyph-detailed.json" /* PRESET_NO_GLYPH_D */,
+      ["No Glpyph - Simple" /* NO_GLYPH_S */]: "no-glyph-simple.json" /* PRESET_NO_GLYPH_S */,
+      ["Emoji - Detailed" /* EMOJI_D */]: "emoji-detailed.json" /* PRESET_EMOJI_D */,
+      ["Emoji - Simple" /* EMOJI_S */]: "emoji-simple.json" /* PRESET_EMOJI_S */
     },
     " ... Select the Preset" /* PRESET_SELCT */
   );
@@ -2413,8 +2416,8 @@ var quickPickOientationList = (context2) => {
     context2,
     ["Horizontal" /* HORIZONTAL */, "Vertical" /* VERTICAL */],
     {
-      ["Horizontal" /* HORIZONTAL */]: "orientation-horizontal.json",
-      ["Vertical" /* VERTICAL */]: "orientation-vertical.json"
+      ["Horizontal" /* HORIZONTAL */]: "orientation-horizontal.json" /* PRESET_ORIENTATION_HORIZONTAL */,
+      ["Vertical" /* VERTICAL */]: "orientation-vertical.json" /* PRESET_ORIENTATION_VERTICAL */
     },
     " ... Select the Preset Orientation" /* PRESET_SELCT_ORIENTATION */
   );
@@ -2422,10 +2425,10 @@ var quickPickOientationList = (context2) => {
 var quickPickColorList = (context2) => {
   quickPickWrapper(
     context2,
-    ["Blur" /* BLUR */, "Sharp" /* SHARP */],
+    ["Dim" /* DIM */, "Bright" /* BRIGHT */],
     {
-      ["Blur" /* BLUR */]: "color-blur.json",
-      ["Sharp" /* SHARP */]: "color-sharp.json"
+      ["Dim" /* DIM */]: "color-dim.json" /* COLOR_DIM */,
+      ["Bright" /* BRIGHT */]: "color-bright.json" /* COLOR_BRIGHT */
     },
     " ... Select the Color" /* PRESET_SELCT_COLOR */
   );

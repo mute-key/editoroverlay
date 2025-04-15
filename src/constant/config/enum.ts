@@ -17,8 +17,8 @@ export const enum PRESET_ORIENTATION {
 }
 
 export const enum COLOR {
-    BLUR = "Blur",
-    SHARP = "Sharp"
+    DIM = "Dim",
+    BRIGHT = "Bright"
 }
 
 export const enum SYSTEM_MESSAGE {
@@ -30,6 +30,20 @@ export const enum SYSTEM_MESSAGE {
     PRESET_SELCT_ORIENTATION = " ... Select the Preset Orientation",
     PRESET_SELCT_COLOR = " ... Select the Color",
     OVERRIDE_CONFIRM = "Configuration will be overwritten. Proceed?"
+}
+
+export const enum SYSTEM_PATH {
+    PRESET_ROOT = "resource/preset/",
+    PRESET_DETAILED = "detailed.json",
+    PRESET_SHORTEN = "shorten.json",
+    PRESET_NO_GLYPH_D = "no-glyph-detailed.json",
+    PRESET_NO_GLYPH_S = "no-glyph-simple.json",
+    PRESET_EMOJI_D = "emoji-detailed.json",
+    PRESET_EMOJI_S = "emoji-simple.json",
+    COLOR_DIM = "color-dim.json",
+    COLOR_BRIGHT = "color-bright.json",
+    PRESET_ORIENTATION_HORIZONTAL = "orientation-horizontal.json",
+    PRESET_ORIENTATION_VERTICAL = "orientation-vertical.json",
 }
 
 export const enum SELECTION_TYPE {
@@ -169,7 +183,7 @@ export const enum DIAGNOSTIC_TEXT_STYLE_KEY {
     WARNING_NOTATION_TEXT_STYLE = "warningNotationTextStyle",
     WARNINGTEXT_STYLE = "warningTextStyle",
     ERROR_NOTATION_TEXT_STYLE = "errorNotationTextStyle",
-    ERROR_TEXT_STYLE = "errorTextStyle", 
+    ERROR_TEXT_STYLE = "errorTextStyle",
 }
 
 export const enum DIAGNOSTIC_BIOME {

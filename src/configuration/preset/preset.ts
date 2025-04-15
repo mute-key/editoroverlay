@@ -1,12 +1,13 @@
 import * as vscode from 'vscode';
+import * as __0x from '../../constant/shared/numeric';
 import path from 'path';
-import { COLOR, CONFIRM, PRESET, PRESET_ORIENTATION, SYSTEM_MESSAGE } from '../../constant/config/enum';
+import { COLOR, CONFIRM, PRESET, PRESET_ORIENTATION, SYSTEM_MESSAGE, SYSTEM_PATH } from '../../constant/config/enum';
 import { CONFIG_SECTION } from '../../constant/config/object';
 import { getWorkspaceConfiguration } from '../shared/configuration';
-import { readFile } from 'node:fs/promises';
 import { prepareRenderGroup, resetAllDecoration } from '../../editor/editor';
 import { updateSelectionTextConfig } from '../decoration/selection';
 import { updateDiagnosticTextConfig } from '../decoration/diagonostic';
+import { readFile } from 'node:fs/promises';
 import type { CommandContext } from "../../initialize";
 
 const clearConfiguration = (context: CommandContext) => (value: string | undefined): void => {
@@ -29,7 +30,7 @@ const restoreToDefault = (): Thenable<string | undefined> => {
 
 const readPreset = async (context: CommandContext, presetFilename): Promise<object | undefined> => {
     try {
-        const jsonPath = context.package.asAbsolutePath(path.join('resource/preset/', presetFilename));
+        const jsonPath = context.package.asAbsolutePath(path.join(SYSTEM_PATH.PRESET_ROOT, presetFilename));
         const content = await readFile(jsonPath, { encoding: 'utf-8' });
         const data = JSON.parse(content);
         return data;
@@ -38,9 +39,9 @@ const readPreset = async (context: CommandContext, presetFilename): Promise<obje
     }
 };
 
-const writeConfiguration = (configInfo: object, packageName: string, json: object) => (selected: string | undefined): void => {
+const writeConfiguration = (configInfo: object, packageName: string, json: object) => (selected: string | undefined): Promise<void> | undefined => {
     if (selected === CONFIRM.YES) {
-        writeSelectedPreset(configInfo, packageName, json);
+        return writeSelectedPreset(configInfo, packageName, json);
     }
 };
 
@@ -55,22 +56,29 @@ const checkDuplciateOverride = (packageName: string, json: any): boolean => {
     return false;
 };
 
-const writeSelectedPreset = (configInfo: object, packageName: string, json: object): void => {
+const writeSelectedPreset = async (configInfo: any, packageName: string, json: object): Promise<void> => {
 
+    configInfo.updateCaller = __0x.configruationCallerPreset; // block all configuration change event trigger
+    vscode.commands.executeCommand("workbench.view.explorer");
     const config = getWorkspaceConfiguration(packageName);
-    Object.keys(json).forEach(section => {
-        if (typeof json[section] === 'object') { // configuration proxy object 
-            const proxy: any = config.inspect<object>(section);
-            config.update(section, { ...proxy?.globalValue, ...json[section] }, true);
+    const section = Object.keys(json);
+    let ridx = section.length;
+    
+    while (ridx--) {
+        if (typeof json[section[ridx]] === 'object') { // configuration proxy object 
+            const proxy: any = config.inspect<object>(section[ridx]);
+            await config.update(section[ridx], { ...proxy?.globalValue, ...json[section[ridx]] }, true);
         } else {
             config.update(section, json[section], true);
         }
-    });
+    }
 
+    resetAllDecoration();
     updateSelectionTextConfig(packageName, true);
     updateDiagnosticTextConfig(packageName, true);
-    resetAllDecoration();
     prepareRenderGroup(configInfo as any);
+
+    configInfo.updateCaller = undefined;
 };
 
 const overrideConfirm = (message: string): Thenable<string | undefined> => {
@@ -81,12 +89,12 @@ const quickPickWrapper = async (context: CommandContext, presetList: string[], f
     const preset = await vscode.window.showQuickPick(presetList, { placeHolder: placeHolder });
     if (preset && Object.hasOwn(fileList, preset)) {
 
-        const json = await readPreset(context, fileList[preset]);
         const packageName = context.package.extension.packageJSON.name;
+        const json = await readPreset(context, fileList[preset]);
         const write = writeConfiguration(context.configInfo, packageName, json ? json : {});
 
         if (checkDuplciateOverride(context.package.extension.packageJSON.name, json)) {
-            overrideConfirm(SYSTEM_MESSAGE.OVERRIDE_CONFIRM).then(write);
+            await overrideConfirm(SYSTEM_MESSAGE.OVERRIDE_CONFIRM).then(write);
         } else {
             write(CONFIRM.YES);
         }
@@ -99,12 +107,12 @@ const quickPickPresetList = (context: CommandContext): void => {
         [PRESET.DETAILED, PRESET.SHORTEN, PRESET.NO_GLYPH_D, PRESET.NO_GLYPH_S, PRESET.EMOJI_D, PRESET.EMOJI_S
         ],
         {
-            [PRESET.DETAILED]: "detailed.json",
-            [PRESET.SHORTEN]: "shorten.json",
-            [PRESET.NO_GLYPH_D]: "no-glyph-detailed.json",
-            [PRESET.NO_GLYPH_S]: "no-glyph-simple.json",
-            [PRESET.EMOJI_D]: "emoji-detailed.json",
-            [PRESET.EMOJI_S]: "emoji-simple.json",
+            [PRESET.DETAILED]: SYSTEM_PATH.PRESET_DETAILED,
+            [PRESET.SHORTEN]: SYSTEM_PATH.PRESET_SHORTEN,
+            [PRESET.NO_GLYPH_D]: SYSTEM_PATH.PRESET_NO_GLYPH_D,
+            [PRESET.NO_GLYPH_S]: SYSTEM_PATH.PRESET_NO_GLYPH_S,
+            [PRESET.EMOJI_D]: SYSTEM_PATH.PRESET_EMOJI_D,
+            [PRESET.EMOJI_S]: SYSTEM_PATH.PRESET_EMOJI_S
         },
         SYSTEM_MESSAGE.PRESET_SELCT);
 };
@@ -114,8 +122,8 @@ const quickPickOientationList = (context: CommandContext): void => {
         context,
         [PRESET_ORIENTATION.HORIZONTAL, PRESET_ORIENTATION.VERTICAL],
         {
-            [PRESET_ORIENTATION.HORIZONTAL]: "orientation-horizontal.json",
-            [PRESET_ORIENTATION.VERTICAL]: "orientation-vertical.json",
+            [PRESET_ORIENTATION.HORIZONTAL]: SYSTEM_PATH.PRESET_ORIENTATION_HORIZONTAL,
+            [PRESET_ORIENTATION.VERTICAL]: SYSTEM_PATH.PRESET_ORIENTATION_VERTICAL,
         },
         SYSTEM_MESSAGE.PRESET_SELCT_ORIENTATION);
 };
@@ -123,15 +131,13 @@ const quickPickOientationList = (context: CommandContext): void => {
 const quickPickColorList = (context: CommandContext): void => {
     quickPickWrapper(
         context,
-        [COLOR.BLUR, COLOR.SHARP],
+        [COLOR.DIM, COLOR.BRIGHT],
         {
-            [COLOR.BLUR]: "color-blur.json",
-            [COLOR.SHARP]: "color-sharp.json",
+            [COLOR.DIM]: SYSTEM_PATH.COLOR_DIM,
+            [COLOR.BRIGHT]: SYSTEM_PATH.COLOR_BRIGHT,
         },
         SYSTEM_MESSAGE.PRESET_SELCT_COLOR);
 };
-
-
 
 export {
     readPreset,

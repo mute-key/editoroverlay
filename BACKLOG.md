@@ -1,6 +1,16 @@
 ### Backlog
 
 ```
+
+- [!] mutlti cursor selection lags and slow down on rapid-fire. need faster response and better performance. 
+- [!] theme based color preset for highlight 
+- [!] direct config update from json leaves selection status text. 
+==========================================================================================================
+- [?] throttling for multi-line selection and multi-cursor selection
+- [?] backgroundColor configuration or auto appply background color based on border colour. not sure yet.
+==========================================================================================================
+- [o] preset format and color preset
+- [o] changing config recreate all decoroation, de-refernce to previous decoroationType from the object.
 - [o] config diversify for differernt selection type and fully programmable config
     + cursorOnly
     + singleLine
@@ -29,14 +39,5 @@
     - singleLine: 
     - multiLine: 
     - multiCursor: 
-
-- [>] maybe more optimisation. i want faster response on cursor/selection change.
-
-- [x] better border width funciton, maybe.
-- [x] cursor type indicator on gutter, maybe later.
-- [x] screenshot of editor selection decorations.
-
-- [?] changing config recreate all decoroation, de-refernce to previous decoroationType from the object.
-      gc will handle it but perhaps it is better to dispose() then recreate?
-- [?] backgroundColor configuration or auto appply background color based on border colour. not sure yet.
+- [o] better optimisation. i want faster response on cursor/selection change.
 ```
