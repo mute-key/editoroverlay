@@ -2445,8 +2445,8 @@ var quickPickContrastList = (context2) => {
     context2,
     ["Dim" /* DIM */, "Bright" /* BRIGHT */],
     {
-      ["Dim" /* DIM */]: "color-dim.json" /* CONTRAST_DIM */,
-      ["Bright" /* BRIGHT */]: "color-bright.json" /* CONTRAST_BRIGHT */
+      ["Dim" /* DIM */]: "contrast-dim.json" /* CONTRAST_DIM */,
+      ["Bright" /* BRIGHT */]: "contrast-bright.json" /* CONTRAST_BRIGHT */
     },
     " ... Select the Theme Color" /* PRESET_SELCT_COLOR */
   );
