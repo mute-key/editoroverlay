@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { clearConfiguration, quickPickPresetList, quickPickOientationList, quickPickColorList, restoreToDefault } from '../configuration/preset/preset';
+import { clearConfiguration, quickPickPresetList, quickPickOientationList, quickPickColorList, restoreToDefault, quickPickContrastList } from '../configuration/preset/preset';
 import type { CommandContext } from "../initialize";
 
 const setPreset = (context: CommandContext): vscode.Disposable => {
@@ -8,6 +8,10 @@ const setPreset = (context: CommandContext): vscode.Disposable => {
 
 const setColor = (context: CommandContext) => {
     return vscode.commands.registerCommand("cursorlinehighlight.setColor", () => quickPickColorList(context));
+};
+
+const setContrast = (context: CommandContext) => {
+    return vscode.commands.registerCommand("cursorlinehighlight.setContrast", () => quickPickContrastList(context));
 };
 
 const setOrientation = (context: CommandContext) => {
@@ -21,6 +25,7 @@ const resetConfiguration = (context: CommandContext): vscode.Disposable => {
 export {
     setPreset,
     setColor,
+    setContrast,
     setOrientation,
     resetConfiguration
 };

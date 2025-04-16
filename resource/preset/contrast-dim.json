@@ -1,6 +1,10 @@
 {
+    "general.borderOpacity": 0.5,
+    "general.backgroundOpacity": 0.06,
+    "selectionText.colorOpacity": 0.4,
+    "selectionText.backgroundOpacity": 0,
     "diagnosticText.diagnosticPlaceholderTextStyle": {
-        "colorOpacity": 0.3,
+        "colorOpacity": 0.4,
         "backgroundColor": "#182129",
         "backgroundOpacity": 0.4
     },

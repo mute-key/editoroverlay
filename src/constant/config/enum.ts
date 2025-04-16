@@ -4,7 +4,7 @@
 
 export const enum PRESET {
     DETAILED = "Detailed",
-    SHORTEN = "Shorten",
+    SIMPLE = "Simple",
     NO_GLYPH_D = "No Glpyph - Detailed",
     NO_GLYPH_S = "No Glpyph - Simple",
     EMOJI_D = "Emoji - Detailed",
@@ -16,9 +16,14 @@ export const enum PRESET_ORIENTATION {
     HORIZONTAL = "Horizontal",
 }
 
-export const enum COLOR {
+export const enum CONTRAST {
     DIM = "Dim",
     BRIGHT = "Bright"
+}
+
+export const enum THEME_KIND {
+    LIGHT = "Light",
+    DARK = "Dark",
 }
 
 export const enum SYSTEM_MESSAGE {
@@ -28,20 +33,24 @@ export const enum SYSTEM_MESSAGE {
     RESTORE_DEFAULT_COMPLETE = "Configuration has been restored to default.",
     PRESET_SELCT = " ... Select the Preset",
     PRESET_SELCT_ORIENTATION = " ... Select the Preset Orientation",
-    PRESET_SELCT_COLOR = " ... Select the Color",
+    PRESET_SELCT_COLOR = " ... Select the Theme Color",
+    PRESET_SELCT_COLOR_CONTRAST = " ... Select the Color Contrast",
     OVERRIDE_CONFIRM = "Configuration will be overwritten. Proceed?"
+    
 }
 
 export const enum SYSTEM_PATH {
     PRESET_ROOT = "resource/preset/",
     PRESET_DETAILED = "detailed.json",
-    PRESET_SHORTEN = "shorten.json",
+    PRESET_SIMPLE = "simple.json",
     PRESET_NO_GLYPH_D = "no-glyph-detailed.json",
     PRESET_NO_GLYPH_S = "no-glyph-simple.json",
     PRESET_EMOJI_D = "emoji-detailed.json",
     PRESET_EMOJI_S = "emoji-simple.json",
-    COLOR_DIM = "color-dim.json",
-    COLOR_BRIGHT = "color-bright.json",
+    CONTRAST_DIM = "color-dim.json",
+    CONTRAST_BRIGHT = "color-bright.json",
+    THEME_LIGHT = "highlight-for-light-theme.json",
+    THEME_DARK = "highlight-for-dark-theme.json",
     PRESET_ORIENTATION_HORIZONTAL = "orientation-horizontal.json",
     PRESET_ORIENTATION_VERTICAL = "orientation-vertical.json",
 }

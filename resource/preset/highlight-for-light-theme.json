@@ -1,0 +1,43 @@
+{
+    "cursorOnly.borderColor": "#010960",
+    "singleLine.borderColor": "#010960",
+    "singleLine.backgroundColor": "#5070d0",
+    "multiLine.borderColor": "#010960",
+    "multiLine.backgroundColor": "#5070d0",
+    "multiCursor.borderColor": "#010960",
+    "multiCursor.backgroundColor": "#5070d0",
+    "general.borderOpacity": 0.5,
+    "general.backgroundOpacity": 0.06,
+    "selectionText.color": "#8b80b9",
+    "selectionText.colorOpacity": 0.5,
+    "selectionText.backgroundColor": "null",
+    "selectionText.backgroundOpacity": 0,
+    "selectionText.selectionCountTextStyle": {
+        "ln": "#0058cc",
+        "col": "#0058cc",
+        "zCol": "#0058cc",
+        "char": "#0058cc",
+        "lc": "#0058cc",
+        "nth": "#0058cc",
+        "count": "#0058cc",
+        "fontWeight": "bold",
+        "opacity": 0.6
+    },
+    "diagnosticText.diagnosticPlaceholderTextStyle": {
+        "colorOpacity": 0.8,
+        "backgroundColor": "#d0d0d0",
+        "backgroundOpacity": 0.4
+    },
+    "diagnosticText.okNotationTextStyle": {
+        "color": "#52b100",
+        "colorOpacity": 0.8,
+        "backgroundOpacity": 1
+    },
+    "diagnosticText.okTextStyle": {
+        "color": "#8ae71d"
+    },
+    "diagnosticText.warningTextStyle": {
+        "color": "#ecb500",
+        "colorOpacity": 1
+    }
+}

@@ -5,7 +5,6 @@
         "backgroundOpacity": 0.4
     },
     "diagnosticText.okNotationTextStyle": {
-        "color": "#8ae71d",
         "colorOpacity": 0.5,
         "backgroundOpacity": 1
     },

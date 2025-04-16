@@ -1,0 +1,45 @@
+{
+    "cursorOnly.borderColor": "#93a5c1",
+    "cursorOnly.backgroundColor": "#383f49",
+    "singleLine.borderColor": "#93a5c1",
+    "singleLine.backgroundColor": "#383f49",
+    "multiLine.borderColor": "#93a5c1",
+    "multiLine.backgroundColor": "#383f49",
+    "multiCursor.borderColor": "#93a5c1",
+    "multiCursor.backgroundColor": "#383f49",
+    "general.borderOpacity": 0.55,
+    "general.backgroundOpacity": 0.13,
+    "selectionText.color": "#8b80b9",
+    "selectionText.colorOpacity": 0.5,
+    "selectionText.backgroundColor": "null",
+    "selectionText.backgroundOpacity": 0,
+    "selectionText.selectionCountTextStyle": {
+        "ln": "#a7b8d3",
+        "col": "#a7b8d3",
+        "zCol": "#a7b8d3",
+        "char": "#a7b8d3",
+        "lc": "#a7b8d3",
+        "nth": "#a7b8d3",
+        "count": "#a7b8d3",
+        "opacity": 0.65,
+        "fontWeight": "bold"
+    },
+    "diagnosticText.diagnosticPlaceholderTextStyle": {
+        "colorOpacity": 0.35,
+        "backgroundColor": "#182129",
+        "backgroundOpacity": 0.4
+    },
+    "diagnosticText.okNotationTextStyle": {
+        "editorPrefix": " ACTIVE:",
+        "allPrefix": "ALL:",
+        "color": "#8ae71d",
+        "colorOpacity": 0.45,
+        "backgroundOpacity": 1
+    },
+    "diagnosticText.okTextStyle": {
+        "color": "#8ae71d"
+    },
+    "diagnosticText.warningTextStyle": {
+        "colorOpacity": 0.85
+    }
+}

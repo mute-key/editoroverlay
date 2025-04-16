@@ -2333,7 +2333,7 @@ var restoreToDefault = () => {
 };
 var readPreset = async (context2, presetFilename) => {
   try {
-    const jsonPath = context2.package.asAbsolutePath(import_path.default.join("resource/preset/" /* PRESET_ROOT */, presetFilename));
+    const jsonPath = context2.asAbsolutePath(import_path.default.join("resource/preset/" /* PRESET_ROOT */, presetFilename));
     const content = await (0, import_promises.readFile)(jsonPath, { encoding: "utf-8" });
     return JSON.parse(content);
   } catch (error2) {
@@ -2370,6 +2370,11 @@ var writeSelectedPreset = async (configInfo2, packageName, json) => {
     }
   }
   resetAllDecoration();
+  updateGeneralConfig(configInfo2);
+  updateHighlightStyleConfiguration(configInfo2, cursorOnly);
+  updateHighlightStyleConfiguration(configInfo2, singleLine);
+  updateHighlightStyleConfiguration(configInfo2, multiLine);
+  updateHighlightStyleConfiguration(configInfo2, multiCursor);
   updateSelectionTextConfig(packageName, true);
   updateDiagnosticTextConfig(packageName, true);
   prepareRenderGroup(configInfo2);
@@ -2382,7 +2387,7 @@ var quickPickWrapper = async (context2, presetList, fileList, placeHolder) => {
   const preset = await vscode12.window.showQuickPick(presetList, { placeHolder });
   if (preset && Object.hasOwn(fileList, preset)) {
     const packageName = context2.package.extension.packageJSON.name;
-    const json = await readPreset(context2, fileList[preset]);
+    const json = await readPreset(context2.package, fileList[preset]);
     const write = writeConfiguration(context2.configInfo, packageName, json ? json : {});
     if (checkDuplciateOverride(context2.package.extension.packageJSON.name, json)) {
       await overrideConfirm("Configuration will be overwritten. Proceed?" /* OVERRIDE_CONFIRM */).then(write);
@@ -2396,7 +2401,7 @@ var quickPickPresetList = (context2) => {
     context2,
     [
       "Detailed" /* DETAILED */,
-      "Shorten" /* SHORTEN */,
+      "Simple" /* SIMPLE */,
       "No Glpyph - Detailed" /* NO_GLYPH_D */,
       "No Glpyph - Simple" /* NO_GLYPH_S */,
       "Emoji - Detailed" /* EMOJI_D */,
@@ -2404,7 +2409,7 @@ var quickPickPresetList = (context2) => {
     ],
     {
       ["Detailed" /* DETAILED */]: "detailed.json" /* PRESET_DETAILED */,
-      ["Shorten" /* SHORTEN */]: "shorten.json" /* PRESET_SHORTEN */,
+      ["Simple" /* SIMPLE */]: "simple.json" /* PRESET_SIMPLE */,
       ["No Glpyph - Detailed" /* NO_GLYPH_D */]: "no-glyph-detailed.json" /* PRESET_NO_GLYPH_D */,
       ["No Glpyph - Simple" /* NO_GLYPH_S */]: "no-glyph-simple.json" /* PRESET_NO_GLYPH_S */,
       ["Emoji - Detailed" /* EMOJI_D */]: "emoji-detailed.json" /* PRESET_EMOJI_D */,
@@ -2427,13 +2432,33 @@ var quickPickOientationList = (context2) => {
 var quickPickColorList = (context2) => {
   quickPickWrapper(
     context2,
+    ["Light" /* LIGHT */, "Dark" /* DARK */],
+    {
+      ["Light" /* LIGHT */]: "highlight-for-light-theme.json" /* THEME_LIGHT */,
+      ["Dark" /* DARK */]: "highlight-for-dark-theme.json" /* THEME_DARK */
+    },
+    " ... Select the Color Contrast" /* PRESET_SELCT_COLOR_CONTRAST */
+  );
+};
+var quickPickContrastList = (context2) => {
+  quickPickWrapper(
+    context2,
     ["Dim" /* DIM */, "Bright" /* BRIGHT */],
     {
-      ["Dim" /* DIM */]: "color-dim.json" /* COLOR_DIM */,
-      ["Bright" /* BRIGHT */]: "color-bright.json" /* COLOR_BRIGHT */
+      ["Dim" /* DIM */]: "color-dim.json" /* CONTRAST_DIM */,
+      ["Bright" /* BRIGHT */]: "color-bright.json" /* CONTRAST_BRIGHT */
     },
-    " ... Select the Color" /* PRESET_SELCT_COLOR */
+    " ... Select the Theme Color" /* PRESET_SELCT_COLOR */
   );
+};
+var checkActiveThemeKind = async (context2) => {
+  if (vscode12.window.activeColorTheme.kind === vscode12.ColorThemeKind.Light) {
+    const packageName = context2.package.extension.packageJSON.name;
+    const json = await readPreset(context2.package, "highlight-for-light-theme.json" /* THEME_LIGHT */);
+    if (json && !checkDuplciateOverride(context2.package.extension.packageJSON.name, json)) {
+      await writeSelectedPreset(context2.configInfo, packageName, json);
+    }
+  }
 };
 
 // src/command/register.ts
@@ -2442,6 +2467,9 @@ var setPreset = (context2) => {
 };
 var setColor = (context2) => {
   return vscode13.commands.registerCommand("cursorlinehighlight.setColor", () => quickPickColorList(context2));
+};
+var setContrast = (context2) => {
+  return vscode13.commands.registerCommand("cursorlinehighlight.setContrast", () => quickPickContrastList(context2));
 };
 var setOrientation = (context2) => {
   return vscode13.commands.registerCommand("cursorlinehighlight.setOrientation", () => quickPickOientationList(context2));
@@ -2574,10 +2602,12 @@ var initialize = async (extensionContext) => {
       package: extensionContext,
       configInfo: configInfo2
     };
+    checkActiveThemeKind(commandContext);
     return [
       // extension subscription list
       setPreset(commandContext),
       setColor(commandContext),
+      setContrast(commandContext),
       setOrientation(commandContext),
       resetConfiguration(commandContext),
       windowStateChanged(eventContext),

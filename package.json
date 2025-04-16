@@ -20,6 +20,7 @@
         "baseImagesUrl": "https://github.com/mute-key/cursorlinehighlight/raw/master/"
     },
     "keywords": [
+        "cursorline",
         "cursor",
         "line",
         "highlight",
@@ -52,27 +53,38 @@
         "commands": [
             {
                 "command": "cursorlinehighlight.applyPreset",
-                "title": "CursorLine Highlight: Apply Preset Configuration",
-                "shortTitle": "Preset",
+                "title": "Apply Preset Configuration",
+                "category": "CursorLine Highlight",
+                "shortTitle": "A",
                 "order": 0
             },
             {
                 "command": "cursorlinehighlight.setColor",
-                "title": "CursorLine Highlight: Set Color Configuration",
-                "shortTitle": "Color",
+                "title": "Set Color Configuration",
+                "category": "CursorLine Highlight",
+                "shortTitle": "B",
                 "order": 1
             },
             {
-                "command": "cursorlinehighlight.setOrientation",
-                "title": "CursorLine Highlight: Set Orientation Configuration",
-                "shortTitle": "Orientation",
+                "command": "cursorlinehighlight.setContrast",
+                "title": "Set Contrast Configuration",
+                "category": "CursorLine Highlight",
+                "shortTitle": "C",
                 "order": 2
             },
             {
-                "command": "cursorlinehighlight.restoreToDefaultConfiguration",
-                "title": "CursorLine Highlight: Reset User Configuration",
-                "shortTitle": "Restore",
+                "command": "cursorlinehighlight.setOrientation",
+                "title": "Set Orientation Configuration",
+                "category": "CursorLine Highlight",
+                "shortTitle": "D",
                 "order": 3
+            },
+            {
+                "command": "cursorlinehighlight.restoreToDefaultConfiguration",
+                "title": "Reset User Configuration",
+                "category": "CursorLine Highlight",
+                "shortTitle": "E",
+                "order": 4
             }
         ],
         "configuration": [

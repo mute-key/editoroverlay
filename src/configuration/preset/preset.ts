@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as __0x from '../../constant/shared/numeric';
 import path from 'path';
-import { COLOR, CONFIRM, PRESET, PRESET_ORIENTATION, SYSTEM_MESSAGE, SYSTEM_PATH } from '../../constant/config/enum';
+import { CONTRAST, CONFIRM, PRESET, PRESET_ORIENTATION, SYSTEM_MESSAGE, SYSTEM_PATH, THEME_KIND } from '../../constant/config/enum';
 import { CONFIG_SECTION } from '../../constant/config/object';
 import { getWorkspaceConfiguration } from '../shared/configuration';
 import { prepareRenderGroup, resetAllDecoration } from '../../editor/editor';
@@ -9,6 +9,7 @@ import { updateSelectionTextConfig } from '../decoration/selection';
 import { updateDiagnosticTextConfig } from '../decoration/diagonostic';
 import { readFile } from 'node:fs/promises';
 import type { CommandContext } from "../../initialize";
+import { updateGeneralConfig, updateHighlightStyleConfiguration } from '../decoration/highlight';
 
 const clearConfiguration = (context: CommandContext) => (value: string | undefined): void => {
     if (value === CONFIRM.YES) {
@@ -28,9 +29,9 @@ const restoreToDefault = (): Thenable<string | undefined> => {
     return overrideConfirm(SYSTEM_MESSAGE.RESTORE_DEFAULT);
 };
 
-const readPreset = async (context: CommandContext, presetFilename): Promise<object | undefined> => {
+const readPreset = async (context: vscode.ExtensionContext, presetFilename): Promise<object | undefined> => {
     try {
-        const jsonPath = context.package.asAbsolutePath(path.join(SYSTEM_PATH.PRESET_ROOT, presetFilename));
+        const jsonPath = context.asAbsolutePath(path.join(SYSTEM_PATH.PRESET_ROOT, presetFilename));
         const content = await readFile(jsonPath, { encoding: 'utf-8' });
         return JSON.parse(content);
     } catch (error) {
@@ -61,7 +62,7 @@ const writeSelectedPreset = async (configInfo: any, packageName: string, json: o
     const config = getWorkspaceConfiguration(packageName);
     const section = Object.keys(json);
     let ridx = section.length;
-    
+
     while (ridx--) {
         if (typeof json[section[ridx]] === 'object') { // configuration proxy object 
             const proxy: any = config.inspect<object>(section[ridx]);
@@ -72,6 +73,11 @@ const writeSelectedPreset = async (configInfo: any, packageName: string, json: o
     }
 
     resetAllDecoration();
+    updateGeneralConfig(configInfo);
+    updateHighlightStyleConfiguration(configInfo, __0x.cursorOnly);
+    updateHighlightStyleConfiguration(configInfo, __0x.singleLine);
+    updateHighlightStyleConfiguration(configInfo, __0x.multiLine);
+    updateHighlightStyleConfiguration(configInfo, __0x.multiCursor);
     updateSelectionTextConfig(packageName, true);
     updateDiagnosticTextConfig(packageName, true);
     prepareRenderGroup(configInfo as any);
@@ -88,7 +94,7 @@ const quickPickWrapper = async (context: CommandContext, presetList: string[], f
     if (preset && Object.hasOwn(fileList, preset)) {
 
         const packageName = context.package.extension.packageJSON.name;
-        const json = await readPreset(context, fileList[preset]);
+        const json = await readPreset(context.package, fileList[preset]);
         const write = writeConfiguration(context.configInfo, packageName, json ? json : {});
 
         if (checkDuplciateOverride(context.package.extension.packageJSON.name, json)) {
@@ -102,11 +108,11 @@ const quickPickWrapper = async (context: CommandContext, presetList: string[], f
 const quickPickPresetList = (context: CommandContext): void => {
     quickPickWrapper(
         context,
-        [PRESET.DETAILED, PRESET.SHORTEN, PRESET.NO_GLYPH_D, PRESET.NO_GLYPH_S, PRESET.EMOJI_D, PRESET.EMOJI_S
+        [PRESET.DETAILED, PRESET.SIMPLE, PRESET.NO_GLYPH_D, PRESET.NO_GLYPH_S, PRESET.EMOJI_D, PRESET.EMOJI_S
         ],
         {
             [PRESET.DETAILED]: SYSTEM_PATH.PRESET_DETAILED,
-            [PRESET.SHORTEN]: SYSTEM_PATH.PRESET_SHORTEN,
+            [PRESET.SIMPLE]: SYSTEM_PATH.PRESET_SIMPLE,
             [PRESET.NO_GLYPH_D]: SYSTEM_PATH.PRESET_NO_GLYPH_D,
             [PRESET.NO_GLYPH_S]: SYSTEM_PATH.PRESET_NO_GLYPH_S,
             [PRESET.EMOJI_D]: SYSTEM_PATH.PRESET_EMOJI_D,
@@ -129,19 +135,43 @@ const quickPickOientationList = (context: CommandContext): void => {
 const quickPickColorList = (context: CommandContext): void => {
     quickPickWrapper(
         context,
-        [COLOR.DIM, COLOR.BRIGHT],
+        [THEME_KIND.LIGHT, THEME_KIND.DARK],
         {
-            [COLOR.DIM]: SYSTEM_PATH.COLOR_DIM,
-            [COLOR.BRIGHT]: SYSTEM_PATH.COLOR_BRIGHT,
+            [THEME_KIND.LIGHT]: SYSTEM_PATH.THEME_LIGHT,
+            [THEME_KIND.DARK]: SYSTEM_PATH.THEME_DARK,
+        },
+        SYSTEM_MESSAGE.PRESET_SELCT_COLOR_CONTRAST);
+        
+};
+
+const quickPickContrastList =  (context: CommandContext): void => {
+    quickPickWrapper(
+        context,
+        [CONTRAST.DIM, CONTRAST.BRIGHT],
+        {
+            [CONTRAST.DIM]: SYSTEM_PATH.CONTRAST_DIM,
+            [CONTRAST.BRIGHT]: SYSTEM_PATH.CONTRAST_BRIGHT,
         },
         SYSTEM_MESSAGE.PRESET_SELCT_COLOR);
+};
+
+const checkActiveThemeKind = async (context: CommandContext): Promise<void> => {
+    if (vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Light) {
+        const packageName = context.package.extension.packageJSON.name;
+        const json = await readPreset(context.package, SYSTEM_PATH.THEME_LIGHT);
+        if (json && !checkDuplciateOverride(context.package.extension.packageJSON.name, json)) {
+            await writeSelectedPreset(context.configInfo, packageName, json);
+        }
+    }
 };
 
 export {
     readPreset,
     quickPickPresetList,
-    quickPickOientationList,
     quickPickColorList,
+    quickPickContrastList,
+    quickPickOientationList,
     restoreToDefault,
     clearConfiguration,
+    checkActiveThemeKind
 };
