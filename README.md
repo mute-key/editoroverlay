@@ -42,7 +42,9 @@ So far, everything in the examples are on default configuration.<br><br>
 
 <img src="./resource/doc/light-theme.png" alt ="GIF" style=""><br>
 
-> [!TIP] Default color scheme for Light themes
+> [!TIP] 
+>
+> Default color scheme for Light themes<br><br>
 > This is what default colors will look like If active color theme is Light theme.<br>
 > To achieve the same style as in the example, run these following commands in vscode command palette as following.
 >
@@ -86,7 +88,8 @@ So far, everything in the examples are on default configuration.<br><br>
 - __Command >__ _`CursorLine Highlight: Reset User Configuration`_
   - Remove global user configurations of this extension form `settings.json`
 
->[!WARNING] [Light Theme User Only] Command: Set Contrast Configuration
+> [!WARNING] 
+> (Light Theme User Only) Command: Set Contrast Configuration<br><br>
 > I Would advice not to use this command if you are using `Light Theme` as it overrides some colors/opacity. I recommand directly changing the values from `Setting UI` or `Setting.json`
 
 ### On setting UI
@@ -116,7 +119,8 @@ same opacity value from 'General.' You can also use string literal 'null' to dis
 
 ### Selection Status
 
-> [!IMPORTANT] SelectionText.enabled
+> [!IMPORTANT] 
+> SelectionText.enabled<br><br>
 > You can enable/disable this feature. (Default: Enabled).
 
 Most of configurations are quite straight foword and they are well explained in configuration section.
@@ -134,8 +138,8 @@ This i would like to fix and update soon.
 
 ### Diagnostic status
 
-
-> [!IMPORTANT] DiagnosticText.enabled
+> [!IMPORTANT]
+> SelectionText.enabled<br><br>
 > You can enable/disable this feature. (Default: Enabled)
 
 Diagnostic status indicate the same entry in probelm view as the screenshot.

@@ -3,8 +3,8 @@
 ```
 
 - [!] mutlti cursor selection lags and slow down on rapid-fire. need faster response and better performance. 
-- [!] theme based color preset for highlight 
 - [!] direct config update from json leaves selection status text. 
+
 ==========================================================================================================
 - [?] throttling for multi-line selection and multi-cursor selection
 - [?] backgroundColor configuration or auto appply background color based on border colour. not sure yet.

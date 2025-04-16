@@ -49,8 +49,8 @@ export const enum SYSTEM_PATH {
     PRESET_EMOJI_S = "emoji-simple.json",
     CONTRAST_DIM = "contrast-dim.json",
     CONTRAST_BRIGHT = "contrast-bright.json",
-    THEME_LIGHT = "highlight-for-light-theme.json",
-    THEME_DARK = "highlight-for-dark-theme.json",
+    THEME_LIGHT = "color-light-theme.json",
+    THEME_DARK = "color-dark-theme.json",
     PRESET_ORIENTATION_HORIZONTAL = "orientation-horizontal.json",
     PRESET_ORIENTATION_VERTICAL = "orientation-vertical.json",
 }
