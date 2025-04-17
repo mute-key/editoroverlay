@@ -1,6 +1,12 @@
 import * as vscode from 'vscode';
 import { SYSTEM_MESSAGE } from '../constant/config/enum';
 
+/**
+ * ERROR related classes.
+ * should be self-explanatory.
+ * 
+ */
+
 class ErrorDecription {
     #configurationSection: string;
     #errorMessage: string;

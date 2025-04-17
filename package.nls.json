@@ -20,7 +20,7 @@
     "placeholder.diagnostic.ok.workspace.default": "${pre}√OK${post}",
     "placeholder.diagnostic.warning.workspace.default": "${pre}⚠${src}/${wrn}${post}",
     "placeholder.diagnostic.error.workspace.default": "${pre}✗${src}/${err}${post}",
-    "text.problem.glyph.line.start": "(",
+    "text.problem.glyph.line.start": " (",
     "text.problem.glyph.line.end": ")",
     "text.problem.glyph.line.equal": "⚙",
     "text.problem.glyph.line.up": "⬆︎",

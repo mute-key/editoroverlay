@@ -37,9 +37,7 @@
     },
     "diagnosticText.warningNotationTextStyle": {
         "editorPrefix": " WARN:",
-        "workspacePrefix": " WARN:",
-        "colorOpacity": 0.4,
-        "backgroundOpacity": 1
+        "workspacePrefix": " WARN:"
     },
     "diagnosticText.errorTextStyle": {
         "colorOpacity": 0.85

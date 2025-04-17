@@ -1,5 +1,10 @@
 import * as Type from '../type/type.d';
 
+/**
+ * 
+ * @param newProp 
+ * @returns 
+ */
 const autoArrayPropertyObject = (newProp) => {
     const target = {};
     return new Proxy(target, {
@@ -11,7 +16,10 @@ const autoArrayPropertyObject = (newProp) => {
         }
     });
 };
+
+
 /**
+ * create new array based on 4 bit number which will parse a bit into true or false arguement supplied.
  * 
  * @param value 
  * @param trueValue 
@@ -34,6 +42,7 @@ const readBits = (value: number, trueValue: any | any[], falseValue: any, bitLen
 
 /**
  * FNV-1a hash.
+ * this function is no longer needed. but just keeping it in case if i need fast short hash with collision.
  * 
  * @param str
  * @param size
@@ -50,6 +59,13 @@ const fnv1aHash = (str: string): string => {
     return hash.toString(16);
 };
 
+/**
+ * split string based on regex and will mark where the regex sits in splited array.
+ * 
+ * @param str 
+ * @param regex 
+ * @returns 
+ */
 const splitAndPosition = (str: string, regex: RegExp): Type.RegexSplitType | undefined => {
 
     const match: RegExpMatchArray | null = str.match(regex);
@@ -111,6 +127,13 @@ const hexToRgbaStringLiteral = (hex: string, opacity: number = 0.6, defaultValue
 
 const hrtimeToMS = (hrtime: [number, number]): number => (process.hrtime(hrtime)[1] / 1000000);
 
+/**
+ * compare number funciton for sort()
+ * 
+ * @param a 
+ * @param b 
+ * @returns 
+ */
 const compareNumbers = (a: number, b: number): number => (a - b);
 
 export {

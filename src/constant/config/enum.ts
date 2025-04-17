@@ -1,6 +1,6 @@
-// ==============================================================================
-// [ COMPILE-TIME CONSTANT ENUM ]
-// ==============================================================================
+//::==============================================================================
+//::  [ COMPILE-TIME CONSTANT ENUM ]
+//::==============================================================================
 
 export const enum PRESET {
     DETAILED = "Detailed",
@@ -36,7 +36,6 @@ export const enum SYSTEM_MESSAGE {
     PRESET_SELCT_COLOR = " ... Select the Theme Color",
     PRESET_SELCT_COLOR_CONTRAST = " ... Select the Color Contrast",
     OVERRIDE_CONFIRM = "Configuration will be overwritten. Proceed?"
-    
 }
 
 export const enum SYSTEM_PATH {

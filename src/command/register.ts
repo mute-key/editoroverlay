@@ -6,15 +6,15 @@ const setPreset = (context: CommandContext): vscode.Disposable => {
     return vscode.commands.registerCommand("cursorlinehighlight.applyPreset", () => quickPickPresetList(context));
 };
 
-const setColor = (context: CommandContext) => {
+const setColor = (context: CommandContext): vscode.Disposable => {
     return vscode.commands.registerCommand("cursorlinehighlight.setColor", () => quickPickColorList(context));
 };
 
-const setContrast = (context: CommandContext) => {
+const setContrast = (context: CommandContext): vscode.Disposable => {
     return vscode.commands.registerCommand("cursorlinehighlight.setContrast", () => quickPickContrastList(context));
 };
 
-const setOrientation = (context: CommandContext) => {
+const setOrientation = (context: CommandContext): vscode.Disposable => {
     return vscode.commands.registerCommand("cursorlinehighlight.setOrientation", () => quickPickOientationList(context));
 };
 

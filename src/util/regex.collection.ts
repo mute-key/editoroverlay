@@ -1,6 +1,10 @@
 import { DIAGNOSTIC_CONTENT_TEXT_KEY, SELECTION_CONTENT_TEXT_CONFIG_KEY } from '../constant/config/enum';
 import * as Type from '../type/type';
 
+//:==============================================================================
+//:  [ REGEX COLLECTION ], self-explanatory.
+//:==============================================================================
+
 const prefix = /(\${pre})/s;
 
 const postfix = /(\${post})/s;
@@ -116,7 +120,7 @@ const indentAndEOLRegex = (indentSize: string | number) => new RegExp(`^( {${ind
 
 const ifStringIsResourceScope = /^[%\.].*[%\.]$/s;
 
-const tagtAndEOLRegex = /(\t|[\r\n]+)*$/gm;
+const tabAndEOLRegex = /(\t|[\r\n]+)*$/gm;
 
 const isValidHexColor = /^#[A-Fa-f0-9]{6}$/;
 
@@ -129,7 +133,7 @@ const contentTextKeysOnly = /\${([^{}]+)}/s;
 export {
     indentAndEOLRegex,
     ifStringIsResourceScope,
-    tagtAndEOLRegex,
+    tabAndEOLRegex,
     isValidHexColor,
     isValidWidth,
     ifContentTextHasPlaceholder,

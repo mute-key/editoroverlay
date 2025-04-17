@@ -161,4 +161,3 @@ export {
     updateHighlightStyleConfiguration,
     generateHighlightDecoration
 };
-

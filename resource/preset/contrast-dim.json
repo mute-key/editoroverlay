@@ -1,10 +1,23 @@
 {
-    "general.borderOpacity": 0.5,
-    "general.backgroundOpacity": 0.06,
-    "selectionText.colorOpacity": 0.4,
+    "general.borderOpacity": 0.55,
+    "general.backgroundOpacity": 0.15,
+    "selectionText.color": "#d7c2ff",
+    "selectionText.colorOpacity": 0.3,
+    "selectionText.backgroundColor": "null",
     "selectionText.backgroundOpacity": 0,
+    "selectionText.selectionCountTextStyle": {
+        "ln": "#a7b8d3",
+        "col": "#a7b8d3",
+        "zCol": "#a7b8d3",
+        "char": "#a7b8d3",
+        "lc": "#a7b8d3",
+        "nth": "#a7b8d3",
+        "count": "#a7b8d3",
+        "opacity": 0.6,
+        "fontWeight": "bold"
+    },
     "diagnosticText.diagnosticPlaceholderTextStyle": {
-        "colorOpacity": 0.4,
+        "colorOpacity": 0.35,
         "backgroundColor": "#182129",
         "backgroundOpacity": 0.4
     },
@@ -14,6 +27,22 @@
         "backgroundOpacity": 1
     },
     "diagnosticText.okTextStyle": {
-        "color": "#5aaf10"
+        "color": "#8ae71d",
+        "colorOpacity": 0.75
+    },
+    "diagnosticText.warningNotationTextStyle": {
+        "colorOpacity": 0.45,
+        "backgroundOpacity": 1
+    },
+    "diagnosticText.warningTextStyle": {
+        "colorOpacity": 0.85,
+        "color": "#ecb500"
+    },
+    "diagnosticText.errorNotationTextStyle": {
+        "colorOpacity": 0.45,
+        "backgroundOpacity": 1
+    },
+    "diagnosticText.errorTextStyle": {
+        "colorOpacity": 0.85
     }
 }

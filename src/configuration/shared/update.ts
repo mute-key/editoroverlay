@@ -6,7 +6,7 @@ import { updateGeneralConfig, updateHighlightStyleConfiguration } from '../decor
 import { updateDiagnosticTextConfig } from '../decoration/diagonostic';
 import { updateSelectionTextConfig } from '../decoration/selection';
 
-const configurationChanged = (configInfo: any, section: string) => {
+const configurationChanged = (configInfo: any, section: string): void => {
     try {
         Error.configurationUpdated();
         const sectionChanged = {

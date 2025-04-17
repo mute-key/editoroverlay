@@ -60,6 +60,17 @@ const selectionChanged: Type.DecorationEventFunc = ({ decorationState }): vscode
     });
 };
 
+// const taskStarted = () => {
+//     return vscode.tasks.onDidStartTaskProcess((e: vscode.TaskProcessStartEvent) => {
+//         console.log(e.processId);
+
+//         vscode.tasks.fetchTasks();
+
+//         // vscode.tasks.taskExecutions
+
+//     });
+// };
+
 // const visibleRangeChanged = (): vscode.Disposable => {
 //     return vscode.window.onDidChangeTextEditorVisibleRanges((event: vscode.TextEditorVisibleRangesChangeEvent): void => {
 //         if (event) { }

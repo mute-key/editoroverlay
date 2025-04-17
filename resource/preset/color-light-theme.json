@@ -36,6 +36,10 @@
     "diagnosticText.okTextStyle": {
         "color": "#8ae71d"
     },
+    "diagnosticText.warningNotationTextStyle": {
+        "colorOpacity": 0.4,
+        "backgroundOpacity": 1
+    },
     "diagnosticText.warningTextStyle": {
         "color": "#ecb500",
         "colorOpacity": 1

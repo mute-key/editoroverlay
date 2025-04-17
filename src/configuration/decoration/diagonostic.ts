@@ -12,7 +12,6 @@ import { convertToDecorationRenderOption, setContentTextOnDecorationRenderOption
 import { bindDiagnosticContentTextState, initializeStateBuffer, reloadContentText, setDiagonosticTextbuffer } from '../../editor/status/diagnostic';
 import { hexToRgbaStringLiteral, readBits } from '../../util/util';
 import { createCursorRange, createCursorRangeNextLine, createCursorRangePreviousLine } from '../../editor/range'; import { setOverrideDigit } from '../../diagnostic/diagnostic';
-;
 
 const positionKeyList = ['pre', 'post'] as const;
 
@@ -413,4 +412,3 @@ const updateDiagnosticTextConfig = (extenionName: string, configuratioChange: bo
 export {
     updateDiagnosticTextConfig
 };
-

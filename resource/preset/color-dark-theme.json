@@ -38,6 +38,10 @@
         "color": "#8ae71d",
         "colorOpacity": 0.75
     },
+    "diagnosticText.warningNotationTextStyle": {
+        "colorOpacity": 0.55,
+        "backgroundOpacity": 1
+    },
     "diagnosticText.warningTextStyle": {
         "colorOpacity": 0.85,
         "color": "#ecb500"

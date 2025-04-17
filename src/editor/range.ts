@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
 
-// "disabled",
-// "IfOutOfVisibleRange",
-// "previousLine",
-// "nextLine"
+/**
+ * range object funciton wrappers.
+ */
+
 
 const createRangeNNNN = (startLine: number, startChar: number, endLine: number, endChar: number): vscode.Range =>
     new vscode.Range(

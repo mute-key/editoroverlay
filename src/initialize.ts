@@ -10,15 +10,33 @@ import Error from './util/error';
 import { clearDecorationState } from './editor/editor';
 import { prepareRenderGroup, renderGroupIs } from './editor/editor';
 import { checkActiveThemeKind } from './configuration/preset/preset';
+import type { DecorationState } from './editor/editor';
 
 export interface CommandContext {
     package: vscode.ExtensionContext,
     configInfo: object
 }
 
+// export interface EventContext {
+//     configInfo: object,
+//     decorationState: DecorationState
+// }
+
+
+/**
+ * Main initialisation of the extension. 
+ * wraps all extenion configuration and prepare the extension subscriptions. 
+ * 
+ * @param extensionContext 
+ * @returns 
+ */
 const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vscode.Disposable[] | void> => {
     try {
-        await extensionContext.extension.activate();
+        
+        await extensionContext.extension.activate();        // this is suppose to wait for its turn to be activated 
+                                                            // when vscode startup, not sure if it is the best method, 
+                                                            // as i am not sure even if it needs to wait to be activated.
+                                                            // maybe need to revise the method.
 
         Error.setPackageName(extensionContext.extension.packageJSON.name);
 
@@ -32,26 +50,26 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
         const configInfo: Type.ConfigInfoReadyType = loadConfig.config;
         const activeEditor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
 
-        const eventContext = {
-            configInfo: configInfo,
-            decorationState: loadConfig.decoration
-        };
-        
         prepareRenderGroup(configInfo);
 
-        if (activeEditor) {
-            clearDecorationState(loadConfig.decoration);
+        if (activeEditor) {                                 // if user is on editor
+            clearDecorationState(loadConfig.decoration);    // initialize decoration state
             loadConfig.decoration.appliedHighlight[0] = renderGroupIs(activeEditor, [__0x.cursorOnly]);
         }
 
-        const commandContext: CommandContext = {
+        const commandContext: CommandContext = {            // context for extension commands
             package: extensionContext,
             configInfo: configInfo
         };
 
+        const eventContext = {                              // context for extension events
+            configInfo: configInfo,
+            decorationState: loadConfig.decoration
+        };
+
         checkActiveThemeKind(commandContext);
-        
-        return [ // extension subscription list
+
+        return [                                            // extension subscription list, commands | events.
             commands.setPreset(commandContext),
             commands.setColor(commandContext),
             commands.setContrast(commandContext),
@@ -63,7 +81,7 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
             windowEvent.editorOptionChanged(eventContext),
             languagesEvent.diagnosticChanged(eventContext),
             workspaceEvent.configChanged(eventContext),
-        ]; 
+        ];
     } catch (err) {
         console.error('Error during extension initialization: ', err);
         vscode.window.showErrorMessage('Extension initialization failed!', err);
