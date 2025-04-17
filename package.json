@@ -5,6 +5,7 @@
     "description": "Apply configurable decorations on cursor line and selection lines.",
     "version": "1.3.0",
     "icon": "./resource/icon.png",
+    "license": "LicenseRef-NoCommercial-UseOnly",
     "engines": {
         "vscode": "^1.96.0"
     },
