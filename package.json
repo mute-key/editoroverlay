@@ -3,7 +3,7 @@
     "publisher": "mutekey",
     "displayName": "Cursor/Selection Line Highlight",
     "description": "Apply configurable decorations on cursor line and selection lines.",
-    "version": "1.3.2",
+    "version": "1.3.3",
     "icon": "./resource/icon.png",
     "license": "LicenseRef-NoCommercial-UseOnly",
     "engines": {
