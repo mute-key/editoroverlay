@@ -971,8 +971,8 @@ var vscode4 = __toESM(require("vscode"));
 var diagnosticState = { ...DIAGNOSTIC_STATE };
 var resetEditorDiagnosticStatistics = () => {
   diagnosticState.editor.warning.line.splice(0);
-  diagnosticState.editor.error.line.splice(0);
   diagnosticState.editor.warning.total = 0;
+  diagnosticState.editor.error.line.splice(0);
   diagnosticState.editor.error.total = 0;
 };
 var resetWorkspaceDiagnosticStatistics = () => {
@@ -2511,6 +2511,7 @@ var activeEditorChanged = ({ configInfo: configInfo2, decorationState: decoratio
       resetAllDecoration();
       if (configInfo2.generalConfigInfo.diagnosticTextEnabled) {
         await resetEditorDiagnosticStatistics();
+        await resetWorkspaceDiagnosticStatistics();
         await updateDiagnostic(editor2.document.uri);
       }
       updateIndentOption(editor2);

@@ -4,7 +4,7 @@ import * as __0x from '../constant/shared/numeric';
 import Error from '../util/error';
 import { resetAllDecoration } from '../editor/editor';
 import { renderGroupIs, updateIndentOption } from '../editor/editor';
-import { resetEditorDiagnosticStatistics, updateDiagnostic } from '../diagnostic/diagnostic';
+import { resetEditorDiagnosticStatistics, resetWorkspaceDiagnosticStatistics, updateDiagnostic } from '../diagnostic/diagnostic';
 
 const windowStateChanged: Type.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
     return vscode.window.onDidChangeWindowState((event: vscode.WindowState): void => {
@@ -35,6 +35,7 @@ const activeEditorChanged: Type.DecorationEventFunc = ({ configInfo, decorationS
 
             if (configInfo.generalConfigInfo.diagnosticTextEnabled) {
                 await resetEditorDiagnosticStatistics();
+                await resetWorkspaceDiagnosticStatistics();
                 await updateDiagnostic(editor.document.uri);
             }
 

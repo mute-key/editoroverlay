@@ -34,8 +34,8 @@ export interface DiagnosticState {
 
 const resetEditorDiagnosticStatistics = (): void => {
     diagnosticState.editor.warning.line.splice(0);
-    diagnosticState.editor.error.line.splice(0);
     diagnosticState.editor.warning.total = 0;
+    diagnosticState.editor.error.line.splice(0);
     diagnosticState.editor.error.total = 0;
 };
 
@@ -137,5 +137,6 @@ const updateDiagnostic = (activeEditorUri: vscode.Uri | undefined = undefined) =
 export {
     updateDiagnostic,
     resetEditorDiagnosticStatistics,
+    resetWorkspaceDiagnosticStatistics,
     setOverrideDigit
 };
