@@ -86,6 +86,14 @@ export const enum HEX_MULTILINE_FN {
 export const multiLineLineCountHex = HEX_MULTILINE_FN.LC;
 export const multiLineChararcterHex = HEX_MULTILINE_FN.CHAR;
 
+export const enum HEX_MULTI_CURSOR_FN {
+    LC = 0x0208,    // 520
+    CHAR = 0x0209,  // 521
+}
+
+export const multiCursorLineCountHex = HEX_MULTI_CURSOR_FN.LC;
+export const multiCursorChararcterHex = HEX_MULTI_CURSOR_FN.CHAR;
+
 //::==============================================================================
 //::[ DIAGNOSTIC STATUS ] 0x0300
 //::==============================================================================
