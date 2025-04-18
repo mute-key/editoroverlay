@@ -36,7 +36,7 @@ const activeEditorChanged: Type.DecorationEventFunc = ({ configInfo, decorationS
             if (configInfo.generalConfigInfo.diagnosticTextEnabled) {
                 resetEditorDiagnosticStatistics();
                 resetWorkspaceDiagnosticStatistics();
-                updateDiagnostic(editor.document.uri);
+                decorationState.eventTrigger[0] = __0x.diagnosticChanged;
             }
 
             updateIndentOption(editor);
@@ -45,6 +45,8 @@ const activeEditorChanged: Type.DecorationEventFunc = ({ configInfo, decorationS
         }
     });
 };
+
+
 
 const editorOptionChanged = (context): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorOptions((event: vscode.TextEditorOptionsChangeEvent): void => {
