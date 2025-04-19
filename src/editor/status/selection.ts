@@ -121,13 +121,10 @@ const multiLineOf = {
  * __0x.multiLineLineCountHex => total lines in selection
  * __0x.multiLineChararcterHex => total characters in seleciton
  */
-const multilineFnHexLink = {
-    [__0x.multiLineLineCountHex]: (editor: vscode.TextEditor) => ((editor.selection.end.line - editor.selection.start.line) + 1),
-    [__0x.multiLineChararcterHex]: (editor: vscode.TextEditor) => editor.document.getText(editor.selection).replace(indentInfo[__0x.regex] as RegExp, "").length
+const multilineFn = {
+    lc: (editor: vscode.TextEditor) => ((editor.selection.end.line - editor.selection.start.line) + 1),
+    char: (editor: vscode.TextEditor) => editor.document.getText(editor.selection).replace(indentInfo[__0x.regex] as RegExp, "").length
 };
-
-
-
 
 /**
  * mutli-cursor selection function collections
@@ -262,29 +259,16 @@ const singleLineSelection = (editor: vscode.TextEditor, previousKey: number[]): 
 type BufferedFuncSignature = (
     setDecorations: vscode.TextEditor['setDecorations'],
     buffer: vscode.TextEditorDecorationType[],
-    resBuffer: Record<number, number | null>,
     channel: number,
 ) => (
     renderOption: any | vscode.DecorationRenderOptions,
     idx: number
 ) => void
 
-const contentTextFuncBuffered: BufferedFuncSignature = (setDecorations, buffer, resBuffer, channel) => (renderOption, idx) => {
-    optionBufferChannel[channel][0].renderOptions = renderOption;                 // set decorationRenderOption as is
-    if (typeof renderOption.after.contentText !== 'string') {                     // if deocorationRenderOption is fn-hexKey
-        const hexKey = renderOption.after.contentText;                            // hexKey of the fn
-        if (resBuffer[hexKey] === -1) {                                           // if selection status fn has not be called previously
-            resBuffer[hexKey] = multilineFnHexLink[hexKey](
-                vscode.window.activeTextEditor                                    // call function 
-            );
-        }
-        decorationOptionBuffer.after = { ...renderOption.after };                 // copy contentText + styles
-        decorationOptionBuffer.after.contentText = String(resBuffer[hexKey]);     // stringfy the values becuase numeric contentText will be ignored for some reason.
-        optionBufferChannel[channel][0].renderOptions = decorationOptionBuffer;   // set decorationRenderOption on buffer channel
-    }
-    setDecorations(buffer[idx], optionBufferChannel[channel]);                    // render on range channel 0 = anchor, 1 = active cursor
+const contentTextFuncBuffered: BufferedFuncSignature = (setDecorations, buffer, channel) => (renderOption, idx) => {
+    renderBufferCH[channel][0].renderOptions = renderOption;   // set decorationRenderOption as is
+    setDecorations(buffer[idx], renderBufferCH[channel]);      // render on range channel 0 = anchor, 1 = active cursor
 };
-
 
 const optionGrid = {
     range: {},
@@ -296,35 +280,28 @@ const optionGrid = {
  * so that contentTextFuncBuffered() does not need to create an array on 
  * calling setDecoration, 
  */
-const optionBufferChannel = [
-    [Object.create({ ...decorationOptionBuffer })],
-    [Object.create({ ...decorationOptionBuffer })],
+const renderBufferCH = [
+    [Object.create(optionGrid)],
+    [Object.create(optionGrid)],
 ];
 
-/**
- * this is to not to call selection status function twice
- * to get the same value for both anchor and cursor
- */
-const multiLineOfStatus: Record<number, number | null> = {
-    [__0x.multiLineLineCountHex]: -1,
-    [__0x.multiLineChararcterHex]: -1
+const multiLineStatusRef = {
+    lc: {} as any | vscode.DecorationInstanceRenderOptions,
+    char: {} as any | vscode.DecorationInstanceRenderOptions
+};
+
+const syncReference = (placehoder: string, object): void => {
+    multiLineStatusRef[placehoder] = object;
 };
 
 const multilineSelection = (editor: vscode.TextEditor, previousKey: number[]): void => {
     __0x.multiLine !== previousKey[0] && clearBufferOfhexkey(editor.setDecorations, previousKey);
+    
+    multiLineStatusRef.lc.contentText = multilineFn.lc(editor).toString();
+    multiLineStatusRef.char.contentText = multilineFn.char(editor).toString();
 
-    multiLineOfStatus[__0x.multiLineLineCountHex] = -1;
-    multiLineOfStatus[__0x.multiLineChararcterHex] = -1;
-
-    optionBufferChannel[0][0] = {                                   // anchor decorationOption 
-        ...optionGrid,
-        range: createLineRange(editor.selection.anchor)             // anchor range on editor based on current selection
-    };
-
-    optionBufferChannel[1][0] = {
-        ...optionGrid,
-        range: createLineRange(editor.selection.active)
-    };
+    renderBufferCH[0][0].range = createLineRange(editor.selection.anchor);
+    renderBufferCH[1][0].range = createLineRange(editor.selection.active);
 
     selectionContentText[__0x.multiLineAnchorText]                  // iterate decorationRenderOption objects 
         .contentText
@@ -332,7 +309,7 @@ const multilineSelection = (editor: vscode.TextEditor, previousKey: number[]): v
             contentTextFuncBuffered(                                // callback attach to render decorationRenderObject 
                 editor.setDecorations,                              // on pre-created decorationType that already are in registry
                 selectionTextBuffer[__0x.multiLineAnchorText],
-                multiLineOfStatus, 0));                             // buffer channel index, 0 is anchor, 1 is active cursor
+                0));                                                // buffer channel index, 0 is anchor, 1 is active cursor
 
     selectionContentText[__0x.multiLineCursorText]
         .contentText
@@ -340,7 +317,7 @@ const multilineSelection = (editor: vscode.TextEditor, previousKey: number[]): v
             contentTextFuncBuffered(
                 editor.setDecorations,
                 selectionTextBuffer[__0x.multiLineCursorText],
-                multiLineOfStatus, 1));
+                1));
 };
 
 const asendingByLineNo = (a: vscode.Selection, b: vscode.Selection): number => (a.end.line - b.end.line);
@@ -532,5 +509,6 @@ export {
     cursorOnlySelection,
     singleLineSelection,
     multilineSelection,
-    multiCursorSelection
+    multiCursorSelection,
+    syncReference
 };

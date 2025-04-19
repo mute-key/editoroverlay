@@ -1,9 +1,11 @@
 import * as Type from '../../type/type';
 import * as regex from '../../util/regex.collection';
+import * as __0x from '../../constant/shared/numeric';
 import { CONFIG_SECTION, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_NUMLINK, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE } from '../../constant/config/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
-import { bindStatusContentTextState, setSelectionTextbuffer } from '../../editor/status/selection';
+import { bindStatusContentTextState, setSelectionTextbuffer, syncReference } from '../../editor/status/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
+import { isEntriesEqual } from '../../util/util';
 
 const convertPositionToDecorationRenderOption = (textPosition, SelectionDecorationStyle): void => {
     return textPosition.contentText.map((text, idx) => {
@@ -31,7 +33,32 @@ const buildSelectionTextDecorationRenderOption = (config: Type.SelectionDecorati
     });
 };
 
+const createSharedObjectSync = (textOftarget, textOfSource: any) => {
+    const anchor = Object.entries(textOfSource.multiLineAnchorText.position);
+    const cursor = Object.entries(textOfSource.multiLineCursorText.position);
+
+    if (isEntriesEqual(anchor, cursor)) {
+        anchor.forEach(([pos, placeholder], idx) => {
+            const referenceObject = textOftarget[__0x.multiLineAnchorText].contentText[pos].after;
+            syncReference(placeholder as string, referenceObject);
+            textOftarget[__0x.multiLineCursorText].contentText[pos].after = referenceObject;
+        });
+    } else {
+
+    }
+
+
+    // Object.keys(textOfSource.multiCursor.position)
+    // Object.keys(textOfSource.multiCursor.position)
+    // if (Object.keys(textOfSource.multiCursor.position))
+    // shallowEqual
+    // console.log(textOfSource);
+    // if (textOfSource.multiCursor.position)
+
+};
+
 const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentTextBufferType, SelectionDecorationStyle, leftMargin): void => {
+
     Object.entries(textOfSource).forEach(([key, textPosition], idx) => {
         const contentTextStyled = convertPositionToDecorationRenderOption(textPosition, SelectionDecorationStyle);;
         const hexKey = SELECTION_CONTENT_TEXT_NUMLINK[key];
@@ -46,6 +73,7 @@ const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentText
         }
         setSelectionTextbuffer(hexKey, textOftarget[hexKey].contentText.length);
     });
+    createSharedObjectSync(textOftarget, textOfSource);
 };
 
 

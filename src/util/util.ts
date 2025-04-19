@@ -136,6 +136,18 @@ const hrtimeToMS = (hrtime: [number, number]): number => (process.hrtime(hrtime)
  */
 const compareNumbers = (a: number, b: number): number => (a - b);
 
+const isObjectShallowEqual = (obj1: object, obj2: object) => {
+    const keys1 = Object.keys(obj1);
+    const keys2 = Object.keys(obj2);
+    if (keys1.length !== keys2.length) {
+        return false;
+    }
+
+    return keys1.every(key => obj2.hasOwnProperty(key) && obj1[key] === obj2[key]);
+};
+
+const isEntriesEqual = (a, b) => a.length === b.length && a.every((element, index) => element[0] === b[index][0] && element[1] === b[index][1]);
+
 export {
     fnv1aHash,
     readBits,
@@ -143,5 +155,7 @@ export {
     splitAndPosition,
     hexToRgbaStringLiteral,
     autoArrayPropertyObject,
-    compareNumbers
+    compareNumbers,
+    isObjectShallowEqual,
+    isEntriesEqual
 };
