@@ -62,17 +62,8 @@ const multiCursorHighlightRange = (editor: vscode.TextEditor, previousKey: numbe
     clearHighlight(editor.setDecorations, previousKey, blankRange);
     // index 0 - selection area
     // index 1 - to apply background color on line until cursor position.
-    applyDecoration(editor.setDecorations, highlightStyleList[__0x.multiCursor][0], editor.selections.reduce((acc: vscode.Range[], selection: vscode.Selection) => {
-        acc.push(createRangeSPEP(selection.start, selection.active));
-        return acc;
-    }, [] as vscode.Range[]));
-    applyDecoration(editor.setDecorations, highlightStyleList[__0x.multiCursor][1], editor.selections.reduce((acc: vscode.Range[], selection: vscode.Selection) => {
-        acc.push(createRangeNNNN(selection.active.line, 0, selection.active.line, selection.active.character));
-        return acc;
-    }, [] as vscode.Range[]));
-    // const editor = vscode.window.activeTextEditor as vscode.TextEditor;
-    // resetDecorationRange(editor, highlightStyleList[previousKey[0]]);
-    // highlightStyleList[previousKey[0]].forEach(resetHighlight(editor.setDecorations, resetRange));
+    applyDecoration(editor.setDecorations, highlightStyleList[__0x.multiCursor][0], [...editor.selections]);
+    applyDecoration(editor.setDecorations, highlightStyleList[__0x.multiCursor][1], [...editor.selections]);
 };
 
 const clearBuffer = (setDecorations: vscode.TextEditor["setDecorations"], resetRange: vscode.Range[]) => (buffer: vscode.TextEditorDecorationType): void => setDecorations(buffer, resetRange);

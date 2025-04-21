@@ -3,7 +3,7 @@ import * as regex from '../../util/regex.collection';
 import * as __0x from '../../constant/shared/numeric';
 import { CONFIG_SECTION, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_NUMLINK, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE } from '../../constant/config/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
-import { bindStatusContentTextState, setSelectionTextbuffer, syncReference } from '../../editor/status/selection';
+import { bindStatusContentTextState, setSelectionTextbuffer, syncrefernceTable } from '../../editor/status/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 import { isEntriesEqual } from '../../util/util';
 
@@ -40,21 +40,18 @@ const createSharedObjectSync = (textOftarget, textOfSource: any) => {
     if (isEntriesEqual(anchor, cursor)) {
         anchor.forEach(([pos, placeholder], idx) => {
             const referenceObject = textOftarget[__0x.multiLineAnchorText].contentText[pos].after;
-            syncReference(placeholder as string, referenceObject);
+            syncrefernceTable("mln_" + placeholder as string, referenceObject);
             textOftarget[__0x.multiLineCursorText].contentText[pos].after = referenceObject;
         });
     } else {
 
     }
 
-
-    // Object.keys(textOfSource.multiCursor.position)
-    // Object.keys(textOfSource.multiCursor.position)
-    // if (Object.keys(textOfSource.multiCursor.position))
-    // shallowEqual
-    // console.log(textOfSource);
-    // if (textOfSource.multiCursor.position)
-
+    console.log(textOftarget[__0x.multiCursorText]);
+    textOftarget[__0x.multiCursorText].position.forEach(([pos, placeholder], idx) => {
+        const referenceObject = textOftarget[__0x.multiCursorText].contentText[pos].after;
+        syncrefernceTable("mcs_" + placeholder as string, referenceObject);
+    });
 };
 
 const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentTextBufferType, SelectionDecorationStyle, leftMargin): void => {

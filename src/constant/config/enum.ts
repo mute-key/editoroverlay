@@ -202,3 +202,7 @@ export const enum DIAGNOSTIC_BIOME {
     ERR = 1 << 2,
 }
 
+export const enum NULL_COLLECTION { 
+    STRING = ""
+}
+
