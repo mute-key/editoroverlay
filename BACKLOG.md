@@ -2,6 +2,26 @@
 
 ```
 
+
+
+
+- [!] selection status does not work when a primary selection is more than 1 selection range 
+     (composite range). this is ofc, should work but it would take some time to implement.
+
+
+- [!] sometimes created decorationTypes does not have ascending decorationTypeID base on sequence, 
+      causing malformed statsus block to be displayed. the only fix is to reload the vscode.
+      need better method to have correct display order to prevent such an event.
+- [!] mutlti cursor selection lags and slow down on rapid-fire. need better code performace for faster response on UI.
+- [!] direct config update on settings.json leaves selection status text. 
+
+- [?] maybe applying preset should have some sort of indicator or message popup that configurations are being updated and will reload. 
+- [?] want to implement new status block for tasks in vscode or from terminal.
+
+
+
+
+
 - [!] mutlti cursor selection lags and slow down on rapid-fire. need faster response and better performance. 
 - [!] direct config update from json leaves selection status text. 
 

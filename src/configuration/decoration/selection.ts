@@ -5,7 +5,7 @@ import { CONFIG_SECTION, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_NUM
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { bindStatusContentTextState, setSelectionTextbuffer, syncrefernceTable } from '../../editor/status/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
-import { isEntriesEqual } from '../../util/util';
+import { autoArrayPropertyObject, isEntriesEqual } from '../../util/util';
 
 const convertPositionToDecorationRenderOption = (textPosition, SelectionDecorationStyle): void => {
     return textPosition.contentText.map((text, idx) => {
@@ -34,23 +34,35 @@ const buildSelectionTextDecorationRenderOption = (config: Type.SelectionDecorati
 };
 
 const createSharedObjectSync = (textOftarget, textOfSource: any) => {
+
+    const cursorOnly = Object.entries(textOfSource.cursorOnlyText.position);
+    cursorOnly.forEach(([pos, placeholder]) => {
+        const referenceObject = textOftarget[__0x.cursorOnlyText].contentText[pos].after;
+        syncrefernceTable(placeholder as string, __0x.cursorOnly, referenceObject);
+    });
+
+    const singleLine = Object.entries(textOfSource.singleLineText.position);
+    singleLine.forEach(([pos, placeholder]) => {
+        const referenceObject = textOftarget[__0x.singleLineText].contentText[pos].after;
+        syncrefernceTable(placeholder as string, __0x.singleLine, referenceObject);
+    });
+
     const anchor = Object.entries(textOfSource.multiLineAnchorText.position);
     const cursor = Object.entries(textOfSource.multiLineCursorText.position);
-
     if (isEntriesEqual(anchor, cursor)) {
         anchor.forEach(([pos, placeholder], idx) => {
             const referenceObject = textOftarget[__0x.multiLineAnchorText].contentText[pos].after;
-            syncrefernceTable("mln_" + placeholder as string, referenceObject);
             textOftarget[__0x.multiLineCursorText].contentText[pos].after = referenceObject;
+            syncrefernceTable(placeholder as string, __0x.multiLine, referenceObject);
         });
     } else {
 
     }
 
-    console.log(textOftarget[__0x.multiCursorText]);
-    textOftarget[__0x.multiCursorText].position.forEach(([pos, placeholder], idx) => {
+    const multiCursor = Object.entries(textOfSource.multiCursorText.position);
+    multiCursor.forEach(([pos, placeholder]) => {
         const referenceObject = textOftarget[__0x.multiCursorText].contentText[pos].after;
-        syncrefernceTable("mcs_" + placeholder as string, referenceObject);
+        syncrefernceTable(placeholder as string, __0x.multiCursor, referenceObject);
     });
 };
 
@@ -68,7 +80,7 @@ const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentText
                 textOftarget[hexKey].contentText[0].after['margin'] = leftMarginToMarginString(leftMargin);
             }
         }
-        setSelectionTextbuffer(hexKey, textOftarget[hexKey].contentText.length);
+        setSelectionTextbuffer(hexKey);
     });
     createSharedObjectSync(textOftarget, textOfSource);
 };

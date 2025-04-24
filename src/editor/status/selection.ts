@@ -2,9 +2,9 @@ import * as vscode from 'vscode';
 import * as Type from '../../type/type';
 import * as __0x from '../../constant/shared/numeric';
 import { INDENT_INFO, SELECTION_CONTENT_TEXT, SELECTION_KIND_LIST } from '../../constant/shared/object';
-import { NULL_COLLECTION, SELECTION_CONTENT_TEXT_CONFIG_KEY } from '../../constant/config/enum';
+import { SELECTION_CONTENT_TEXT_CONFIG_KEY } from '../../constant/config/enum';
 import { DECORATION_OPTION_CONFIG } from '../../constant/config/object';
-import { createLineRange, blankRange, createStartEndRangeOfSelection } from '../range';
+import { createLineRange, blankRange } from '../range';
 import { resetDecoration } from '../editor';
 
 /**
@@ -14,7 +14,6 @@ import { resetDecoration } from '../editor';
 const selectionContentText = {
     ...SELECTION_CONTENT_TEXT
 } as unknown as Type.StatusContentTextType;
-
 
 const indentInfo = {
     ...INDENT_INFO
@@ -33,6 +32,22 @@ const selectionTextBuffer = {
     [__0x.singleLineText]: [] as vscode.TextEditorDecorationType[],
     [__0x.multiLineAnchorText]: [] as vscode.TextEditorDecorationType[],
     [__0x.multiLineCursorText]: [] as vscode.TextEditorDecorationType[],
+    [__0x.multiCursorText]: [] as vscode.TextEditorDecorationType[]
+};
+
+const rangePointerTable = {
+    [__0x.cursorOnlyText]: undefined as any | vscode.Range,
+    [__0x.singleLineText]: undefined as any | vscode.Range,
+    [__0x.multiLineAnchorText]: undefined as any | vscode.Range,
+    [__0x.multiLineCursorText]: undefined as any | vscode.Range,
+    [__0x.multiCursorText]: [] as any | vscode.Range[]
+};
+
+const selectionDecorationOption = {
+    [__0x.cursorOnlyText]: [] as any,
+    [__0x.singleLineText]: [] as any,
+    [__0x.multiLineAnchorText]: [] as any,
+    [__0x.multiLineCursorText]: [] as any,
     [__0x.multiCursorText]: [] as any
 };
 
@@ -42,31 +57,6 @@ const selectionTextBuffer = {
  * automatically be de-referenced by the api as they are consumed.
  */
 const decorationOptionBuffer = { ...DECORATION_OPTION_CONFIG } as Type.DecorationRenderOptionType;
-
-/**
- * prepare selection status block buffer with pre-created vscode.decorationType(s)
- * so they do not need to be recreated on refresh. creating decorationType is costly, 
- * and it put some overhead by regenerating it's unique key as well as 
- * to vscode decoration registry.
- * 
- * @param hexKey 
- * @param size 
- * @returns 
- */
-const setSelectionTextbuffer = (hexKey: number, size: number): void => {
-    decorationOptionBuffer.isWholeLine = true;
-    decorationOptionBuffer.rangeBehavior = vscode.DecorationRangeBehavior.ClosedClosed;
-
-    if (hexKey === __0x.multiCursorText) {
-        return;
-    }
-
-    selectionTextBuffer[hexKey].splice(0);
-    selectionTextBuffer[hexKey].push(...selectionContentText[hexKey].contentText.map((decorationOption, idx) => {
-        decorationOptionBuffer.after = { ...decorationOption.after };
-        return vscode.window.createTextEditorDecorationType(decorationOption);
-    }));
-};
 
 /**
  * editor character in line index/column calculator
@@ -147,11 +137,11 @@ const multiCursorFn = {
 };
 
 const multiCursorOf = {
-    nth: () => 0,
-    count: () => 0,
-    ln: () => 0,
-    lc: () => 0,
-    char: () => 0,
+    nth: () => null,
+    count: () => null,
+    ln: () => null,
+    lc: () => null,
+    char: () => null,
 };
 
 /**
@@ -171,75 +161,50 @@ const selectionOf: Type.ContentTextStateType = {
 };
 
 /**
- * set decorationRenderOption to range on pre-created decroationType list in buffer based on index.
+ * prepare selection status block buffer with pre-created vscode.decorationType(s)
+ * so they do not need to be recreated on refresh. creating decorationType is costly, 
+ * and it put some overhead by regenerating it's unique key as well as 
+ * to vscode decoration registry.
  * 
- * this funciton is a callback attachment for selectionContentText object based on 
- * selection hexKey of __0x.cursorOnly, __0x.singleLine or __0x.multiLine.
- * 
- * if contentText of decorationRenderOption is a function reference, call the function 
- * with given the context to get the selection status values
- * 
+ * @param hexKey 
+ * @param size 
+ * @returns 
  */
-const contentTextFunc = (buffer: vscode.TextEditorDecorationType[], context, option) => (contentText: any | vscode.DecorationRenderOptions, idx: number): void => {
-    option.renderOptions = contentText;
-    if (typeof contentText.after.contentText !== 'string') {
-        decorationOptionBuffer.after = { ...contentText.after };
-        decorationOptionBuffer.after.contentText = String(decorationOptionBuffer.after.contentText(context));
-        option.renderOptions = decorationOptionBuffer;
+const setSelectionTextbuffer = (hexKey: number): void => {
+
+    decorationOptionBuffer.isWholeLine = true;
+    decorationOptionBuffer.rangeBehavior = vscode.DecorationRangeBehavior.ClosedClosed;
+
+    selectionTextBuffer[hexKey].push(...selectionContentText[hexKey].contentText.map((decorationOption) => {
+        decorationOptionBuffer.after = { ...decorationOption.after };
+        return vscode.window.createTextEditorDecorationType(decorationOption);
+    }));
+
+    selectionDecorationOption[hexKey]?.splice(0);
+    if (hexKey === __0x.multiCursorText) {
+        selectionContentText[hexKey].contentText.forEach(() => {
+            selectionDecorationOption[hexKey].push([]);
+        });
+        return;
+    } else {
+        selectionContentText[hexKey].contentText.forEach((contentText) => {
+            selectionDecorationOption[hexKey].push([{
+                get range() {
+                    return rangePointerTable[hexKey];
+                },
+                renderOptions: contentText
+            }]);
+        });
+
+        // for (let fidx = 0; fidx < selectionContentText[hexKey].contentText.length; fidx++) {
+        //     selectionDecorationOption[hexKey].push([{
+        //         get range() {
+        //             return rangePointerTable[hexKey];
+        //         },
+        //         renderOptions: selectionContentText[hexKey].contentText[fidx]
+        //     }]);
+        // }
     }
-    context.editor.setDecorations(buffer[idx], [option]);
-};
-
-/**
- * render function implementation for cursorOnly selection status block
- * 
- * @param editor 
- * @param previousKey 
- */
-const cursorOnlySelection = (editor: vscode.TextEditor, previousKey: number[]): void => {
-    clearSelectionTextBuffer(editor);                           // clear all other selection status buffer
-    const context = {                                           // status function context
-        idx: 0,
-        editor: editor
-    };
-    const buffer = selectionTextBuffer[__0x.cursorOnlyText];    // get pre-created decorationType buffer
-    const option = {                                            // options to be passed to decroationType
-        range: createLineRange(editor.selection.active),
-        renderOptions: {}
-    };
-    selectionContentText[__0x.cursorOnlyText]                   // iteration of decorationRenderOption objects
-        .contentText
-        .forEach(
-            contentTextFunc(
-                buffer,
-                context,
-                option));
-};
-
-/**
- * render function implementation for singleLine selection status block
- * 
- * @param editor 
- * @param previousKey 
- */
-const singleLineSelection = (editor: vscode.TextEditor, previousKey: number[]): void => {
-    clearBufferOfhexkey(editor.setDecorations, previousKey);    // clear previous selection status decoration rendered
-    const context = {                                           // status function context
-        idx: 0,
-        editor: editor
-    };
-    const buffer = selectionTextBuffer[__0x.singleLineText];    // get pre-created decorationType buffer
-    const option = {                                            // options to be passed to decroationType
-        range: createLineRange(editor.selection.active),
-        renderOptions: {}
-    };
-    selectionContentText[__0x.singleLineText]                   // iteration of decorationRenderOption objects
-        .contentText
-        .forEach(
-            contentTextFunc(
-                buffer,
-                context,
-                option));
 };
 
 /**
@@ -248,28 +213,23 @@ const singleLineSelection = (editor: vscode.TextEditor, previousKey: number[]): 
  * @param placehoder 
  * @param object 
  */
-const syncrefernceTable = (placehoder: string, refObj: object): void => {
-    refernceTable[placehoder] = refObj;
-};
-
-/** 
- * status reference replica for line count and character count
- * */
-const refernceTable = {
-    // multl line refefecen objects
-    mln_lc: {} as any | vscode.DecorationInstanceRenderOptions,
-    mln_char: {} as any | vscode.DecorationInstanceRenderOptions,
-    //  multl cursor refefecen objects
-    mcs_nth: {} as any | vscode.DecorationInstanceRenderOptions,
-    mcs_count: {} as any | vscode.DecorationInstanceRenderOptions,
-    mcs_ln: {} as any | vscode.DecorationInstanceRenderOptions,
-    mcs_lc: {} as any | vscode.DecorationInstanceRenderOptions,
-    mcs_char: {} as any | vscode.DecorationInstanceRenderOptions,
-};
-
-const optionGrid = {
-    range: {},
-    renderOptions: {}
+const syncrefernceTable = (placehoder: string, hexKey: number, refObj: object): void => {
+    switch (hexKey) {
+        case __0x.cursorOnly:
+            cursorOnlyStatusRef[placehoder] = refObj;
+            break;
+        case __0x.singleLine:
+            singleLinetatusRef[placehoder] = refObj;
+            break;
+        case __0x.multiLine:
+            multiLinetatusRef[placehoder] = refObj;
+            break;
+        case __0x.multiCursor:
+            console.log(placehoder, refObj);
+            multiCursorStatusRef[placehoder] = refObj;
+            break;
+        default: break;
+    }
 };
 
 /**
@@ -281,200 +241,230 @@ const optionGrid = {
  * @param countBuffer 
  * @returns 
  */
-type BufferedFuncSignature = (setDecorations: vscode.TextEditor['setDecorations'], buffer: vscode.TextEditorDecorationType[], channel: number,) => (renderOption: any | vscode.DecorationRenderOptions, idx: number) => void
+type BufferedFuncSignature = (setDecorations: vscode.TextEditor['setDecorations'], buffer: vscode.TextEditorDecorationType[]) => (renderOption: any | vscode.DecorationRenderOptions, idx: number) => void
 
-const contentTextFuncBuffered: BufferedFuncSignature = (setDecorations, buffer, channel) => (renderOption, idx) => {
-    renderBufferCH[channel][0].renderOptions = renderOption;   // set decorationRenderOption as is
-    setDecorations(buffer[idx], renderBufferCH[channel]);      // render on range channel 0 = anchor, 1 = active cursor
+const contentTextFuncBuffered: BufferedFuncSignature = (setDecorations, buffer) => (renderOption, idx) => {
+    setDecorations(buffer[idx], renderOption);
+};
+
+const cursorOnlyStatusRef = {
+    ln: undefined as any | vscode.DecorationInstanceRenderOptions,
+    col: undefined as any | vscode.DecorationInstanceRenderOptions,
+    zCol: undefined as any | vscode.DecorationInstanceRenderOptions,
 };
 
 /**
- * pre-create array for decroationOption array for both anchor and cursor
- * so that contentTextFuncBuffered() does not need to create an array on 
- * calling setDecoration, 
+ * render function implementation for cursorOnly selection status block
+ * 
+ * @param editor 
+ * @param previousKey 
  */
-const renderBufferCH = [
-    [Object.create(optionGrid)],
-    [Object.create(optionGrid)],
-    [Object.create(optionGrid)],
-    [Object.create(optionGrid)],
-    [Object.create(optionGrid)],
-];
+const cursorOnlySelection = (editor: vscode.TextEditor, previousKey: number[]): void => {
+    clearSelectionTextBuffer(editor);
 
-const multilineSelection = (editor: vscode.TextEditor, previousKey: number[]): void => {
-    __0x.multiLine !== previousKey[0] && clearBufferOfhexkey(editor.setDecorations, previousKey);
+    cursorOnlyStatusRef
+        .zCol
+        .contentText = columns.zCol({ editor }).toString();
 
-    refernceTable
-        .mln_lc
-        .contentText = multiLineFn.lc(editor).toString();           // update selection status references
-    refernceTable
-        .mln_char
-        .contentText = multiLineFn.char(editor).toString();
+    rangePointerTable[__0x.cursorOnlyText] = createLineRange(editor.selection.active);
 
-    renderBufferCH[0][0]
-        .range = createLineRange(editor.selection.anchor);          // set range on decoration channel 
-    renderBufferCH[1][0]
-        .range = createLineRange(editor.selection.active);
-
-    selectionContentText[__0x.multiLineAnchorText]                  // iterate decorationRenderOption objects 
-        .contentText
-        .forEach(
-            contentTextFuncBuffered(                                // callback attach to render decorationRenderObject 
-                editor.setDecorations,                              // on pre-created decorationType that already are in registry
-                selectionTextBuffer[__0x.multiLineAnchorText],
-                0));                                                // buffer channel index, 0 is anchor, 1 is active cursor
-
-    selectionContentText[__0x.multiLineCursorText]
-        .contentText
+    selectionDecorationOption[__0x.cursorOnlyText]
         .forEach(
             contentTextFuncBuffered(
                 editor.setDecorations,
-                selectionTextBuffer[__0x.multiLineCursorText],
-                1));
+                selectionTextBuffer[__0x.cursorOnlyText]));
 };
 
-// mcs_nth: {} as any | vscode.DecorationInstanceRenderOptions,
-// mcs_count: {} as any | vscode.DecorationInstanceRenderOptions,
-// mcs_ln: {} as any | vscode.DecorationInstanceRenderOptions,
-// mcs_lc: {} as any | vscode.DecorationInstanceRenderOptions,
-// mcs_char: {} as any | vscode.DecorationInstanceRenderOptions,
-
-// const multiCursorIndexBuffer: number[] = [];
-
-const asendingByLineNo = (a: vscode.Selection, b: vscode.Selection): number => (a.end.line - b.end.line);
-
-
-
-const selectionBuffer = [] as any; // as [number, vscode.DecroationType[], vscode.Range]
-
-const decorationBuffer = [[], [], [], [], []] as any;
-
-const contentTextFuncRefOnly = (setDecorations, option) => (decorationOption) => {
-    const decorationType = vscode.window.createTextEditorDecorationType(decorationOption);
-    option.renderOptions = decorationOption;    // set decorationRenderOption as is
-    setDecorations(decorationType, [option]);   // render on range channel 0 = anchor, 1 = active cursor
-    return decorationType;
-};
-
-const multiCursorContext = {
-    idx: "",
-    editor: Object.create(null),
-    pos: 0
-};
-
-const multiCursorMeta = {
-    cursorPosition: 0,
-    lc: 0,
-    char: 0,
-};
-
-const multiCursorBufferCh = [{ ...optionGrid }];
-
-const multiCursorStatus = (editor, pos) => {
-    const selectionText = selectionContentText[__0x.multiCursorText].contentText;
-    optionGrid.range = editor.selections[pos];
-    const selectionTextInfo = selectionText.map(contentTextFuncRefOnly(editor.setDecorations, optionGrid));
-    return [pos + 1, selectionTextInfo, editor.selections[pos]];
-};
-
-const updateStatus = (editor: vscode.TextEditor) => {
-
-    // multiCursorBufferCh[0].range = 
-    // multiCursorBufferCh[0].renderOptions = selectionContentText[__0x.multiCursorText].contentText[7];
-    // editor.setDecorations(selectionTextBuffer[__0x.multiCursorText][0][1][7], editor.selections);
-    // editor.setDecorations(selectionTextBuffer[__0x.multiCursorText][0][1][7], selectionContentText[__0x.multiCursorText].contentText[7]);
-    // const buffer = selectionTextBuffer[__0x.multiCursorText];
-    // let length = buffer.length;
-    // while (length--) {
-
-    //     multiCursorBufferCh[0].range = buffer[length][2];
-    //     multiCursorBufferCh[0].renderOptions = selectionContentText[__0x.multiCursorText].contentText[5];
-    //     editor.setDecorations(buffer[length][1][5], multiCursorBufferCh as any);
-    //     multiCursorBufferCh[0].renderOptions = selectionContentText[__0x.multiCursorText].contentText[7];
-    //     editor.setDecorations(buffer[length][1][7], multiCursorBufferCh as any);
-
-    //     // renderBufferCH[1][0].range = buffer[length][2];
-    // }
+const singleLinetatusRef = {
+    ln: undefined as any | vscode.DecorationInstanceRenderOptions,
+    char: undefined as any | vscode.DecorationInstanceRenderOptions,
 };
 
 /**
+ * render function implementation for singleLine selection status block
  * 
- * 
- * @param editor  
+ * @param editor 
  * @param previousKey 
  */
+const singleLineSelection = (editor: vscode.TextEditor, previousKey: number[]): void => {
+    clearBufferOfhexkey(editor.setDecorations, previousKey);
+
+    singleLinetatusRef
+        .char
+        .contentText = columns.zCol({ editor }).toString();
+
+    rangePointerTable[__0x.singleLineText] = createLineRange(editor.selection.active);
+
+    selectionDecorationOption[__0x.singleLineText]
+        .forEach(
+            contentTextFuncBuffered(
+                editor.setDecorations,
+                selectionTextBuffer[__0x.singleLineText]));
+};
+
+const multiLinetatusRef = {
+    ln: undefined as any | vscode.DecorationInstanceRenderOptions,
+    lc: undefined as any | vscode.DecorationInstanceRenderOptions,
+    char: undefined as any | vscode.DecorationInstanceRenderOptions,
+};
+
+const multilineSelection = (editor: vscode.TextEditor, previousKey: number[]) => {
+    __0x.multiLine !== previousKey[0] && clearBufferOfhexkey(editor.setDecorations, previousKey);
+
+    multiLinetatusRef
+        .lc
+        .contentText = multiLineFn.lc(editor).toString();           // update selection status references
+    multiLinetatusRef
+        .char
+        .contentText = multiLineFn.char(editor).toString();
+
+    rangePointerTable[__0x.multiLineAnchorText] = createLineRange(editor.selection.anchor);
+    rangePointerTable[__0x.multiLineCursorText] = createLineRange(editor.selection.active);
+
+    selectionDecorationOption[__0x.multiLineAnchorText]
+        .forEach(
+            contentTextFuncBuffered(
+                editor.setDecorations,
+                selectionTextBuffer[__0x.multiLineAnchorText]));
+
+    selectionDecorationOption[__0x.multiLineCursorText]
+        .forEach(
+            contentTextFuncBuffered(
+                editor.setDecorations,
+                selectionTextBuffer[__0x.multiLineCursorText]));
+};
+
+const multiCursorStatusRef = {
+    nth: undefined as any | vscode.DecorationInstanceRenderOptions,
+    count: undefined as any | vscode.DecorationInstanceRenderOptions,
+    ln: undefined as any | vscode.DecorationInstanceRenderOptions,
+    lc: undefined as any | vscode.DecorationInstanceRenderOptions,
+    char: undefined as any | vscode.DecorationInstanceRenderOptions,
+};
+
+
+const multiCursorState = {
+    context: {
+        editor: {} as any | vscode.TextEditor,
+        pos: 0
+    },
+    selections: [] as vscode.Selection[],
+    accumulate: false,
+    nthPosition: 1,
+    statusIndex: 1,
+    baseLine: -1,
+    baseShift: false,
+    index: 0,
+    char: 0,
+};
+
+const clearMultiCursorState = () => {
+    multiCursorState.selections = [];
+    multiCursorState.index = 0;
+    multiCursorState.statusIndex = 0;
+    multiCursorState.context.pos = 0;
+    multiCursorState.baseShift = false;
+    multiCursorState.baseLine = -1;
+    multiCursorState.context.editor = {};
+};
+
+const insertMultiCursor = (selectionIndex: number) => {
+
+    if (multiCursorState.selections[selectionIndex].end.line < multiCursorState.baseLine) {
+        if (!multiCursorState.baseShift) {
+            multiCursorState.statusIndex = 0;
+            multiCursorState.baseShift = true;
+        }
+
+        selectionDecorationOption[__0x.multiCursorText][multiCursorState.nthPosition].forEach((nth, idx) => {
+            
+            if (idx < selectionIndex - (multiCursorState.statusIndex)-1) {
+                selectionDecorationOption[__0x.multiCursorText][multiCursorState.nthPosition][idx].renderOptions.after.shiftIndex(1);
+                console.log(selectionDecorationOption[__0x.multiCursorText][multiCursorState.nthPosition][idx].renderOptions.after.contentText);
+            }
+        });
+    }
+
+    if (selectionIndex - 1 > 0 && multiCursorState.selections[selectionIndex - 1].end.line === multiCursorState.selections[selectionIndex].end.line) {
+        console.log(multiCursorState.selections[selectionIndex - 1].end.line, multiCursorState.selections[selectionIndex].end.line);
+        selectionDecorationOption[__0x.multiCursorText][multiCursorState.nthPosition][selectionIndex - 1].renderOptions.after.addIndex(multiCursorState.statusIndex + 1);
+        return;
+    }
+
+    const nthPlaceholder = selectionContentText[__0x.multiCursorText].contentText[multiCursorState.nthPosition];
+    nthPlaceholder.after = {
+        ...nthPlaceholder.after,
+        indexList: [multiCursorState.statusIndex + 1],
+        addIndex(i) {
+            this.indexList.push(i);
+        },
+        shiftIndex(shift) {
+            this.indexList.forEach((i, idx) => this.indexList[idx] += shift);
+        },
+        get contentText() {
+            return this.indexList.join(',');
+        },
+    };
+
+    selectionContentText[__0x.multiCursorText].contentText.forEach((contentText, idx) => {
+        selectionDecorationOption[__0x.multiCursorText][idx].push({
+            get range() {
+                return multiCursorState.selections[selectionIndex];
+            },
+            renderOptions: idx === multiCursorState.nthPosition ? { ...contentText } : contentText
+        });
+    });
+    
+};
+
+
 const multiCursorSelection = (editor: vscode.TextEditor, previousKey: number[]): void => {
+
     __0x.multiCursor !== previousKey[0] && (() => {
         clearBufferOfhexkey(editor.setDecorations, previousKey);
-
-        multiCursorMeta.cursorPosition = 0;
-        multiCursorMeta.lc = 0;
-        multiCursorMeta.char = 0;
-
-        selectionTextBuffer[__0x.multiCursorText].push(multiCursorStatus(editor, multiCursorMeta.cursorPosition));
-        multiCursorMeta.cursorPosition++;
-        multiCursorContext.idx = '';
-        multiCursorContext.editor = editor;
-        multiCursorContext.pos = multiCursorMeta.cursorPosition;
+        clearMultiCursorState();
+        multiCursorState.context.editor = editor;
+        multiCursorState.context.pos = multiCursorState.index;
+        multiCursorState.selections.push(editor.selections[0]);
+        multiCursorState.char = multiCursorState.char + multiCursorFn.char(multiCursorState.context);
+        insertMultiCursor(multiCursorState.index);
+        multiCursorState.baseLine = editor.selections[0].end.line;
+        multiCursorState.index++;
+        multiCursorState.statusIndex++;
     })();
 
-    multiCursorContext.editor = editor;
-    multiCursorContext.pos = multiCursorMeta.cursorPosition;
-    refernceTable.mcs_lc.contentText = multiCursorFn.lc(multiCursorContext).toString();
-    multiCursorMeta.char = multiCursorMeta.char + multiCursorFn.char(multiCursorContext);
-    refernceTable.mcs_char.contentText = multiCursorMeta.char.toString();
-    updateStatus(editor);
+    const selection = editor.selections[multiCursorState.index];
+    multiCursorState.selections.push(selection);
 
-    selectionTextBuffer[__0x.multiCursorText].push(multiCursorStatus(editor, multiCursorMeta.cursorPosition));
+    multiCursorStatusRef
+        .count
+        .contentText = multiCursorFn.count(multiCursorState.context).toString();
 
-    multiCursorMeta.cursorPosition++;
+    multiCursorStatusRef
+        .lc
+        .contentText = multiCursorFn.lc(multiCursorState.context).toString();
 
-
-    // console.log(selectionTextBuffer[__0x.multiCursorText]);
-
-    // let widx = 0;
-    // while (widx < targetSelection.length) {
-
-    //     const context = {
-    //         idx: '',
-    //         editor: editor,
-    //         pos: multiCursorState[1]
-    //     };
-
-    //     const selectionText = selectionContentText[__0x.multiCursorText].contentText;
-    //     const selectionTextInfo = selectionText.map(decorationOption => vscode.window.createTextEditorDecorationType(decorationOption));
-    //     const range = createStartEndRangeOfSelection(editor.selections[multiCursorState[1]]);
-
-    //     const option = { ...optionGrid };
-    //     option.range = range;
-
-    //     selectionText
-    //         .forEach(
-    //             contentTextFunc(
-    //                 selectionTextInfo,
-    //                 context,
-    //                 option));
+    multiCursorState.char += multiCursorFn.char(multiCursorState.context);
+    multiCursorStatusRef
+        .char
+        .contentText = multiCursorState.char.toString();
 
 
+    insertMultiCursor(multiCursorState.index);
+    multiCursorState.index++;
+    multiCursorState.statusIndex++;
 
-    //     multiCursorState[2] += multiCursorFn.lc(context);
-    //     multiCursorState[3] += multiCursorFn.char(context);
+    multiCursorState.selections.forEach((selection, idx) => {
+        rangePointerTable[__0x.multiCursorText][idx] = selection;
+    });
 
-    //     refernceTable
-    //         .mcs_lc
-    //         .contentText = multiCursorState[2].toString();
-    //     refernceTable
-    //         .mcs_char
-    //         .contentText = multiCursorState[3].toString();
-    //     multiCursorState[1]++;
-    //     widx++;
-    // }
-
-    // console.log(selectionTextBuffer[__0x.multiCursorText]);
+    selectionTextBuffer[__0x.multiCursorText].forEach((decorationType, idx) => {
+        editor.setDecorations(decorationType, selectionDecorationOption[__0x.multiCursorText][idx]);
+    });
 };
 
 const clearSelectionTextBuffer = (editor: vscode.TextEditor): void => {
-    SELECTION_KIND_LIST.forEach(hexKey => clearBufferOfhexkey(editor.setDecorations, [hexKey]));
+    SELECTION_KIND_LIST?.forEach(hexKey => clearBufferOfhexkey(editor.setDecorations, [hexKey]));
 };
 
 const clearDisposeBuffer = (setDecorations: vscode.TextEditor["setDecorations"]) =>
@@ -496,10 +486,15 @@ const clearBufferOfhexkey = (setDecorations: vscode.TextEditor["setDecorations"]
             selectionTextBuffer[__0x.multiLineCursorText].forEach(resetDecoration(setDecorations));
             break;
         case __0x.multiCursor:
-            for (const selection of selectionTextBuffer[__0x.multiCursorText]) {
-                selection[1].forEach(clearDisposeBuffer(setDecorations));
-            }
-            selectionTextBuffer[__0x.multiCursorText] = [];
+            clearMultiCursorState();
+            selectionTextBuffer[__0x.multiCursorText].forEach(resetDecoration(setDecorations));
+            selectionDecorationOption[__0x.multiCursorText].forEach((option, idx) => {
+                selectionDecorationOption[__0x.multiCursorText][idx] = [];
+            });
+            // for (const selection of selectionTextBuffer[__0x.multiCursorText]) {
+            //     selection[1].forEach(clearDisposeBuffer(setDecorations));
+            // }
+            // selectionTextBuffer[__0x.multiCursorText] = [];
             break;
         default:
             break;
@@ -513,7 +508,13 @@ const selectionTextInfoSplit = {
     [__0x.multiCursor]: (editor: vscode.TextEditor, previousKey: number[]) => multiCursorSelection(editor, previousKey)
 };
 
-const bindStatusContentTextState = (): Type.BindContentTextStateType => {
+type BindContentTextStateType = {
+    functionOf: Type.ContentTextStateType,
+    textOf: Type.StatusContentTextType,
+    infoOf: Type.IndentInfoType
+}
+
+const bindStatusContentTextState = (): BindContentTextStateType => {
     return {
         functionOf: selectionOf,
         textOf: selectionContentText,
