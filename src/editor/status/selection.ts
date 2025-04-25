@@ -30,9 +30,15 @@ const indentInfo = {
 const selectionTextBuffer = {
     [__0x.cursorOnlyText]: [] as vscode.TextEditorDecorationType[],
     [__0x.singleLineText]: [] as vscode.TextEditorDecorationType[],
-    [__0x.multiLineAnchorText]: [] as vscode.TextEditorDecorationType[],
-    [__0x.multiLineCursorText]: [] as vscode.TextEditorDecorationType[],
+    [__0x.multiLineText]: [] as vscode.TextEditorDecorationType[],
     [__0x.multiCursorText]: [] as vscode.TextEditorDecorationType[]
+};
+
+const selectionDecorationOption = {
+    [__0x.cursorOnlyText]: [] as any,
+    [__0x.singleLineText]: [] as any,
+    [__0x.multiLineText]: [] as any,
+    [__0x.multiCursorText]: [] as any
 };
 
 const rangePointerTable = {
@@ -43,13 +49,7 @@ const rangePointerTable = {
     [__0x.multiCursorText]: [] as any | vscode.Range[]
 };
 
-const selectionDecorationOption = {
-    [__0x.cursorOnlyText]: [] as any,
-    [__0x.singleLineText]: [] as any,
-    [__0x.multiLineAnchorText]: [] as any,
-    [__0x.multiLineCursorText]: [] as any,
-    [__0x.multiCursorText]: [] as any
-};
+
 
 /**
  * will work as deocorationRenderOption buffer, but will not be copied
@@ -170,40 +170,64 @@ const selectionOf: Type.ContentTextStateType = {
  * @param size 
  * @returns 
  */
-const setSelectionTextbuffer = (hexKey: number): void => {
+const setSelectionTextbuffer = (hexKey: number, length: number): void => {
 
     decorationOptionBuffer.isWholeLine = true;
     decorationOptionBuffer.rangeBehavior = vscode.DecorationRangeBehavior.ClosedClosed;
 
-    selectionTextBuffer[hexKey].push(...selectionContentText[hexKey].contentText.map((decorationOption) => {
-        decorationOptionBuffer.after = { ...decorationOption.after };
-        return vscode.window.createTextEditorDecorationType(decorationOption);
-    }));
+    let lengthBuffer = length;
+    while (lengthBuffer--) {
+        const decorationType = vscode.window.createTextEditorDecorationType(decorationOptionBuffer);
+        selectionTextBuffer[hexKey].push(decorationType);
+    }
 
     selectionDecorationOption[hexKey]?.splice(0);
-    if (hexKey === __0x.multiCursorText) {
-        selectionContentText[hexKey].contentText.forEach(() => {
-            selectionDecorationOption[hexKey].push([]);
-        });
-        return;
-    } else {
-        selectionContentText[hexKey].contentText.forEach((contentText) => {
-            selectionDecorationOption[hexKey].push([{
-                get range() {
-                    return rangePointerTable[hexKey];
-                },
-                renderOptions: contentText
-            }]);
-        });
+    switch (hexKey) {
+        case __0x.cursorOnlyText:
+            selectionContentText[hexKey].contentText.forEach((contentText) => {
+                selectionDecorationOption[hexKey].push([{
+                    get range() {
+                        return rangePointerTable[hexKey];
+                    },
+                    renderOptions: contentText
+                }]);
+            });
+            break;
+        case __0x.singleLineText:
+            selectionContentText[hexKey].contentText.forEach((contentText) => {
+                selectionDecorationOption[hexKey].push([{
+                    get range() {
+                        return rangePointerTable[hexKey];
+                    },
+                    renderOptions: contentText
+                }]);
+            });
+            break;
+        case __0x.multiLineText:
+            selectionDecorationOption[hexKey].length = length;
+            selectionDecorationOption[hexKey].fill(...[]);
+            selectionTextBuffer[hexKey].forEach((option, idx) => {
+                selectionDecorationOption[hexKey][idx] = [];
+                selectionDecorationOption[hexKey][idx].push({
+                    get range() {
+                        return rangePointerTable[__0x.multiLineAnchorText];
+                    },
+                    renderOptions: selectionContentText[__0x.multiLineAnchorText].contentText[idx]
+                }, {
+                    get range() {
+                        return rangePointerTable[__0x.multiLineCursorText];
+                    },
+                    renderOptions: selectionContentText[__0x.multiLineCursorText].contentText[idx]
+                });
+            });
+            break;
+        case __0x.multiCursorText:
+            selectionContentText[hexKey].contentText.forEach(() => {
+                selectionDecorationOption[hexKey].push([]);
+            });
+            break;
 
-        // for (let fidx = 0; fidx < selectionContentText[hexKey].contentText.length; fidx++) {
-        //     selectionDecorationOption[hexKey].push([{
-        //         get range() {
-        //             return rangePointerTable[hexKey];
-        //         },
-        //         renderOptions: selectionContentText[hexKey].contentText[fidx]
-        //     }]);
-        // }
+        default: break;
     }
 };
 
@@ -225,7 +249,6 @@ const syncrefernceTable = (placehoder: string, hexKey: number, refObj: object): 
             multiLinetatusRef[placehoder] = refObj;
             break;
         case __0x.multiCursor:
-            console.log(placehoder, refObj);
             multiCursorStatusRef[placehoder] = refObj;
             break;
         default: break;
@@ -243,8 +266,8 @@ const syncrefernceTable = (placehoder: string, hexKey: number, refObj: object): 
  */
 type BufferedFuncSignature = (setDecorations: vscode.TextEditor['setDecorations'], buffer: vscode.TextEditorDecorationType[]) => (renderOption: any | vscode.DecorationRenderOptions, idx: number) => void
 
-const contentTextFuncBuffered: BufferedFuncSignature = (setDecorations, buffer) => (renderOption, idx) => {
-    setDecorations(buffer[idx], renderOption);
+const contentTextFuncBuffered: BufferedFuncSignature = (setDecorations, buffer) => async (renderOption, idx) => {
+    await setDecorations(buffer[idx], renderOption);
 };
 
 const cursorOnlyStatusRef = {
@@ -321,17 +344,11 @@ const multilineSelection = (editor: vscode.TextEditor, previousKey: number[]) =>
     rangePointerTable[__0x.multiLineAnchorText] = createLineRange(editor.selection.anchor);
     rangePointerTable[__0x.multiLineCursorText] = createLineRange(editor.selection.active);
 
-    selectionDecorationOption[__0x.multiLineAnchorText]
+    selectionDecorationOption[__0x.multiLineText]
         .forEach(
             contentTextFuncBuffered(
                 editor.setDecorations,
-                selectionTextBuffer[__0x.multiLineAnchorText]));
-
-    selectionDecorationOption[__0x.multiLineCursorText]
-        .forEach(
-            contentTextFuncBuffered(
-                editor.setDecorations,
-                selectionTextBuffer[__0x.multiLineCursorText]));
+                selectionTextBuffer[__0x.multiLineText]));
 };
 
 const multiCursorStatusRef = {
@@ -377,16 +394,14 @@ const insertMultiCursor = (selectionIndex: number) => {
         }
 
         selectionDecorationOption[__0x.multiCursorText][multiCursorState.nthPosition].forEach((nth, idx) => {
-            
-            if (idx < selectionIndex - (multiCursorState.statusIndex)-1) {
+
+            if (idx < selectionIndex - (multiCursorState.statusIndex) - 1) {
                 selectionDecorationOption[__0x.multiCursorText][multiCursorState.nthPosition][idx].renderOptions.after.shiftIndex(1);
-                console.log(selectionDecorationOption[__0x.multiCursorText][multiCursorState.nthPosition][idx].renderOptions.after.contentText);
             }
         });
     }
 
     if (selectionIndex - 1 > 0 && multiCursorState.selections[selectionIndex - 1].end.line === multiCursorState.selections[selectionIndex].end.line) {
-        console.log(multiCursorState.selections[selectionIndex - 1].end.line, multiCursorState.selections[selectionIndex].end.line);
         selectionDecorationOption[__0x.multiCursorText][multiCursorState.nthPosition][selectionIndex - 1].renderOptions.after.addIndex(multiCursorState.statusIndex + 1);
         return;
     }
@@ -414,9 +429,7 @@ const insertMultiCursor = (selectionIndex: number) => {
             renderOptions: idx === multiCursorState.nthPosition ? { ...contentText } : contentText
         });
     });
-    
 };
-
 
 const multiCursorSelection = (editor: vscode.TextEditor, previousKey: number[]): void => {
 
@@ -449,7 +462,6 @@ const multiCursorSelection = (editor: vscode.TextEditor, previousKey: number[]):
         .char
         .contentText = multiCursorState.char.toString();
 
-
     insertMultiCursor(multiCursorState.index);
     multiCursorState.index++;
     multiCursorState.statusIndex++;
@@ -473,6 +485,8 @@ const clearDisposeBuffer = (setDecorations: vscode.TextEditor["setDecorations"])
         buffer.dispose();
     };
 
+const oneDimensionBuffer = __0x.cursorOnlyText & __0x.singleLineText & __0x.multiLineText;
+
 const clearBufferOfhexkey = (setDecorations: vscode.TextEditor["setDecorations"], previousKey: number[]): void => {
     switch (previousKey[0]) {
         case __0x.cursorOnly:
@@ -482,8 +496,7 @@ const clearBufferOfhexkey = (setDecorations: vscode.TextEditor["setDecorations"]
             selectionTextBuffer[__0x.singleLineText].forEach(resetDecoration(setDecorations));
             break;
         case __0x.multiLine:
-            selectionTextBuffer[__0x.multiLineAnchorText].forEach(resetDecoration(setDecorations));
-            selectionTextBuffer[__0x.multiLineCursorText].forEach(resetDecoration(setDecorations));
+            selectionTextBuffer[__0x.multiLineText].forEach(resetDecoration(setDecorations));
             break;
         case __0x.multiCursor:
             clearMultiCursorState();
@@ -491,10 +504,6 @@ const clearBufferOfhexkey = (setDecorations: vscode.TextEditor["setDecorations"]
             selectionDecorationOption[__0x.multiCursorText].forEach((option, idx) => {
                 selectionDecorationOption[__0x.multiCursorText][idx] = [];
             });
-            // for (const selection of selectionTextBuffer[__0x.multiCursorText]) {
-            //     selection[1].forEach(clearDisposeBuffer(setDecorations));
-            // }
-            // selectionTextBuffer[__0x.multiCursorText] = [];
             break;
         default:
             break;

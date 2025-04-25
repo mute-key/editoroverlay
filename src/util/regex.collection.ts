@@ -79,6 +79,8 @@ const zeroColumn = /(\${zCol})/s;
 
 const lineCount = /(\${lc})/s;
 
+const linePosition = /(\${pos})/s;
+
 const lineNumber = /(\${ln})/s;
 
 const character = /(\${char})/s;

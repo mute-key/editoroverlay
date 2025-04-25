@@ -5,7 +5,7 @@ import { CONFIG_SECTION, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_NUM
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { bindStatusContentTextState, setSelectionTextbuffer, syncrefernceTable } from '../../editor/status/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
-import { autoArrayPropertyObject, isEntriesEqual } from '../../util/util';
+import { isEntriesEqual } from '../../util/util';
 
 const convertPositionToDecorationRenderOption = (textPosition, SelectionDecorationStyle): void => {
     return textPosition.contentText.map((text, idx) => {
@@ -68,6 +68,7 @@ const createSharedObjectSync = (textOftarget, textOfSource: any) => {
 
 const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentTextBufferType, SelectionDecorationStyle, leftMargin): void => {
 
+
     Object.entries(textOfSource).forEach(([key, textPosition], idx) => {
         const contentTextStyled = convertPositionToDecorationRenderOption(textPosition, SelectionDecorationStyle);;
         const hexKey = SELECTION_CONTENT_TEXT_NUMLINK[key];
@@ -80,7 +81,15 @@ const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentText
                 textOftarget[hexKey].contentText[0].after['margin'] = leftMarginToMarginString(leftMargin);
             }
         }
-        setSelectionTextbuffer(hexKey);
+    });
+
+    [
+        [__0x.cursorOnlyText, textOftarget[__0x.cursorOnlyText].contentText.length],
+        [__0x.singleLineText, textOftarget[__0x.singleLineText].contentText.length],
+        [__0x.multiLineText, textOftarget[__0x.multiLineAnchorText].contentText.length],
+        [__0x.multiCursorText, textOftarget[__0x.multiCursorText].contentText.length]
+    ].forEach(([hexKey, length]) => {
+        setSelectionTextbuffer(hexKey, length);
     });
     createSharedObjectSync(textOftarget, textOfSource);
 };

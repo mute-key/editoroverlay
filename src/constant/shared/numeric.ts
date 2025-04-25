@@ -67,28 +67,30 @@ export const multiCursor = HEX_SELECTION_TYPE.MULTI_CURSOR;
 export const enum HEX_SELECTION_TEXT {
     CURSOR_ONLY_TEXT = 0x0201,
     SINGLE_LINE_TEXT = 0x0202,
-    MULTI_LINE_CURSOR_TEXT = 0x0203,
-    MULTI_LINE_ANCHOR_TEXT = 0x0204,
-    MULTI_CURSOR_TEXT = 0x0205,
+    MULTI_LINE_TEXT = 0x0203,
+    MULTI_LINE_CURSOR_TEXT = 0x0204,
+    MULTI_LINE_ANCHOR_TEXT = 0x0205,
+    MULTI_CURSOR_TEXT = 0x0206,
 }
 
 export const cursorOnlyText = HEX_SELECTION_TEXT.CURSOR_ONLY_TEXT;
 export const singleLineText = HEX_SELECTION_TEXT.SINGLE_LINE_TEXT;
+export const multiLineText = HEX_SELECTION_TEXT.MULTI_LINE_TEXT;
 export const multiLineCursorText = HEX_SELECTION_TEXT.MULTI_LINE_CURSOR_TEXT;
 export const multiLineAnchorText = HEX_SELECTION_TEXT.MULTI_LINE_ANCHOR_TEXT;
 export const multiCursorText = HEX_SELECTION_TEXT.MULTI_CURSOR_TEXT;
 
 export const enum HEX_MULTILINE_FN {
-    LC = 0x0206,    // 518
-    CHAR = 0x0207,  // 519
+    LC = 0x0207,    // 518
+    CHAR = 0x0208,  // 519
 }
 
 export const multiLineLineCountHex = HEX_MULTILINE_FN.LC;
 export const multiLineChararcterHex = HEX_MULTILINE_FN.CHAR;
 
 export const enum HEX_MULTI_CURSOR_FN {
-    LC = 0x0208,    // 520
-    CHAR = 0x0209,  // 521
+    LC = 0x0209,    // 520
+    CHAR = 0x0210,  // 521
 }
 
 export const multiCursorLineCountHex = HEX_MULTI_CURSOR_FN.LC;
@@ -181,6 +183,14 @@ export const lineEqual = DIAGNOSTIC_PROBLEM_LINE_GLYPH.LINE_EQUAL;
 export const lineUp = DIAGNOSTIC_PROBLEM_LINE_GLYPH.LINE_UP;
 export const lineDown = DIAGNOSTIC_PROBLEM_LINE_GLYPH.LINE_DOWN;
 
+export const editorWarningTotal = HEX_DIAGNOSTIC_STATUS_TEXT_KIND.EDITOR + DIAGNOSTIC_STATE.WARNING;
+export const editorErrorTotal = HEX_DIAGNOSTIC_STATUS_TEXT_KIND.EDITOR + DIAGNOSTIC_STATE.ERROR;
+export const workspaceWarningSource = HEX_DIAGNOSTIC_STATUS_TEXT_KIND.WORKSPACE + DIAGNOSTIC_STATE.WARNING + DIAGNOSTIC_STATE.SOURCE;
+export const workspaceWarningTotal = HEX_DIAGNOSTIC_STATUS_TEXT_KIND.WORKSPACE + DIAGNOSTIC_STATE.WARNING + DIAGNOSTIC_STATE.TOTAL;
+export const workspaceErrorSource = HEX_DIAGNOSTIC_STATUS_TEXT_KIND.WORKSPACE + DIAGNOSTIC_STATE.ERROR + DIAGNOSTIC_STATE.SOURCE;
+export const workspaceErrorTotal = HEX_DIAGNOSTIC_STATUS_TEXT_KIND.WORKSPACE + DIAGNOSTIC_STATE.ERROR + DIAGNOSTIC_STATE.TOTAL;
+
+
 //::==============================================================================
 //::[ DIAGNOSTIC STATUS ] 0x00, 37 -> 218
 //::==============================================================================
@@ -210,6 +220,8 @@ export const editorWarnWorkspaceWarnErr = DIAGNOSTIC_STATE_SIGNATURE.E_WARN_W_WA
 export const editorErrWorkspaceErr = DIAGNOSTIC_STATE_SIGNATURE.E_ERR_W_ERR;
 export const editorErrWorkspaceWarnErr = DIAGNOSTIC_STATE_SIGNATURE.E_ERR_W_WARN_ERR;
 export const editorWarnErrWorkspaceWarnErr = DIAGNOSTIC_STATE_SIGNATURE.E_WARN_ERR_W_WARN_ERR;
+
+
 
 //::==============================================================================
 //::[ MISC ] 0x1000, 00 is reserved.

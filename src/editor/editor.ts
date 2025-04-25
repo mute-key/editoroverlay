@@ -98,7 +98,7 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): void => {
 
         if (config.generalConfigInfo.diagnosticTextEnabled && (numKey === __0x.cursorOnly || numKey === __0x.singleLine)) {
             callList.push(editModeCheck);
-        } else {
+        } else if (config.generalConfigInfo.diagnosticTextEnabled) {
             callList.push(diagnosticInfo(decorationState));
         }
 

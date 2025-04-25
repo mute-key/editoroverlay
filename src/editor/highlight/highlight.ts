@@ -15,7 +15,7 @@ const borderPositionInfo = {
 
 const cursorOnlyHighlightRange = (editor: vscode.TextEditor, previousKey: number[]): void => {
     __0x.cursorOnly !== previousKey[0] && clearEveryHighlight(editor);
-    
+
     applyDecoration(editor.setDecorations, highlightStyleList[__0x.cursorOnly][0], [createLineRange(editor.selection.active)]);
     // const borderConfig: Type.BorderPositionParserType = borderPositionInfo[borderConfigSymlink] as Type.BorderPositionParserType;
     // highlightStyleList[previousKey[0]].forEach(resetHighlight(editor.setDecorations, resetRange));
@@ -48,14 +48,34 @@ const singelLineHighlightRange = (editor: vscode.TextEditor, previousKey: number
     applyDecoration(editor.setDecorations, highlightStyleList[__0x.singleLine][0], [createRangeSPEP(editor.selection.start, editor.selection.end)]);
 };
 
-const multiLineHighlightRange = (editor: vscode.TextEditor, previousKey: number[]) => {
+// const multiLineHighlightRange = (editor: vscode.TextEditor, previousKey: number[]) => {
+//     __0x.multiLine !== previousKey[0] && clearHighlight(editor.setDecorations, previousKey, blankRange);
+//     // index 0 - top border
+//     // index 1 - bottom border
+//     // index 2 - background color only for the range inbetween 0 and 1.
+//     applyDecoration(editor.setDecorations, highlightStyleList[__0x.multiLine][0], [createLineRange(editor.selection.start)]);
+//     applyDecoration(editor.setDecorations, highlightStyleList[__0x.multiLine][1], [createLineRange(editor.selection.end)]);
+//     applyDecoration(editor.setDecorations, highlightStyleList[__0x.multiLine][2], [editor.selection]);
+// };
+
+
+const multiLineOptionCH = [
+    [Object.create(null)] as any | vscode.Range,
+    [Object.create(null)],
+    [Object.create(null)],
+];
+
+const multiLineHighlightRange = async (editor: vscode.TextEditor, previousKey: number[]) => {
     __0x.multiLine !== previousKey[0] && clearHighlight(editor.setDecorations, previousKey, blankRange);
     // index 0 - top border
     // index 1 - bottom border
     // index 2 - background color only for the range inbetween 0 and 1.
-    applyDecoration(editor.setDecorations, highlightStyleList[__0x.multiLine][0], [createLineRange(editor.selection.start)]);
-    applyDecoration(editor.setDecorations, highlightStyleList[__0x.multiLine][1], [createLineRange(editor.selection.end)]);
-    applyDecoration(editor.setDecorations, highlightStyleList[__0x.multiLine][2], [editor.selection]);
+    multiLineOptionCH[0][0] = createLineRange(editor.selection.start);
+    multiLineOptionCH[1][0] = createLineRange(editor.selection.end);
+    multiLineOptionCH[2][0] = editor.selection;
+    await editor.setDecorations(highlightStyleList[__0x.multiLine][0], multiLineOptionCH[0] as any);
+    await editor.setDecorations(highlightStyleList[__0x.multiLine][1], multiLineOptionCH[1] as any);
+    await editor.setDecorations(highlightStyleList[__0x.multiLine][2], multiLineOptionCH[2] as any);
 };
 
 const multiCursorHighlightRange = (editor: vscode.TextEditor, previousKey: number[]): void => {

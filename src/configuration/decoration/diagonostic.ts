@@ -5,11 +5,11 @@ import * as __$ from '../../constant/shared/symbol';
 import * as regex from '../../util/regex.collection';
 import { CONFIG_SECTION, DECORATION_OPTION_LINKER, DIAGNOSTIC_ALL_PLACEHOLDER_LINKER, DIAGNOSTIC_CONFIG, DIAGNOSTIC_CONTENT_TEXT_LIST, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM, DIAGNOSTIC_DECORATION_STYLE, DIAGNOSTIC_DECORATION_TEXT_KIND, DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER, DIAGNOSTIC_STYLE_LIST, DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER } from '../../constant/config/object';
 import { DIAGNOSTIC_BIOME, DIAGNOSTIC_TEXT_STYLE_KEY } from '../../constant/config/enum';
-import { DIAGNOSTIC_PROBLEM_LIST } from '../../constant/shared/object';
+import { DIAGNOSTIC_CONTENT_TEXT, DIAGNOSTIC_ENTRY_LIST, DIAGNOSTIC_PROBLEM_LIST } from '../../constant/shared/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { sanitizeConfigValue } from '../shared/validation';
 import { convertToDecorationRenderOption, setContentTextOnDecorationRenderOption } from '../shared/decoration';
-import { bindDiagnosticContentTextState, initializeStateBuffer, reloadContentText, setDiagonosticTextbuffer } from '../../editor/status/diagnostic';
+import { bindDiagnosticContentTextState, composeRenderOption, initializeStateBuffer, reloadContentText, setDiagonosticTextbuffer } from '../../editor/status/diagnostic';
 import { hexToRgbaStringLiteral, readBits } from '../../util/util';
 import { createCursorRange, createCursorRangeNextLine, createCursorRangePreviousLine } from '../../editor/range'; import { setOverrideDigit } from '../../diagnostic/diagnostic';
 
@@ -17,35 +17,34 @@ const positionKeyList = ['pre', 'post'] as const;
 
 const positionKeyToPlaceholderName = { pre: 'prefix', post: 'postfix', } as const;
 
-const applyExtraStyle = (textOf: Record<number, Type.DecorationRenderOptionType[]>, extraStyle, leftMargin: string | undefined): void => {
+const applyExtraStyle = (textOf: Record<number, any>, extraStyle, leftMargin: string | undefined): void => {
     let backgroundColor;
     const sidePadding = extraStyle.sidePadding !== 'null' ? extraStyle.sidePadding : null;
     const topDownPadding = extraStyle.topDownPadding !== 'null' ? extraStyle.topDownPadding : null;
     const marginLeftStr = `;margin-left:${leftMargin}`;
 
-
-    for (const contentText of Object.values(textOf)) {
+    for (const option of Object.values(textOf)) {
 
         if (extraStyle.borderRadius) {
-            contentText[0].after['textDecoration'] = `;border-top-left-radius:${extraStyle.borderRadius};border-bottom-left-radius:${extraStyle.borderRadius};padding-left:${sidePadding}`;
-            contentText[contentText.length - 1].after['textDecoration'] = `;border-top-right-radius:${extraStyle.borderRadius};border-bottom-right-radius:${extraStyle.borderRadius};padding-right:${sidePadding}`;
+            option[0][0].renderOptions.after['textDecoration'] = `;border-top-left-radius:${extraStyle.borderRadius};border-bottom-left-radius:${extraStyle.borderRadius};padding-left:${sidePadding}`;
+            option[0][option[0].length - 1].renderOptions.after['textDecoration'] = `;border-top-right-radius:${extraStyle.borderRadius};border-bottom-right-radius:${extraStyle.borderRadius};padding-right:${sidePadding}`;
         }
 
         if (leftMargin !== '0px' && leftMargin !== '0em' && leftMargin) {
-            contentText[0].after['textDecoration'] += `;margin-left:${leftMargin}`;
+            option[0][0].renderOptions.after['textDecoration'] += `;margin-left:${leftMargin}`;
         }
     }
 
     if (extraStyle.backgroundColor !== 'null') {
         backgroundColor = hexToRgbaStringLiteral(extraStyle.backgroundColor, extraStyle.backgroundOpacity, "#333333", 0.7);
-        Object.entries(textOf).forEach(([hexKey, contentText]: [string, any]) => {
-            contentText.forEach((text, idx) => {
-                textOf[hexKey][idx].after['backgroundColor'] = backgroundColor;
+        Object.entries(textOf).forEach(([hexKey, option]: [string, any]) => {
+            option[0].forEach((text, idx) => {
+                textOf[hexKey][0][idx].renderOptions.after['backgroundColor'] = backgroundColor;
                 if (idx !== 0) {
-                    textOf[hexKey][idx].after['textDecoration'] = textOf[hexKey][idx].after['textDecoration']?.replace(marginLeftStr, '');
+                    textOf[hexKey][0][idx].renderOptions.after['textDecoration'] = textOf[hexKey][idx].after?.textDecoration.replace(marginLeftStr, '');
                 }
                 if (topDownPadding) {
-                    textOf[hexKey][idx].after['textDecoration'] += `;padding-top:${topDownPadding};padding-bottom:${topDownPadding}`;
+                    textOf[hexKey][0][idx].renderOptions.after['textDecoration'] += `;padding-top:${topDownPadding};padding-bottom:${topDownPadding}`;
                 }
             });
         });
@@ -102,15 +101,14 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             return decoration;
         }).filter(decoration => decoration.after.contentText !== undefined);
     };
+
     
     preset.layout[__0x.allOkPlaceholderContentText].contentText.forEach(decoration => {
         if (decoration.after.contentText === __0x.allOkHexKey) {
             const ok = concatinateNotation(preset.all[__0x.allOkContentText]);
-            setDiagonosticTextbuffer(__0x.allOkOverride, ok.map(decoration => vscode.window.createTextEditorDecorationType(decoration)));
-            textOftarget[__0x.allOkOverride].push(...ok);
+            composeRenderOption(__0x.allOkOverride, [...ok]);
         } else {
-            setDiagonosticTextbuffer(__0x.allOkOverride, [vscode.window.createTextEditorDecorationType(decoration)]);
-            textOftarget[__0x.allOkOverride].push({ ...decoration });
+            composeRenderOption(__0x.allOkOverride, [{ ...decoration }]);
         }
     });
 
@@ -119,66 +117,46 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             const ok = concatinateNotation(preset.editor[__0x.okEditorContentText]);
             const warn = concatinateNotation(preset.editor[__0x.warningEditorContentText]);
             const err = concatinateNotation(preset.editor[__0x.errorEditorContentText]);
-            textOftarget[__0x.allOkNoOverride].push(...ok);
-            textOftarget[__0x.editorOkWorkspaceWarn].push(...ok);
-            textOftarget[__0x.editorOkWorkspaceErr].push(...ok);
-            textOftarget[__0x.editorOkWorkspaceWarnErr].push(...ok);
-            textOftarget[__0x.editorWarnWorkspaceWarn].push(...warn);
-            textOftarget[__0x.editorWarnWorkspaceErr].push(...warn);
-            textOftarget[__0x.editorWarnWorkspaceWarnErr].push(...warn);
-            textOftarget[__0x.editorErrWorkspaceErr].push(...err);
-            textOftarget[__0x.editorErrWorkspaceWarnErr].push(...err);
-            textOftarget[__0x.editorWarnErrWorkspaceWarnErr].push(...warn, ...err);
-            const okDecoration = ok.map(decoration => vscode.window.createTextEditorDecorationType(decoration));
-            const warnDecoration = warn.map(decoration => vscode.window.createTextEditorDecorationType(decoration));
-            const errDecoration = err.map(decoration => vscode.window.createTextEditorDecorationType(decoration));
-            setDiagonosticTextbuffer(__0x.allOkNoOverride, okDecoration);
-            setDiagonosticTextbuffer(__0x.editorOkWorkspaceWarn, okDecoration);
-            setDiagonosticTextbuffer(__0x.editorOkWorkspaceErr, okDecoration);
-            setDiagonosticTextbuffer(__0x.editorOkWorkspaceWarnErr, okDecoration);
-            setDiagonosticTextbuffer(__0x.editorWarnWorkspaceWarn, warnDecoration);
-            setDiagonosticTextbuffer(__0x.editorWarnWorkspaceErr, warnDecoration);
-            setDiagonosticTextbuffer(__0x.editorWarnWorkspaceWarnErr, warnDecoration);
-            setDiagonosticTextbuffer(__0x.editorErrWorkspaceErr, errDecoration);
-            setDiagonosticTextbuffer(__0x.editorErrWorkspaceWarnErr, errDecoration);
-            setDiagonosticTextbuffer(__0x.editorWarnErrWorkspaceWarnErr, [...warnDecoration, ...errDecoration]);
+            composeRenderOption(__0x.allOkNoOverride, [...ok]);
+            composeRenderOption(__0x.editorOkWorkspaceWarn, [...ok]);
+            composeRenderOption(__0x.editorOkWorkspaceErr, [...ok]);
+            composeRenderOption(__0x.editorOkWorkspaceWarnErr, [...ok]);
+            composeRenderOption(__0x.editorWarnWorkspaceWarn, [...warn]);
+            composeRenderOption(__0x.editorWarnWorkspaceErr, [...warn]);
+            composeRenderOption(__0x.editorWarnWorkspaceWarnErr, [...warn]);
+            composeRenderOption(__0x.editorErrWorkspaceErr, [...err]);
+            composeRenderOption(__0x.editorErrWorkspaceWarnErr, [...err]);
+            composeRenderOption(__0x.editorWarnErrWorkspaceWarnErr, [...warn, ...err]);
             return;
         }
         if (decoration.after.contentText === __0x.workspaceHexKey) {
             const ok = concatinateNotation(preset.workspace[__0x.okWorkspaceContentText]);
             const warn = concatinateNotation(preset.workspace[__0x.warningWorkspaceContentText]);
             const err = concatinateNotation(preset.workspace[__0x.errorWorkspaceContentText]);
-            textOftarget[__0x.allOkNoOverride].push(...ok);
-            textOftarget[__0x.editorOkWorkspaceWarn].push(...warn);
-            textOftarget[__0x.editorOkWorkspaceErr].push(...err);
-            textOftarget[__0x.editorOkWorkspaceWarnErr].push(...warn, ...err);
-            textOftarget[__0x.editorWarnWorkspaceWarn].push(...warn);
-            textOftarget[__0x.editorWarnWorkspaceErr].push(...err);
-            textOftarget[__0x.editorWarnWorkspaceWarnErr].push(...warn, ...err);
-            textOftarget[__0x.editorErrWorkspaceErr].push(...err);
-            textOftarget[__0x.editorErrWorkspaceWarnErr].push(...warn, ...err);
-            textOftarget[__0x.editorWarnErrWorkspaceWarnErr].push(...warn, ...err);
-            const okDecoration = ok.map(decoration => vscode.window.createTextEditorDecorationType(decoration));
-            const warnDecoration = warn.map(decoration => vscode.window.createTextEditorDecorationType(decoration));
-            const errDecoration = err.map(decoration => vscode.window.createTextEditorDecorationType(decoration));
-            setDiagonosticTextbuffer(__0x.allOkNoOverride, okDecoration);
-            setDiagonosticTextbuffer(__0x.editorOkWorkspaceWarn, warnDecoration);
-            setDiagonosticTextbuffer(__0x.editorOkWorkspaceErr, errDecoration);
-            setDiagonosticTextbuffer(__0x.editorOkWorkspaceWarnErr, [...warnDecoration, ...errDecoration]);
-            setDiagonosticTextbuffer(__0x.editorWarnWorkspaceWarn, warnDecoration);
-            setDiagonosticTextbuffer(__0x.editorWarnWorkspaceErr, errDecoration);
-            setDiagonosticTextbuffer(__0x.editorWarnWorkspaceWarnErr, [...warnDecoration, ...errDecoration]);
-            setDiagonosticTextbuffer(__0x.editorErrWorkspaceErr, errDecoration);
-            setDiagonosticTextbuffer(__0x.editorErrWorkspaceWarnErr, [...warnDecoration, ...errDecoration]);
-            setDiagonosticTextbuffer(__0x.editorWarnErrWorkspaceWarnErr, [...warnDecoration, ...errDecoration]);
+            composeRenderOption(__0x.allOkNoOverride, [...ok]);
+            composeRenderOption(__0x.editorOkWorkspaceWarn, [...warn]);
+            composeRenderOption(__0x.editorOkWorkspaceErr, [...err]);
+            composeRenderOption(__0x.editorOkWorkspaceWarnErr, [...warn, ...err]);
+            composeRenderOption(__0x.editorWarnWorkspaceWarn, [...warn]);
+            composeRenderOption(__0x.editorWarnWorkspaceErr, [...err]);
+            composeRenderOption(__0x.editorWarnWorkspaceWarnErr, [...warn, ...err]);
+            composeRenderOption(__0x.editorErrWorkspaceErr, [...err]);
+            composeRenderOption(__0x.editorErrWorkspaceWarnErr, [...warn, ...err]);
+            composeRenderOption(__0x.editorWarnErrWorkspaceWarnErr, [...warn, ...err]);
             return;
         }
-        const decorationType = vscode.window.createTextEditorDecorationType(decoration);
+
         DIAGNOSTIC_PROBLEM_LIST.forEach(hexKey => {
-            textOftarget[hexKey].push({ ...decoration });
-            setDiagonosticTextbuffer(hexKey, [decorationType]);
+            composeRenderOption(hexKey, [{ ...decoration }]);
         });
     });
+
+    const lengthList = [] as number[];
+    DIAGNOSTIC_ENTRY_LIST.forEach(hexKey => {
+        lengthList.push(textOftarget[hexKey].length);
+    });
+    const max = Math.max(...lengthList);
+    setDiagonosticTextbuffer(max);
 };
 
 const ifNoationNotNull = (property: string, str: string) => {
