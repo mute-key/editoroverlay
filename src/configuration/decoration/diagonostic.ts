@@ -1,11 +1,10 @@
-import * as vscode from 'vscode';
 import * as Type from '../../type/type';
 import * as __0x from '../../constant/shared/numeric';
 import * as __$ from '../../constant/shared/symbol';
 import * as regex from '../../util/regex.collection';
 import { CONFIG_SECTION, DECORATION_OPTION_LINKER, DIAGNOSTIC_ALL_PLACEHOLDER_LINKER, DIAGNOSTIC_CONFIG, DIAGNOSTIC_CONTENT_TEXT_LIST, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM, DIAGNOSTIC_DECORATION_STYLE, DIAGNOSTIC_DECORATION_TEXT_KIND, DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER, DIAGNOSTIC_STYLE_LIST, DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER } from '../../constant/config/object';
 import { DIAGNOSTIC_BIOME, DIAGNOSTIC_TEXT_STYLE_KEY } from '../../constant/config/enum';
-import { DIAGNOSTIC_CONTENT_TEXT, DIAGNOSTIC_ENTRY_LIST, DIAGNOSTIC_PROBLEM_LIST } from '../../constant/shared/object';
+import { DIAGNOSTIC_PROBLEM_LIST } from '../../constant/shared/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { sanitizeConfigValue } from '../shared/validation';
 import { convertToDecorationRenderOption, setContentTextOnDecorationRenderOption } from '../shared/decoration';
@@ -18,37 +17,34 @@ const positionKeyList = ['pre', 'post'] as const;
 const positionKeyToPlaceholderName = { pre: 'prefix', post: 'postfix', } as const;
 
 const applyExtraStyle = (textOf: Record<number, any>, extraStyle, leftMargin: string | undefined): void => {
-    let backgroundColor;
     const sidePadding = extraStyle.sidePadding !== 'null' ? extraStyle.sidePadding : null;
     const topDownPadding = extraStyle.topDownPadding !== 'null' ? extraStyle.topDownPadding : null;
-    const marginLeftStr = `;margin-left:${leftMargin}`;
 
-    for (const option of Object.values(textOf)) {
+    Object.entries(textOf).forEach(([hexKey, option]: [string, any]) => {
+        option.map(optonList => optonList.filter(ro => ro.length > 0)).forEach((text, idx, array) => {
+            if (extraStyle.backgroundColor && extraStyle.backgroundOpacity) {
+                textOf[hexKey][idx][0].renderOptions.after['backgroundColor'] = hexToRgbaStringLiteral(extraStyle.backgroundColor, extraStyle.backgroundOpacity, "#333333", 0.7);;
+            }
 
-        if (extraStyle.borderRadius) {
-            option[0][0].renderOptions.after['textDecoration'] = `;border-top-left-radius:${extraStyle.borderRadius};border-bottom-left-radius:${extraStyle.borderRadius};padding-left:${sidePadding}`;
-            option[0][option[0].length - 1].renderOptions.after['textDecoration'] = `;border-top-right-radius:${extraStyle.borderRadius};border-bottom-right-radius:${extraStyle.borderRadius};padding-right:${sidePadding}`;
-        }
-
-        if (leftMargin !== '0px' && leftMargin !== '0em' && leftMargin) {
-            option[0][0].renderOptions.after['textDecoration'] += `;margin-left:${leftMargin}`;
-        }
-    }
-
-    if (extraStyle.backgroundColor !== 'null') {
-        backgroundColor = hexToRgbaStringLiteral(extraStyle.backgroundColor, extraStyle.backgroundOpacity, "#333333", 0.7);
-        Object.entries(textOf).forEach(([hexKey, option]: [string, any]) => {
-            option[0].forEach((text, idx) => {
-                textOf[hexKey][0][idx].renderOptions.after['backgroundColor'] = backgroundColor;
-                if (idx !== 0) {
-                    textOf[hexKey][0][idx].renderOptions.after['textDecoration'] = textOf[hexKey][idx].after?.textDecoration.replace(marginLeftStr, '');
+            if (extraStyle.borderRadius) {
+                if (idx === 0) {
+                    textOf[hexKey][0][0].renderOptions.after['textDecoration'] = `;border-top-left-radius:${extraStyle.borderRadius};border-bottom-left-radius:${extraStyle.borderRadius};padding-left:${sidePadding}`;
                 }
-                if (topDownPadding) {
-                    textOf[hexKey][0][idx].renderOptions.after['textDecoration'] += `;padding-top:${topDownPadding};padding-bottom:${topDownPadding}`;
+
+                if (idx === array.length - 1) {
+                    textOf[hexKey][idx][0].renderOptions.after['textDecoration'] = `;border-top-right-radius:${extraStyle.borderRadius};border-bottom-right-radius:${extraStyle.borderRadius};padding-right:${sidePadding}`;
                 }
-            });
+            }
+
+            if (topDownPadding) {
+                textOf[hexKey][idx][0].renderOptions.after['textDecoration'] += `;padding-top:${topDownPadding};padding-bottom:${topDownPadding}`;
+            }
+
+            if (leftMargin !== '0px' && leftMargin !== '0em' && leftMargin && idx === 0) {
+                textOf[hexKey][0][0].renderOptions.after['textDecoration'] += `;margin-left:${leftMargin}`;
+            }
         });
-    }
+    });
 };
 
 const convertPositionDecorationRenderOption = ({ textPosition, primaryStyle, secondaryStyle, notation, leftMargin }) => {
@@ -102,7 +98,7 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
         }).filter(decoration => decoration.after.contentText !== undefined);
     };
 
-    
+
     preset.layout[__0x.allOkPlaceholderContentText].contentText.forEach(decoration => {
         if (decoration.after.contentText === __0x.allOkHexKey) {
             const ok = concatinateNotation(preset.all[__0x.allOkContentText]);
@@ -150,13 +146,6 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Ty
             composeRenderOption(hexKey, [{ ...decoration }]);
         });
     });
-
-    const lengthList = [] as number[];
-    DIAGNOSTIC_ENTRY_LIST.forEach(hexKey => {
-        lengthList.push(textOftarget[hexKey].length);
-    });
-    const max = Math.max(...lengthList);
-    setDiagonosticTextbuffer(max);
 };
 
 const ifNoationNotNull = (property: string, str: string) => {
@@ -376,6 +365,7 @@ const updateDiagnosticTextConfig = (extenionName: string, configuratioChange: bo
     setCursorLine(bindTo.functionOf, diagnosticConfig.visibility);
     setOverrideDigit(placeholderDigit);
     initializeStateBuffer(placeholderDigit);
+    setDiagonosticTextbuffer();
     delete bindToBuffer.textof;
     delete bindToBuffer.functionOf;
     delete bindTo.visibilityOf;

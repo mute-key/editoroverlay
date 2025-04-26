@@ -266,8 +266,8 @@ const syncrefernceTable = (placehoder: string, hexKey: number, refObj: object): 
  */
 type BufferedFuncSignature = (setDecorations: vscode.TextEditor['setDecorations'], buffer: vscode.TextEditorDecorationType[]) => (renderOption: any | vscode.DecorationRenderOptions, idx: number) => void
 
-const contentTextFuncBuffered: BufferedFuncSignature = (setDecorations, buffer) => async (renderOption, idx) => {
-    await setDecorations(buffer[idx], renderOption);
+const contentTextFuncBuffered: BufferedFuncSignature = (setDecorations, buffer) => (renderOption, idx) => {
+    setDecorations(buffer[idx], renderOption);
 };
 
 const cursorOnlyStatusRef = {
@@ -351,16 +351,15 @@ const multilineSelection = (editor: vscode.TextEditor, previousKey: number[]) =>
                 selectionTextBuffer[__0x.multiLineText]));
 };
 
-const multiCursorStatusRef = {
-    nth: undefined as any | vscode.DecorationInstanceRenderOptions,
-    count: undefined as any | vscode.DecorationInstanceRenderOptions,
-    ln: undefined as any | vscode.DecorationInstanceRenderOptions,
-    lc: undefined as any | vscode.DecorationInstanceRenderOptions,
-    char: undefined as any | vscode.DecorationInstanceRenderOptions,
+const multiCursorStatusRef: Record<string, any | vscode.DecorationInstanceRenderOptions> = {
+    nth: undefined,
+    count: undefined,
+    ln: undefined,
+    lc: undefined,
+    char: undefined,
 };
 
-
-const multiCursorState = {
+const multiCursorState: Record<string, any | number | boolean | vscode.Selection[]> = {
     context: {
         editor: {} as any | vscode.TextEditor,
         pos: 0
@@ -485,8 +484,6 @@ const clearDisposeBuffer = (setDecorations: vscode.TextEditor["setDecorations"])
         buffer.dispose();
     };
 
-const oneDimensionBuffer = __0x.cursorOnlyText & __0x.singleLineText & __0x.multiLineText;
-
 const clearBufferOfhexkey = (setDecorations: vscode.TextEditor["setDecorations"], previousKey: number[]): void => {
     switch (previousKey[0]) {
         case __0x.cursorOnly:
@@ -508,13 +505,6 @@ const clearBufferOfhexkey = (setDecorations: vscode.TextEditor["setDecorations"]
         default:
             break;
     }
-};
-
-const selectionTextInfoSplit = {
-    [__0x.cursorOnly]: (editor: vscode.TextEditor, previousKey: number[]) => cursorOnlySelection(editor, previousKey),
-    [__0x.singleLine]: (editor: vscode.TextEditor, previousKey: number[]) => singleLineSelection(editor, previousKey),
-    [__0x.multiLine]: (editor: vscode.TextEditor, previousKey: number[]) => multilineSelection(editor, previousKey),
-    [__0x.multiCursor]: (editor: vscode.TextEditor, previousKey: number[]) => multiCursorSelection(editor, previousKey)
 };
 
 type BindContentTextStateType = {

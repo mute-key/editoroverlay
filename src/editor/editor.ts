@@ -42,7 +42,7 @@ const clearDecorationState = (decorationState) => {
 const clearAll = (editor: vscode.TextEditor): void => {
     clearEveryHighlight(editor);
     clearSelectionTextBuffer(editor);
-    clearDiagnosticText(editor.setDecorations, decorationState.diagnosticSignature);
+    clearDiagnosticText(editor.setDecorations);
 };
 
 const resetAllDecoration = () => vscode.window.visibleTextEditors.forEach(clearAll);

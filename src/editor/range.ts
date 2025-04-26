@@ -30,8 +30,7 @@ const createCursorRangePreviousLine = (editor: vscode.TextEditor, lineDelta: num
 };
 
 const createCursorRangeNextLine = (editor: vscode.TextEditor, lineDelta: number = 1): vscode.Range => {
-    const position = new vscode.Position(editor.selection.end.line + lineDelta, editor.selection.end.character);
-    return new vscode.Range(position, position);
+    return editor.document.lineAt(editor.selection.end.line + lineDelta).range;
 };
 
 const createLineRange = (position: vscode.Position): vscode.Range =>
