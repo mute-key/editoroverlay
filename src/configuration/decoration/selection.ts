@@ -56,7 +56,7 @@ const createSharedObjectSync = (textOftarget, textOfSource: any) => {
             syncrefernceTable(placeholder as string, __0x.multiLine, referenceObject);
         });
     } else {
-
+        // should error
     }
 
     const multiCursor = Object.entries(textOfSource.multiCursorText.position);
@@ -83,14 +83,20 @@ const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentText
         }
     });
 
+    const cursorOnlyText = textOftarget[__0x.cursorOnlyText];
+    const singleLineText = textOftarget[__0x.singleLineText];
+    const multiLineAnchorText = textOftarget[__0x.multiLineAnchorText];
+    const multiCursorText = textOftarget[__0x.multiCursorText];
+
     [
-        [__0x.cursorOnlyText, textOftarget[__0x.cursorOnlyText].contentText.length],
-        [__0x.singleLineText, textOftarget[__0x.singleLineText].contentText.length],
-        [__0x.multiLineText, textOftarget[__0x.multiLineAnchorText].contentText.length],
-        [__0x.multiCursorText, textOftarget[__0x.multiCursorText].contentText.length]
-    ].forEach(([hexKey, length]) => {
-        setSelectionTextbuffer(hexKey, length);
+        [__0x.cursorOnlyText, cursorOnlyText.contentText.length, cursorOnlyText.position],
+        [__0x.singleLineText, singleLineText.contentText.length, singleLineText.position],
+        [__0x.multiLineText, multiLineAnchorText.contentText.length, multiLineAnchorText.position],
+        [__0x.multiCursorText, multiCursorText.contentText.length, multiCursorText.position]
+    ].forEach(([hexKey, length, placeholder]) => {
+        setSelectionTextbuffer(hexKey, length, placeholder);
     });
+
     createSharedObjectSync(textOftarget, textOfSource);
 };
 

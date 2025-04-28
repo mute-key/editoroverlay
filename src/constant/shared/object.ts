@@ -5,10 +5,10 @@ import * as __0x from './numeric';
 // ==============================================================================
 
 export const INDENT_INFO = {
-    [__0x.size]: undefined,
-    [__0x.type]: undefined,
-    [__0x.regex]: undefined
-} as const;
+    size: undefined,
+    type: undefined,
+    regex: undefined
+};
 
 export const DECORATION_STATE = {
     appliedHighlight: [0],

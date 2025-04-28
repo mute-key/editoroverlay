@@ -3,7 +3,7 @@
     "publisher": "mutekey",
     "displayName": "Cursor/Selection Line Highlight",
     "description": "Apply configurable decorations on cursor line and selection lines.",
-    "version": "1.3.4",
+    "version": "1.4.0",
     "icon": "./resource/icon.png",
     "license": "LicenseRef-NoCommercial-UseOnly",
     "engines": {
@@ -426,6 +426,7 @@
                             "col": "%color.selectionText.placeholder.text.col%",
                             "zCol": "%color.selectionText.placeholder.text.zCol%",
                             "char": "%color.selectionText.placeholder.text.char%",
+                            "charOnly": "%color.selectionText.placeholder.text.char%",
                             "lc": "%color.selectionText.placeholder.text.lc%",
                             "nth": "%color.selectionText.placeholder.text.nth%",
                             "count": "%color.selectionText.placeholder.text.count%",
@@ -522,27 +523,12 @@
                             "DiagnosticKind": "editor | workspace",
                             "placeTextOnPreviousOrNextLine": "currentLine",
                             "overrideLayoutPlaceholderColorToHighestSeverity": false,
-                            "overrideAllOk": true
+                            "overrideAllOk": true,
+                            "autoLinePositionDatumPoint": "2/3"
                         },
                         "markdownDescription": "%description.diagnosticText.visibility%",
                         "additionalProperties": false,
                         "properties": {
-                            "displayWhenCursorOnly": {
-                                "type": "boolean",
-                                "default": true
-                            },
-                            "displayWhenSingleLine": {
-                                "type": "boolean",
-                                "default": true
-                            },
-                            "displayWhenMultiLine": {
-                                "type": "boolean",
-                                "default": true
-                            },
-                            "displayWhenMultiCursor": {
-                                "type": "boolean",
-                                "default": true
-                            },
                             "DiagnosticKind": {
                                 "type": "string",
                                 "enum": [
@@ -557,7 +543,9 @@
                                 "enum": [
                                     "currentLine",
                                     "previousLine",
-                                    "nextLine"
+                                    "previousLine (Auto)",
+                                    "nextLine",
+                                    "nextLine (Auto)"
                                 ],
                                 "default": "currentLine"
                             },
@@ -568,6 +556,10 @@
                             "overrideAllOk": {
                                 "type": "boolean",
                                 "default": true
+                            },
+                            "autoLinePositionDatumPoint": {
+                                "type": "string",
+                                "default": "2/3"
                             }
                         }
                     },

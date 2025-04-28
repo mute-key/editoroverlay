@@ -5,12 +5,13 @@ import * as regex from '../../util/regex.collection';
 import { CONFIG_SECTION, DECORATION_OPTION_LINKER, DIAGNOSTIC_ALL_PLACEHOLDER_LINKER, DIAGNOSTIC_CONFIG, DIAGNOSTIC_CONTENT_TEXT_LIST, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM, DIAGNOSTIC_DECORATION_STYLE, DIAGNOSTIC_DECORATION_TEXT_KIND, DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER, DIAGNOSTIC_STYLE_LIST, DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER } from '../../constant/config/object';
 import { DIAGNOSTIC_BIOME, DIAGNOSTIC_TEXT_STYLE_KEY } from '../../constant/config/enum';
 import { DIAGNOSTIC_PROBLEM_LIST } from '../../constant/shared/object';
+import { convertToDecorationRenderOption, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { sanitizeConfigValue } from '../shared/validation';
-import { convertToDecorationRenderOption, setContentTextOnDecorationRenderOption } from '../shared/decoration';
-import { bindDiagnosticContentTextState, composeRenderOption, initializeStateBuffer, reloadContentText, setDiagonosticTextbuffer } from '../../editor/status/diagnostic';
+import { createCursorRange, createCursorRangeLine, createCursorRangeLineAuto } from '../../editor/range';
+import { bindDiagnosticContentTextState, clearDiagnosticTextState, composeRenderOption, initializeStateBuffer, setDiagonosticTextbuffer } from '../../editor/status/diagnostic';
+import { setOverrideDigit } from '../../diagnostic/diagnostic';
 import { hexToRgbaStringLiteral, readBits } from '../../util/util';
-import { createCursorRange, createCursorRangeNextLine, createCursorRangePreviousLine } from '../../editor/range'; import { setOverrideDigit } from '../../diagnostic/diagnostic';
 
 const positionKeyList = ['pre', 'post'] as const;
 
@@ -19,7 +20,6 @@ const positionKeyToPlaceholderName = { pre: 'prefix', post: 'postfix', } as cons
 const applyExtraStyle = (textOf: Record<number, any>, extraStyle, leftMargin: string | undefined): void => {
     const sidePadding = extraStyle.sidePadding !== 'null' ? extraStyle.sidePadding : null;
     const topDownPadding = extraStyle.topDownPadding !== 'null' ? extraStyle.topDownPadding : null;
-
     Object.entries(textOf).forEach(([hexKey, option]: [string, any]) => {
         option.map(optonList => optonList.filter(ro => ro.length > 0)).forEach((text, idx, array) => {
             if (extraStyle.backgroundColor && extraStyle.backgroundOpacity) {
@@ -305,15 +305,6 @@ const decorationStyleFromBiome = (diagnosticBiome: number): string[] =>
         .flat(),
     DIAGNOSTIC_TEXT_STYLE_KEY.DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE];
 
-const clearOverrideState = (stateOf) => {
-    const textOf = stateOf.textOf as any;
-    for (const placeholder in textOf.layout) {
-        if (placeholder['override']) {
-            delete placeholder['override'];
-        }
-    }
-};
-
 const setGlyph = (glyphList, config) => {
     glyphList[__0x.openningBracket] = config.openningBracket;
     glyphList[__0x.closingBracket] = config.closingBracket;
@@ -324,35 +315,49 @@ const setGlyph = (glyphList, config) => {
 
 const setCursorLine = (bindTo, visibility) => {
     if (visibility.placeTextOnPreviousOrNextLine === "previousLine") {
-        bindTo.rangeFunction = createCursorRangePreviousLine;
+        bindTo.rangeFunction = createCursorRangeLine(-1);
+        return;
+    }
+    if (visibility.placeTextOnPreviousOrNextLine === "previousLine (Auto)") {
+        bindTo.rangeFunction = createCursorRangeLineAuto(-1);
         return;
     }
     if (visibility.placeTextOnPreviousOrNextLine === "nextLine") {
-        bindTo.rangeFunction = createCursorRangeNextLine;
+        bindTo.rangeFunction = createCursorRangeLine(1);
+        return;
+    }
+    if (visibility.placeTextOnPreviousOrNextLine === "nextLine (Auto)") {
+        bindTo.rangeFunction = createCursorRangeLineAuto(1);
         return;
     }
     bindTo.rangeFunction = createCursorRange;
     return;
 };
 
-const updateDiagnosticTextConfig = (extenionName: string, configuratioChange: boolean = false): boolean => {
+
+
+const updateDiagnosticTextConfig = async (extenionName: string, configuratioChange: boolean = false) => {
     const diagnosticConfig = { ...DIAGNOSTIC_CONFIG } as typeof DIAGNOSTIC_CONFIG;
     const diagnosticDecorationStyle = { ...DIAGNOSTIC_DECORATION_STYLE } as unknown as Type.DiagonosticDecorationStyle;
+
     const dignosticContentTextPreset = {
         layout: {},
         editor: {},
         workspace: {},
         all: {}
     };
+
     const bindTo: any = bindDiagnosticContentTextState();
+
     let bindToBuffer: any = {
         functionOf: bindTo.functionOf,
         textOf: {}
     };
+
     if (configuratioChange) {
-        clearOverrideState(bindTo);
-        reloadContentText();
+        clearDiagnosticTextState();
     }
+
     workspaceProxyConfiguration(diagnosticConfig, extenionName + '.' + CONFIG_SECTION.diagnosticText, DIAGNOSTIC_CONTENT_TEXT_LIST, bindToBuffer, regex.diagnosticTextRegex);
     const placeholderDigit = diagnosticConfig.visibility.overrideAllOk ? __0x.allOkOverride : __0x.allOkNoOverride;
     const diagnosticBiome = diagnosticVisibilityBiome(diagnosticConfig.visibility);

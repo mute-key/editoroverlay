@@ -7,7 +7,7 @@ import { bindStatusContentTextState, clearSelectionTextBuffer } from './status/s
 import { clearDiagnosticText, diagnosticInfo } from './status/diagnostic';
 import { cursorOnlyHighlightRange, singelLineHighlightRange, multiLineHighlightRange, multiCursorHighlightRange, clearEveryHighlight } from './highlight/highlight';
 import { cursorOnlySelection, singleLineSelection, multilineSelection, multiCursorSelection } from './status/selection';
-import { blankRange } from './range';
+import { blankRange, updateRangeMetadata } from './range';
 
 export type DecorationState = typeof DECORATION_STATE;
 
@@ -85,6 +85,7 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): void => {
         [__0x.multiLine]: multilineSelection,
         [__0x.multiCursor]: multiCursorSelection
     };
+    
 
     SELECTION_KIND_LIST.forEach(numKey => {
 
@@ -118,6 +119,11 @@ const editModeCheck = (editor: vscode.TextEditor) => {
     if (editor.selections[0].start.line !== decorationState.previousLine[0]) {
         diagnosticInfo(decorationState)(editor);
     }
+
+    if (editor.document.isDirty) {
+        updateRangeMetadata(editor);
+    }
+    
     decorationState.previousLine[0] = editor.selections[0].start.line;
 };
 

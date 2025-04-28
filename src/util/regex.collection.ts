@@ -85,6 +85,8 @@ const lineNumber = /(\${ln})/s;
 
 const character = /(\${char})/s;
 
+const characterOnly = /(\${charOnly})/s;
+
 const nth = /(\${nth})/s;
 
 const selectionCount = /(\${count})/s;
@@ -102,12 +104,14 @@ const SelectionTextRegex: Record<string, Type.RegexStatusContentTextUnion> = {
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: {
         lc: lineCount,
         ln: lineNumber,
-        char: character
+        char: character,
+        charOnly: characterOnly
     },
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: {
         lc: lineCount,
         ln: lineNumber,
-        char: character
+        char: character,
+        charOnly: characterOnly
     },
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: {
         nth: nth,
@@ -118,7 +122,7 @@ const SelectionTextRegex: Record<string, Type.RegexStatusContentTextUnion> = {
     },
 };
 
-const indentAndEOLRegex = (indentSize: string | number) => new RegExp(`^( {${indentSize}}|[\r\n]+)*$`, 'gm');
+const indentAndEOLRegex = (indentSize: string | number) => new RegExp(`^( {${indentSize}}|[\r\n]+)*`, 'gm');
 
 const ifStringIsResourceScope = /^[%\.].*[%\.]$/s;
 

@@ -52,12 +52,14 @@ const setDiagonosticTextbuffer = (): void => {
         lengthList.push([hexKey, diagnosticContentText[hexKey].length]);
     });
 
-    const max = Math.max(...lengthList.map(list => list[1]));
-    let idx = max;
-
     decorationOptionBuffer.isWholeLine = true;
     decorationOptionBuffer.rangeBehavior = vscode.DecorationRangeBehavior.ClosedClosed;
 
+    const max = Math.max(...lengthList.map(list => list[1]));
+    let idx = max;
+
+    diagnosticStatusBuffer?.forEach(decorationType => decorationType.dispose());
+    diagnosticStatusBuffer?.splice(0);
     while (idx--) {
         diagnosticStatusBuffer.push(vscode.window.createTextEditorDecorationType(decorationOptionBuffer));
     }
@@ -68,13 +70,12 @@ const setDiagonosticTextbuffer = (): void => {
             diagnosticContentText[length[0]].push([]);
         }
     });
-
-    console.log(diagnosticContentText);
 };
 
-const reloadContentText = (): void => {
-    diagnosticStatusBuffer.forEach(decorationType => decorationType.dispose());
-    diagnosticStatusBuffer.splice(0);
+const clearDiagnosticTextState = (): void => {
+    for (const hexKey of DIAGNOSTIC_ENTRY_LIST) {
+        diagnosticContentText[hexKey] = [];
+    }
 };
 
 const diagnosticVisibility = { ...DIAGNOSTIC_VISIBILITY_CONFIG } as Type.DiagnosticVisibilityType;
@@ -209,7 +210,7 @@ const renderDiagnosticText = (setDecorations) => (options, idx: number) => {
 
 const diagnosticInfo = (decorationState) => (editor: vscode.TextEditor): void => {
     if (decorationState.eventTrigger[0] === __0x.diagnosticChanged) {
-        refreshBuffer(updateDiagnostic(editor.document.uri));        
+        refreshBuffer(updateDiagnostic(editor.document.uri));
     }
 
     diggnosticStateList.forEach(updateDiagnosticState({
@@ -241,7 +242,7 @@ export {
     composeRenderOption,
     setDiagonosticTextbuffer,
     initializeStateBuffer,
-    reloadContentText,
+    clearDiagnosticTextState,
     clearDiagnosticText,
     diagnosticInfo,
 };

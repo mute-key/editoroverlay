@@ -11,6 +11,7 @@ import { clearDecorationState } from './editor/editor';
 import { prepareRenderGroup, renderGroupIs } from './editor/editor';
 import { checkActiveThemeKind } from './configuration/preset/preset';
 import type { DecorationState } from './editor/editor';
+import { updateRangeMetadata } from './editor/range';
 
 export interface CommandContext {
     package: vscode.ExtensionContext,
@@ -53,6 +54,7 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
         prepareRenderGroup(configInfo);
 
         if (activeEditor) {                                 // if user is on editor
+            updateRangeMetadata(activeEditor);              // set selection range meta data for the editor
             clearDecorationState(loadConfig.decoration);    // initialize decoration state
             loadConfig.decoration.appliedHighlight[0] = renderGroupIs(activeEditor, [__0x.cursorOnly]);
         }

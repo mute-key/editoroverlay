@@ -5,11 +5,13 @@ import Error from '../util/error';
 import { resetAllDecoration } from '../editor/editor';
 import { renderGroupIs, updateIndentOption } from '../editor/editor';
 import { resetEditorDiagnosticStatistics, resetWorkspaceDiagnosticStatistics, updateDiagnostic } from '../diagnostic/diagnostic';
+import { updateRangeMetadata } from '../editor/range';
 
 const windowStateChanged: Type.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
     return vscode.window.onDidChangeWindowState((event: vscode.WindowState): void => {
         if (event.focused) {
             if (vscode.window.activeTextEditor) {
+                updateIndentOption(vscode.window.activeTextEditor);
                 decorationState.appliedHighlight[0] = renderGroupIs(vscode.window.activeTextEditor, [__0x.cursorOnly]);
             }
 
@@ -32,6 +34,8 @@ const activeEditorChanged: Type.DecorationEventFunc = ({ configInfo, decorationS
             }
 
             resetAllDecoration();
+
+            updateRangeMetadata(editor);
 
             if (configInfo.generalConfigInfo.diagnosticTextEnabled) {
                 resetEditorDiagnosticStatistics();
@@ -66,11 +70,7 @@ const selectionChanged: Type.DecorationEventFunc = ({ decorationState }): vscode
 // const taskStarted = () => {
 //     return vscode.tasks.onDidStartTaskProcess((e: vscode.TaskProcessStartEvent) => {
 //         console.log(e.processId);
-
 //         vscode.tasks.fetchTasks();
-
-//         // vscode.tasks.taskExecutions
-
 //     });
 // };
 

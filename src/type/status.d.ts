@@ -10,6 +10,7 @@ type SelectionDecorationStyleType = {
         col?: DecorationType.DecorationRenderOptionType,
         zCol?: DecorationType.DecorationRenderOptionType,
         char?: DecorationType.DecorationRenderOptionType,
+        charOnly?: DecorationType.DecorationRenderOptionType,
         lc?: DecorationType.DecorationRenderOptionType,
         nth?: DecorationType.DecorationRenderOptionType,
         count?: DecorationType.DecorationRenderOptionType
@@ -69,13 +70,15 @@ type SingleLineStatusTextRegExp = {
 type MultiLineCursorStatusTextRegExp = {
     lc: RegExp
     ln: RegExp
-    char: RegExp
+    char: RegExp,
+    charOnly: RegExp
 }
 
 type MultiLineAnchorStatusTextRegExp = {
     lc: RegExp
     ln: RegExp
     char: RegExp
+    charOnly: RegExp
 }
 
 type MultiCursorStatusTextRegExp = {

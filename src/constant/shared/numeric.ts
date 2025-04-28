@@ -81,20 +81,28 @@ export const multiLineAnchorText = HEX_SELECTION_TEXT.MULTI_LINE_ANCHOR_TEXT;
 export const multiCursorText = HEX_SELECTION_TEXT.MULTI_CURSOR_TEXT;
 
 export const enum HEX_MULTILINE_FN {
-    LC = 0x0207,    // 518
-    CHAR = 0x0208,  // 519
+    LC = 0x0207,            // 517
+    CHAR = 0x0208,          // 518
+    CHAR_ONLY = 0x0209,     // 519
 }
 
 export const multiLineLineCountHex = HEX_MULTILINE_FN.LC;
 export const multiLineChararcterHex = HEX_MULTILINE_FN.CHAR;
+export const multiLineChararcterOnlyHex = HEX_MULTILINE_FN.CHAR_ONLY;
 
 export const enum HEX_MULTI_CURSOR_FN {
-    LC = 0x0209,    // 520
-    CHAR = 0x0210,  // 521
+    NTH = 0x020A,
+    COUNT = 0x020B,
+    LN = 0x020C,
+    LC = 0x020D,
+    CHAR = 0x020F,
 }
 
-export const multiCursorLineCountHex = HEX_MULTI_CURSOR_FN.LC;
-export const multiCursorChararcterHex = HEX_MULTI_CURSOR_FN.CHAR;
+export const multiCursorLineNthHex = HEX_MULTI_CURSOR_FN.NTH;
+export const multiCursorLineCountHex = HEX_MULTI_CURSOR_FN.COUNT;
+export const multiCursorLineLineNumberHex = HEX_MULTI_CURSOR_FN.LN;
+export const multiCursorLineLineCountHex = HEX_MULTI_CURSOR_FN.LC;
+export const multiCursorLineCharacterHex = HEX_MULTI_CURSOR_FN.CHAR;
 
 //::==============================================================================
 //::[ DIAGNOSTIC STATUS ] 0x0300
