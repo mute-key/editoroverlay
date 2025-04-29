@@ -128,7 +128,7 @@ const multiCursorFn = {
     count: ({ editor }) => 1,
     // ln: ({ idx, editor }) => editor.selections[idx].end.line + 1,
     lc: ({ editor, pos }) => {
-        return editor.selections[0].isSingleLine ? editor.selections.length : (editor.selections[pos].end.line - editor.selections[pos].start.line + 1);
+        return editor.selections[0].isSingleLine ? editor.selections.length : editor.selections.length * (editor.selections[pos].end.line - editor.selections[pos].start.line + 1);
     },
     char: ({ editor, pos }) => {
         //  char
@@ -294,8 +294,12 @@ const functionChain = (statusRef, args) => ([fnName, fnChain]) => {
 };
 
 const functionChainAccumulate = (statusRef, args) => ([fnName, fnChain]) => {
-    multiCursorCounter[fnName] += fnChain(args);
-    statusRef[fnName].contentText = multiCursorCounter[fnName].toString();
+    if (fnName === 'char') {
+        multiCursorCounter[fnName] += fnChain(args);
+        statusRef[fnName].contentText = multiCursorCounter[fnName].toString();
+    } else {
+        statusRef[fnName].contentText = fnChain(args).toString();
+    }
 };
 
 const cursorOnlyStatusRef = {
@@ -418,7 +422,7 @@ const clearMultiCursorState = () => {
 };
 
 const multiCursorPosition = (placeholder: string, position: number) => {
-    if (placeholder = 'nth') {
+    if (placeholder === 'nth') {
         multiCursorState.nthPosition = position;
     }
 };
@@ -487,7 +491,10 @@ const setRangerPointer = (refObject) => (selection: vscode.Selection, idx: numbe
 
 const renderMultiCursor = (setDecorations, decorationOption) => (decorationType: vscode.TextEditorDecorationType, idx: number): void => setDecorations(decorationType, decorationOption[idx]);
 
-const increaseIndex = (): number => multiCursorState.index++ && multiCursorState.statusIndex++;
+const increaseIndex = (): void => {
+    multiCursorState.index++ ;
+    multiCursorState.statusIndex++;
+};
 
 const addMultiCursorEntry = (selection: vscode.Selection): void => {
     multiCursorState.selections.push(selection);
