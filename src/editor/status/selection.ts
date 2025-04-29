@@ -125,7 +125,7 @@ const multiLineFn = {
  */
 const multiCursorFn = {
     // nth: ({ idx }) => idx,
-    count: ({ editor }) => 1,
+    count: ({ editor }) => editor.selections.length,
     // ln: ({ idx, editor }) => editor.selections[idx].end.line + 1,
     lc: ({ editor, pos }) => {
         return editor.selections[0].isSingleLine ? editor.selections.length : editor.selections.length * (editor.selections[pos].end.line - editor.selections[pos].start.line + 1);
