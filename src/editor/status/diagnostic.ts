@@ -208,16 +208,20 @@ const renderDiagnosticText = (setDecorations) => (options, idx: number) => {
     setDecorations(diagnosticStatusBuffer[idx], options);
 };
 
+const context = {
+    line: 0,
+    state: Object.create(null)
+};
+
 const diagnosticInfo = (decorationState) => (editor: vscode.TextEditor): void => {
     if (decorationState.eventTrigger[0] === __0x.diagnosticChanged) {
         refreshBuffer(updateDiagnostic(editor.document.uri));
     }
+    context.line = editor.selection.end.line;
+    context.state = stateBuffer;
 
-    diggnosticStateList.forEach(updateDiagnosticState({
-        line: editor.selection.end.line,
-        state: stateBuffer
-    }));
 
+    diggnosticStateList.forEach(updateDiagnosticState(context));
     diagonosticReferenceTable.rangeReference = diagnosticOf.rangeFunction(editor);
     diagnosticContentText[diagnosticRenderSignature(stateBuffer)].forEach(renderDiagnosticText(editor.setDecorations));
 };

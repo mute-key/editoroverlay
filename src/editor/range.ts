@@ -14,7 +14,7 @@ const updateRangeMetadata = (editor: vscode.TextEditor): void => {
     while (lc--) {
         length.push(editor.document.lineAt(lc).range.end.character);
     }
-    rangeMetadata.datumPointOfEditor = Math.ceil(Math.max(...length) * rangeMetadata.autoInlineDatumPoint/100);
+    rangeMetadata.datumPointOfEditor = Math.ceil(Math.max(...length) * rangeMetadata.autoInlineDatumPoint / 100);
 };
 // autoLinePositionDatumPoint
 /**
@@ -40,17 +40,13 @@ const checkRangeLengthDatum = (editor: vscode.TextEditor, delta: number): boolea
 const checkEndOfDocDelta = (editor: vscode.TextEditor, delta: number): boolean => ((editor.selection.end.line + delta) === editor.document.lineCount);
 
 const createRangeNNNN = (startLine: number, startChar: number, endLine: number, endChar: number): vscode.Range =>
-    new vscode.Range(
-        new vscode.Position(startLine, startChar),
-        new vscode.Position(endLine, endChar));
+    new vscode.Range(new vscode.Position(startLine, startChar), new vscode.Position(endLine, endChar));
 
 const createRangeSPEP = (start: vscode.Position, end: vscode.Position): vscode.Range =>
     new vscode.Range(start, end);
 
 const createRangeNNEP = (line: number, startChar: number, end: vscode.Position): vscode.Range =>
-    new vscode.Range(
-        new vscode.Position(line, startChar),
-        end);
+    new vscode.Range(new vscode.Position(line, startChar), end);
 
 const createCursorRange = (editor: vscode.TextEditor): vscode.Range => {
     const position = new vscode.Position(editor.selection.end.line, editor.selection.end.character);
@@ -61,7 +57,7 @@ const createCursorRangeLine = (lineDelta: number) => (editor: vscode.TextEditor)
     return editor.document.lineAt(editor.selection.end.line + (checkEndOfDocDelta(editor, lineDelta) ? 0 : rangeMetadata.diagnosticLineDelta)).range;
 };
 
-const createCursorRangeLineAuto = (lineDelta: number) =>  (editor: vscode.TextEditor): vscode.Range => {
+const createCursorRangeLineAuto = (lineDelta: number) => (editor: vscode.TextEditor): vscode.Range => {
     return editor.document.lineAt(editor.selection.end.line + (checkEndOfDocDelta(editor, lineDelta) ? 0 : checkRangeLengthDatum(editor, lineDelta) ? 0 : 1)).range;
 };
 
