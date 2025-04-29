@@ -177,14 +177,50 @@ i will try to list the template strucutre briefly.
 ## Backlog
 
 ```plain
+************************************************************************************************************
+
+|Sticky List| [!]: issues [?]: not decided [~]: planning, on going
+
 - [!] sometimes created decorationTypes does not have ascending decorationTypeID base on sequence, 
       causing malformed statsus block to be displayed. the only fix is to reload the vscode.
       need better method to have correct display order to prevent such an event.
-- [!] mutlti cursor selection lags and slow down on rapid-fire. need better code performace for faster response on UI.
 - [!] direct config update on settings.json leaves selection status text. 
 
-- [?] maybe applying preset should have some sort of indicator or message popup that configurations are being updated and will reload. 
-- [?] want to implement new status block for tasks in vscode or from terminal.
+- [?] throttling or debouncing for multi-line selection and multi-cursor selection
+- [?] backgroundColor configuration or auto appply background color based on border colour. not sure yet.
+- [?] maybe applying preset should have some sort of indicator or message popup that configurations are 
+      being updated and will reload. 
+- [?] probably document state indicator could be useful? not sure
+
+- [~] configuration pattern improvement.
+- [~] configuration code clean up.
+- [~] implement new status block for tasks in vscode or from terminal.
+- [~] to get back to configuration code at some point and clean up.
+- [~] mutline highlight/status has high rendering cost. have been constantly optimizing the cost ever 
+      since. this will be onging until no longer spikes even with rapid-fire but maybe it is very 
+      difficult without debounce. the problem with debounce or throttlign will introduce some delays 
+      with input response. im not sure if i will like that instead cripy response as of now.
+- [~] implement new diggnostic position (auto-before) just like (auto-inline).
+
+************************************************************************************************************
+
+|1.4.0 Update|
+
+- [+] new configuration nextLine (auto) or previousLine (auto) for diagnotic visiblity has been added.
+- [+] new autoLinePositionDatumPoint has been added to serve a base range point to auto inline 
+      diagnotic status when next line length exceed datum point.
+- [+] performance improvment for multiLine highlight as well as all types of staus selection status. 
+      multi-cursor selection status no longer lags nor slowed on render on UI even when rapid-trigger.
+      some large performance improvement refactoring has been done for all selection status.
+      the refactoring was focused on maximum usage of references and pointer-like handling. 
+- [+] new placeholder 'charOnly' has been added for multi-line that ignores indents and carriage returns. 
+- [+] dignostic text placement next line will be displayed on same line when the cursor is on the 
+      last line of the document
+- [+] bug has been fixed for reloading the configuration when diagnotic was enabled/disabled is changed.
+- [+] composite range has been fixed as to be handled by multi-cursor correctly.
+- [+] fixed a bug where decoration being rendered on both tab column on editor shift columns. 
+
+************************************************************************************************************
 ```
 
 ## Lastly
