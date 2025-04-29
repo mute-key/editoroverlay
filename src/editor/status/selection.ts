@@ -417,7 +417,13 @@ const clearMultiCursorState = () => {
     multiCursorCounter.char = 0;
 };
 
-const shiftPreviousIndex = (selectionIndex, decorationOption, nth) => (_option, idx) => {
+const multiCursorPosition = (placeholder: string, position: number) => {
+    if (placeholder = 'nth') {
+        multiCursorState.nthPosition = position;
+    }
+};
+
+const shiftPreviousIndex = (selectionIndex: number, decorationOption, nth: number) => (_option, idx: number) => {
     if (idx < selectionIndex - (multiCursorState.statusIndex) - 1) {
         decorationOption[nth][idx].renderOptions.after.shiftIndex(1);
     }
@@ -432,7 +438,7 @@ const multiCursorOption = (option, selectionIndex, nth) => (contentText, idx) =>
     });
 };
 
-const insertMultiCursor = (selectionIndex: number) => {
+const multiCursorDecorationOption = (selectionIndex: number) => {
     const nth = multiCursorState.nthPosition;
     if (multiCursorState.selections[selectionIndex].end.line < multiCursorState.baseLine) {
         if (!multiCursorState.baseShift) {
@@ -477,9 +483,18 @@ const insertMultiCursor = (selectionIndex: number) => {
                 nth));
 };
 
-const setRangerPointer = (table) => (selection, idx) => table[idx] = selection;
+const setRangerPointer = (refObject) => (selection: vscode.Selection, idx: number): vscode.Selection => refObject[idx] = selection;
 
-const renderMultiCursor = (setDecorations, decorationOption) => (decorationType, idx) => setDecorations(decorationType, decorationOption[idx]);
+const renderMultiCursor = (setDecorations, decorationOption) => (decorationType: vscode.TextEditorDecorationType, idx: number): void => setDecorations(decorationType, decorationOption[idx]);
+
+const increaseIndex = (): number => multiCursorState.index++ && multiCursorState.statusIndex++;
+
+const addMultiCursorEntry = (selection: vscode.Selection): void => {
+    multiCursorState.selections.push(selection);
+    selectionStatusFunctionChain[__0x.multiCursorText].forEach(functionChainAccumulate(multiCursorStatusRef, multiCursorState.context));
+    multiCursorDecorationOption(multiCursorState.index);
+    increaseIndex();
+};
 
 const multiCursorSelection = (editor: vscode.TextEditor, previousKey: number[]): void => {
 
@@ -488,25 +503,11 @@ const multiCursorSelection = (editor: vscode.TextEditor, previousKey: number[]):
         clearMultiCursorState();
         multiCursorState.context.editor = editor;
         multiCursorState.context.pos = multiCursorState.index;
-        multiCursorState.selections.push(editor.selections[0]);
-        selectionStatusFunctionChain[__0x.multiCursorText].forEach(functionChainAccumulate(multiCursorStatusRef, multiCursorState.context));
-        insertMultiCursor(multiCursorState.index);
+        addMultiCursorEntry(editor.selections[0]);
         multiCursorState.baseLine = editor.selections[0].end.line;
-        multiCursorState.index++;
-        multiCursorState.statusIndex++;
     })();
 
-
-
-    const selection = editor.selections[multiCursorState.index];
-    multiCursorState.selections.push(selection);
-
-    selectionStatusFunctionChain[__0x.multiCursorText].forEach(functionChainAccumulate(multiCursorStatusRef, multiCursorState.context));
-
-    insertMultiCursor(multiCursorState.index);
-    multiCursorState.index++;
-    multiCursorState.statusIndex++;
-
+    addMultiCursorEntry(editor.selections[multiCursorState.index]);
     multiCursorState.selections.forEach(setRangerPointer(rangePointerTable[__0x.multiCursorText]));
     selectionTextBuffer[__0x.multiCursorText].forEach(renderMultiCursor(editor.setDecorations, selectionDecorationOption[__0x.multiCursorText]));
 };
@@ -566,5 +567,6 @@ export {
     singleLineSelection,
     multilineSelection,
     multiCursorSelection,
-    syncrefernceTable
+    syncrefernceTable,
+    multiCursorPosition
 };

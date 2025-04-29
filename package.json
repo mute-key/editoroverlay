@@ -524,7 +524,7 @@
                             "placeTextOnPreviousOrNextLine": "currentLine",
                             "overrideLayoutPlaceholderColorToHighestSeverity": false,
                             "overrideAllOk": true,
-                            "autoLinePositionDatumPoint": "2/3"
+                            "autoInlineDatumPoint": 60
                         },
                         "markdownDescription": "%description.diagnosticText.visibility%",
                         "additionalProperties": false,
@@ -543,9 +543,9 @@
                                 "enum": [
                                     "currentLine",
                                     "previousLine",
-                                    "previousLine (Auto)",
+                                    "previousLine (auto-inline)",
                                     "nextLine",
-                                    "nextLine (Auto)"
+                                    "nextLine (auto-inline)"
                                 ],
                                 "default": "currentLine"
                             },
@@ -557,9 +557,11 @@
                                 "type": "boolean",
                                 "default": true
                             },
-                            "autoLinePositionDatumPoint": {
-                                "type": "string",
-                                "default": "2/3"
+                            "autoInlineDatumPoint": {
+                                "type": "number",
+                                "default": 60,
+                                "minimum":0,
+                                "maximum": 100
                             }
                         }
                     },

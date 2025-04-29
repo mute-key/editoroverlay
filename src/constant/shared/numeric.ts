@@ -229,8 +229,6 @@ export const editorErrWorkspaceErr = DIAGNOSTIC_STATE_SIGNATURE.E_ERR_W_ERR;
 export const editorErrWorkspaceWarnErr = DIAGNOSTIC_STATE_SIGNATURE.E_ERR_W_WARN_ERR;
 export const editorWarnErrWorkspaceWarnErr = DIAGNOSTIC_STATE_SIGNATURE.E_WARN_ERR_W_WARN_ERR;
 
-
-
 //::==============================================================================
 //::[ MISC ] 0x1000, 00 is reserved.
 //::==============================================================================
@@ -240,12 +238,13 @@ export const enum EVENT_SIGNATURE {
     DIAGNOSTIC_CHANGED = 0x1002,
     SELECTION_CHANGED = 0x1003,
     DOCUMENT_CHANGED = 0x1004,
+    EDITOR_TAB_CHANGED = 0x1004,
 }
 
 export const noEvent = EVENT_SIGNATURE.NO_EVENT;
 export const diagnosticChanged = EVENT_SIGNATURE.DIAGNOSTIC_CHANGED; // 4098
 export const selectionChanged = EVENT_SIGNATURE.SELECTION_CHANGED; // 4099
-export const documentChanged = EVENT_SIGNATURE.DOCUMENT_CHANGED; // 4100
+export const tabChanged = EVENT_SIGNATURE.EDITOR_TAB_CHANGED; // 4100
 
 export const enum CONFIGURATION_CHANGE_CALLER {
     PRESET = 0x1101,

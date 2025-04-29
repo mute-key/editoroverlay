@@ -1,40 +1,53 @@
 ### Backlog
 
 ```plain
-==========================================================================================================
-- [?] throttling or debouncing for multi-line selection and multi-cursor selection
-- [?] backgroundColor configuration or auto appply background color based on border colour. not sure yet.
-- [?] maybe applying preset should have some sort of indicator or message popup that configurations are being updated and will reload. 
-- [~] to implement new status block for tasks in vscode or from terminal.
-- [~] to get back to configuration code at some point and clean up.
-- [~] mutline highlight/status has high rendering cost. have been constantly optimizing the cost ever since. 
-      this will be onging until no longer spikes even with rapid-fire but maybe it is very difficult without debounce.
-      the problem with debounce or throttlign will introduce some delays with input response. 
-      im not sure if i will like that instead cripy response as of now.
-==========================================================================================================
+************************************************************************************************************
 
-v1.4.0 Update
-- [+] new configuration nextLine (auto) or previousLine (auto) for diagnotic visiblity has been added.
-- [+] new autoLinePositionDatumPoint has been added to serve a base range point to auto inline diagnotic status 
-      when next line length exceed datum point.
-- [+] performance improvment for multiLine highlight as well as all types of staus selection status. 
-      multi-cursor selection status no longer lags nor slowed on UI update when rapid-trigger.
-      some large refactoring has been done for all selection status with maximized utilization of references.
-- [+] new placeholder 'charOnly' has been added for multi-line that ignores indents and carriage returns. 
-- [+] dignostic text placement next line will be displayed on same line when the cursor is on the last line of the document
-- [+] bug has been fixed for when reloading the configuration when diagnotic was enabled/disabled is changed.
-
-- [!] selection status does not work when a primary selection is more than 1 selection range 
-     (composite range). this is ofc, should work but it would take some time to implement.
+|Sticky List| [!]: issues [?]: not decided [~]: planning, on going
 
 - [!] sometimes created decorationTypes does not have ascending decorationTypeID base on sequence, 
       causing malformed statsus block to be displayed. the only fix is to reload the vscode.
       need better method to have correct display order to prevent such an event.
 - [!] direct config update on settings.json leaves selection status text. 
 
+- [?] throttling or debouncing for multi-line selection and multi-cursor selection
+- [?] backgroundColor configuration or auto appply background color based on border colour. not sure yet.
+- [?] maybe applying preset should have some sort of indicator or message popup that configurations are 
+      being updated and will reload. 
+- [?] probably document state indicator could be useful? not sure
 
+- [~] configuration pattern improvement.
+- [~] configuration code clean up.
+- [~] implement new status block for tasks in vscode or from terminal.
+- [~] to get back to configuration code at some point and clean up.
+- [~] mutline highlight/status has high rendering cost. have been constantly optimizing the cost ever 
+      since. this will be onging until no longer spikes even with rapid-fire but maybe it is very 
+      difficult without debounce. the problem with debounce or throttlign will introduce some delays 
+      with input response. im not sure if i will like that instead cripy response as of now.
+- [~] implement new diggnostic position (auto-before) just like (auto-inline).
 
-v1.3.4 Update
+************************************************************************************************************
+
+|1.4.0 Update|
+
+- [+] new configuration nextLine (auto) or previousLine (auto) for diagnotic visiblity has been added.
+- [+] new autoLinePositionDatumPoint has been added to serve a base range point to auto inline 
+      diagnotic status when next line length exceed datum point.
+- [+] performance improvment for multiLine highlight as well as all types of staus selection status. 
+      multi-cursor selection status no longer lags nor slowed on render on UI even when rapid-trigger.
+      some large performance improvement refactoring has been done for all selection status.
+      the refactoring was focused on maximum usage of references and pointer-like handling. 
+- [+] new placeholder 'charOnly' has been added for multi-line that ignores indents and carriage returns. 
+- [+] dignostic text placement next line will be displayed on same line when the cursor is on the 
+      last line of the document
+- [+] bug has been fixed for reloading the configuration when diagnotic was enabled/disabled is changed.
+- [+] composite range has been fixed as to be handled by multi-cursor correctly.
+- [+] fixed a bug where decoration being rendered on both tab column on editor shift columns. 
+
+************************************************************************************************************
+
+|1.3.4 Update| ... and before, (list has not been kept up)
+
 - [o] preset format and color preset
 - [o] changing config recreate all decoroation, de-refernce to previous decoroationType from the object.
 - [o] config diversify for differernt selection type and fully programmable config

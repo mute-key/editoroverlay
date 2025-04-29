@@ -141,7 +141,8 @@ export const DIAGNOSTIC_VISIBILITY_CONFIG = {
     DiagnosticKind: undefined,
     placeTextOnPreviousOrNextLine: undefined,
     overrideLayoutPlaceholderColorToHighestSeverity: undefined,
-    overrideAllOk: undefined
+    overrideAllOk: undefined,
+    autoInlineDatumPoint: undefined
 } as const;
 
 export const DIAGNOSTIC_GLYPH = {

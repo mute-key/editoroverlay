@@ -8,7 +8,7 @@ import { DIAGNOSTIC_PROBLEM_LIST } from '../../constant/shared/object';
 import { convertToDecorationRenderOption, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { sanitizeConfigValue } from '../shared/validation';
-import { createCursorRange, createCursorRangeLine, createCursorRangeLineAuto } from '../../editor/range';
+import { createCursorRange, createCursorRangeLine, createCursorRangeLineAuto, setAutoInlineDatumPoint } from '../../editor/range';
 import { bindDiagnosticContentTextState, clearDiagnosticTextState, composeRenderOption, initializeStateBuffer, setDiagonosticTextbuffer } from '../../editor/status/diagnostic';
 import { setOverrideDigit } from '../../diagnostic/diagnostic';
 import { hexToRgbaStringLiteral, readBits } from '../../util/util';
@@ -314,11 +314,12 @@ const setGlyph = (glyphList, config) => {
 };
 
 const setCursorLine = (bindTo, visibility) => {
+    
     if (visibility.placeTextOnPreviousOrNextLine === "previousLine") {
         bindTo.rangeFunction = createCursorRangeLine(-1);
         return;
     }
-    if (visibility.placeTextOnPreviousOrNextLine === "previousLine (Auto)") {
+    if (visibility.placeTextOnPreviousOrNextLine === "previousLine (auto-inline)") {
         bindTo.rangeFunction = createCursorRangeLineAuto(-1);
         return;
     }
@@ -326,15 +327,16 @@ const setCursorLine = (bindTo, visibility) => {
         bindTo.rangeFunction = createCursorRangeLine(1);
         return;
     }
-    if (visibility.placeTextOnPreviousOrNextLine === "nextLine (Auto)") {
+    if (visibility.placeTextOnPreviousOrNextLine === "nextLine (auto-inline)") {
         bindTo.rangeFunction = createCursorRangeLineAuto(1);
         return;
     }
+
+    setAutoInlineDatumPoint(visibility.autoInlineDatumPoint);
     bindTo.rangeFunction = createCursorRange;
+
     return;
 };
-
-
 
 const updateDiagnosticTextConfig = async (extenionName: string, configuratioChange: boolean = false) => {
     const diagnosticConfig = { ...DIAGNOSTIC_CONFIG } as typeof DIAGNOSTIC_CONFIG;

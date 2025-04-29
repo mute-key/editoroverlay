@@ -2,8 +2,11 @@ import * as vscode from 'vscode';
 
 const rangeMetadata = {
     diagnosticLineDelta: 1,
-    inlineDatumRange: 0
+    autoInlineDatumPoint: 0,
+    datumPointOfEditor: 0
 };
+
+const setAutoInlineDatumPoint = (percentage: number) => rangeMetadata.autoInlineDatumPoint = percentage;
 
 const updateRangeMetadata = (editor: vscode.TextEditor): void => {
     let lc = editor.document.lineCount;
@@ -11,7 +14,7 @@ const updateRangeMetadata = (editor: vscode.TextEditor): void => {
     while (lc--) {
         length.push(editor.document.lineAt(lc).range.end.character);
     }
-    rangeMetadata.inlineDatumRange = Math.ceil(Math.max(...length) * 2/3);
+    rangeMetadata.datumPointOfEditor = Math.ceil(Math.max(...length) * rangeMetadata.autoInlineDatumPoint/100);
 };
 // autoLinePositionDatumPoint
 /**
@@ -24,7 +27,7 @@ const updateRangeMetadata = (editor: vscode.TextEditor): void => {
 const checkRangeLengthDatum = (editor: vscode.TextEditor, delta: number): boolean => {
     const nextLineLength = editor.document.lineAt(editor.selection.end.line + delta).range.end.character;
     const currentLineLineLength = editor.document.lineAt(editor.selection.end.line).range.end.character;
-    return (nextLineLength > currentLineLineLength) && (nextLineLength > rangeMetadata.inlineDatumRange);
+    return (nextLineLength > currentLineLineLength) && (nextLineLength > rangeMetadata.datumPointOfEditor);
 };
 
 /**
@@ -80,5 +83,6 @@ export {
     createCursorRangeLineAuto,
     createStartEndRangeOfSelection,
     blankRange,
-    updateRangeMetadata
+    updateRangeMetadata,
+    setAutoInlineDatumPoint
 };

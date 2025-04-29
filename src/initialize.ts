@@ -81,6 +81,7 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
             windowEvent.activeEditorChanged(eventContext),
             windowEvent.selectionChanged(eventContext),
             windowEvent.editorOptionChanged(eventContext),
+            windowEvent.tabChanged(eventContext),
             languagesEvent.diagnosticChanged(eventContext),
             workspaceEvent.configChanged(eventContext),
         ];

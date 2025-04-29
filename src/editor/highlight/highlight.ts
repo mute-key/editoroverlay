@@ -48,25 +48,24 @@ const singelLineHighlightRange = (editor: vscode.TextEditor, previousKey: number
     applyDecoration(editor.setDecorations, highlightStyleList[__0x.singleLine][0], [createRangeSPEP(editor.selection.start, editor.selection.end)]);
 };
 
-
-const multiLineOptionCH = [
+const multiLineRangeCH = [
     [Object.create(null)] as any | vscode.Range[],
     [Object.create(null)],
     [Object.create(null)],
 ];
 
-const renderMultiLineHighlight = (setDecorations, options) => async (highlight, idx) => await setDecorations(highlight, options[idx]);
+const renderMultiLineHighlight = (setDecorations: vscode.TextEditor['setDecorations']) => (highlight, idx) => setDecorations(highlight, multiLineRangeCH[idx]);
 
 const multiLineHighlightRange = async (editor: vscode.TextEditor, previousKey: number[]) => {
     __0x.multiLine !== previousKey[0] && clearHighlight(editor.setDecorations, previousKey, blankRange);
     // index 0 - top border
     // index 1 - bottom border
     // index 2 - background color only for the range inbetween 0 and 1.
-    multiLineOptionCH[0][0] = editor.document.lineAt(editor.selection.start).range; // createLineRange();
-    multiLineOptionCH[1][0] = editor.document.lineAt(editor.selection.end).range; // createLineRange();
-    multiLineOptionCH[2][0] = editor.selection;
+    multiLineRangeCH[0][0] = editor.document.lineAt(editor.selection.start).range; // createLineRange();
+    multiLineRangeCH[1][0] = editor.document.lineAt(editor.selection.end).range; // createLineRange();
+    multiLineRangeCH[2][0] = editor.selection;
 
-    highlightStyleList[__0x.multiLine].forEach(renderMultiLineHighlight(editor.setDecorations, multiLineOptionCH));
+    highlightStyleList[__0x.multiLine].forEach(renderMultiLineHighlight(editor.setDecorations));
 };
 
 const multiCursorHighlightRange = (editor: vscode.TextEditor, previousKey: number[]): void => {

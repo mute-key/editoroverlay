@@ -3,7 +3,7 @@ import * as regex from '../../util/regex.collection';
 import * as __0x from '../../constant/shared/numeric';
 import { CONFIG_SECTION, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_NUMLINK, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE } from '../../constant/config/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
-import { bindStatusContentTextState, setSelectionTextbuffer, syncrefernceTable } from '../../editor/status/selection';
+import { bindStatusContentTextState, multiCursorPosition, setSelectionTextbuffer, syncrefernceTable } from '../../editor/status/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 import { isEntriesEqual } from '../../util/util';
 
@@ -63,6 +63,7 @@ const createSharedObjectSync = (textOftarget, textOfSource: any) => {
     multiCursor.forEach(([pos, placeholder]) => {
         const referenceObject = textOftarget[__0x.multiCursorText].contentText[pos].after;
         syncrefernceTable(placeholder as string, __0x.multiCursor, referenceObject);
+        multiCursorPosition(placeholder as string, pos as unknown as number);
     });
 };
 
@@ -104,16 +105,19 @@ const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentText
 const updateSelectionTextConfig = (extenionName: string, configuratioChange: boolean = false): boolean => {
     const SelectionDecorationConfig = { ...SELECTION_DECORAITON_CONFIG } as Type.SelectionDecorationConfigType;
     const SelectionDecorationStyle = { ...SELECTION_DECORATION_STYLE } as Type.SelectionDecorationStyleType;
+
     const bindTo: any = bindStatusContentTextState();
+
     const bindToBuffer: any = {
         functionOf: bindTo.functionOf,
         textOf: {}
     };
+    
     // hm ...
     workspaceProxyConfiguration(SelectionDecorationConfig, extenionName + '.' + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST, bindToBuffer, regex.SelectionTextRegex);
     buildSelectionTextDecorationRenderOption(SelectionDecorationConfig, SelectionDecorationStyle);
     buildStatusTextState(bindTo.textOf, bindToBuffer.textOf, SelectionDecorationStyle, SelectionDecorationConfig.leftMargin);
-    // sealSelctionText();
+
     delete bindTo.functionOf;
     delete bindTo.infoOf;
     delete bindTo.textOf;
