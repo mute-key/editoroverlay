@@ -204,7 +204,7 @@ i will try to list the template strucutre briefly.
 
 ************************************************************************************************************
 
-|1.4.0 Update|
+|1.4.4 Update|
 
 - [+] new configuration nextLine (auto) or previousLine (auto) for diagnotic visiblity has been added.
 - [+] new autoLinePositionDatumPoint has been added to serve a base range point to auto inline 
@@ -218,7 +218,8 @@ i will try to list the template strucutre briefly.
       last line of the document
 - [+] bug has been fixed for reloading the configuration when diagnotic was enabled/disabled is changed.
 - [+] composite range has been fixed as to be handled by multi-cursor correctly.
-- [+] fixed a bug where decoration being rendered on both tab column on editor shift columns. 
+- [+] fixed a bug where decoration being rendered on both tab column on editor shift tabs. 
+- [+] some partial tweaks on multi-line highlight and diagnostic function.
 
 ************************************************************************************************************
 ```

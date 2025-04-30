@@ -14,7 +14,7 @@ const updateRangeMetadata = (editor: vscode.TextEditor): void => {
     while (lc--) {
         length.push(editor.document.lineAt(lc).range.end.character);
     }
-    rangeMetadata.datumPointOfEditor = Math.ceil(Math.max(...length) * rangeMetadata.autoInlineDatumPoint / 100);
+    rangeMetadata.datumPointOfEditor = Math.ceil(Math.max(...length) * (rangeMetadata.autoInlineDatumPoint / 100));
 };
 // autoLinePositionDatumPoint
 /**
