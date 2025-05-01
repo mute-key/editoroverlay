@@ -2,8 +2,8 @@
     "name": "cursorlinehighlight",
     "publisher": "mutekey",
     "displayName": "Cursor/Selection Line Highlight",
-    "description": "Apply configurable decorations on cursor line and selection lines.",
-    "version": "1.4.5",
+    "description": "Highly configurable highlights on cursor line and selection lines in editor real-time.",
+    "version": "1.4.6",
     "icon": "./resource/icon.png",
     "license": "LicenseRef-NoCommercial-UseOnly",
     "engines": {
@@ -38,7 +38,10 @@
         "border",
         "underline",
         "text",
-        "style"
+        "style",
+        "overlay",
+        "editor",
+        "underline"
     ],
     "categories": [
         "Themes",

@@ -204,7 +204,7 @@ i will try to list the template strucutre briefly.
 
 ************************************************************************************************************
 
-|1.4.4 Update|
+|1.4.5 Update|
 
 - [+] new configuration nextLine (auto) or previousLine (auto) for diagnotic visiblity has been added.
 - [+] new autoLinePositionDatumPoint has been added to serve a base range point to auto inline 
@@ -226,7 +226,7 @@ i will try to list the template strucutre briefly.
 
 ## Lastly
 
-If you use glyph fonts such as powerline or nerdfont, glyphs in those fonts can be used to customize the contentText too.(You will need to change the editor font to the ones with that glyphs)
+If you use glyph fonts such as powerline or nerdfont, glyphs in those fonts can be used to customize the contentText too. (You will need to change the editor font to the ones with that glyphs)
 I may add font family configuration in the future iteration but i can not guarantee when. I hope you like this extenion and find this extenion as small upgrade to QOL of using vscode.
 
 Thank you for reading.
