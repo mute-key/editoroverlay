@@ -10,7 +10,6 @@ import Error from './util/error';
 import { clearDecorationState } from './editor/editor';
 import { prepareRenderGroup, renderGroupIs } from './editor/editor';
 import { checkActiveThemeKind } from './configuration/preset/preset';
-import type { DecorationState } from './editor/editor';
 import { updateRangeMetadata } from './editor/range';
 
 export interface CommandContext {
@@ -22,7 +21,6 @@ export interface CommandContext {
 //     configInfo: object,
 //     decorationState: DecorationState
 // }
-
 
 /**
  * Main initialisation of the extension. 

@@ -176,7 +176,6 @@ export const DIAGNOSTIC_CONFIG = {
     errorEditorContentText: undefined
 } as const;
 
-
 export const DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER = {
     [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: __0x.okEditorContentText,
     [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: __0x.warningEditorContentText,
@@ -188,7 +187,6 @@ export const DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER = {
     [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: __0x.warningWorkspaceContentText,
     [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: __0x.errorWorkspaceContentText,
 } as const;
-
 
 export const DIAGNOSTIC_ALL_PLACEHOLDER_LINKER = {
     [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: __0x.allOkContentText,

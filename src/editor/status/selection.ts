@@ -246,7 +246,8 @@ const setSelectionTextbuffer = (hexKey: number, length: number, placeholder): vo
             });
             buildFunctionChain(hexKey, placeholder, { ...multiCursorFn });
             break;
-        default: break;
+        default: 
+            break;
     }
 };
 

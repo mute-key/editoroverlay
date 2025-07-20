@@ -28,7 +28,22 @@
 
 ************************************************************************************************************
 
-|1.4.0 Update|
+i think some people actually prefer top-bottom border, as i saw in vscode release note.
+not sure if the one that i saw is my extension or not though
+maybe change the way the borders are being handled in configuration to make it more intuitive? 
+hm, 
+
+i quite like the syles of this backlog, maybe i can make the app or extenion out of it 
+no todo apps ever scratched my itchings. perhaps this is the time to make myself one. 
+
+- [+] new command to set auto next line for status
+- [+] 
+
+
+
+************************************************************************************************************
+
+|1.4.5 Update|
 
 - [+] new configuration nextLine (auto) or previousLine (auto) for diagnotic visiblity has been added.
 - [+] new autoLinePositionDatumPoint has been added to serve a base range point to auto inline 
