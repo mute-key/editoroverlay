@@ -1,4 +1,4 @@
-import * as Type from '../../type/type';
+import * as D from '../../type/type';
 import * as regex from '../../util/regex.collection';
 import * as __0x from '../../constant/shared/numeric';
 import { CONFIG_SECTION, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_NUMLINK, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE } from '../../constant/config/object';

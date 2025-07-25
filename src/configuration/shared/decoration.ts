@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import * as Type from '../../type/type';
+import * as D from '../../type/type';
 import * as regex from '../../util/regex.collection';
 import Error from '../../util/error';
 import { DECORATION_OPTION_AFTER_CONFIG, DECORATION_OPTION_CONFIG } from '../../constant/config/object';

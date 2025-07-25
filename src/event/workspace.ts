@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import * as Type from '../type/type.d';
+import * as D from '../type/type.d';
 import * as __0x from '../constant/shared/numeric';
 import { CONFIG_SECTION } from '../constant/config/object';
 import { configurationChanged } from '../configuration/shared/update';

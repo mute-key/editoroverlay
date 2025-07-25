@@ -1,4 +1,4 @@
-import * as Type from '../type/type.d';
+import * as D from '../type/type.d';
 
 /**
  * 

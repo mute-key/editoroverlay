@@ -1,4 +1,4 @@
-import * as Type from './type/type';
+import * as D from './type/type';
 import * as vscode from 'vscode';
 import * as config from './configuration/load';
 import * as commands from './command/register';
@@ -11,16 +11,17 @@ import { clearDecorationState } from './editor/editor';
 import { prepareRenderGroup, renderGroupIs } from './editor/editor';
 import { checkActiveThemeKind } from './configuration/preset/preset';
 import { updateRangeMetadata } from './editor/range';
+import type { DecorationState } from './editor/editor';
 
 export interface CommandContext {
     package: vscode.ExtensionContext,
     configInfo: object
 }
 
-// export interface EventContext {
-//     configInfo: object,
-//     decorationState: DecorationState
-// }
+export interface EventContext {
+    configInfo: object,
+    decorationState: DecorationState
+}
 
 /**
  * Main initialisation of the extension. 
@@ -46,7 +47,7 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
             return;
         }
 
-        const configInfo: Type.ConfigInfoReadyType = loadConfig.config;
+        const configInfo: D.config.type.ConfigInfoReadyType = loadConfig.config;
         const activeEditor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
 
         prepareRenderGroup(configInfo);
@@ -62,7 +63,7 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
             configInfo: configInfo
         };
 
-        const eventContext = {                              // context for extension events
+        const eventContext: EventContext = {                              // context for extension events
             configInfo: configInfo,
             decorationState: loadConfig.decoration
         };

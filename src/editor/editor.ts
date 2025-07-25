@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import * as Type from '../type/type';
+import * as D from '../type/type';
 import * as __0x from '../constant/shared/numeric';
 import * as regex from '../util/regex.collection';
 import { DECORATION_STATE, SELECTION_KIND_LIST } from '../constant/shared/object';
@@ -33,7 +33,7 @@ const resetDecoration = (setDecorations: vscode.TextEditor['setDecorations']) =>
  * maybe drop the array in future but keeping it as is for now.
  * 
  */
-const clearDecorationState = (decorationState) => {
+const clearDecorationState = (decorationState: DecorationState): void => {
     decorationState.eventTrigger[0] = __0x.noEvent;
     decorationState.appliedHighlight[0] = __0x.cursorOnly;
     decorationState.diagnosticSignature[0] = __0x.allOkOverride;
@@ -45,7 +45,7 @@ const clearAll = (editor: vscode.TextEditor): void => {
     clearDiagnosticText(editor.setDecorations);
 };
 
-const resetAllDecoration = () => vscode.window.visibleTextEditors.forEach(clearAll);
+const resetAllDecoration = (): void => vscode.window.visibleTextEditors.forEach(clearAll);
 
 /**
  * perhaps i need to move this function to selection.ts later on.
@@ -85,7 +85,7 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): void => {
         [__0x.multiLine]: multilineSelection,
         [__0x.multiCursor]: multiCursorSelection
     };
-    
+
 
     SELECTION_KIND_LIST.forEach(numKey => {
 
@@ -115,7 +115,7 @@ const prepareRenderGroup = (config: Type.ConfigInfoReadyType): void => {
  * 
  * @param editor 
  */
-const editModeCheck = (editor: vscode.TextEditor) => {
+const editModeCheck = (editor: vscode.TextEditor): void => {
     if (editor.selections[0].start.line !== decorationState.previousLine[0]) {
         diagnosticInfo(decorationState)(editor);
     }
@@ -123,7 +123,7 @@ const editModeCheck = (editor: vscode.TextEditor) => {
     if (editor.document.isDirty) {
         updateRangeMetadata(editor);
     }
-    
+
     decorationState.previousLine[0] = editor.selections[0].start.line;
 };
 
@@ -137,6 +137,8 @@ const renderFnStack = {
     [__0x.multiCursor]: [] as any[]
 };
 
+type LineFn = (arg0: vscode.TextEditor, arg1: number[]) => void
+
 /**
  * function call chain
  * 
@@ -144,7 +146,7 @@ const renderFnStack = {
  * @param numKey previous selection type hexKey in array to unset previous selection decoration
  * @returns 
  */
-const fnList = (editor: vscode.TextEditor, numKey: number[]) => fn => fn(editor, numKey);
+const fnList = (editor: vscode.TextEditor, numKey: number[]) => (fn: LineFn) => fn(editor, numKey);
 
 /**
  * call function call chain based on user cursor/selelction type
@@ -160,7 +162,7 @@ const renderGroupIs = (editor: vscode.TextEditor, numKey: number[]): number => {
             renderFnStack[__0x.cursorOnly].forEach(fnBind);
             return __0x.cursorOnly;
         }
-        if (!editor.selections[0].isSingleLine) {           // multi-line, wanted to reduce the execution step of multi
+        if (!editor.selections[0].isSingleLine) {           // multi-line, wanted to reduce the execution step
             renderFnStack[__0x.multiLine].forEach(fnBind);
             return __0x.multiLine;
         } else {                                            // single-line

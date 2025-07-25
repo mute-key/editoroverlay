@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import * as Type from '../../type/type';
+import * as D from '../../type/type';
 import * as __0x from '../../constant/shared/numeric';
 import { BORDER_WIDTH_DEFINITION, CONFIG_KEY_LINKER_SECTION, CONFIG_SECTION, DECORATION_STYLE_PREFIX, NO_CONFIGURATION_DEOCORATION_DEFAULT, NO_CONFIGURATION_GENERAL_DEFAULT } from '../../constant/config/object';
 import { CONFIG_KEY_LINKER } from '../../constant/config/enum';

@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
 import * as ConfigType from '../type/configuration';
-import * as DecorationType from '../type/decoration';
+import * as Decoration from '../type/decoration';
 
 type EventContext = {
     editor?: vscode.TextEditor
-    configInfo: ConfigType.ConfigInfoReadyType
-    decorationState: DecorationType.DecorationStateType
+    configInfo: ConfigType.intf.ConfigReady
+    decorationState: Decoration.type.DecorationStateType
 }
 
 type DecorationEventFunc = (context: EventContext) => vscode.Disposable

@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import * as Type from '../../type/type';
+import * as D from '../../type/type';
 import * as __0x from '../../constant/shared/numeric';
 import { HIGHLIGHT_BORDER_POSITION_INFO, HIGHLIGHT_STYLE_LIST } from '../../constant/shared/object';
 import { createLineRange, createRangeSPEP, blankRange } from '../range';
@@ -7,7 +7,7 @@ import { applyDecoration } from '../editor';
 
 const highlightStyleList = {
     ...HIGHLIGHT_STYLE_LIST
-} as unknown as Type.HighlightStyleListType;
+} as unknown as D.decoration.type.HighlightStyleList;
 
 const borderPositionInfo = {
     ...HIGHLIGHT_BORDER_POSITION_INFO,

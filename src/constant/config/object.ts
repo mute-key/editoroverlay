@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import * as Type from '../../type/type.d';
+import * as D from '../../type/type.d';
 import * as __0x from '../shared/numeric';
 import { BORDER_POSITION_MASK, BORDER_POSITION_VARIATION, CONFIG_SECTION_KEY, DECORATION_GENERAL_STYLE_CONFIG_KEY, DECORATION_SELECTION_STYLE_CONFIG_KEY, DECORATION_STYLE_CONFIG_KEY, DECORATION_TYPE_MASK, DIAGNOSTIC_SEVERITY_KEY, DIAGNOSTIC_TEXT_STYLE_KEY, SELECTION_CONTENT_TEXT_CONFIG_KEY } from './enum';
 

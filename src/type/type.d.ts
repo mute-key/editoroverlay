@@ -3,14 +3,16 @@
  * 
  */
 import * as vscode from 'vscode';
+import type * as status from './status.d';
+import type * as conf from './configuration.d';
+import type * as diagnostic from './diagnostic.d';
+import type * as event from './event.d';
+import type * as decoration from './decoration.d';
 
-export * from './status.d';
-export * from './configuration';
-export * from './decoration.d';
-export * from './diagnostic.d';
-export * from './event.d';
-
-export type TextList = string[];
-
-
-
+export type {
+    status,
+    conf,
+    diagnostic,
+    event,
+    decoration
+};

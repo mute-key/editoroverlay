@@ -1,6 +1,6 @@
 /* eslint-disable semi */
 import * as vscode from 'vscode';
-import * as Type from '../type/type';
+import * as D from '../type/type';
 import { DIAGNOSTIC_SEVERITY_TO_KEY } from '../constant/config/object';
 import { DIAGNOSTIC_STATE } from '../constant/shared/object';
 import { DIAGNOSTIC_BIOME } from '../constant/config/enum';

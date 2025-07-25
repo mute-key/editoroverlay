@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import * as Type from '../../type/type';
+import * as D from '../../type/type';
 import * as __0x from '../../constant/shared/numeric';
 import * as __$ from '../../constant/shared/symbol';
 import { createCursorRange } from '../range';

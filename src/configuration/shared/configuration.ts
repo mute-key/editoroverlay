@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import * as Type from '../../type/type';
+import * as D from '../../type/type';
 import Error from '../../util/error';
 import { convertNullStringToNull } from './validation';
 import { hexToRgbaStringLiteral, } from '../../util/util';

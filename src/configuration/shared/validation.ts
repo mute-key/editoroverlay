@@ -1,4 +1,4 @@
-import * as Type from '../../type/type';
+import * as D from '../../type/type';
 import * as regex from '../../util/regex.collection';
 import { updateEditorConfiguration } from './editor';
 
