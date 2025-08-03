@@ -1,9 +1,10 @@
 import * as vscode from 'vscode';
-import * as D from '../type/type.d';
 import * as __0x from '../constant/shared/numeric';
 import { diagnosticInfo } from '../editor/status/diagnostic';
 
-const diagnosticChanged: Type.DecorationEventFunc = ({ configInfo, decorationState }): vscode.Disposable => {
+import type * as D from '../type/type.d';
+
+const diagnosticChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decorationState }): vscode.Disposable => {
     return vscode.languages.onDidChangeDiagnostics(async (event: vscode.DiagnosticChangeEvent) => {
 
         const editor = vscode.window.activeTextEditor;                  // when active editor 

@@ -1,4 +1,4 @@
-import * as D from './type/type';
+
 import * as vscode from 'vscode';
 import * as config from './configuration/load';
 import * as commands from './command/register';
@@ -11,17 +11,9 @@ import { clearDecorationState } from './editor/editor';
 import { prepareRenderGroup, renderGroupIs } from './editor/editor';
 import { checkActiveThemeKind } from './configuration/preset/preset';
 import { updateRangeMetadata } from './editor/range';
-import type { DecorationState } from './editor/editor';
 
-export interface CommandContext {
-    package: vscode.ExtensionContext,
-    configInfo: object
-}
+import type * as D from './type/type';
 
-export interface EventContext {
-    configInfo: object,
-    decorationState: DecorationState
-}
 
 /**
  * Main initialisation of the extension. 
@@ -32,11 +24,11 @@ export interface EventContext {
  */
 const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vscode.Disposable[] | void> => {
     try {
-        
+
         await extensionContext.extension.activate();        // this is suppose to wait for its turn to be activated 
-                                                            // when vscode startup, not sure if it is the best method, 
-                                                            // as i am not sure even if it needs to wait to be activated.
-                                                            // maybe need to revise the method.
+        // when vscode startup, not sure if it is the best method, 
+        // as i am not sure even if it needs to wait to be activated.
+        // maybe need to revise the method.
 
         Error.setPackageName(extensionContext.extension.packageJSON.name);
 
@@ -47,7 +39,7 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
             return;
         }
 
-        const configInfo: D.config.type.ConfigInfoReadyType = loadConfig.config;
+        const configInfo: D.Status.Intf.ConfigInfo = loadConfig.config;
         const activeEditor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
 
         prepareRenderGroup(configInfo);
@@ -58,13 +50,13 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
             loadConfig.decoration.appliedHighlight[0] = renderGroupIs(activeEditor, [__0x.cursorOnly]);
         }
 
-        const commandContext: CommandContext = {            // context for extension commands
+        const commandContext: D.Command.Intf.Context = {    // context for extension commands
             package: extensionContext,
             configInfo: configInfo
         };
 
-        const eventContext: EventContext = {                              // context for extension events
-            configInfo: configInfo,
+        const eventContext: D.Event.Intf.Context = {        // context for extension events
+            configInfo: configInfo as D.Config.Intf.ConfigReady,
             decorationState: loadConfig.decoration
         };
 

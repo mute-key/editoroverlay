@@ -1,11 +1,12 @@
 import * as vscode from 'vscode';
-import * as D from '../../type/type';
 import * as __0x from '../../constant/shared/numeric';
 import { INDENT_INFO, SELECTION_CONTENT_TEXT, SELECTION_KIND_LIST } from '../../constant/shared/object';
 import { SELECTION_CONTENT_TEXT_CONFIG_KEY } from '../../constant/config/enum';
 import { DECORATION_OPTION_CONFIG } from '../../constant/config/object';
 import { createLineRange, blankRange } from '../range';
 import { resetDecoration } from '../editor';
+
+import type * as D from '../../type/type.d';
 
 /**
  * memory for decorationRenderOption objects

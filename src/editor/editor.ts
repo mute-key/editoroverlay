@@ -1,13 +1,14 @@
 import * as vscode from 'vscode';
-import * as D from '../type/type';
 import * as __0x from '../constant/shared/numeric';
-import * as regex from '../util/regex.collection';
+import * as regex from '../collection/regex';
 import { DECORATION_STATE, SELECTION_KIND_LIST } from '../constant/shared/object';
 import { bindStatusContentTextState, clearSelectionTextBuffer } from './status/selection';
 import { clearDiagnosticText, diagnosticInfo } from './status/diagnostic';
 import { cursorOnlyHighlightRange, singelLineHighlightRange, multiLineHighlightRange, multiCursorHighlightRange, clearEveryHighlight } from './highlight/highlight';
 import { cursorOnlySelection, singleLineSelection, multilineSelection, multiCursorSelection } from './status/selection';
 import { blankRange, updateRangeMetadata } from './range';
+
+import type * as D from '../type/type.d';
 
 export type DecorationState = typeof DECORATION_STATE;
 
@@ -66,20 +67,20 @@ const updateIndentOption = (editor: vscode.TextEditor): void => {
  * 
  * @param config 
  */
-const prepareRenderGroup = (config: Type.ConfigInfoReadyType): void => {
+const prepareRenderGroup = (config: D.Config.Intf.ConfigReady): void => {
     renderFnStack[__0x.cursorOnly].splice(0);
     renderFnStack[__0x.singleLine].splice(0);
     renderFnStack[__0x.multiLine].splice(0);
     renderFnStack[__0x.multiCursor].splice(0);
 
-    const highlightList = {
+    const highlightList: D.Editor.Intf.RenderGroup = {
         [__0x.cursorOnly]: cursorOnlyHighlightRange,
         [__0x.singleLine]: singelLineHighlightRange,
         [__0x.multiLine]: multiLineHighlightRange,
         [__0x.multiCursor]: multiCursorHighlightRange
     };
 
-    const selectionList = {
+    const selectionList: D.Editor.Intf.RenderGroup = {
         [__0x.cursorOnly]: cursorOnlySelection,
         [__0x.singleLine]: singleLineSelection,
         [__0x.multiLine]: multilineSelection,
@@ -130,7 +131,7 @@ const editModeCheck = (editor: vscode.TextEditor): void => {
 /**
  * buffer for rendering function call stack
  */
-const renderFnStack = {
+const renderFnStack: Record<number, any[]> = {
     [__0x.cursorOnly]: [] as any[],
     [__0x.singleLine]: [] as any[],
     [__0x.multiLine]: [] as any[],

@@ -1,10 +1,11 @@
 import * as vscode from 'vscode';
-import * as D from '../type/type.d';
 import * as __0x from '../constant/shared/numeric';
 import { CONFIG_SECTION } from '../constant/config/object';
 import { configurationChanged } from '../configuration/shared/update';
 
-const configChanged: Type.DecorationEventFunc = ({ configInfo, decorationState }): vscode.Disposable => {
+import type * as D from '../type/type.d';
+
+const configChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decorationState }): vscode.Disposable => {
     return vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
         if (event) {
             if (configInfo.updateCaller === undefined) {                                // if not preset triggered event
