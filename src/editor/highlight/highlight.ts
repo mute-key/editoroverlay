@@ -1,17 +1,19 @@
 import * as vscode from 'vscode';
-import * as D from '../../type/type';
 import * as __0x from '../../constant/shared/numeric';
 import { HIGHLIGHT_BORDER_POSITION_INFO, HIGHLIGHT_STYLE_LIST } from '../../constant/shared/object';
 import { createLineRange, createRangeSPEP, blankRange } from '../range';
 import { applyDecoration } from '../editor';
 
+import type * as D from '../../type/highlight';
+export type * from '../../type/highlight';
+
 const highlightStyleList = {
     ...HIGHLIGHT_STYLE_LIST
-} as unknown as D.decoration.type.HighlightStyleList;
+} as unknown as D.Tp.HighlightStyleList;
 
 const borderPositionInfo = {
     ...HIGHLIGHT_BORDER_POSITION_INFO,
-} as unknown as Type.BorderPositionInfoType;
+} as unknown as D.Tp.BorderPositionInfoType;
 
 const cursorOnlyHighlightRange = (editor: vscode.TextEditor, previousKey: number[]): void => {
     __0x.cursorOnly !== previousKey[0] && clearEveryHighlight(editor);
@@ -56,7 +58,7 @@ const multiLineRangeCH = [
     [Object.create(null)],
 ];
 
-const renderMultiLineHighlight = (setDecorations: vscode.TextEditor['setDecorations'], range) => (highlight: vscode.TextEditorDecorationType, idx: number) => setDecorations(highlight, range[idx]);
+const renderMultiLineHighlight = (setDecorations: vscode.TextEditor['setDecorations'], range: vscode.Range[]) => (highlight: vscode.TextEditorDecorationType, idx: number) => setDecorations(highlight, range[idx] as unknown as readonly vscode.Range[] | readonly vscode.DecorationOptions[]);
 
 const multiLineHighlightRange = (editor: vscode.TextEditor, previousKey: number[]) => {
 
@@ -106,7 +108,7 @@ const clearEveryHighlight = (editor: vscode.TextEditor) => {
     clearHighlight(editor.setDecorations, [__0x.multiCursor], blankRange);
 };
 
-const coordinatorSplit: Type.CoordinatorSplitType = {
+const coordinatorSplit: D.Intf.CoordinatorSplitType = {
     [__0x.cursorOnly]: (editor: vscode.TextEditor, previousKey: number[]) => cursorOnlyHighlightRange(editor, previousKey),
     [__0x.singleLine]: (editor: vscode.TextEditor, previousKey: number[]) => singelLineHighlightRange(editor, previousKey),
     [__0x.multiLine]: (editor: vscode.TextEditor, previousKey: number[]) => multiLineHighlightRange(editor, previousKey),

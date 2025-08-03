@@ -1,11 +1,23 @@
 import * as vscode from 'vscode';
-import * as ConfigType from '../type/configuration';
-import * as Decoration from '../type/decoration';
+import type * as Config from './configuration';
+import type * as Highlight from './highlight';
 
-type EventContext = {
-    editor?: vscode.TextEditor
-    configInfo: ConfigType.intf.ConfigReady
-    decorationState: Decoration.type.DecorationStateType
+export type {
+    Intf,
+    Tp
+};
+
+declare namespace Intf {
+    interface EventContext {
+        editor?: vscode.TextEditor
+        configInfo: Config.Intf.ConfigReady
+        decorationState: Highlight.Intf.DecorationState
+    }
 }
 
-type DecorationEventFunc = (context: EventContext) => vscode.Disposable
+declare namespace Tp {
+    type DecorationEventFunc = (context: Intf.EventContext) => vscode.Disposable
+}
+
+
+

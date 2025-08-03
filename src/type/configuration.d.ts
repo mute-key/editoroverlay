@@ -1,12 +1,17 @@
 import * as vscode from 'vscode';
-import * as StatusType from './status';
-import type { DecorationState } from '../editor/editor';
-import * as DecorationType from './decoration';
-import * as DiagnosticType from './diagnostic';
 import { BORDER_POSITION_VARIATION, DECORATION_GENERAL_STYLE_CONFIG_KEY, DECORATION_SELECTION_STYLE_CONFIG_KEY, DECORATION_STYLE_CONFIG_KEY } from 'src/constant/config/enum';
 import { DECORATION_STYLE_PREFIX } from 'src/constant/config/object';
 
-export namespace type {
+import type * as Status from './status';
+import type * as Editor from './editor';
+import type * as Decoration from './highlight';
+import type * as Diagnostic from './diagnostic';
+
+export type {
+    Intf, Tp
+};
+
+declare namespace Tp {
 
     type NoConfigurationGeneraType = {
         [DECORATION_GENERAL_STYLE_CONFIG_KEY.OPACITY]: number
@@ -55,7 +60,7 @@ export namespace type {
         configSectionName?: string,
     ) => T | string | null
 
-    type ConfigCondition = <T extends string | number | boolean | null>(configReady: StatusType.type.ConfigInfo, configKeyWithScope: string, value: T, defaultValue: T) => {
+    type ConfigCondition = <T extends string | number | boolean | null>(configReady: Status.Intf.ConfigInfo, configKeyWithScope: string, value: T, defaultValue: T) => {
         bordercolor: () => T | null
         backgroundcolor: () => T | null
         borderwidth: () => T | null
@@ -79,8 +84,6 @@ export namespace type {
         array: string[]
     }
 
-
-
     type ContentTextPositionBufferType = {
         contentText?: any[],
         position: {
@@ -89,7 +92,7 @@ export namespace type {
     }
 }
 
-export namespace intf {
+declare namespace Intf {
 
     interface GeneralConfigInfoType {
         borderOpacity?: number
@@ -101,7 +104,7 @@ export namespace intf {
         diagnosticTextEnabled: boolean
     }
 
-    interface ConfigReady extends StatusType.type.ConfigInfo{
+    interface ConfigReady extends Status.Intf.ConfigInfo {
         name: string
         renderLimiter: number | any,
         updateCaller?: number,
@@ -111,7 +114,7 @@ export namespace intf {
 
     interface InitialisedConfig {
         config: ConfigReady,
-        decoration: DecorationState
+        decoration: Decoration.Intf.DecorationState
     }
 }
 

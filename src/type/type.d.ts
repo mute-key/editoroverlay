@@ -2,17 +2,16 @@
  * [type declarations]
  * 
  */
-import * as vscode from 'vscode';
-import type * as status from './status.d';
-import type * as conf from './configuration.d';
-import type * as diagnostic from './diagnostic.d';
-import type * as event from './event.d';
-import type * as decoration from './decoration.d';
+import type * as Status from './status';
+import type * as Config from './configuration';
+import type * as Diagnostic from '../editor/status/diagnostic';
+import type * as Event from './event';
+import type * as Decoration from '../editor/highlight/highlight';
 
 export type {
-    status,
-    conf,
-    diagnostic,
-    event,
-    decoration
+    Status,
+    Config,
+    Diagnostic,
+    Event,
+    Decoration
 };

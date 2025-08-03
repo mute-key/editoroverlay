@@ -16,8 +16,12 @@
 		// "noUnusedParameters": true, /* Report errors on unused parameters. */
 		"declaration": true,
 		"declarationDir": "src/types",
+		
 		// "isolatedModules": true
 		// "types": [],
+		
+		/* sperate import/export and import type/export type but it disables esm import? */
+		// "verbatimModuleSyntax": true
 
 	},
 	"include": [

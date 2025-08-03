@@ -1,106 +1,78 @@
 import * as vscode from 'vscode';
-import * as Decoration from './decoration.d';
 import { SELECTION_CONTENT_TEXT_CONFIG_KEY } from 'src/constant/config/enum';
 
-export namespace type {
-    type SelectionDecorationStyle = {
+import type * as Highlight from './highlight';
+import type * as Regex from './regex';
+
+export type {
+    Intf,
+    Tp
+};
+
+declare namespace Intf {
+    interface SelectionDecorationStyle {
         leftMargin?: string
-        placeholderDecorationOption?: Decoration.type.RenderOption,
+        placeholderDecorationOption?: Highlight.Intf.RenderOption,
         selectionDecorationOption: {
-            ln?: Decoration.type.RenderOption,
-            col?: Decoration.type.RenderOption,
-            zCol?: Decoration.type.RenderOption,
-            char?: Decoration.type.RenderOption,
-            charOnly?: Decoration.type.RenderOption,
-            lc?: Decoration.type.RenderOption,
-            nth?: Decoration.type.RenderOption,
-            count?: Decoration.type.RenderOption
+            ln?: Highlight.Intf.RenderOption,
+            col?: Highlight.Intf.RenderOption,
+            zCol?: Highlight.Intf.RenderOption,
+            char?: Highlight.Intf.RenderOption,
+            charOnly?: Highlight.Intf.RenderOption,
+            lc?: Highlight.Intf.RenderOption,
+            nth?: Highlight.Intf.RenderOption,
+            count?: Highlight.Intf.RenderOption
         }
     }
 
-    type StatusContentTextPosition = {
-        contentText?: (string | number | number | ContentTextFuncSignature)[],
+    interface StatusContentTextPosition {
+        contentText?: (string | number | number | Tp.ContentTextFuncSignature)[],
         position: {
             [key: number]: string
         }
     }
 
-    type StatusContentTextPositionReady = {
+    interface StatusContentTextPositionReady extends StatusContentTextPosition {
         contentText: any[],
-    } & StatusContentTextPosition
+    }
 
 
-    type StatusContentTextBuffer = {
+    interface StatusContentTextBuffer {
         [key: string]: {
             contentText: any[]
             position: number[]
         }
     }
 
-    type StatusContentText = {
+    interface StatusContentText {
         [key: number]: ContentTextSymlinkKind
     }
 
-    type ContentTextSymlinkKind = {
+    interface ContentTextSymlinkKind {
         contentText: any[],
         position: [number, symbol][]
     }
 
-    type ContentTextPositionFunc = {
+    interface ContentTextPositionFunc {
         contentText: any[],
         position: {
             [key: number]: (context: any) => string
         }
     }
 
-    type SelectionTextInfoSplit = {
+    interface SelectionTextInfoSplit {
         [key: number]: () => void
-    };
-
-    type CursorOnlyStatusTextRegExp = {
-        col: RegExp
-        zCol: RegExp
-        ln: RegExp
     }
 
-    type SingleLineStatusTextRegExp = {
-        char: RegExp
-        ln: RegExp
+    interface RegexStatusContentText {
+        [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: Regex.Intf.CursorOnlyStatusText
+        [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: Regex.Intf.SingleLineStatusText
+        [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: Regex.Intf.MultiLineCursorStatusText
+        [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: Regex.Intf.MultiLineAnchorStatusText
+        [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: Regex.Intf.MultiCursorStatusText
     }
 
-    type MultiLineCursorStatusTextRegExp = {
-        lc: RegExp
-        ln: RegExp
-        char: RegExp,
-        charOnly: RegExp
-    }
-
-    type MultiLineAnchorStatusTextRegExp = {
-        lc: RegExp
-        ln: RegExp
-        char: RegExp
-        charOnly: RegExp
-    }
-
-    type MultiCursorStatusTextRegExp = {
-        nth: RegExp
-        count: RegExp
-        lc: RegExp
-        ln: RegExp
-        char: RegExp
-    }
-
-    type RegexStatusContentTextUnion = CursorOnlyStatusTextRegExp | SingleLineStatusTextRegExp | MultiLineCursorStatusTextRegExp | MultiLineAnchorStatusTextRegExp | MultiCursorStatusTextRegExp
-
-    type RegexStatusContentText = {
-        [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: CursorOnlyStatusTextRegExp
-        [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: SingleLineStatusTextRegExp
-        [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: MultiLineCursorStatusTextRegExp
-        [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: MultiLineAnchorStatusTextRegExp
-        [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: MultiCursorStatusTextRegExp
-    }
-
-    type SelectionDecorationConfig = {
+    interface SelectionDecorationConfig {
         enabled?: boolean
         color?: string,
         colorOpacity?: number,
@@ -128,80 +100,64 @@ export namespace type {
         }
     }
 
-    type StatusTextInfo = {
-        opacity?: number,
-        color?: string,
-        backgroundColor?: string,
-        fontStyle?: string,
-        fontWeight?: string
-        cursorOnlyText?: string,
-        singleLineText?: string,
-        multiLineCursorText?: string,
-        multiLineAnchorText?: string,
-        multiCursorText?: string,
-    }
+    // type StatusTextInfo = {
+    //     opacity?: number,
+    //     color?: string,
+    //     backgroundColor?: string,
+    //     fontStyle?: string,
+    //     fontWeight?: string
+    //     cursorOnlyText?: string,
+    //     singleLineText?: string,
+    //     multiLineCursorText?: string,
+    //     multiLineAnchorText?: string,
+    //     multiCursorText?: string,
+    // }
 
     interface ConfigInfo {
         name?: string
         updateCaller?: number,
     }
 
-    type IndentInfo = {
+    interface IndentInfo {
         size?: number,
         type?: string,
         regex?: RegExp,
     }
 
-    type IndentReady = {
+    interface IndentReady {
         size: number,
         type: string,
         regex: RegExp,
     }
 
-    type StatusInfo = {
+    interface StatusInfo {
         indent: IndentInfo
-        statusDecoration?: Decoration.type.RenderOption
+        statusDecoration?: Highlight.Intf.RenderOption
     }
 
-    type StatusTextInfo = {
-        contentText: Decoration.type.RenderOption[]
+    interface StatusTextInfo {
+        contentText: Highlight.Intf.RenderOption[]
         range: vscode.Range
     }
 
-    type ContentTextFuncContext = {
+    interface ContentTextFuncContext {
         idx: number | string,
         editor: vscode.TextEditor,
         // indent: IndentReadyType,
     }
 
-    type ContentTextFuncSignature = (context: ContentTextFuncContext) => any
-
-    type ContentTextFuncNoContextSignature = (editor: vscode.TextEditor) => any
-
-    type ContentTextFunc = Record<string, (number | string | ContentTextFuncSignature)>;
-
-    type ContentTextStateFuncSignature = (statusContentText: StatusContentText) => void
-
-    type StatusOf = {
-        [k in SELECTION_CONTENT_TEXT_CONFIG_KEY]: ContentTextFunc;
-    }
-
-    type ContentTextState = {
-        [k in SELECTION_CONTENT_TEXT_CONFIG_KEY]: ContentTextFunc;
-    }
-
-    type SplitFunc = {
+    interface SplitFunc {
         position: number,
-        array: (string | symbol | number | ContentTextFuncSignature)[]
+        array: (string | symbol | number | Tp.ContentTextFuncSignature)[]
     }
 
-    type SearchObject = {
-        nextSearchString: string | symbol | number | (ContentTextFuncSignature),
+    interface SearchObject {
+        nextSearchString: string | symbol | number | (Tp.ContentTextFuncSignature),
         lastPosition: number
     }
 
-    type BindContentTextState = {
-        functionOf: ContentTextState,
+    interface BindContentTextState {
+        functionOf: Tp.ContentTextState,
         textOf: StatusContentText,
         infoOf: IndentInfo
         // styleOf: StatusDecorationStyleType
@@ -209,4 +165,20 @@ export namespace type {
     }
 }
 
+declare namespace Tp {
+    type ContentTextFuncSignature = (context: Intf.ContentTextFuncContext) => any
 
+    type ContentTextFuncNoContextSignature = (editor: vscode.TextEditor) => any
+
+    type ContentTextFunc = Record<string, (number | string | ContentTextFuncSignature)>;
+
+    type ContentTextStateFuncSignature = (statusContentText: Intf.StatusContentText) => void
+
+    type StatusOf = {
+        [k in SELECTION_CONTENT_TEXT_CONFIG_KEY]: Tp.ContentTextFunc;
+    }
+
+    type ContentTextState = {
+        [k in SELECTION_CONTENT_TEXT_CONFIG_KEY]: Tp.ContentTextFunc;
+    }
+}
