@@ -8,10 +8,11 @@ import { prepareRenderGroup, resetAllDecoration } from '../../editor/editor';
 import { updateSelectionTextConfig } from '../decoration/selection';
 import { updateDiagnosticTextConfig } from '../decoration/diagonostic';
 import { readFile } from 'node:fs/promises';
-import type { CommandContext } from "../../initialize";
 import { updateGeneralConfig, updateHighlightStyleConfiguration } from '../decoration/highlight';
 
-const clearConfiguration = (context: CommandContext) => (value: string | undefined): void => {
+import type * as D from "../../type/type";
+
+const clearConfiguration = (context: D.Command.Intf.Context) => (value: string | undefined): void => {
     if (value === CONFIRM.YES) {
         for (const section of Object.values(CONFIG_SECTION)) {
             const config = getWorkspaceConfiguration(context.package.extension.packageJSON.name + "." + section);
@@ -95,7 +96,7 @@ interface PresetSet {
     placeHolder: string
 }
 
-const quickPickWrapper = async (context: CommandContext, { presetList, fileList, placeHolder }: PresetSet): Promise<void> => {
+const quickPickWrapper = async (context: D.Command.Intf.Context, { presetList, fileList, placeHolder }: PresetSet): Promise<void> => {
     const preset = await vscode.window.showQuickPick(presetList.map(l => { return { label: l }; }), { placeHolder: placeHolder });
     if (preset && Object.hasOwn(fileList, preset.label.toString())) {
 
@@ -151,15 +152,15 @@ const presetContrast: PresetSet = {
     placeHolder: SYSTEM_MESSAGE.PRESET_SELCT_COLOR,
 };
 
-const quickPickPresetList = (context: CommandContext) => quickPickWrapper(context, presetList);
+const quickPickPresetList = (context: D.Command.Intf.Context) => quickPickWrapper(context, presetList);
 
-const quickPickOientationList = (context: CommandContext) => quickPickWrapper(context, presetOridentation);
+const quickPickOientationList = (context: D.Command.Intf.Context) => quickPickWrapper(context, presetOridentation);
 
-const quickPickColorList = (context: CommandContext) => quickPickWrapper(context, presetColor);
+const quickPickColorList = (context: D.Command.Intf.Context) => quickPickWrapper(context, presetColor);
 
-const quickPickContrastList = (context: CommandContext) => quickPickWrapper(context, presetContrast);
+const quickPickContrastList = (context: D.Command.Intf.Context) => quickPickWrapper(context, presetContrast);
 
-const checkActiveThemeKind = async (context: CommandContext): Promise<void> => {
+const checkActiveThemeKind = async (context: D.Command.Intf.Context): Promise<void> => {
     if (vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Light) {
         const packageName = context.package.extension.packageJSON.name;
         const json = await readPreset(context.package, SYSTEM_PATH.THEME_LIGHT);

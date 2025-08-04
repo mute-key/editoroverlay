@@ -1,30 +1,31 @@
 import * as vscode from 'vscode';
-import * as D from '../../type/type';
-import * as regex from '../../util/regex.collection';
+import * as regex from '../../collection/regex';
 import Error from '../../util/error';
 import { DECORATION_OPTION_AFTER_CONFIG, DECORATION_OPTION_CONFIG } from '../../constant/config/object';
 import { sanitizeContentText } from './validation';
 import { hexToRgbaStringLiteral, splitAndPosition } from '../../util/util';
 
+import type * as D from '../../type/type';
+
 const leftMarginToMarginString = (leftMargin: string | undefined) => `0 0 0 ${leftMargin}`;
 
-const castToFuncSignature = (result: Type.RegexSplitType | undefined): Type.SplitFuncType | undefined => {
+const castToFuncSignature = (result: D.Config.Tp.RegexSplit | undefined): D.Status.Intf.SplitFunc | undefined => {
     if (result) {
         return {
             ...result,
-            array: result.array.filter(entry => entry !== undefined) as (any | (Type.ContentTextFuncSignature))[],
+            array: result.array.filter(entry => entry !== undefined) as (any | (D.Status.Tp.ContentTextFuncSignature))[],
         };
     }
 };
 
-const setContentTextOnDecorationRenderOption = (source: Type.DecorationRenderOptionType, contentText: string): Type.DecorationRenderOptionType => {
-    const target = {... source as Type.DecorationRenderOptionType};
+const setContentTextOnDecorationRenderOption = (source: D.Decoration.Intf.RenderInstanceOptionReady, contentText: string): D.Decoration.Intf.RenderInstanceOptionReady => {
+    const target = {... source };
     target.after = {... source.after};
     target.after.contentText = contentText;
     return target;
 };
 
-const searchPlaceholderPosition = (textOf: Type.ContentTextWithPositionType, functionOf: Type.ContentTextFunc, functionKey: string, regex: RegExp, search: Type.SearchObjectType, lastIndex: boolean): void => {
+const searchPlaceholderPosition = (textOf: D.Diagnostic.Intf.ContentTextWithPosition, functionOf: D.Status.Tp.ContentTextFunc, functionKey: string, regex: RegExp, search: D.Status.Intf.SearchObject, lastIndex: boolean): void => {
     const split = castToFuncSignature(splitAndPosition(search.nextSearchString as string, regex));
     if (split) {
         if (Object.hasOwn(functionOf, functionKey)) {
@@ -59,7 +60,7 @@ const parseContentText = (contentText: string, sectionKey: string, bindTo: any, 
         if (match.length > Object.keys(regexObject[sectionKey]).length) {
             Error.register(sectionName + '.' +  sectionKey, "numbers of placeholder exceed availability");
         }
-        let searchObject: Type.SearchObjectType | undefined = {
+        let searchObject: D.Status.Intf.SearchObject | undefined = {
             nextSearchString: contentText,
             lastPosition: 0
         };
@@ -80,11 +81,11 @@ const parseContentText = (contentText: string, sectionKey: string, bindTo: any, 
     }
 };
 
-const convertToDecorationRenderOption = (config: Type.DecorationTextStyleConfig | Type.DecorationTextPrePostFixStyleConfig, isWholeLine: boolean = true, contentText: string | undefined = undefined) => {
-    const decorationOption = { ...DECORATION_OPTION_CONFIG } as Type.DecorationRenderOptionType;
+const convertToDecorationRenderOption = (config: D.Decoration.Intf.DecorationTextStyleConfig | D.Decoration.Intf.DecorationTextPrePostFixStyleConfig, isWholeLine: boolean = true, contentText: string | undefined = undefined) => {
+    const decorationOption = { ...DECORATION_OPTION_CONFIG } as D.Decoration.Intf.RenderInstanceOption;
     decorationOption.isWholeLine = isWholeLine;
     decorationOption.rangeBehavior = vscode.DecorationRangeBehavior.ClosedOpen;
-    decorationOption.after = { ...DECORATION_OPTION_AFTER_CONFIG } as Type.DecorationRenderAfterOptionType;
+    decorationOption.after = { ...DECORATION_OPTION_AFTER_CONFIG } as D.Decoration.Intf.DecorationRenderOptionAfter;
     if (contentText) {
         decorationOption.after.contentText = contentText;
     }

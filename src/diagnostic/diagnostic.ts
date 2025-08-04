@@ -46,8 +46,8 @@ const resetWorkspaceDiagnosticStatistics = (): void => {
     diagnosticState.workspace.error.total = 0;
 };
 
-const parseDiagnostic = (state, severity, fsPath: string, activeEditorfsPath: string | undefined = undefined): void => {
-    Object.keys(severity).forEach(severityType => {
+const parseDiagnostic = (state: DiagnosticState, severity: D.Diagnostic.Intf.DiagnosticFsBind, fsPath: string, activeEditorfsPath: string | undefined = undefined): void => {
+    Object.keys(severity).forEach((severityType: string) => {
         if (fsPath === activeEditorfsPath) {
             state.editor[severityType].line = [
                 ...new Set([
@@ -66,13 +66,13 @@ const parseDiagnostic = (state, severity, fsPath: string, activeEditorfsPath: st
     });
 };
 
-const buildDiagnostic = (source, diagnosticList, uri): void => {
+const buildDiagnostic = (source: D.Diagnostic.Intf.DiagnosticSource, diagnosticList: vscode.Diagnostic[], uri: vscode.Uri): void => {
     for (const diagnostic of diagnosticList) {
         if (diagnostic.severity <= vscode.DiagnosticSeverity.Warning) {
             if (typeof source[uri.fsPath] !== 'object') {
                 source[uri.fsPath] = {};
             }
-            const sevKey = DIAGNOSTIC_SEVERITY_TO_KEY[diagnostic.severity];
+            const sevKey = DIAGNOSTIC_SEVERITY_TO_KEY[diagnostic.severity] as string;
             if (!Array.isArray(source[uri.fsPath][sevKey])) {
                 source[uri.fsPath][sevKey] = [];
             }
@@ -105,7 +105,7 @@ const convertTo1DArray = (state: DiagnosticState): (number | number[])[] => [
     state.workspace.error.total,
 ];
 
-const diagnosticSource: Type.DiagnosticSourceType = {};
+const diagnosticSource: D.Diagnostic.Intf.DiagnosticSource = {};
 
 const setOverrideDigit = (digit: number) => {
     diagnosticState.override = digit;
@@ -130,7 +130,7 @@ const updateDiagnostic = (activeEditorUri: vscode.Uri | undefined = undefined) =
     };
 
     diagnosticState.severity = maxSeverity(diagnosticState);
-    
+
     return convertTo1DArray(diagnosticState);
 };
 

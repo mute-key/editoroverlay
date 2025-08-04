@@ -68,7 +68,7 @@ declare namespace Intf {
         [key: number]: any
     }
 
-    interface BorderPositionParserType {
+    interface BorderPositionParser {
         isWholeLine: boolean,
         borderPosition: string,
         beforeCursor: boolean,
@@ -84,7 +84,7 @@ declare namespace Intf {
     }
 
 
-    interface ColourConfigTransformType {
+    interface ColourConfigTransform {
         of: string,
         fn: (v: string, n: number, d: string) => string
     }
@@ -111,7 +111,7 @@ declare namespace Intf {
         margin?: string
     }
 
-    interface DecorationRenderAfterOptionType {
+    interface DecorationRenderOptionAfter {
         contentText?: string | any,
         color?: string,
         backgroundColor?: string,
@@ -129,7 +129,7 @@ declare namespace Intf {
     interface RenderInstanceOption {
         isWholeLine?: boolean,
         rangeBehavior?: any,
-        after: DecorationRenderAfterOptionType
+        after: DecorationRenderOptionAfter
     }
 
     interface RenderInstanceOptionReady extends RenderInstanceOption {
@@ -143,7 +143,7 @@ declare namespace Intf {
 }
 
 declare namespace Tp {
-    type DecorationStyleConfigType = {
+    type DecorationStyleConfig = {
         [k in keyof typeof DECORATION_STYLE_CONFIG_KEY]: boolean | string | number;
         // [DECORATION_STYLE_CONFIG_KEY.IS_WHOLE_LINE]: boolean
         // [DECORATION_STYLE_CONFIG_KEY.BORDER_WIDTH]: string
@@ -167,7 +167,7 @@ declare namespace Tp {
         [key: symbol]: Intf.RenderGroupSetProperty
     }
 
-    type DecorationInfoType = {
+    type DecorationInfo = {
         [key: number]: Intf.DecorationInfoPropType | any
     }
 
@@ -182,9 +182,9 @@ declare namespace Tp {
         [key: string]: ContentTextPositionType
     }
 
-    type DecorationStyleKeyOnlyType = keyof typeof DECORATION_STYLE_PREFIX
+    type DecorationStyleKeyOnly = keyof typeof DECORATION_STYLE_PREFIX
 
-    type HighlightStyleList = Record<DecorationStyleKeyOnlyType, vscode.TextEditorDecorationType[]>;
+    type HighlightStyleList = Record<DecorationStyleKeyOnly, vscode.TextEditorDecorationType[]>;
 
     type UnsetDecorationFunctionType = (editor: vscode.TextEditor, highlightStatus: Intf.DecorationState) => (selectionKind: Intf.DecorationInfoPropType) => void;
 
@@ -194,11 +194,11 @@ declare namespace Tp {
 
     type UnsetFunctionType = (selectionKind: Intf.DecorationInfoPropType) => void
 
-    type BorderPositionInfoType = Record<DecorationStyleKeyOnlyType, Intf.BorderPositionParserType | undefined>;
+    type BorderPositionInfoType = Record<DecorationStyleKeyOnly, Intf.BorderPositionParser | undefined>;
 
     type SelectionTypeToDecorationFunc = (context: Intf.SelectionHighlightKindContext) => Intf.DecorationWithRangeType[]
 
-    type SelectionConfigFunctionType = (config: DecorationStyleConfigType, decorationKey: number) => string[] | undefined
+    type SelectionConfigFunction = (config: DecorationStyleConfig, decorationKey: number) => string[] | undefined
 
-    type CreateDecorationFunctionType = (config: DecorationStyleConfigType, decorationKey: number, decorationTypeSplit: SelectionConfigFunctionType) => vscode.TextEditorDecorationType[] | undefined
+    type CreateDecorationFunction = (config: DecorationStyleConfig, decorationKey: number, decorationTypeSplit: SelectionConfigFunction) => vscode.TextEditorDecorationType[] | undefined
 }

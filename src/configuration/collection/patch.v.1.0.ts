@@ -43,7 +43,7 @@ const removeUserSetting = (extensionConfig: vscode.WorkspaceConfiguration, key: 
     return extensionConfig.update(key, undefined, vscode.ConfigurationTarget.Global);
 };
 
-const updateLegacyConfig = async (configReady: D.ConfigInfoReadyType) => {
+const updateLegacyConfig = async (configReady: D.Config.Intf.ConfigReady) => {
     const extensionConfig = getWorkspaceConfiguration(configReady.name);
     Object.entries(extensionConfig).forEach(async ([key, value]) => {
         if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {

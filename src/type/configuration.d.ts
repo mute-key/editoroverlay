@@ -13,13 +13,13 @@ export type {
 
 declare namespace Tp {
 
-    type NoConfigurationGeneraType = {
+    type NoConfigurationGenera = {
         [DECORATION_GENERAL_STYLE_CONFIG_KEY.OPACITY]: number
         [DECORATION_GENERAL_STYLE_CONFIG_KEY.BACKGROUND_OPACITY]: number
         [DECORATION_GENERAL_STYLE_CONFIG_KEY.SELECTION_TEXT_ENABLED]: boolean
     }
 
-    type NoConfigurationStatusType = {
+    type NoConfigurationStatus = {
         [DECORATION_SELECTION_STYLE_CONFIG_KEY.SELECTION_TEXT_OPACITY]: number
         [DECORATION_SELECTION_STYLE_CONFIG_KEY.SELECTION_TEXT_COLOR]: string
         [DECORATION_SELECTION_STYLE_CONFIG_KEY.SELECTION_TEXT_BACKGROUND_COLOR]: string | null
@@ -27,7 +27,7 @@ declare namespace Tp {
         [DECORATION_SELECTION_STYLE_CONFIG_KEY.SELECTION_TEXT_FONT_WEIGHT]: string,
     }
 
-    type NoConfigurationDeocorationPropType = {
+    type NoConfigurationDeocorationProp = {
         [DECORATION_STYLE_CONFIG_KEY.IS_WHOLE_LINE]: boolean
         [DECORATION_STYLE_CONFIG_KEY.BORDER_POSITION]: string
         [DECORATION_STYLE_CONFIG_KEY.BORDER_STYLE]: string
@@ -37,23 +37,23 @@ declare namespace Tp {
         [DECORATION_STYLE_CONFIG_KEY.BACKGROUND_COLOR]?: string
     }
 
-    type NoConfigurationDecorationType = {
-        [key: string]: NoConfigurationDeocorationPropType | any
+    type NoConfigurationDecoration = {
+        [key: string]: NoConfigurationDeocorationProp | any
     }
 
-    type DecorationStyleConfigPrefixType = typeof DECORATION_STYLE_PREFIX[keyof typeof DECORATION_STYLE_PREFIX] | "";
+    type DecorationStyleConfigPrefix = typeof DECORATION_STYLE_PREFIX[keyof typeof DECORATION_STYLE_PREFIX] | "";
 
-    type DecorationStyleConfigNameType = `${DECORATION_STYLE_CONFIG_KEY}`
+    type DecorationStyleConfigName = `${DECORATION_STYLE_CONFIG_KEY}`
 
-    type GeneralConfigNameOnlyType = `${DECORATION_GENERAL_STYLE_CONFIG_KEY}`
+    type GeneralConfigNameOnly = `${DECORATION_GENERAL_STYLE_CONFIG_KEY}`
 
-    type StatusTextConfigNameOnlyType = `${DECORATION_SELECTION_STYLE_CONFIG_KEY}`
+    type StatusTextConfigNameOnly = `${DECORATION_SELECTION_STYLE_CONFIG_KEY}`
 
-    type DecorationStyleConfigValueType = string | number | boolean
+    type DecorationStyleConfigValue = string | number | boolean
 
     type StringTransformFunc = ((s: string) => string)[]
 
-    type DecorationConfigGetFunctionType = <T extends DecorationStyleConfigValueType>(
+    type DecorationConfigGetFunction = <T extends DecorationStyleConfigValue>(
         configSection: vscode.WorkspaceConfiguration,
         configName: string,
         defaultValue: T,
@@ -69,22 +69,22 @@ declare namespace Tp {
     type BorderPositionKeyOnly = `${BORDER_POSITION_VARIATION}`
 
 
-    type configErrorType = {
+    type configError = {
         on: string,
         currentValue: string
     }
 
-    type nextSearchStringType = {
+    type nextSearchString = {
         keep: string | string[]
         next?: string | string[]
     }
 
-    type RegexSplitType = {
+    type RegexSplit = {
         position: number,
         array: string[]
     }
 
-    type ContentTextPositionBufferType = {
+    type ContentTextPositionBuffer = {
         contentText?: any[],
         position: {
             [key: number]: string

@@ -14,11 +14,11 @@ import type * as D from '../../type/type.d';
  */
 const selectionContentText = {
     ...SELECTION_CONTENT_TEXT
-} as unknown as D.status.type.StatusContentText;
+} as unknown as D.Status.Intf.StatusContentText;
 
 const indentInfo = {
     ...INDENT_INFO
-} as D.status.type.IndentInfo;
+} as D.Status.Intf.IndentInfo;
 
 /**
  * buffer that will store styled decroationType objects in fixed width array.
@@ -35,7 +35,7 @@ const selectionTextBuffer: Record<number, vscode.TextEditorDecorationType[]> = {
     [__0x.multiCursorText]: []
 };
 
-const selectionDecorationOption: Record<number, any[] | [][] | [D.decoration.type.RenderOption][]> = {
+const selectionDecorationOption: Record<number, any[] | [][] | [D.Decoration.Intf.RenderOption][]> = {
     [__0x.cursorOnlyText]: [],
     [__0x.singleLineText]: [],
     [__0x.multiLineText]: [],
@@ -55,7 +55,7 @@ const rangePointerTable: Record<number, undefined | [] | vscode.Range | vscode.R
  * becuase the api will consume the object and references in this object will
  * automatically be de-referenced by the api as they are consumed.
  */
-const decorationOptionBuffer = { ...DECORATION_OPTION_CONFIG } as D.decoration.type.RenderInstanceOption;
+const decorationOptionBuffer = { ...DECORATION_OPTION_CONFIG } as D.Decoration.Intf.RenderInstanceOption;
 
 /**
  * editor character in line index/column calculator
@@ -160,7 +160,7 @@ const multiCursorOf = {
  * regarding with contentText with this method.
  * 
  */
-const selectionOf: D.status.type.ContentTextState = {
+const selectionOf: D.Status.Tp.ContentTextState = {
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: { ...columns, ...lineNumber },
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: { ...lineNumber, ...characterCount },
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: { ...lineNumber, ...multiLineOf },
@@ -168,7 +168,7 @@ const selectionOf: D.status.type.ContentTextState = {
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: multiCursorOf,
 };
 
-const composeRenderOption = (hexKey: any, contentText: any): D.decoration.type.RenderOption => {
+const composeRenderOption = (hexKey: any, contentText: any): D.Decoration.Intf.RenderOption => {
     return {
         get range() {
             return rangePointerTable[hexKey];
@@ -291,11 +291,11 @@ const contentTextFuncBuffered: BufferedFuncSignature = (setDecorations, buffer) 
     setDecorations(buffer[idx], renderOption);
 };
 
-const functionChain = (statusRef, args) => ([fnName, fnChain]: [string, (args) => {}]) => {
+const functionChain: D.Selection.Tp.FunctionChain = (statusRef, args) => ([fnName, fnChain]) => {
     statusRef[fnName].contentText = fnChain(args).toString();
 };
 
-const functionChainAccumulate = (statusRef, args) => ([fnName, fnChain]) => {
+const functionChainAccumulate: D.Selection.Tp.FunctionChain = (statusRef, args) => ([fnName, fnChain]) => {
     if (fnName === 'char') {
         multiCursorCounter[fnName] += fnChain(args);
         statusRef[fnName].contentText = multiCursorCounter[fnName].toString();
@@ -429,13 +429,13 @@ const multiCursorPosition = (placeholder: string, position: number) => {
     }
 };
 
-const shiftPreviousIndex = (selectionIndex: number, decorationOption, nth: number) => (_option, idx: number) => {
+const shiftPreviousIndex = (selectionIndex: number, decorationOption: any[][], nth: number) => (_option: unknown, idx: number) => {
     if (idx < selectionIndex - (multiCursorState.statusIndex) - 1) {
         decorationOption[nth][idx].renderOptions.after.shiftIndex(1);
     }
 };
 
-const multiCursorOption = (option, selectionIndex, nth) => (contentText, idx) => {
+const multiCursorOption = (option: D.Decoration.Intf.RenderOption[][], selectionIndex: number, nth: number) => (contentText: string | any, idx: number) => {
     option[idx].push({
         get range() {
             return multiCursorState.selections[selectionIndex];
@@ -469,11 +469,11 @@ const multiCursorDecorationOption = (selectionIndex: number) => {
     nthPlaceholder.after = {
         ...nthPlaceholder.after,
         indexList: [multiCursorState.statusIndex + 1],
-        addIndex(i) {
+        addIndex(i: number) {
             this.indexList.push(i);
         },
-        shiftIndex(shift) {
-            this.indexList.forEach((i, idx) => this.indexList[idx] += shift);
+        shiftIndex(shift: number) {
+            this.indexList.forEach((i: unknown, idx: number) => this.indexList[idx] += shift);
         },
         get contentText() {
             return this.indexList.join(',');
@@ -489,9 +489,13 @@ const multiCursorDecorationOption = (selectionIndex: number) => {
                 nth));
 };
 
-const setRangerPointer = (refObject) => (selection: vscode.Selection, idx: number): vscode.Selection => refObject[idx] = selection;
+const setRangerPointer = (refObject: vscode.Range[]) =>
+    (selection: vscode.Selection, idx: number): vscode.Selection =>
+        refObject[idx] = selection;
 
-const renderMultiCursor = (setDecorations, decorationOption) => (decorationType: vscode.TextEditorDecorationType, idx: number): void => setDecorations(decorationType, decorationOption[idx]);
+const renderMultiCursor = (setDecorations: vscode.TextEditor['setDecorations'], decorationOption: D.Selection.Tp.MultiCursorRenderOption) =>
+    (decorationType: vscode.TextEditorDecorationType, idx: number): void =>
+        setDecorations(decorationType, decorationOption[idx]);
 
 const increaseIndex = (): void => {
     multiCursorState.index++;
@@ -517,7 +521,7 @@ const multiCursorSelection = (editor: vscode.TextEditor, previousKey: number[]):
     })();
 
     addMultiCursorEntry(editor.selections[multiCursorState.index]);
-    multiCursorState.selections.forEach(setRangerPointer(rangePointerTable[__0x.multiCursorText]));
+    multiCursorState.selections.forEach(setRangerPointer(rangePointerTable[__0x.multiCursorText] as vscode.Range[]));
     selectionTextBuffer[__0x.multiCursorText].forEach(renderMultiCursor(editor.setDecorations, selectionDecorationOption[__0x.multiCursorText]));
 };
 
@@ -555,9 +559,9 @@ const clearBufferOfhexkey = (setDecorations: vscode.TextEditor["setDecorations"]
 };
 
 type BindContentTextStateType = {
-    functionOf: Type.ContentTextStateType,
-    textOf: Type.StatusContentTextType,
-    infoOf: Type.IndentInfoType
+    functionOf: D.Status.Tp.ContentTextState,
+    textOf: D.Status.Intf.StatusContentText,
+    infoOf: D.Status.Intf.IndentInfo
 }
 
 const bindStatusContentTextState = (): BindContentTextStateType => {

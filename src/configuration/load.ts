@@ -10,9 +10,9 @@ import { bindEditorDecoration } from '../editor/editor';
 
 const configInfo = { 
     ...CONFIG_INFO
-} as unknown as D.conf.intf.ConfigReady;
+} as unknown as D.Config.Intf.ConfigReady;
 
-const loadConfiguration = (context?: vscode.ExtensionContext): D.conf.intf.InitialisedConfig | undefined => {
+const loadConfiguration = (context?: vscode.ExtensionContext): D.Config.Intf.InitialisedConfig | undefined => {
 
     const name = context?.extension.packageJSON.name;
 
@@ -26,7 +26,7 @@ const loadConfiguration = (context?: vscode.ExtensionContext): D.conf.intf.Initi
         return;
     }
 
-    const configReady = configInfo as D.conf.intf.ConfigReady;
+    const configReady = configInfo as D.Config.Intf.ConfigReady;
     const decorationState = bindEditorDecoration().stateOf;
 
     if (!configReady.configError) {

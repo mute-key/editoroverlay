@@ -23,7 +23,7 @@ declare namespace Intf {
         [key: number]: any[]
     }
 
-    interface DiagnosticVisibilityType {
+    interface DiagnosticVisibility {
         displayWhenCursorOnly?: boolean,
         displayWhenSingleLine?: boolean,
         displayWhenMultiLine?: boolean,
@@ -36,10 +36,12 @@ declare namespace Intf {
         hideWarning?: boolean
     }
 
-    interface DiagnosticSourceType {
-        [key: string]: {
-            [key: string]: vscode.Diagnostic[]
-        }
+    interface DiagnosticFsBind {
+        [key: string]: vscode.Diagnostic[]
+    }
+
+    interface DiagnosticSource {
+        [key: string]: DiagnosticFsBind
     }
 
     interface DiagonosticDecorationStyle {
@@ -73,7 +75,7 @@ declare namespace Intf {
         errorContentText?: vscode.TextEditorDecorationType[];
     }
 
-    interface ContentTextWithPositionType {
+    interface ContentTextWithPosition {
         contentText?: (string | symbol | number | Status.Tp.ContentTextFuncSignature)[],
         position: {}
     }
@@ -118,10 +120,10 @@ declare namespace Intf {
         }
     }
 
-    interface DiagnosticConfigType {
+    interface DiagnosticConfig {
         enabled?: boolean
         leftMargin?: string
-        visibility: Intf.DiagnosticVisibilityType
+        visibility: Intf.DiagnosticVisibility
         okNotationTextStyle?: Decoration.Intf.DecorationTextPrePostFixStyleConfig
         okTextStyle?: Decoration.Intf.DecorationTextStyleConfig
         problemPlaceholderContentText?: string

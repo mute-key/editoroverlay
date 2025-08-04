@@ -1,8 +1,9 @@
-import * as D from '../../type/type';
-import * as regex from '../../util/regex.collection';
+import * as regex from '../../collection/regex';
 import { updateEditorConfiguration } from './editor';
 
-const configCondition: Type.ConfigCondition = <T extends string | number | boolean | null>(configReady: Type.ConfigInfoReadyType, configKeyWithScope: string, value: T, defaultValue: T) => {
+import type * as D from '../../type/type';
+
+const configCondition = <T extends string | number | boolean | null>(configReady: D.Config.Intf.ConfigReady, configKeyWithScope: string, value: T, defaultValue: T) => {
     return {
         "bordercolor": () => {
             if (!regex.isValidHexColor.test(String(value))) {

@@ -9,16 +9,15 @@ import { updateDiagnostic } from '../../diagnostic/diagnostic';
 import { resetDecoration } from '../editor';
 import * as Decoration from '../highlight/highlight';
 
-import type * as D from '../../type/diagnostic';
-export type * from '../../type/diagnostic';
+import type * as D from '../../type/type';
 
 const diagnosticContentText = {
     ...DIAGNOSTIC_CONTENT_TEXT
-} as unknown as D.Intf.DiagnosticContentText;
+} as unknown as D.Diagnostic.Intf.DiagnosticContentText;
 
 const lineGlyph = {
     ...DIAGNOSTIC_GLYPH
-} as unknown as D.Intf.LineGlyph;
+} as unknown as D.Diagnostic.Intf.LineGlyph;
 
 const diagnosticStatusBuffer = [] as (any | vscode.TextEditorDecorationType)[];
 
@@ -81,7 +80,7 @@ const clearDiagnosticTextState = (): void => {
     }
 };
 
-const diagnosticVisibility = { ...DIAGNOSTIC_VISIBILITY_CONFIG } as D.Intf.DiagnosticVisibilityType;
+const diagnosticVisibility = { ...DIAGNOSTIC_VISIBILITY_CONFIG } as D.Diagnostic.Intf.DiagnosticVisibility;
 
 const problemLineGlyph = (lineNumber: number[], line: number) => {
     const linePosition: any[] = [];
