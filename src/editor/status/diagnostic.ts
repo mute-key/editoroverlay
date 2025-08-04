@@ -191,7 +191,7 @@ const refreshBuffer = (state: (number | number[])[]) => {
     }
 };
 
-const fnCollection: Record<number, D.Tp.DiagnosticSignatureFuncSign> = {
+const fnCollection: Record<number, D.Diagnostic.Tp.DiagnosticSignatureFuncSign> = {
     [__0x.editorWarningTotal]: ({ state, line }) => String(state[3]) + problemLineGlyph(state[2], line),
     [__0x.editorErrorTotal]: ({ state, line }) => String(state[5]) + problemLineGlyph(state[4], line),
     [__0x.workspaceWarningSource]: ({ state }) => String(state[6]),
@@ -221,8 +221,6 @@ const diagnosticInfo = (decorationState: Decoration.Intf.DecorationState) => (ed
     }
     context.line = editor.selection.end.line;
     context.state = stateBuffer;
-
-
     diggnosticStateList.forEach(updateDiagnosticState(context));
     diagonosticReferenceTable.rangeReference = diagnosticOf.rangeFunction(editor);
     diagnosticContentText[diagnosticRenderSignature(stateBuffer)].forEach(renderDiagnosticText(editor.setDecorations));
