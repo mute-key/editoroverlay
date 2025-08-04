@@ -1,13 +1,14 @@
 import * as vscode from 'vscode';
-import * as Type from '../../type/type';
 import Error from '../../util/error';
 import { convertNullStringToNull } from './validation';
 import { hexToRgbaStringLiteral, } from '../../util/util';
 import { parseContentText } from '../shared/decoration';
 
+import type * as D from '../../type/type';
+
 const getWorkspaceConfiguration = (section: string): vscode.WorkspaceConfiguration => vscode.workspace.getConfiguration(section);
 
-const colorConfigTransform: Record<string, Type.ColourConfigTransformType> = {
+const colorConfigTransform: Record<string, D.Decoration.Intf.ColourConfigTransform> = {
     borderColor: {
         of: 'borderOpacity',
         fn: (v: string, n: number, d: string) => hexToRgbaStringLiteral(v, n, d),
@@ -18,7 +19,7 @@ const colorConfigTransform: Record<string, Type.ColourConfigTransformType> = {
     }
 };
 
-const getConfigValue: Type.DecorationConfigGetFunctionType = <T extends Type.DecorationStyleConfigValueType>(configSection: vscode.WorkspaceConfiguration, configName: string, defaultValue: T, configSectionName?: string): T | string | null => {
+const getConfigValue: D.Config.Tp.DecorationConfigGetFunction = <T extends D.Config.Tp.DecorationStyleConfigValue>(configSection: vscode.WorkspaceConfiguration, configName: string, defaultValue: T, configSectionName?: string): T | string | null => {
     try {
         const value = configSection.get<T>(configName, defaultValue);
         if (value === undefined) {

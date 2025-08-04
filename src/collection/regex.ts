@@ -1,5 +1,5 @@
 import { DIAGNOSTIC_CONTENT_TEXT_KEY, SELECTION_CONTENT_TEXT_CONFIG_KEY } from '../constant/config/enum';
-import * as Type from '../type/type';
+import type * as D from './regex.d';
 
 //:==============================================================================
 //:  [ REGEX COLLECTION ], self-explanatory.
@@ -47,7 +47,7 @@ const errorTotalRegex = {
     err: error,
 };
 
-const diagnosticTextRegex: Record<string, Type.RegexDiagnosticContentTextUnion> = {
+const diagnosticTextRegex: Record<string, D.Tp.DiagnosticContentTextUnion> = {
     [DIAGNOSTIC_CONTENT_TEXT_KEY.PLACEHOLDER_PROBLEM_CONTENT_TEXT]: problemRegex,
     [DIAGNOSTIC_CONTENT_TEXT_KEY.PLACEHOLDER_ALL_OK_CONTENT_TEXT]: okRegex,
     [DIAGNOSTIC_CONTENT_TEXT_KEY.OK_ALL_CONTENT_TEXT]: notationRegex,
@@ -91,7 +91,7 @@ const nth = /(\${nth})/s;
 
 const selectionCount = /(\${count})/s;
 
-const SelectionTextRegex: Record<string, Type.RegexStatusContentTextUnion> = {
+const SelectionTextRegex: Record<string, D.Tp.StatusContentTextUnion> = {
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: {
         col: column,
         zCol: zeroColumn,
@@ -145,5 +145,6 @@ export {
     ifContentTextHasPlaceholder,
     contentTextKeysOnly,
     SelectionTextRegex,
-    diagnosticTextRegex
+    diagnosticTextRegex,
+    D
 };

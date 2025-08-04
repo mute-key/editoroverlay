@@ -1,7 +1,6 @@
-import * as Type from '../../type/type';
 import * as __0x from '../../constant/shared/numeric';
 import * as __$ from '../../constant/shared/symbol';
-import * as regex from '../../util/regex.collection';
+import * as regex from '../../collection/regex';
 import { CONFIG_SECTION, DECORATION_OPTION_LINKER, DIAGNOSTIC_ALL_PLACEHOLDER_LINKER, DIAGNOSTIC_CONFIG, DIAGNOSTIC_CONTENT_TEXT_LIST, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM, DIAGNOSTIC_DECORATION_STYLE, DIAGNOSTIC_DECORATION_TEXT_KIND, DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER, DIAGNOSTIC_STYLE_LIST, DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER } from '../../constant/config/object';
 import { DIAGNOSTIC_BIOME, DIAGNOSTIC_TEXT_STYLE_KEY } from '../../constant/config/enum';
 import { DIAGNOSTIC_PROBLEM_LIST } from '../../constant/shared/object';
@@ -12,6 +11,8 @@ import { createCursorRange, createCursorRangeLine, createCursorRangeLineAuto, se
 import { bindDiagnosticContentTextState, clearDiagnosticTextState, composeRenderOption, initializeStateBuffer, setDiagonosticTextbuffer } from '../../editor/status/diagnostic';
 import { setOverrideDigit } from '../../diagnostic/diagnostic';
 import { hexToRgbaStringLiteral, readBits } from '../../util/util';
+
+import type * as D from '../../type/type';
 
 const positionKeyList = ['pre', 'post'] as const;
 
@@ -61,7 +62,7 @@ const convertPositionDecorationRenderOption = ({ textPosition, primaryStyle, sec
     }).filter(decorationOption => decorationOption !== undefined);
 };
 
-const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: Type.DiagonosticDecorationStyle, leftMargin: string = '') => {
+const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: D.Diagnostic.Intf.DiagonosticDecorationStyle, leftMargin: string = '') => {
     const convertPositionWrapper = (context, target, propertyName, contentTextHeyKey) => {
         if (Object.hasOwn(target[propertyName], contentTextHeyKey)) {
             if (target[propertyName][contentTextHeyKey].notation) {
@@ -215,7 +216,7 @@ const overrideStyle = (config, overrideBiome) => {
     };
 };
 
-const buildDiagnosticStyle = (config: Type.DiagnosticConfigType, style: Type.DiagonosticDecorationStyle, diagnosticStyleList: string[], visibility: Type.DiagnosticVisibilityType, diagnosticBiome) => {
+const buildDiagnosticStyle = (config: D.Diagnostic.Intf.DiagnosticConfig, style: D.Diagnostic.Intf.DiagonosticDecorationStyle, diagnosticStyleList: string[], visibility: D.Diagnostic.Intf.DiagnosticVisibility, diagnosticBiome) => {
     const result = {
         workspace: {},
         editor: {},
@@ -229,7 +230,7 @@ const buildDiagnosticStyle = (config: Type.DiagnosticConfigType, style: Type.Dia
         style.leftMargin = config.leftMargin;
     }
     diagnosticStyleList.forEach(styleName => {
-        const styleConfig: Type.DecorationTextStyleConfig = {   // this is due to syle config values are in proxy object.
+        const styleConfig: D.Decoration.Intf.DecorationTextStyleConfig = {   // this is due to syle config values are in proxy object.
             color: sanitizeConfigValue(config[styleName].color),
             colorOpacity: config[styleName].colorOpacity,
             backgroundColor: sanitizeConfigValue(config[styleName].backgroundColor),
@@ -276,7 +277,7 @@ type DiagnosticBiomeType = {
     editor: number,
 }
 
-const diagnosticVisibilityBiome = (visibility: Type.DiagnosticVisibilityType): DiagnosticBiomeType => {
+const diagnosticVisibilityBiome = (visibility: D.Diagnostic.Intf.DiagnosticVisibility): DiagnosticBiomeType => {
     let workspacMask: number = DIAGNOSTIC_BIOME.ALL;
     let editorMask: number = DIAGNOSTIC_BIOME.ALL;
     if (visibility.DiagnosticKind === "workspace Only") {
@@ -340,7 +341,7 @@ const setCursorLine = (bindTo, visibility) => {
 
 const updateDiagnosticTextConfig = async (extenionName: string, configuratioChange: boolean = false) => {
     const diagnosticConfig = { ...DIAGNOSTIC_CONFIG } as typeof DIAGNOSTIC_CONFIG;
-    const diagnosticDecorationStyle = { ...DIAGNOSTIC_DECORATION_STYLE } as unknown as Type.DiagonosticDecorationStyle;
+    const diagnosticDecorationStyle = { ...DIAGNOSTIC_DECORATION_STYLE } as unknown as D.Diagnostic.Intf.DiagonosticDecorationStyle;
 
     const dignosticContentTextPreset = {
         layout: {},

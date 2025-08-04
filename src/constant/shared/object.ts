@@ -87,6 +87,7 @@ export const DIAGNOSTIC_CONTENT_TEXT = {
 } as const;
 
 export const DIAGNOSTIC_PROBLEM_LIST = [
+    __0x.allOkNoOverride,
     __0x.editorOkWorkspaceWarn,
     __0x.editorOkWorkspaceErr,
     __0x.editorOkWorkspaceWarnErr,
@@ -108,7 +109,6 @@ export const DIAGNOSTIC_GLYPH = {
 
 export const DIAGNOSTIC_ENTRY_LIST = [
     __0x.allOkOverride,
-    __0x.allOkNoOverride,
     ...DIAGNOSTIC_PROBLEM_LIST
 ];
 

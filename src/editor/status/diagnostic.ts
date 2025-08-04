@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import * as Type from '../../type/type';
 import * as __0x from '../../constant/shared/numeric';
 import * as __$ from '../../constant/shared/symbol';
 import { createCursorRange } from '../range';
@@ -8,18 +7,21 @@ import { DECORATION_OPTION_CONFIG, DIAGNOSTIC_VISIBILITY_CONFIG } from '../../co
 import { DIAGNOSTIC_CONTENT_TEXT_KEY } from '../../constant/config/enum';
 import { updateDiagnostic } from '../../diagnostic/diagnostic';
 import { resetDecoration } from '../editor';
+import * as Decoration from '../highlight/highlight';
+
+import type * as D from '../../type/type';
 
 const diagnosticContentText = {
     ...DIAGNOSTIC_CONTENT_TEXT
-};
+} as unknown as D.Diagnostic.Intf.DiagnosticContentText;
 
 const lineGlyph = {
     ...DIAGNOSTIC_GLYPH
-};
+} as unknown as D.Diagnostic.Intf.LineGlyph;
 
 const diagnosticStatusBuffer = [] as (any | vscode.TextEditorDecorationType)[];
 
-const composeRenderOption = (renderSignature: any, renderOptions: any[]) => {
+const composeRenderOption = (renderSignature: number, renderOptions: any[]) => {
     renderOptions.forEach(option => {
         if (typeof option.after.contentText === 'number' && Object.hasOwn(diagonosticReferenceTable, option.after.contentText)) {
             diagonosticReferenceTable[option.after.contentText] = option.after;
@@ -55,7 +57,7 @@ const setDiagonosticTextbuffer = (): void => {
     decorationOptionBuffer.isWholeLine = true;
     decorationOptionBuffer.rangeBehavior = vscode.DecorationRangeBehavior.ClosedClosed;
 
-    const max = Math.max(...lengthList.map(list => list[1]));
+    const max = Math.max(...lengthList.map((list: number[]) => list[1]));
     let idx = max;
 
     diagnosticStatusBuffer?.forEach(decorationType => decorationType.dispose());
@@ -64,7 +66,7 @@ const setDiagonosticTextbuffer = (): void => {
         diagnosticStatusBuffer.push(vscode.window.createTextEditorDecorationType(decorationOptionBuffer));
     }
 
-    lengthList.forEach(length => {
+    lengthList.forEach((length: number[]) => {
         let deltaIdx = max - length[1];
         while (deltaIdx--) {
             diagnosticContentText[length[0]].push([]);
@@ -78,7 +80,7 @@ const clearDiagnosticTextState = (): void => {
     }
 };
 
-const diagnosticVisibility = { ...DIAGNOSTIC_VISIBILITY_CONFIG } as Type.DiagnosticVisibilityType;
+const diagnosticVisibility = { ...DIAGNOSTIC_VISIBILITY_CONFIG } as D.Diagnostic.Intf.DiagnosticVisibility;
 
 const problemLineGlyph = (lineNumber: number[], line: number) => {
     const linePosition: any[] = [];
@@ -182,14 +184,14 @@ const diagnosticRenderSignature = (state: typeof stateBuffer): number => {
     return (emask === 0 && wmask === 0) ? state[0] as number : ((emask ? emask << 5 : 1 << 5) | (wmask ? wmask << 2 : 1 << 2) | 0b10);
 };
 
-const refreshBuffer = (state) => {
+const refreshBuffer = (state: (number | number[])[]) => {
     let idx = state.length;
     while (idx--) {
         stateBuffer[idx] = state[idx];
     }
 };
 
-const fnCollection: Record<number, any> = {
+const fnCollection: Record<number, D.Diagnostic.Tp.DiagnosticSignatureFuncSign> = {
     [__0x.editorWarningTotal]: ({ state, line }) => String(state[3]) + problemLineGlyph(state[2], line),
     [__0x.editorErrorTotal]: ({ state, line }) => String(state[5]) + problemLineGlyph(state[4], line),
     [__0x.workspaceWarningSource]: ({ state }) => String(state[6]),
@@ -204,8 +206,8 @@ const updateDiagnosticState = (context: any) => (hexKey: number) => {
     diagonosticReferenceTable[hexKey].contentText = fnCollection[hexKey](context);
 };
 
-const renderDiagnosticText = (setDecorations) => (options, idx: number) => {
-    setDecorations(diagnosticStatusBuffer[idx], options);
+const renderDiagnosticText = (setDecorations: vscode.TextEditor['setDecorations']) => (options: vscode.DecorationInstanceRenderOptions, idx: number) => {
+    setDecorations(diagnosticStatusBuffer[idx], options as any);
 };
 
 const context = {
@@ -213,14 +215,12 @@ const context = {
     state: Object.create(null)
 };
 
-const diagnosticInfo = (decorationState) => (editor: vscode.TextEditor): void => {
+const diagnosticInfo = (decorationState: Decoration.Intf.DecorationState) => (editor: vscode.TextEditor): void => {
     if (decorationState.eventTrigger[0] === __0x.diagnosticChanged) {
         refreshBuffer(updateDiagnostic(editor.document.uri));
     }
     context.line = editor.selection.end.line;
     context.state = stateBuffer;
-
-
     diggnosticStateList.forEach(updateDiagnosticState(context));
     diagonosticReferenceTable.rangeReference = diagnosticOf.rangeFunction(editor);
     diagnosticContentText[diagnosticRenderSignature(stateBuffer)].forEach(renderDiagnosticText(editor.setDecorations));

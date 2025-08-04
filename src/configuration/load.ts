@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import * as Type from '../type/type';
+import * as D from '../type/type';
 import { CONFIG_INFO } from '../constant/config/object';
 import { generateHighlightDecoration } from './decoration/highlight';
 import { updateLegacyConfig } from './collection/patch.v.1.0';
@@ -10,9 +10,9 @@ import { bindEditorDecoration } from '../editor/editor';
 
 const configInfo = { 
     ...CONFIG_INFO
-} as Type.ConfigInfoType;
+} as unknown as D.Config.Intf.ConfigReady;
 
-const loadConfiguration = (context?: vscode.ExtensionContext): Type.InitialisedConfigType | undefined => {
+const loadConfiguration = (context?: vscode.ExtensionContext): D.Config.Intf.InitialisedConfig | undefined => {
 
     const name = context?.extension.packageJSON.name;
 
@@ -26,7 +26,7 @@ const loadConfiguration = (context?: vscode.ExtensionContext): Type.InitialisedC
         return;
     }
 
-    const configReady = configInfo as Type.ConfigInfoReadyType;
+    const configReady = configInfo as D.Config.Intf.ConfigReady;
     const decorationState = bindEditorDecoration().stateOf;
 
     if (!configReady.configError) {

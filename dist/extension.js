@@ -42,7 +42,6 @@ var vscode17 = __toESM(require("vscode"));
 var vscode = __toESM(require("vscode"));
 
 // src/constant/shared/numeric.ts
-var regex = 18 /* REGEX */;
 var reset = 256 /* RESET */;
 var cursorOnly = 257 /* CURSOR_ONLY */;
 var singleLine = 258 /* SINGLE_LINE */;
@@ -322,7 +321,9 @@ var DIAGNOSTIC_CONTENT_TEXT_LIST = [
 ];
 var DIAGNOSTIC_SEVERITY_TO_KEY = {
   [vscode.DiagnosticSeverity.Warning]: "warning" /* WARNING */,
-  [vscode.DiagnosticSeverity.Error]: "error" /* ERROR */
+  [vscode.DiagnosticSeverity.Error]: "error" /* ERROR */,
+  [vscode.DiagnosticSeverity.Information]: void 0,
+  [vscode.DiagnosticSeverity.Hint]: void 0
 };
 var DIAGNOSTIC_DECORATION_STYLE = {
   leftMargin: void 0,
@@ -475,6 +476,7 @@ var DIAGNOSTIC_CONTENT_TEXT = {
   [editorWarnErrWorkspaceWarnErr]: []
 };
 var DIAGNOSTIC_PROBLEM_LIST = [
+  allOkNoOverride,
   editorOkWorkspaceWarn,
   editorOkWorkspaceErr,
   editorOkWorkspaceWarnErr,
@@ -494,7 +496,6 @@ var DIAGNOSTIC_GLYPH2 = {
 };
 var DIAGNOSTIC_ENTRY_LIST = [
   allOkOverride,
-  allOkNoOverride,
   ...DIAGNOSTIC_PROBLEM_LIST
 ];
 var DIAGNOSTIC_EDITOR_CONTENT_TEXT_KEYSET = {
@@ -547,7 +548,7 @@ var blankRange = [];
 // src/editor/editor.ts
 var vscode6 = __toESM(require("vscode"));
 
-// src/util/regex.collection.ts
+// src/collection/regex.ts
 var prefix = /(\${pre})/s;
 var postfix = /(\${post})/s;
 var source = /(\${src})/s;
@@ -715,7 +716,7 @@ var multiCursorFn = {
       return editor2.selections[pos].end.character - editor2.selections[pos].start.character;
     }
     const text = editor2.document.getText(editor2.selections[pos]);
-    return text.replace(indentInfo[regex], "").length;
+    return text.replace(indentInfo.regex, "").length;
   }
 };
 var multiCursorOf = {
@@ -778,7 +779,7 @@ var setSelectionTextbuffer = (hexKey, length, placeholder) => {
       break;
     case multiLineText:
       selectionDecorationOption[hexKey].length = length;
-      selectionDecorationOption[hexKey].fill(...[]);
+      selectionDecorationOption[hexKey].fill([]);
       selectionTextBuffer[hexKey].forEach((option, idx) => {
         selectionDecorationOption[hexKey][idx] = [];
         selectionDecorationOption[hexKey][idx].push(
@@ -1611,11 +1612,11 @@ var readBits = (value, trueValue, falseValue, bitLength) => {
   }
   return array;
 };
-var splitAndPosition = (str, regex2) => {
-  const match = str.match(regex2);
+var splitAndPosition = (str, regex) => {
+  const match = str.match(regex);
   let split = [];
   if (match && match.index !== void 0) {
-    split = str.split(regex2);
+    split = str.split(regex);
     if (split[0].length === 0) {
       delete split[0];
       return {
@@ -1642,8 +1643,8 @@ var hexToRgbaStringLiteral = (hex, opacity = 0.6, defaultValue, opacityDefault) 
   if (hex.length === 3) {
     hex = hex.split("").map((x) => x + x).join("");
   }
-  const regex2 = /^[0-9A-Fa-f]{6}$/;
-  if (!regex2.test(hex)) {
+  const regex = /^[0-9A-Fa-f]{6}$/;
+  if (!regex.test(hex)) {
     hex = defaultValue.replace(/^#/, "");
     opacity = opacityDefault;
   }
@@ -1671,8 +1672,8 @@ var setContentTextOnDecorationRenderOption = (source2, contentText) => {
   target.after.contentText = contentText;
   return target;
 };
-var searchPlaceholderPosition = (textOf, functionOf, functionKey, regex2, search, lastIndex) => {
-  const split = castToFuncSignature(splitAndPosition(search.nextSearchString, regex2));
+var searchPlaceholderPosition = (textOf, functionOf, functionKey, regex, search, lastIndex) => {
+  const split = castToFuncSignature(splitAndPosition(search.nextSearchString, regex));
   if (split) {
     if (Object.hasOwn(functionOf, functionKey)) {
       split.array[split.position] = functionOf[functionKey];
@@ -2538,11 +2539,13 @@ var writeSelectedPreset = async (configInfo2, packageName, json) => {
 var overrideConfirm = (message) => {
   return vscode12.window.showWarningMessage(message, ...["Yes" /* YES */, "No" /* NO */]);
 };
-var quickPickWrapper = async (context2, presetList, fileList, placeHolder) => {
-  const preset = await vscode12.window.showQuickPick(presetList, { placeHolder });
-  if (preset && Object.hasOwn(fileList, preset)) {
+var quickPickWrapper = async (context2, { presetList: presetList2, fileList, placeHolder }) => {
+  const preset = await vscode12.window.showQuickPick(presetList2.map((l) => {
+    return { label: l };
+  }), { placeHolder });
+  if (preset && Object.hasOwn(fileList, preset.label.toString())) {
     const packageName = context2.package.extension.packageJSON.name;
-    const json = await readPreset(context2.package, fileList[preset]);
+    const json = await readPreset(context2.package, fileList[preset.label.toString()]);
     const write = writeConfiguration(context2.configInfo, packageName, json ? json : {});
     if (checkDuplciateOverride(context2.package.extension.packageJSON.name, json)) {
       await overrideConfirm("Configuration will be overwritten. Proceed?" /* OVERRIDE_CONFIRM */).then(write);
@@ -2551,61 +2554,46 @@ var quickPickWrapper = async (context2, presetList, fileList, placeHolder) => {
     }
   }
 };
-var quickPickPresetList = (context2) => {
-  quickPickWrapper(
-    context2,
-    [
-      "Detailed" /* DETAILED */,
-      "Simple" /* SIMPLE */,
-      "No Glpyph - Detailed" /* NO_GLYPH_D */,
-      "No Glpyph - Simple" /* NO_GLYPH_S */,
-      "Emoji - Detailed" /* EMOJI_D */,
-      "Emoji - Simple" /* EMOJI_S */
-    ],
-    {
-      ["Detailed" /* DETAILED */]: "detailed.json" /* PRESET_DETAILED */,
-      ["Simple" /* SIMPLE */]: "simple.json" /* PRESET_SIMPLE */,
-      ["No Glpyph - Detailed" /* NO_GLYPH_D */]: "no-glyph-detailed.json" /* PRESET_NO_GLYPH_D */,
-      ["No Glpyph - Simple" /* NO_GLYPH_S */]: "no-glyph-simple.json" /* PRESET_NO_GLYPH_S */,
-      ["Emoji - Detailed" /* EMOJI_D */]: "emoji-detailed.json" /* PRESET_EMOJI_D */,
-      ["Emoji - Simple" /* EMOJI_S */]: "emoji-simple.json" /* PRESET_EMOJI_S */
-    },
-    " ... Select the Preset" /* PRESET_SELCT */
-  );
+var presetList = {
+  presetList: ["Detailed" /* DETAILED */, "Simple" /* SIMPLE */, "No Glpyph - Detailed" /* NO_GLYPH_D */, "No Glpyph - Simple" /* NO_GLYPH_S */, "Emoji - Detailed" /* EMOJI_D */, "Emoji - Simple" /* EMOJI_S */],
+  fileList: {
+    ["Detailed" /* DETAILED */]: "detailed.json" /* PRESET_DETAILED */,
+    ["Simple" /* SIMPLE */]: "simple.json" /* PRESET_SIMPLE */,
+    ["No Glpyph - Detailed" /* NO_GLYPH_D */]: "no-glyph-detailed.json" /* PRESET_NO_GLYPH_D */,
+    ["No Glpyph - Simple" /* NO_GLYPH_S */]: "no-glyph-simple.json" /* PRESET_NO_GLYPH_S */,
+    ["Emoji - Detailed" /* EMOJI_D */]: "emoji-detailed.json" /* PRESET_EMOJI_D */,
+    ["Emoji - Simple" /* EMOJI_S */]: "emoji-simple.json" /* PRESET_EMOJI_S */
+  },
+  placeHolder: " ... Select the Preset" /* PRESET_SELCT */
 };
-var quickPickOientationList = (context2) => {
-  quickPickWrapper(
-    context2,
-    ["Horizontal" /* HORIZONTAL */, "Vertical" /* VERTICAL */],
-    {
-      ["Horizontal" /* HORIZONTAL */]: "orientation-horizontal.json" /* PRESET_ORIENTATION_HORIZONTAL */,
-      ["Vertical" /* VERTICAL */]: "orientation-vertical.json" /* PRESET_ORIENTATION_VERTICAL */
-    },
-    " ... Select the Preset Orientation" /* PRESET_SELCT_ORIENTATION */
-  );
+var presetOridentation = {
+  presetList: ["Horizontal" /* HORIZONTAL */, "Vertical" /* VERTICAL */],
+  fileList: {
+    ["Horizontal" /* HORIZONTAL */]: "orientation-horizontal.json" /* PRESET_ORIENTATION_HORIZONTAL */,
+    ["Vertical" /* VERTICAL */]: "orientation-vertical.json" /* PRESET_ORIENTATION_VERTICAL */
+  },
+  placeHolder: " ... Select the Preset Orientation" /* PRESET_SELCT_ORIENTATION */
 };
-var quickPickColorList = (context2) => {
-  quickPickWrapper(
-    context2,
-    ["Light" /* LIGHT */, "Dark" /* DARK */],
-    {
-      ["Light" /* LIGHT */]: "color-light-theme.json" /* THEME_LIGHT */,
-      ["Dark" /* DARK */]: "color-dark-theme.json" /* THEME_DARK */
-    },
-    " ... Select the Color Contrast" /* PRESET_SELCT_COLOR_CONTRAST */
-  );
+var presetColor = {
+  presetList: ["Light" /* LIGHT */, "Dark" /* DARK */],
+  fileList: {
+    ["Light" /* LIGHT */]: "color-light-theme.json" /* THEME_LIGHT */,
+    ["Dark" /* DARK */]: "color-dark-theme.json" /* THEME_DARK */
+  },
+  placeHolder: " ... Select the Color Contrast" /* PRESET_SELCT_COLOR_CONTRAST */
 };
-var quickPickContrastList = (context2) => {
-  quickPickWrapper(
-    context2,
-    ["Dim" /* DIM */, "Bright" /* BRIGHT */],
-    {
-      ["Dim" /* DIM */]: "contrast-dim.json" /* CONTRAST_DIM */,
-      ["Bright" /* BRIGHT */]: "contrast-bright.json" /* CONTRAST_BRIGHT */
-    },
-    " ... Select the Theme Color" /* PRESET_SELCT_COLOR */
-  );
+var presetContrast = {
+  presetList: ["Dim" /* DIM */, "Bright" /* BRIGHT */],
+  fileList: {
+    ["Dim" /* DIM */]: "contrast-dim.json" /* CONTRAST_DIM */,
+    ["Bright" /* BRIGHT */]: "contrast-bright.json" /* CONTRAST_BRIGHT */
+  },
+  placeHolder: " ... Select the Theme Color" /* PRESET_SELCT_COLOR */
 };
+var quickPickPresetList = (context2) => quickPickWrapper(context2, presetList);
+var quickPickOientationList = (context2) => quickPickWrapper(context2, presetOridentation);
+var quickPickColorList = (context2) => quickPickWrapper(context2, presetColor);
+var quickPickContrastList = (context2) => quickPickWrapper(context2, presetContrast);
 var checkActiveThemeKind = async (context2) => {
   if (vscode12.window.activeColorTheme.kind === vscode12.ColorThemeKind.Light) {
     const packageName = context2.package.extension.packageJSON.name;

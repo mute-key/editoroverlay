@@ -1,5 +1,4 @@
-import * as Type from '../../type/type';
-import * as regex from '../../util/regex.collection';
+import * as regex from '../../collection/regex';
 import * as __0x from '../../constant/shared/numeric';
 import { CONFIG_SECTION, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_NUMLINK, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE } from '../../constant/config/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
@@ -7,12 +6,14 @@ import { bindStatusContentTextState, multiCursorPosition, setSelectionTextbuffer
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 import { isEntriesEqual } from '../../util/util';
 
+import type * as D from '../../type/type';
+
 const convertPositionToDecorationRenderOption = (textPosition, SelectionDecorationStyle): void => {
     return textPosition.contentText.map((text, idx) => {
         const option = typeof text === 'string'
             ? SelectionDecorationStyle.placeholderDecorationOption
             : SelectionDecorationStyle.selectionDecorationOption[textPosition.position[idx]];
-        const contentTextRenderOption = setContentTextOnDecorationRenderOption(option as Type.DecorationRenderOptionType, text);
+        const contentTextRenderOption = setContentTextOnDecorationRenderOption(option as D.Decoration.Intf.RenderOption, text);
         if (typeof text === 'symbol') {
             textPosition.position[idx] = contentTextRenderOption.after.contentText;
         }
@@ -20,10 +21,10 @@ const convertPositionToDecorationRenderOption = (textPosition, SelectionDecorati
     }).filter(decorationOption => decorationOption !== undefined);
 };
 
-const buildSelectionTextDecorationRenderOption = (config: Type.SelectionDecorationConfigType, style: Type.SelectionDecorationStyleType) => {
+const buildSelectionTextDecorationRenderOption = (config: D.Status.Intf.SelectionDecorationConfig, style: D.Status.Intf.SelectionDecorationStyle) => {
     style.placeholderDecorationOption = convertToDecorationRenderOption(config, true);
     Object.keys(style.selectionDecorationOption).forEach((key, idx) => {
-        const styleConfig: Type.DecorationTextStyleConfig = {
+        const styleConfig: D.Decoration.Intf.DecorationTextStyleConfig = {
             color: config.selectionCountTextStyle[key],
             colorOpacity: config.selectionCountTextStyle.opacity,
             fontStyle: config.selectionCountTextStyle.fontStyle,
@@ -67,7 +68,7 @@ const createSharedObjectSync = (textOftarget, textOfSource: any) => {
     });
 };
 
-const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentTextBufferType, SelectionDecorationStyle, leftMargin): void => {
+const buildStatusTextState = (textOftarget, textOfSource: D.Status.Intf.StatusContentTextBuffer, SelectionDecorationStyle, leftMargin): void => {
 
 
     Object.entries(textOfSource).forEach(([key, textPosition], idx) => {
@@ -103,8 +104,8 @@ const buildStatusTextState = (textOftarget, textOfSource: Type.StatusContentText
 
 
 const updateSelectionTextConfig = (extenionName: string, configuratioChange: boolean = false): boolean => {
-    const SelectionDecorationConfig = { ...SELECTION_DECORAITON_CONFIG } as Type.SelectionDecorationConfigType;
-    const SelectionDecorationStyle = { ...SELECTION_DECORATION_STYLE } as Type.SelectionDecorationStyleType;
+    const SelectionDecorationConfig = { ...SELECTION_DECORAITON_CONFIG } as D.Status.Intf.SelectionDecorationConfig;
+    const SelectionDecorationStyle = { ...SELECTION_DECORATION_STYLE } as D.Status.Intf.SelectionDecorationStyle;
 
     const bindTo: any = bindStatusContentTextState();
 

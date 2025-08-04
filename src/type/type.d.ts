@@ -2,15 +2,24 @@
  * [type declarations]
  * 
  */
-import * as vscode from 'vscode';
+import type * as Config from './configuration.d';
+import type * as Command from './command';
+import type * as Common from './common.d';
+import type * as Event from './event';
+import type * as Editor from './editor';
+import type * as Decoration from './highlight';
+import type * as Diagnostic from './diagnostic';
+import type * as Status from './status';
+import type * as Selection from './selection';
 
-export * from './status.d';
-export * from './configuration';
-export * from './decoration.d';
-export * from './diagnostic.d';
-export * from './event.d';
-
-export type TextList = string[];
-
-
-
+export type {
+    Common,
+    Command,
+    Config,
+    Diagnostic,
+    Decoration,
+    Event,
+    Editor,
+    Status,
+    Selection
+};

@@ -1,156 +1,155 @@
 import * as vscode from 'vscode';
-import * as DecorationType from './decoration.d';
-import * as StatusType from './status.d';
 import { DIAGNOSTIC_CONTENT_TEXT_KEY } from 'src/constant/config/enum';
 
-type DiagnosticSourceType = {
-    [key: string]: {
+import type * as Status from './status';
+import type * as Decoration from './highlight';
+import type * as Regex from './regex';
+
+export type {
+    Intf,
+    Tp
+};
+
+declare namespace Intf {
+
+}
+
+declare namespace Intf {
+    interface DiagnosticContentText {
+        [key: number]: any[]
+    }
+
+    interface LineGlyph {
+        [key: number]: any[]
+    }
+
+    interface DiagnosticVisibility {
+        displayWhenCursorOnly?: boolean,
+        displayWhenSingleLine?: boolean,
+        displayWhenMultiLine?: boolean,
+        displayWhenMultiCursor?: boolean,
+        DiagnosticKind?: string,
+        placeTextOnPreviousOrNextLine?: string,
+        overrideLayoutPlaceholderColorToHighestSeverity?: boolean,
+        overrideAllOk?: boolean,
+        hideOk?: boolean,
+        hideWarning?: boolean
+    }
+
+    interface DiagnosticFsBind {
         [key: string]: vscode.Diagnostic[]
     }
-}
 
-type DiagonosticDecorationStyle = {
-    leftMargin: string,
-    diagonosticDecorationOptionReady: DecorationType.DecorationRenderOptionType[],
-    diagonosticDecorationText: DiagonosticTextStateTextType
-    diagonosticDecorationOption: {
-        okTextStyle?: DecorationType.DecorationRenderOptionType,
-        okPrefixPostfixTextStyle?: DecorationType.DecorationRenderOptionType,
-        warningTextStyle?: DecorationType.DecorationRenderOptionType,
-        warningPrefixPostfixTextStyle?: DecorationType.DecorationRenderOptionType,
-        errorTextStyle?: DecorationType.DecorationRenderOptionType,
-        errorPrefixPostfixTextStyle?: DecorationType.DecorationRenderOptionType,
-    };
-}
+    interface DiagnosticSource {
+        [key: string]: DiagnosticFsBind
+    }
 
+    interface DiagonosticDecorationStyle {
+        leftMargin: string,
+        diagonosticDecorationOptionReady: Decoration.Intf.RenderOption[],
+        diagonosticDecorationText: DiagonosticTextStateTextType
+        diagonosticDecorationOption: {
+            okTextStyle?: Decoration.Intf.RenderOption,
+            okPrefixPostfixTextStyle?: Decoration.Intf.RenderOption,
+            warningTextStyle?: Decoration.Intf.RenderOption,
+            warningPrefixPostfixTextStyle?: Decoration.Intf.RenderOption,
+            errorTextStyle?: Decoration.Intf.RenderOption,
+            errorPrefixPostfixTextStyle?: Decoration.Intf.RenderOption,
+        };
+    }
 
-type DiagnosticAllOkTextRegExp = {
-    allok: RegExp
-}
+    interface DiagonosticTextStateTextType {
+        okNotationText?: DiagonosticTextStateTextEntryType;
+        warningNotationText?: DiagonosticTextStateTextEntryType;
+        errorNotationText?: DiagonosticTextStateTextEntryType;
+    }
 
-type DiagnosticProblemTextRegExp = {
-    editor: RegExp
-    workspace: RegExp
-}
+    interface DiagonosticTextStateTextEntryType {
+        prefix?: string
+        postfix?: string
+    }
 
-type DiagnosticNotationTextRegExp = {
-    pre: RegExp
-    post: RegExp
-}
+    interface DiagonosticStateDecorationType {
+        okContentText?: vscode.TextEditorDecorationType[];
+        warningContentText?: vscode.TextEditorDecorationType[];
+        errorContentText?: vscode.TextEditorDecorationType[];
+    }
 
-type DiagnosticWorkspaceRegExp = {
-    pre: RegExp
-    post: RegExp
-    src: RegExp
-    wrn: RegExp
-}
+    interface ContentTextWithPosition {
+        contentText?: (string | symbol | number | Status.Tp.ContentTextFuncSignature)[],
+        position: {}
+    }
 
-type DiagnosticEditorRegExp = {
-    pre: RegExp
-    post: RegExp
-    err: RegExp
-}
+    interface RegexDiagnosticContentTextType {
+        [DIAGNOSTIC_CONTENT_TEXT_KEY.PLACEHOLDER_PROBLEM_CONTENT_TEXT]: Regex.Intf.DiagnosticProblemText,
+        [DIAGNOSTIC_CONTENT_TEXT_KEY.PLACEHOLDER_ALL_OK_CONTENT_TEXT]: Regex.Intf.DiagnosticAllOkText,
+        [DIAGNOSTIC_CONTENT_TEXT_KEY.OK_ALL_CONTENT_TEXT]: Regex.Intf.DiagnosticNotationText,
+        [DIAGNOSTIC_CONTENT_TEXT_KEY.OK_WORKSPACE_CONTENT_TEXT]: Regex.Intf.DiagnosticNotationText,
+        [DIAGNOSTIC_CONTENT_TEXT_KEY.OK_EDITOR_CONTENT_TEXT]: Regex.Intf.DiagnosticNotationText,
+        [DIAGNOSTIC_CONTENT_TEXT_KEY.WARNING_WORKSPACE_CONTENT_TEXT]: Regex.Intf.DiagnosticWorkspace,
+        [DIAGNOSTIC_CONTENT_TEXT_KEY.WARNING_EDITOR_CONTENT_TEXT]: Regex.Intf.DiagnosticEditor,
+        [DIAGNOSTIC_CONTENT_TEXT_KEY.ERROR_WORKSPACE_CONTENT_TEXT]: Regex.Intf.DiagnosticWorkspace,
+        [DIAGNOSTIC_CONTENT_TEXT_KEY.ERROR_EDITOR_CONTENT_TEXT]: Regex.Intf.DiagnosticEditor,
+    }
 
-type RegexDiagnosticContentTextUnion = DiagnosticNotationTextRegExp | DiagnosticWorkspaceRegExp | DiagnosticEditorRegExp | DiagnosticAllOkTextRegExp | DiagnosticProblemTextRegExp
+    interface DiagnosticOkTextType {
+        contentText: (string | any)[]
+        position: {
+            pre?: number
+            post?: number
+        }
+    }
 
-type RegexDiagnosticContentTextType = {
-    [DIAGNOSTIC_CONTENT_TEXT_KEY.PLACEHOLDER_PROBLEM_CONTENT_TEXT]: DiagnosticProblemTextRegExp,
-    [DIAGNOSTIC_CONTENT_TEXT_KEY.PLACEHOLDER_ALL_OK_CONTENT_TEXT]: DiagnosticAllOkTextRegExp,
-    [DIAGNOSTIC_CONTENT_TEXT_KEY.OK_ALL_CONTENT_TEXT]: DiagnosticNotationTextRegExp,
-    [DIAGNOSTIC_CONTENT_TEXT_KEY.OK_WORKSPACE_CONTENT_TEXT]: DiagnosticNotationTextRegExp,
-    [DIAGNOSTIC_CONTENT_TEXT_KEY.OK_EDITOR_CONTENT_TEXT]: DiagnosticNotationTextRegExp,
-    [DIAGNOSTIC_CONTENT_TEXT_KEY.WARNING_WORKSPACE_CONTENT_TEXT]: DiagnosticWorkspaceRegExp,
-    [DIAGNOSTIC_CONTENT_TEXT_KEY.WARNING_EDITOR_CONTENT_TEXT]: DiagnosticEditorRegExp,
-    [DIAGNOSTIC_CONTENT_TEXT_KEY.ERROR_WORKSPACE_CONTENT_TEXT]: DiagnosticWorkspaceRegExp,
-    [DIAGNOSTIC_CONTENT_TEXT_KEY.ERROR_EDITOR_CONTENT_TEXT]: DiagnosticEditorRegExp,
-}
+    interface DiagnosticWarningTextType {
+        contentText?: string[]
+        position: {
+            pre?: number
+            post?: number
+            src?: number
+            wrn?: number
+        }
+    }
 
-type DiagnosticOkTextType = {
-    contentText: (string | any)[]
-    position: {
-        pre?: number
-        post?: number
+    interface DiagnosticErrorTextType {
+        contentText?: string[]
+        position: {
+            pre?: number
+            post?: number
+            src?: number
+            err?: number
+        }
+    }
+
+    interface DiagnosticConfig {
+        enabled?: boolean
+        leftMargin?: string
+        visibility: Intf.DiagnosticVisibility
+        okNotationTextStyle?: Decoration.Intf.DecorationTextPrePostFixStyleConfig
+        okTextStyle?: Decoration.Intf.DecorationTextStyleConfig
+        problemPlaceholderContentText?: string
+        allOkPlaceholderContentText?: string
+        okEditorContentText?: string
+        allOkContentText?: string
+        warningNotationTextStyle?: Decoration.Intf.DecorationTextPrePostFixStyleConfig
+        warningTextStyle?: Decoration.Intf.DecorationTextStyleConfig
+        warningWorkspaceContentText?: string
+        warningEditorContentText?: string
+        errorNotationTextStyle?: Decoration.Intf.DecorationTextPrePostFixStyleConfig
+        errorTextStyle?: Decoration.Intf.DecorationTextStyleConfig
+        errorWorkspaceContentText?: string
+        errorEditorContentText?: string
+    }
+
+    interface DiagnosticSignatureFuncContext {
+        state: number[][],
+        line: number
     }
 }
 
-type DiagnosticWarningTextType = {
-    contentText?: string[]
-    position: {
-        pre?: number
-        post?: number
-        src?: number
-        wrn?: number
-    }
+declare namespace Tp {
+    type DiagnosticSignatureFuncSign = (context: Intf.DiagnosticSignatureFuncContext) => string
+
+    type DiagnosticTextStateBodyStyleFunc = (config: Decoration.Intf.DecorationTextStyleConfig) => void
 }
-
-type DiagnosticErrorTextType = {
-    contentText?: string[]
-    position: {
-        pre?: number
-        post?: number
-        src?: number
-        err?: number
-    }
-}
-
-type DiagnosticVisibilityType = {
-    displayWhenCursorOnly?: boolean,
-    displayWhenSingleLine?: boolean,
-    displayWhenMultiLine?: boolean,
-    displayWhenMultiCursor?: boolean,
-    DiagnosticKind?: string,
-    placeTextOnPreviousOrNextLine?: string,
-    overrideLayoutPlaceholderColorToHighestSeverity?: boolean,
-    overrideAllOk?: boolean,
-    hideOk?: boolean,
-    hideWarning?: boolean
-}
-
-type DiagnosticConfigType = {
-    enabled?: boolean
-    leftMargin?: string
-    visibility: DiagnosticVisibilityType
-    okNotationTextStyle?: DecorationType.DecorationTextPrePostFixStyleConfig
-    okTextStyle?: DecorationType.DecorationTextStyleConfig
-    problemPlaceholderContentText?: string
-    allOkPlaceholderContentText?: string
-    okEditorContentText?: string
-    allOkContentText?: string
-    warningNotationTextStyle?: DecorationType.DecorationTextPrePostFixStyleConfig
-    warningTextStyle?: DecorationType.DecorationTextStyleConfig
-    warningWorkspaceContentText?: string
-    warningEditorContentText?: string
-    errorNotationTextStyle?: DecorationType.DecorationTextPrePostFixStyleConfig
-    errorTextStyle?: DecorationType.DecorationTextStyleConfig
-    errorWorkspaceContentText?: string
-    errorEditorContentText?: string
-}
-
-type DiagnosticTextStateBodyStyleFunc = (config: DecorationType.DecorationTextStyleConfig) => void
-
-type DiagonosticTextStateTextType = {
-    okNotationText?: DiagonosticTextStateTextEntryType;
-    warningNotationText?: DiagonosticTextStateTextEntryType;
-    errorNotationText?: DiagonosticTextStateTextEntryType;
-}
-
-type DiagonosticTextStateTextEntryType = {
-    prefix?: string
-    postfix?: string
-}
-
-type DiagonosticStateDecorationType = {
-    okContentText?: vscode.TextEditorDecorationType[];
-    warningContentText?: vscode.TextEditorDecorationType[];
-    errorContentText?: vscode.TextEditorDecorationType[];
-}
-
-type ContentTextWithPositionType = {
-    contentText?: (string | symbol | number | StatusType.ContentTextFuncSignature)[],
-    position: {}
-}
-
 
 // type BuildDiagonosticDecorationType = (context: DiagnosticContext) => any[]
-
-

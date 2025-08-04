@@ -8,10 +8,11 @@ import { prepareRenderGroup, resetAllDecoration } from '../../editor/editor';
 import { updateSelectionTextConfig } from '../decoration/selection';
 import { updateDiagnosticTextConfig } from '../decoration/diagonostic';
 import { readFile } from 'node:fs/promises';
-import type { CommandContext } from "../../initialize";
 import { updateGeneralConfig, updateHighlightStyleConfiguration } from '../decoration/highlight';
 
-const clearConfiguration = (context: CommandContext) => (value: string | undefined): void => {
+import type * as D from "../../type/type";
+
+const clearConfiguration = (context: D.Command.Intf.Context) => (value: string | undefined): void => {
     if (value === CONFIRM.YES) {
         for (const section of Object.values(CONFIG_SECTION)) {
             const config = getWorkspaceConfiguration(context.package.extension.packageJSON.name + "." + section);
@@ -89,12 +90,18 @@ const overrideConfirm = (message: string): Thenable<string | undefined> => {
     return vscode.window.showWarningMessage(message, ...[CONFIRM.YES, CONFIRM.NO]);
 };
 
-const quickPickWrapper = async (context: CommandContext, presetList: string[], fileList: object, placeHolder: string): Promise<void> => {
-    const preset = await vscode.window.showQuickPick(presetList, { placeHolder: placeHolder });
-    if (preset && Object.hasOwn(fileList, preset)) {
+interface PresetSet {
+    presetList: string[]
+    fileList: Record<string, string>
+    placeHolder: string
+}
+
+const quickPickWrapper = async (context: D.Command.Intf.Context, { presetList, fileList, placeHolder }: PresetSet): Promise<void> => {
+    const preset = await vscode.window.showQuickPick(presetList.map(l => { return { label: l }; }), { placeHolder: placeHolder });
+    if (preset && Object.hasOwn(fileList, preset.label.toString())) {
 
         const packageName = context.package.extension.packageJSON.name;
-        const json = await readPreset(context.package, fileList[preset]);
+        const json = await readPreset(context.package, fileList[preset.label.toString()]);
         const write = writeConfiguration(context.configInfo, packageName, json ? json : {});
 
         if (checkDuplciateOverride(context.package.extension.packageJSON.name, json)) {
@@ -105,57 +112,55 @@ const quickPickWrapper = async (context: CommandContext, presetList: string[], f
     }
 };
 
-const quickPickPresetList = (context: CommandContext): void => {
-    quickPickWrapper(
-        context,
-        [PRESET.DETAILED, PRESET.SIMPLE, PRESET.NO_GLYPH_D, PRESET.NO_GLYPH_S, PRESET.EMOJI_D, PRESET.EMOJI_S
-        ],
-        {
-            [PRESET.DETAILED]: SYSTEM_PATH.PRESET_DETAILED,
-            [PRESET.SIMPLE]: SYSTEM_PATH.PRESET_SIMPLE,
-            [PRESET.NO_GLYPH_D]: SYSTEM_PATH.PRESET_NO_GLYPH_D,
-            [PRESET.NO_GLYPH_S]: SYSTEM_PATH.PRESET_NO_GLYPH_S,
-            [PRESET.EMOJI_D]: SYSTEM_PATH.PRESET_EMOJI_D,
-            [PRESET.EMOJI_S]: SYSTEM_PATH.PRESET_EMOJI_S
-        },
-        SYSTEM_MESSAGE.PRESET_SELCT);
+const presetList: PresetSet = {
+    presetList: [PRESET.DETAILED, PRESET.SIMPLE, PRESET.NO_GLYPH_D, PRESET.NO_GLYPH_S, PRESET.EMOJI_D, PRESET.EMOJI_S],
+    fileList: {
+        [PRESET.DETAILED]: SYSTEM_PATH.PRESET_DETAILED,
+        [PRESET.SIMPLE]: SYSTEM_PATH.PRESET_SIMPLE,
+        [PRESET.NO_GLYPH_D]: SYSTEM_PATH.PRESET_NO_GLYPH_D,
+        [PRESET.NO_GLYPH_S]: SYSTEM_PATH.PRESET_NO_GLYPH_S,
+        [PRESET.EMOJI_D]: SYSTEM_PATH.PRESET_EMOJI_D,
+        [PRESET.EMOJI_S]: SYSTEM_PATH.PRESET_EMOJI_S
+    },
+    placeHolder: SYSTEM_MESSAGE.PRESET_SELCT,
 };
 
-const quickPickOientationList = (context: CommandContext): void => {
-    quickPickWrapper(
-        context,
-        [PRESET_ORIENTATION.HORIZONTAL, PRESET_ORIENTATION.VERTICAL],
-        {
-            [PRESET_ORIENTATION.HORIZONTAL]: SYSTEM_PATH.PRESET_ORIENTATION_HORIZONTAL,
-            [PRESET_ORIENTATION.VERTICAL]: SYSTEM_PATH.PRESET_ORIENTATION_VERTICAL,
-        },
-        SYSTEM_MESSAGE.PRESET_SELCT_ORIENTATION);
+const presetOridentation: PresetSet = {
+    presetList: [PRESET_ORIENTATION.HORIZONTAL, PRESET_ORIENTATION.VERTICAL],
+    fileList: {
+        [PRESET_ORIENTATION.HORIZONTAL]: SYSTEM_PATH.PRESET_ORIENTATION_HORIZONTAL,
+        [PRESET_ORIENTATION.VERTICAL]: SYSTEM_PATH.PRESET_ORIENTATION_VERTICAL,
+    },
+    placeHolder: SYSTEM_MESSAGE.PRESET_SELCT_ORIENTATION
 };
 
-const quickPickColorList = (context: CommandContext): void => {
-    quickPickWrapper(
-        context,
-        [THEME_KIND.LIGHT, THEME_KIND.DARK],
-        {
-            [THEME_KIND.LIGHT]: SYSTEM_PATH.THEME_LIGHT,
-            [THEME_KIND.DARK]: SYSTEM_PATH.THEME_DARK,
-        },
-        SYSTEM_MESSAGE.PRESET_SELCT_COLOR_CONTRAST);
-        
+const presetColor: PresetSet = {
+    presetList: [THEME_KIND.LIGHT, THEME_KIND.DARK],
+    fileList: {
+        [THEME_KIND.LIGHT]: SYSTEM_PATH.THEME_LIGHT,
+        [THEME_KIND.DARK]: SYSTEM_PATH.THEME_DARK,
+    },
+    placeHolder: SYSTEM_MESSAGE.PRESET_SELCT_COLOR_CONTRAST,
 };
 
-const quickPickContrastList =  (context: CommandContext): void => {
-    quickPickWrapper(
-        context,
-        [CONTRAST.DIM, CONTRAST.BRIGHT],
-        {
-            [CONTRAST.DIM]: SYSTEM_PATH.CONTRAST_DIM,
-            [CONTRAST.BRIGHT]: SYSTEM_PATH.CONTRAST_BRIGHT,
-        },
-        SYSTEM_MESSAGE.PRESET_SELCT_COLOR);
+const presetContrast: PresetSet = {
+    presetList: [CONTRAST.DIM, CONTRAST.BRIGHT],
+    fileList: {
+        [CONTRAST.DIM]: SYSTEM_PATH.CONTRAST_DIM,
+        [CONTRAST.BRIGHT]: SYSTEM_PATH.CONTRAST_BRIGHT,
+    },
+    placeHolder: SYSTEM_MESSAGE.PRESET_SELCT_COLOR,
 };
 
-const checkActiveThemeKind = async (context: CommandContext): Promise<void> => {
+const quickPickPresetList = (context: D.Command.Intf.Context) => quickPickWrapper(context, presetList);
+
+const quickPickOientationList = (context: D.Command.Intf.Context) => quickPickWrapper(context, presetOridentation);
+
+const quickPickColorList = (context: D.Command.Intf.Context) => quickPickWrapper(context, presetColor);
+
+const quickPickContrastList = (context: D.Command.Intf.Context) => quickPickWrapper(context, presetContrast);
+
+const checkActiveThemeKind = async (context: D.Command.Intf.Context): Promise<void> => {
     if (vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Light) {
         const packageName = context.package.extension.packageJSON.name;
         const json = await readPreset(context.package, SYSTEM_PATH.THEME_LIGHT);

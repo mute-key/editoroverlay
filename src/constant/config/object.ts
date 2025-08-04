@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
-import * as Type from '../../type/type.d';
 import * as __0x from '../shared/numeric';
 import { BORDER_POSITION_MASK, BORDER_POSITION_VARIATION, CONFIG_SECTION_KEY, DECORATION_GENERAL_STYLE_CONFIG_KEY, DECORATION_SELECTION_STYLE_CONFIG_KEY, DECORATION_STYLE_CONFIG_KEY, DECORATION_TYPE_MASK, DIAGNOSTIC_SEVERITY_KEY, DIAGNOSTIC_TEXT_STYLE_KEY, SELECTION_CONTENT_TEXT_CONFIG_KEY } from './enum';
+
+import type* as D from '../../type/type.d';
 
 export const CONFIG_SECTION = {
     [CONFIG_SECTION_KEY.GENERAL]: CONFIG_SECTION_KEY.GENERAL,
@@ -75,7 +76,7 @@ export const DECORATION_STYLE_PREFIX = {
     [__0x.multiCursor]: 'multiCursor'
 } as const;
 
-export const SELECTION_CONTENT_TEXT_LIST: Type.TextList = [
+export const SELECTION_CONTENT_TEXT_LIST: D.Common.Tp.TextList = [
     "cursorOnlyText",
     "singleLineText",
     "multiLineCursorText",
@@ -114,7 +115,7 @@ export const DECORATION_OPTION_AFTER_CONFIG = {
     margin: undefined,
 } as const;
 
-export const SELECTION_KIND: Type.DecorationInfoType = {
+export const SELECTION_KIND: D.Decoration.Tp.DecorationInfo = {
     [__0x.reset]: {
         KEY: __0x.reset,
         MASK: DECORATION_TYPE_MASK.RESET
@@ -176,7 +177,6 @@ export const DIAGNOSTIC_CONFIG = {
     errorEditorContentText: undefined
 } as const;
 
-
 export const DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER = {
     [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: __0x.okEditorContentText,
     [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: __0x.warningEditorContentText,
@@ -188,7 +188,6 @@ export const DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER = {
     [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: __0x.warningWorkspaceContentText,
     [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: __0x.errorWorkspaceContentText,
 } as const;
-
 
 export const DIAGNOSTIC_ALL_PLACEHOLDER_LINKER = {
     [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: __0x.allOkContentText,
@@ -223,13 +222,13 @@ export const DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM = {
     errorWorkspaceContentText: __0x.errorWorkspaceContentText,
 } as const;
 
-export const DIAGNOSTIC_STYLE_LIST: Type.TextList[] = [
+export const DIAGNOSTIC_STYLE_LIST: D.Common.Tp.TextList[] = [
     [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.OK_TEXT_STYLE],
     [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.WARNINGTEXT_STYLE],
     [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_TEXT_STYLE],
 ] as const;
 
-export const DIAGNOSTIC_CONTENT_TEXT_LIST: Type.TextList = [
+export const DIAGNOSTIC_CONTENT_TEXT_LIST: D.Common.Tp.TextList = [
     "problemPlaceholderContentText",
     "allOkPlaceholderContentText",
     "okWorkspaceContentText",
@@ -243,7 +242,9 @@ export const DIAGNOSTIC_CONTENT_TEXT_LIST: Type.TextList = [
 
 export const DIAGNOSTIC_SEVERITY_TO_KEY = {
     [vscode.DiagnosticSeverity.Warning]: DIAGNOSTIC_SEVERITY_KEY.WARNING,
-    [vscode.DiagnosticSeverity.Error]: DIAGNOSTIC_SEVERITY_KEY.ERROR
+    [vscode.DiagnosticSeverity.Error]: DIAGNOSTIC_SEVERITY_KEY.ERROR,
+    [vscode.DiagnosticSeverity.Information]: undefined,
+    [vscode.DiagnosticSeverity.Hint]: undefined
 } as const;
 
 export const DIAGNOSTIC_DECORATION_STYLE = {

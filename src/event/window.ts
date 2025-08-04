@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import * as Type from '../type/type.d';
 import * as __0x from '../constant/shared/numeric';
 import Error from '../util/error';
 import { resetAllDecoration } from '../editor/editor';
@@ -7,7 +6,9 @@ import { renderGroupIs, updateIndentOption } from '../editor/editor';
 import { resetEditorDiagnosticStatistics, resetWorkspaceDiagnosticStatistics, updateDiagnostic } from '../diagnostic/diagnostic';
 import { updateRangeMetadata } from '../editor/range';
 
-const windowStateChanged: Type.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
+import type * as D from '../type/type.d';
+
+const windowStateChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
     const onDidChangeWindowState = vscode.window.onDidChangeWindowState((event: vscode.WindowState): void => {
         if (event.focused) {
             if (vscode.window.activeTextEditor) {
@@ -27,7 +28,7 @@ const windowStateChanged: Type.DecorationEventFunc = ({ decorationState }): vsco
     return onDidChangeWindowState;
 };
 
-const activeEditorChanged: Type.DecorationEventFunc = ({ configInfo, decorationState }): vscode.Disposable => {
+const activeEditorChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decorationState }): vscode.Disposable => {
     return vscode.window.onDidChangeActiveTextEditor((editor: vscode.TextEditor | undefined) => {
         if (editor) {
             if (decorationState.eventTrigger[0] === __0x.tabChanged) {
@@ -64,7 +65,7 @@ const editorOptionChanged = (context): vscode.Disposable => {
     });
 };
 
-const selectionChanged: Type.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
+const selectionChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) => {
         /**
          * using event.editor cause an issue with tab chagne event. 

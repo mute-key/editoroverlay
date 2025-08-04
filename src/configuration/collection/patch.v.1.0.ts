@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import * as Type from '../../type/type';
+import * as D from '../../type/type';
 import { getWorkspaceConfiguration } from '../shared/configuration';
 
 const legacyConfig = {
@@ -43,7 +43,7 @@ const removeUserSetting = (extensionConfig: vscode.WorkspaceConfiguration, key: 
     return extensionConfig.update(key, undefined, vscode.ConfigurationTarget.Global);
 };
 
-const updateLegacyConfig = async (configReady: Type.ConfigInfoReadyType) => {
+const updateLegacyConfig = async (configReady: D.Config.Intf.ConfigReady) => {
     const extensionConfig = getWorkspaceConfiguration(configReady.name);
     Object.entries(extensionConfig).forEach(async ([key, value]) => {
         if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
