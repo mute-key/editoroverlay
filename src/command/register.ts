@@ -1,24 +1,25 @@
 import * as vscode from 'vscode';
 import { clearConfiguration, quickPickPresetList, quickPickOientationList, quickPickColorList, restoreToDefault, quickPickContrastList } from '../configuration/preset/preset';
-import type { CommandContext } from "../initialize";
 
-const setPreset = (context: CommandContext): vscode.Disposable => {
+import type * as D from "../type/type.d";
+
+const setPreset = (context: D.Command.Intf.Context): vscode.Disposable => {
     return vscode.commands.registerCommand("cursorlinehighlight.applyPreset", () => quickPickPresetList(context));
 };
 
-const setColor = (context: CommandContext): vscode.Disposable => {
+const setColor = (context: D.Command.Intf.Context): vscode.Disposable => {
     return vscode.commands.registerCommand("cursorlinehighlight.setColor", () => quickPickColorList(context));
 };
 
-const setContrast = (context: CommandContext): vscode.Disposable => {
+const setContrast = (context: D.Command.Intf.Context): vscode.Disposable => {
     return vscode.commands.registerCommand("cursorlinehighlight.setContrast", () => quickPickContrastList(context));
 };
 
-const setOrientation = (context: CommandContext): vscode.Disposable => {
+const setOrientation = (context: D.Command.Intf.Context): vscode.Disposable => {
     return vscode.commands.registerCommand("cursorlinehighlight.setOrientation", () => quickPickOientationList(context));
 };
 
-const resetConfiguration = (context: CommandContext): vscode.Disposable => {
+const resetConfiguration = (context: D.Command.Intf.Context): vscode.Disposable => {
     return vscode.commands.registerCommand("cursorlinehighlight.restoreToDefaultConfiguration", () => restoreToDefault().then(clearConfiguration(context)));
 };
 

@@ -77,8 +77,8 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: D.
         const linker = DECORATION_OPTION_LINKER[contentTextName];
         const context = {
             textPosition: textPosition,
-            primaryStyle: style.diagonosticDecorationOption[linker[0]],
-            secondaryStyle: linker[1] ? style.diagonosticDecorationOption[linker[1]] : null,
+            primaryStyle: style.diagnosticDecorationOption[linker[0]],
+            secondaryStyle: linker[1] ? style.diagnosticDecorationOption[linker[1]] : null,
             notation: [],
             leftMargin: leftMargin
         };
@@ -238,7 +238,7 @@ const buildDiagnosticStyle = (config: D.Diagnostic.Intf.DiagnosticConfig, style:
             fontStyle: sanitizeConfigValue(config[styleName].fontStyle),
             fontWeight: sanitizeConfigValue(config[styleName].fontWeight),
         };
-        style.diagonosticDecorationOption[styleName] = convertToDecorationRenderOption(styleConfig, true);
+        style.diagnosticDecorationOption[styleName] = convertToDecorationRenderOption(styleConfig, true);
         result.workspace = {
             ...result.workspace,
             ...ifNoation(config, styleName, "workspace", DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER)

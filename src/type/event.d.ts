@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import type * as Config from './configuration';
-import type * as Highlight from './highlight';
+import type * as Decoration from './decoration';
 
 export type {
     Intf,
@@ -11,7 +11,7 @@ declare namespace Intf {
     interface Context {
         editor?: vscode.TextEditor
         configInfo: Config.Intf.ConfigReady
-        decorationState: Highlight.Intf.DecorationState
+        decorationState: Decoration.Intf.State
     }
 }
 

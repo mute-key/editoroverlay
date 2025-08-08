@@ -7,6 +7,7 @@ import { createLineRange, blankRange } from '../range';
 import { resetDecoration } from '../editor';
 
 import type * as D from '../../type/type.d';
+import { json } from 'stream/consumers';
 
 /**
  * memory for decorationRenderOption objects
@@ -35,6 +36,10 @@ const selectionTextBuffer: Record<number, vscode.TextEditorDecorationType[]> = {
     [__0x.multiCursorText]: []
 };
 
+
+/**
+ * object that will store render options 
+ */
 const selectionDecorationOption: Record<number, any[] | [][] | [D.Decoration.Intf.RenderOption][]> = {
     [__0x.cursorOnlyText]: [],
     [__0x.singleLineText]: [],
@@ -409,9 +414,10 @@ const multiCursorCounter: Record<string, number> = {
 };
 
 const clearMultiCursorState = () => {
+    LineSelectionBuffer.splice(0);
     multiCursorState.selections = [];
     multiCursorState.index = 0;
-    multiCursorState.statusIndex = 0;
+    multiCursorState.statusIndex = 1;
     multiCursorState.context.pos = 0;
     multiCursorState.baseShift = false;
     multiCursorState.baseLine = -1;
@@ -421,81 +427,172 @@ const clearMultiCursorState = () => {
     multiCursorCounter.ln = 0;
     multiCursorCounter.lc = 0;
     multiCursorCounter.char = 0;
+    multiCursorIndex.group = [];
+    multiCursorIndex.idx = 0;
 };
 
-const multiCursorPosition = (placeholder: string, position: number) => {
+const multiCursorIndex = {
+    group: [] as any | [][],
+    idx: 0
+};
+
+const multiCursorPosition = (placeholder: string, position: number): void => {
     if (placeholder === 'nth') {
         multiCursorState.nthPosition = position;
     }
 };
 
-const shiftPreviousIndex = (selectionIndex: number, decorationOption: any[][], nth: number) => (_option: unknown, idx: number) => {
-    if (idx < selectionIndex - (multiCursorState.statusIndex) - 1) {
-        decorationOption[nth][idx].renderOptions.after.shiftIndex(1);
-    }
-};
+const pushMultiCursorOption = (selectionIndex: number, nth: number) => (contentText: string | any, idx: number) => {
 
-const multiCursorOption = (option: D.Decoration.Intf.RenderOption[][], selectionIndex: number, nth: number) => (contentText: string | any, idx: number) => {
-    option[idx].push({
+    const ifNth = idx === nth;
+
+    let renderOption = ifNth ? { ...contentText } : contentText;
+    if (ifNth) {
+        renderOption.after = { ...contentText.after };
+    }
+    selectionDecorationOption[__0x.multiCursorText][idx].push({
         get range() {
             return multiCursorState.selections[selectionIndex];
         },
-        renderOptions: idx === nth ? { ...contentText } : contentText
+        renderOptions: { ...renderOption }
     });
 };
 
+/**
+ * [lineNumber, renderInstanceOptionBufferIndex] tuple to list
+ */
+const LineSelectionBuffer: [number, number][] = [];
+
+const checkIfDuplicateLine = (lineNumber: number): number | undefined => {
+    let l = LineSelectionBuffer.length;
+    while (l--) {
+        if (LineSelectionBuffer[l][0] === lineNumber) {
+            return l;
+        }
+    }
+    return undefined;
+};
+
+
+const ifOnLastSelection = (selectionIndex: number): boolean => {
+    if (selectionIndex > 0) {
+        return multiCursorState.selections[selectionIndex].end.line === multiCursorState.selections[selectionIndex - 1].end.line;
+    }
+    return false;
+};
+
+const pushCursorIndex = (calibration: number = 0): void => {
+    let l = multiCursorIndex.idx + calibration;
+    while (l--) {
+        multiCursorIndex.group[l][0] += 1;
+    }
+};
+
+const pushCursorGroup = (): void => {
+    multiCursorIndex.idx += 1;
+    multiCursorIndex.group.push([0]);
+};
+
+const appendNthIndex = (nth: number, line: number, index: number) => selectionDecorationOption[__0x.multiCursorText][nth][line].renderOptions.after.indexList.push(index);
+
+const prependNthIndex = (nth: number, line: number, index: number) => selectionDecorationOption[__0x.multiCursorText][nth][line].renderOptions.after.indexList.unshift(index);
+
+
+/**
+ * 
+ * 
+ * @param selectionIndex 
+ * @returns 
+ */
 const multiCursorDecorationOption = (selectionIndex: number) => {
     const nth = multiCursorState.nthPosition;
-    if (multiCursorState.selections[selectionIndex].end.line < multiCursorState.baseLine) {
-        if (!multiCursorState.baseShift) {
-            multiCursorState.statusIndex = 0;
-            multiCursorState.baseShift = true;
+    const currentLine = multiCursorState.selections[selectionIndex].end.line;
+    const dupLine = checkIfDuplicateLine(multiCursorState.selections[selectionIndex].end.line);
+    const onLastSelection = ifOnLastSelection(selectionIndex);
+    const shift = currentLine < multiCursorState.baseLine;
+    const onBaseLine = currentLine === multiCursorState.baseLine;
+
+
+    if (dupLine !== undefined) {  // 
+        if (shift) {              // 
+            if (onBaseLine) {
+                appendNthIndex(nth, dupLine, multiCursorState.statusIndex);
+            } else {
+                // 그룹 밀어야함 
+                pushCursorIndex();
+                pushCursorGroup();
+                appendNthIndex(nth, dupLine, multiCursorState.statusIndex);
+            }
+        } else if (!shift) {
+            if (multiCursorIndex.idx === 0) {
+                if (onBaseLine) {
+                    if (onLastSelection) {
+                        appendNthIndex(nth, dupLine, multiCursorState.statusIndex);
+                    } else {
+                        pushCursorGroup();
+                        pushCursorIndex();
+                        const indexList = selectionDecorationOption[__0x.multiCursorText][nth][dupLine].renderOptions.after.indexList;
+                        const lastIndex = indexList[indexList.length - 1] - 1;
+                        appendNthIndex(nth, dupLine, lastIndex);
+                    }
+                } else {
+                    appendNthIndex(nth, dupLine, multiCursorState.statusIndex);
+                    pushCursorIndex();
+                }
+            } else {
+                if (onBaseLine) {
+                    // 
+                    const indexList = selectionDecorationOption[__0x.multiCursorText][nth][dupLine].renderOptions.after.indexList;
+                    const lastIndex = indexList[indexList.length - 1] + 1;
+                    appendNthIndex(nth, dupLine, lastIndex);
+                    pushCursorIndex();
+                } else {
+                    if (onLastSelection) {
+                        pushCursorIndex();
+                        appendNthIndex(nth, dupLine, multiCursorState.statusIndex);
+                    } else {
+                        pushCursorIndex();
+                        multiCursorState.statusIndex = 1;
+                        prependNthIndex(nth, dupLine, 0);
+                    }
+                }
+            }
         }
-
-        selectionDecorationOption[__0x.multiCursorText][nth]
-            .forEach(
-                shiftPreviousIndex(
-                    selectionIndex,
-                    selectionDecorationOption[__0x.multiCursorText],
-                    multiCursorState.nthPosition));
-    }
-
-    if (selectionIndex > 0 && multiCursorState.selections[selectionIndex - 1].end.line === multiCursorState.selections[selectionIndex].end.line) {
-        selectionDecorationOption[__0x.multiCursorText][nth][selectionIndex - 1].renderOptions.after.addIndex(multiCursorState.statusIndex + 1);
         return;
+    } else if (shift) {
+        multiCursorState.statusIndex = 1;
+        multiCursorState.baseLine = currentLine;
+        pushCursorGroup();
     }
 
-    const nthPlaceholder = selectionContentText[__0x.multiCursorText].contentText[nth];
-    nthPlaceholder.after = {
-        ...nthPlaceholder.after,
-        indexList: [multiCursorState.statusIndex + 1],
-        addIndex(i: number) {
-            this.indexList.push(i);
-        },
-        shiftIndex(shift: number) {
-            this.indexList.forEach((i: unknown, idx: number) => this.indexList[idx] += shift);
-        },
+    if (multiCursorIndex.idx > 0) {
+        pushCursorIndex();
+    }
+
+    LineSelectionBuffer.push([multiCursorState.selections[selectionIndex].end.line, selectionIndex]);
+
+    const nthRenderInstanceOption = selectionContentText[__0x.multiCursorText].contentText[nth];
+    nthRenderInstanceOption.after = {
+        ...selectionContentText[__0x.multiCursorText].contentText[nth].after,
+        groupIndex: parseInt(multiCursorIndex.idx.toString()),
+        baseIndex: multiCursorIndex.group[multiCursorIndex.idx],
+        indexList: [multiCursorState.statusIndex],
         get contentText() {
-            return this.indexList.join(',');
+            return this.indexList.map(i => i + this.baseIndex[0]).join(',');
         },
     };
 
     selectionContentText[__0x.multiCursorText]
         .contentText
         .forEach(
-            multiCursorOption(
-                selectionDecorationOption[__0x.multiCursorText],
+            pushMultiCursorOption(
                 selectionIndex,
                 nth));
 };
 
-const setRangerPointer = (refObject: vscode.Range[]) =>
-    (selection: vscode.Selection, idx: number): vscode.Selection =>
-        refObject[idx] = selection;
+const setRangerPointer = (refObject: vscode.Range[]) => (selection: vscode.Selection, idx: number): vscode.Selection => refObject[idx] = selection;
 
-const renderMultiCursor = (setDecorations: vscode.TextEditor['setDecorations'], decorationOption: D.Selection.Tp.MultiCursorRenderOption) =>
-    (decorationType: vscode.TextEditorDecorationType, idx: number): void =>
-        setDecorations(decorationType, decorationOption[idx]);
+const renderMultiCursor = (setDecorations: vscode.TextEditor['setDecorations'], decorationOption: D.Selection.Tp.MultiCursorRenderOption) => (decorationType: vscode.TextEditorDecorationType, idx: number): void => setDecorations(decorationType, decorationOption[idx]);
 
 const increaseIndex = (): void => {
     multiCursorState.index++;
@@ -503,6 +600,7 @@ const increaseIndex = (): void => {
 };
 
 const addMultiCursorEntry = (selection: vscode.Selection): void => {
+    console.clear();
     multiCursorState.selections.push(selection);
     selectionStatusFunctionChain[__0x.multiCursorText].forEach(functionChainAccumulate(multiCursorStatusRef, multiCursorState.context));
     multiCursorDecorationOption(multiCursorState.index);
@@ -514,15 +612,19 @@ const multiCursorSelection = (editor: vscode.TextEditor, previousKey: number[]):
     __0x.multiCursor !== previousKey[0] && (() => {
         clearBufferOfhexkey(editor.setDecorations, previousKey);
         clearMultiCursorState();
+        multiCursorIndex.group.push([0]);
         multiCursorState.context.editor = editor;
         multiCursorState.context.pos = multiCursorState.index;
         addMultiCursorEntry(editor.selections[0]);
         multiCursorState.baseLine = editor.selections[0].end.line;
     })();
 
+    // 선택줄이 한줄 이상인지도 확인해야함 
+
     addMultiCursorEntry(editor.selections[multiCursorState.index]);
     multiCursorState.selections.forEach(setRangerPointer(rangePointerTable[__0x.multiCursorText] as vscode.Range[]));
     selectionTextBuffer[__0x.multiCursorText].forEach(renderMultiCursor(editor.setDecorations, selectionDecorationOption[__0x.multiCursorText]));
+
 };
 
 const clearSelectionTextBuffer = (editor: vscode.TextEditor): void => {

@@ -1,4 +1,3 @@
-
 import * as vscode from 'vscode';
 import * as config from './configuration/load';
 import * as commands from './command/register';
@@ -13,7 +12,6 @@ import { checkActiveThemeKind } from './configuration/preset/preset';
 import { updateRangeMetadata } from './editor/range';
 
 import type * as D from './type/type';
-
 
 /**
  * Main initialisation of the extension. 
@@ -42,7 +40,7 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
         const configInfo: D.Status.Intf.ConfigInfo = loadConfig.config;
         const activeEditor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
 
-        prepareRenderGroup(configInfo);
+        prepareRenderGroup(configInfo as D.Config.Intf.ConfigReady);
 
         if (activeEditor) {                                 // if user is on editor
             updateRangeMetadata(activeEditor);              // set selection range meta data for the editor

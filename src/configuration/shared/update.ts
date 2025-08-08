@@ -3,7 +3,7 @@ import Error from '../../util/error';
 import { CONFIG_SECTION_KEY } from '../../constant/config/enum';
 import { resetAllDecoration, prepareRenderGroup } from '../../editor/editor';
 import { updateGeneralConfig, updateHighlightStyleConfiguration } from '../decoration/highlight';
-import { updateDiagnosticTextConfig } from '../decoration/diagonostic';
+import { updateDiagnosticTextConfig } from '../decoration/diagnostic';
 import { updateSelectionTextConfig } from '../decoration/selection';
 import { config } from 'process';
 

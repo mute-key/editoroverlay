@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { SELECTION_CONTENT_TEXT_CONFIG_KEY } from 'src/constant/config/enum';
 
-import type * as Highlight from './highlight';
+import type * as Highlight from './decoration';
 import type * as Regex from './regex';
 
 export type {

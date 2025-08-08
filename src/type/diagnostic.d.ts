@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { DIAGNOSTIC_CONTENT_TEXT_KEY } from 'src/constant/config/enum';
 
 import type * as Status from './status';
-import type * as Decoration from './highlight';
+import type * as Decoration from './decoration';
 import type * as Regex from './regex';
 
 export type {
@@ -46,9 +46,9 @@ declare namespace Intf {
 
     interface DiagonosticDecorationStyle {
         leftMargin: string,
-        diagonosticDecorationOptionReady: Decoration.Intf.RenderOption[],
-        diagonosticDecorationText: DiagonosticTextStateTextType
-        diagonosticDecorationOption: {
+        diagnosticDecorationOptionReady: Decoration.Intf.RenderOption[],
+        diagnosticDecorationText: DiagonosticTextStateTextType
+        diagnosticDecorationOption: {
             okTextStyle?: Decoration.Intf.RenderOption,
             okPrefixPostfixTextStyle?: Decoration.Intf.RenderOption,
             warningTextStyle?: Decoration.Intf.RenderOption,

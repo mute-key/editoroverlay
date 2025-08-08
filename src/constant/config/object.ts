@@ -249,7 +249,7 @@ export const DIAGNOSTIC_SEVERITY_TO_KEY = {
 
 export const DIAGNOSTIC_DECORATION_STYLE = {
     leftMargin: undefined,
-    diagonosticDecorationOption: {
+    diagnosticDecorationOption: {
         [DIAGNOSTIC_TEXT_STYLE_KEY.DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE]: undefined,
         [DIAGNOSTIC_TEXT_STYLE_KEY.OK_TEXT_STYLE]: undefined,
         [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: undefined,

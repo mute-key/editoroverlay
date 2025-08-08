@@ -10,9 +10,7 @@ import { blankRange, updateRangeMetadata } from './range';
 
 import type * as D from '../type/type.d';
 
-export type DecorationState = typeof DECORATION_STATE;
-
-const decorationState = { ...DECORATION_STATE };
+const decorationState = { ...DECORATION_STATE } as unknown as D.Decoration.Intf.State;
 
 const createEditorDecorationType = (styleAppliedConfig: any): vscode.TextEditorDecorationType => vscode.window.createTextEditorDecorationType(styleAppliedConfig as vscode.DecorationRenderOptions);;
 
@@ -30,11 +28,11 @@ const resetDecoration = (setDecorations: vscode.TextEditor['setDecorations']) =>
 
 /**
  * I assuemd using array to store value in object would be faster than mutating the object as it would be a reference.
- * at this point, i am not sure if there is a significan advantage, however this respond smoother in my experience so far. 
+ * at this point, i am not sure if there is a significant advantage, however this respond smoother in my experience so far. 
  * maybe drop the array in future but keeping it as is for now.
  * 
  */
-const clearDecorationState = (decorationState: DecorationState): void => {
+const clearDecorationState = (decorationState: D.Decoration.Intf.State): void => {
     decorationState.eventTrigger[0] = __0x.noEvent;
     decorationState.appliedHighlight[0] = __0x.cursorOnly;
     decorationState.diagnosticSignature[0] = __0x.allOkOverride;
@@ -49,7 +47,7 @@ const clearAll = (editor: vscode.TextEditor): void => {
 const resetAllDecoration = (): void => vscode.window.visibleTextEditors.forEach(clearAll);
 
 /**
- * perhaps i need to move this function to selection.ts later on.
+ * when a user change indent option of the viewing editor
  * 
  * @param editor 
  */
@@ -86,7 +84,6 @@ const prepareRenderGroup = (config: D.Config.Intf.ConfigReady): void => {
         [__0x.multiLine]: multilineSelection,
         [__0x.multiCursor]: multiCursorSelection
     };
-
 
     SELECTION_KIND_LIST.forEach(numKey => {
 

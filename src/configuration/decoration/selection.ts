@@ -13,7 +13,7 @@ const convertPositionToDecorationRenderOption = (textPosition, SelectionDecorati
         const option = typeof text === 'string'
             ? SelectionDecorationStyle.placeholderDecorationOption
             : SelectionDecorationStyle.selectionDecorationOption[textPosition.position[idx]];
-        const contentTextRenderOption = setContentTextOnDecorationRenderOption(option as D.Decoration.Intf.RenderOption, text);
+        const contentTextRenderOption = setContentTextOnDecorationRenderOption(option as any, text);
         if (typeof text === 'symbol') {
             textPosition.position[idx] = contentTextRenderOption.after.contentText;
         }
@@ -22,7 +22,7 @@ const convertPositionToDecorationRenderOption = (textPosition, SelectionDecorati
 };
 
 const buildSelectionTextDecorationRenderOption = (config: D.Status.Intf.SelectionDecorationConfig, style: D.Status.Intf.SelectionDecorationStyle) => {
-    style.placeholderDecorationOption = convertToDecorationRenderOption(config, true);
+    style.placeholderDecorationOption = convertToDecorationRenderOption(config, true) as any;
     Object.keys(style.selectionDecorationOption).forEach((key, idx) => {
         const styleConfig: D.Decoration.Intf.DecorationTextStyleConfig = {
             color: config.selectionCountTextStyle[key],

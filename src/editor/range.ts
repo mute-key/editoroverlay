@@ -6,7 +6,7 @@ const rangeMetadata = {
     datumPointOfEditor: 0
 };
 
-const setAutoInlineDatumPoint = (percentage: number) => rangeMetadata.autoInlineDatumPoint = percentage;
+const setAutoInlineDatumPoint = (percentage: number): number => rangeMetadata.autoInlineDatumPoint = percentage;
 
 const updateRangeMetadata = (editor: vscode.TextEditor): void => {
     let lc = editor.document.lineCount;
@@ -68,6 +68,8 @@ const createStartEndRangeOfSelection = (selection: vscode.Selection): vscode.Ran
     createRangeSPEP(selection.start, selection.end);
 
 const blankRange = [] as vscode.Range[];
+
+const lineCountOfRange = (selection: vscode.Range | vscode.Selection): boolean => selection.isSingleLine;
 
 export {
     createRangeNNNN,

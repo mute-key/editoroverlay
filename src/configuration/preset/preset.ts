@@ -6,7 +6,7 @@ import { CONFIG_SECTION } from '../../constant/config/object';
 import { getWorkspaceConfiguration } from '../shared/configuration';
 import { prepareRenderGroup, resetAllDecoration } from '../../editor/editor';
 import { updateSelectionTextConfig } from '../decoration/selection';
-import { updateDiagnosticTextConfig } from '../decoration/diagonostic';
+import { updateDiagnosticTextConfig } from '../decoration/diagnostic';
 import { readFile } from 'node:fs/promises';
 import { updateGeneralConfig, updateHighlightStyleConfiguration } from '../decoration/highlight';
 

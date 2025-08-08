@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import type * as Decoration from './highlight';
+import type * as Decoration from './decoration';
 
 export namespace Intf {
     interface StatusRefContext {

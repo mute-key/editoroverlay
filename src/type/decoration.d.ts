@@ -15,15 +15,16 @@ declare namespace Intf {
         editorReference?: any[]
     }
 
-    interface DecorationState {
+    interface State {
         appliedHighlight: number[]
         diagnosticSignature: number[]
         eventTrigger: number[]
+        previousLine: number[]
     }
 
     interface DecorationContext {
         editor: vscode.TextEditor
-        decorationState: DecorationState
+        decorationState: State
     }
 
     interface SelectionInfoType {
@@ -35,7 +36,7 @@ declare namespace Intf {
         KEY: number,
         MASK: DECORATION_TYPE_MASK
     }
-    
+
     interface AppliedHighlightType {
         applied: DecorationInfoPropType,
         ofDecorationType?: vscode.TextEditorDecorationType[]
@@ -45,7 +46,6 @@ declare namespace Intf {
         applied?: DecorationInfoPropType,
         editorDecoration?: vscode.TextEditorDecorationType[]
     }
-
 
     interface DecorationWithRangeType {
         highlight: vscode.TextEditorDecorationType,
@@ -186,7 +186,7 @@ declare namespace Tp {
 
     type HighlightStyleList = Record<DecorationStyleKeyOnly, vscode.TextEditorDecorationType[]>;
 
-    type UnsetDecorationFunctionType = (editor: vscode.TextEditor, highlightStatus: Intf.DecorationState) => (selectionKind: Intf.DecorationInfoPropType) => void;
+    type UnsetDecorationFunctionType = (editor: vscode.TextEditor, highlightStatus: Intf.State) => (selectionKind: Intf.DecorationInfoPropType) => void;
 
     type SetDecorationOnEditorFunc = (context: Intf.DecorationContext) => void;
 

@@ -4,7 +4,7 @@ import { CONFIG_INFO } from '../constant/config/object';
 import { generateHighlightDecoration } from './decoration/highlight';
 import { updateLegacyConfig } from './collection/patch.v.1.0';
 import { updateSelectionTextConfig } from './decoration/selection';
-import { updateDiagnosticTextConfig } from './decoration/diagonostic';
+import { updateDiagnosticTextConfig } from './decoration/diagnostic';
 import { writeEditorConfiguration } from './shared/editor';
 import { bindEditorDecoration } from '../editor/editor';
 

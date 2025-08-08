@@ -4,7 +4,7 @@ import { DECORATION_STYLE_PREFIX } from 'src/constant/config/object';
 
 import type * as Status from './status';
 import type * as Editor from './editor';
-import type * as Decoration from './highlight';
+import type * as Decoration from './decoration';
 import type * as Diagnostic from './diagnostic';
 
 export type {
@@ -114,7 +114,7 @@ declare namespace Intf {
 
     interface InitialisedConfig {
         config: ConfigReady,
-        decoration: Decoration.Intf.DecorationState
+        decoration: Decoration.Intf.State
     }
 }
 

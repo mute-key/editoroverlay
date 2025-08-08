@@ -327,7 +327,7 @@ var DIAGNOSTIC_SEVERITY_TO_KEY = {
 };
 var DIAGNOSTIC_DECORATION_STYLE = {
   leftMargin: void 0,
-  diagonosticDecorationOption: {
+  diagnosticDecorationOption: {
     ["diagnosticPlaceholderTextStyle" /* DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE */]: void 0,
     ["okTextStyle" /* OK_TEXT_STYLE */]: void 0,
     ["okNotationTextStyle" /* OK_NOTATION_TEXT_STYLE */]: void 0,
@@ -909,9 +909,10 @@ var multiCursorCounter = {
   char: 0
 };
 var clearMultiCursorState = () => {
+  LineSelectionBuffer.splice(0);
   multiCursorState.selections = [];
   multiCursorState.index = 0;
-  multiCursorState.statusIndex = 0;
+  multiCursorState.statusIndex = 1;
   multiCursorState.context.pos = 0;
   multiCursorState.baseShift = false;
   multiCursorState.baseLine = -1;
@@ -921,61 +922,131 @@ var clearMultiCursorState = () => {
   multiCursorCounter.ln = 0;
   multiCursorCounter.lc = 0;
   multiCursorCounter.char = 0;
+  multiCursorIndex.group = [];
+  multiCursorIndex.idx = 0;
+};
+var multiCursorIndex = {
+  group: [],
+  idx: 0
 };
 var multiCursorPosition = (placeholder, position) => {
   if (placeholder === "nth") {
     multiCursorState.nthPosition = position;
   }
 };
-var shiftPreviousIndex = (selectionIndex, decorationOption, nth2) => (_option, idx) => {
-  if (idx < selectionIndex - multiCursorState.statusIndex - 1) {
-    decorationOption[nth2][idx].renderOptions.after.shiftIndex(1);
+var pushMultiCursorOption = (selectionIndex, nth2) => (contentText, idx) => {
+  const ifNth = idx === nth2;
+  let renderOption = ifNth ? { ...contentText } : contentText;
+  if (ifNth) {
+    renderOption.after = { ...contentText.after };
   }
-};
-var multiCursorOption = (option, selectionIndex, nth2) => (contentText, idx) => {
-  option[idx].push({
+  selectionDecorationOption[multiCursorText][idx].push({
     get range() {
       return multiCursorState.selections[selectionIndex];
     },
-    renderOptions: idx === nth2 ? { ...contentText } : contentText
+    renderOptions: { ...renderOption }
   });
 };
+var LineSelectionBuffer = [];
+var checkIfDuplicateLine = (lineNumber3) => {
+  let l = LineSelectionBuffer.length;
+  while (l--) {
+    if (LineSelectionBuffer[l][0] === lineNumber3) {
+      return l;
+    }
+  }
+  return void 0;
+};
+var ifOnLastSelection = (selectionIndex) => {
+  if (selectionIndex > 0) {
+    return multiCursorState.selections[selectionIndex].end.line === multiCursorState.selections[selectionIndex - 1].end.line;
+  }
+  return false;
+};
+var pushCursorIndex = (calibration = 0) => {
+  let l = multiCursorIndex.idx + calibration;
+  while (l--) {
+    multiCursorIndex.group[l][0] += 1;
+  }
+};
+var pushCursorGroup = () => {
+  multiCursorIndex.idx += 1;
+  multiCursorIndex.group.push([0]);
+};
+var appendNthIndex = (nth2, line, index) => selectionDecorationOption[multiCursorText][nth2][line].renderOptions.after.indexList.push(index);
+var prependNthIndex = (nth2, line, index) => selectionDecorationOption[multiCursorText][nth2][line].renderOptions.after.indexList.unshift(index);
 var multiCursorDecorationOption = (selectionIndex) => {
   const nth2 = multiCursorState.nthPosition;
-  if (multiCursorState.selections[selectionIndex].end.line < multiCursorState.baseLine) {
-    if (!multiCursorState.baseShift) {
-      multiCursorState.statusIndex = 0;
-      multiCursorState.baseShift = true;
+  const currentLine = multiCursorState.selections[selectionIndex].end.line;
+  const dupLine = checkIfDuplicateLine(multiCursorState.selections[selectionIndex].end.line);
+  const onLastSelection = ifOnLastSelection(selectionIndex);
+  const shift = currentLine < multiCursorState.baseLine;
+  const onBaseLine = currentLine === multiCursorState.baseLine;
+  if (dupLine !== void 0) {
+    if (shift) {
+      if (onBaseLine) {
+        appendNthIndex(nth2, dupLine, multiCursorState.statusIndex);
+      } else {
+        pushCursorIndex();
+        pushCursorGroup();
+        appendNthIndex(nth2, dupLine, multiCursorState.statusIndex);
+      }
+    } else if (!shift) {
+      if (multiCursorIndex.idx === 0) {
+        if (onBaseLine) {
+          if (onLastSelection) {
+            appendNthIndex(nth2, dupLine, multiCursorState.statusIndex);
+          } else {
+            pushCursorGroup();
+            pushCursorIndex();
+            const indexList = selectionDecorationOption[multiCursorText][nth2][dupLine].renderOptions.after.indexList;
+            const lastIndex = indexList[indexList.length - 1] - 1;
+            appendNthIndex(nth2, dupLine, lastIndex);
+          }
+        } else {
+          appendNthIndex(nth2, dupLine, multiCursorState.statusIndex);
+          pushCursorIndex();
+        }
+      } else {
+        if (onBaseLine) {
+          const indexList = selectionDecorationOption[multiCursorText][nth2][dupLine].renderOptions.after.indexList;
+          const lastIndex = indexList[indexList.length - 1] + 1;
+          appendNthIndex(nth2, dupLine, lastIndex);
+          pushCursorIndex();
+        } else {
+          if (onLastSelection) {
+            pushCursorIndex();
+            appendNthIndex(nth2, dupLine, multiCursorState.statusIndex);
+          } else {
+            pushCursorIndex();
+            multiCursorState.statusIndex = 1;
+            prependNthIndex(nth2, dupLine, 0);
+          }
+        }
+      }
     }
-    selectionDecorationOption[multiCursorText][nth2].forEach(
-      shiftPreviousIndex(
-        selectionIndex,
-        selectionDecorationOption[multiCursorText],
-        multiCursorState.nthPosition
-      )
-    );
-  }
-  if (selectionIndex > 0 && multiCursorState.selections[selectionIndex - 1].end.line === multiCursorState.selections[selectionIndex].end.line) {
-    selectionDecorationOption[multiCursorText][nth2][selectionIndex - 1].renderOptions.after.addIndex(multiCursorState.statusIndex + 1);
     return;
+  } else if (shift) {
+    multiCursorState.statusIndex = 1;
+    multiCursorState.baseLine = currentLine;
+    pushCursorGroup();
   }
-  const nthPlaceholder = selectionContentText[multiCursorText].contentText[nth2];
-  nthPlaceholder.after = {
-    ...nthPlaceholder.after,
-    indexList: [multiCursorState.statusIndex + 1],
-    addIndex(i) {
-      this.indexList.push(i);
-    },
-    shiftIndex(shift) {
-      this.indexList.forEach((i, idx) => this.indexList[idx] += shift);
-    },
+  if (multiCursorIndex.idx > 0) {
+    pushCursorIndex();
+  }
+  LineSelectionBuffer.push([multiCursorState.selections[selectionIndex].end.line, selectionIndex]);
+  const nthRenderInstanceOption = selectionContentText[multiCursorText].contentText[nth2];
+  nthRenderInstanceOption.after = {
+    ...selectionContentText[multiCursorText].contentText[nth2].after,
+    groupIndex: parseInt(multiCursorIndex.idx.toString()),
+    baseIndex: multiCursorIndex.group[multiCursorIndex.idx],
+    indexList: [multiCursorState.statusIndex],
     get contentText() {
-      return this.indexList.join(",");
+      return this.indexList.map((i) => i + this.baseIndex[0]).join(",");
     }
   };
   selectionContentText[multiCursorText].contentText.forEach(
-    multiCursorOption(
-      selectionDecorationOption[multiCursorText],
+    pushMultiCursorOption(
       selectionIndex,
       nth2
     )
@@ -988,6 +1059,7 @@ var increaseIndex = () => {
   multiCursorState.statusIndex++;
 };
 var addMultiCursorEntry = (selection) => {
+  console.clear();
   multiCursorState.selections.push(selection);
   selectionStatusFunctionChain[multiCursorText].forEach(functionChainAccumulate(multiCursorStatusRef, multiCursorState.context));
   multiCursorDecorationOption(multiCursorState.index);
@@ -997,6 +1069,7 @@ var multiCursorSelection = (editor2, previousKey) => {
   multiCursor !== previousKey[0] && (() => {
     clearBufferOfhexkey(editor2.setDecorations, previousKey);
     clearMultiCursorState();
+    multiCursorIndex.group.push([0]);
     multiCursorState.context.editor = editor2;
     multiCursorState.context.pos = multiCursorState.index;
     addMultiCursorEntry(editor2.selections[0]);
@@ -1147,19 +1220,19 @@ var lineGlyph = {
 var diagnosticStatusBuffer = [];
 var composeRenderOption2 = (renderSignature, renderOptions) => {
   renderOptions.forEach((option) => {
-    if (typeof option.after.contentText === "number" && Object.hasOwn(diagonosticReferenceTable, option.after.contentText)) {
-      diagonosticReferenceTable[option.after.contentText] = option.after;
+    if (typeof option.after.contentText === "number" && Object.hasOwn(diagnosticReferenceTable, option.after.contentText)) {
+      diagnosticReferenceTable[option.after.contentText] = option.after;
       diggnosticStateList.push(option.after.contentText);
     }
     diagnosticContentText[renderSignature].push([{
       get range() {
-        return diagonosticReferenceTable.rangeReference;
+        return diagnosticReferenceTable.rangeReference;
       },
       renderOptions: option
     }]);
   });
 };
-var diagonosticReferenceTable = {
+var diagnosticReferenceTable = {
   rangeReference: void 0,
   [editorWarningTotal]: void 0,
   [editorErrorTotal]: void 0,
@@ -1288,7 +1361,7 @@ var fnCollection = {
 };
 var diggnosticStateList = [];
 var updateDiagnosticState = (context2) => (hexKey) => {
-  diagonosticReferenceTable[hexKey].contentText = fnCollection[hexKey](context2);
+  diagnosticReferenceTable[hexKey].contentText = fnCollection[hexKey](context2);
 };
 var renderDiagnosticText = (setDecorations) => (options, idx) => {
   setDecorations(diagnosticStatusBuffer[idx], options);
@@ -1304,7 +1377,7 @@ var diagnosticInfo = (decorationState2) => (editor2) => {
   context.line = editor2.selection.end.line;
   context.state = stateBuffer;
   diggnosticStateList.forEach(updateDiagnosticState(context));
-  diagonosticReferenceTable.rangeReference = diagnosticOf.rangeFunction(editor2);
+  diagnosticReferenceTable.rangeReference = diagnosticOf.rangeFunction(editor2);
   diagnosticContentText[diagnosticRenderSignature(stateBuffer)].forEach(renderDiagnosticText(editor2.setDecorations));
 };
 var clearDiagnosticText = (setDecorations) => {
@@ -2098,7 +2171,7 @@ var updateSelectionTextConfig = (extenionName, configuratioChange = false) => {
   return true;
 };
 
-// src/configuration/decoration/diagonostic.ts
+// src/configuration/decoration/diagnostic.ts
 var positionKeyList = ["pre", "post"];
 var positionKeyToPlaceholderName = { pre: "prefix", post: "postfix" };
 var applyExtraStyle = (textOf, extraStyle, leftMargin) => {
@@ -2154,8 +2227,8 @@ var buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style, left
     const linker = DECORATION_OPTION_LINKER[contentTextName];
     const context2 = {
       textPosition,
-      primaryStyle: style.diagonosticDecorationOption[linker[0]],
-      secondaryStyle: linker[1] ? style.diagonosticDecorationOption[linker[1]] : null,
+      primaryStyle: style.diagnosticDecorationOption[linker[0]],
+      secondaryStyle: linker[1] ? style.diagnosticDecorationOption[linker[1]] : null,
       notation: [],
       leftMargin
     };
@@ -2304,7 +2377,7 @@ var buildDiagnosticStyle = (config, style, diagnosticStyleList, visibility, diag
       fontStyle: sanitizeConfigValue(config[styleName].fontStyle),
       fontWeight: sanitizeConfigValue(config[styleName].fontWeight)
     };
-    style.diagonosticDecorationOption[styleName] = convertToDecorationRenderOption(styleConfig, true);
+    style.diagnosticDecorationOption[styleName] = convertToDecorationRenderOption(styleConfig, true);
     result.workspace = {
       ...result.workspace,
       ...ifNoation(config, styleName, "workspace", DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER)

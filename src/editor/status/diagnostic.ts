@@ -23,21 +23,21 @@ const diagnosticStatusBuffer = [] as (any | vscode.TextEditorDecorationType)[];
 
 const composeRenderOption = (renderSignature: number, renderOptions: any[]) => {
     renderOptions.forEach(option => {
-        if (typeof option.after.contentText === 'number' && Object.hasOwn(diagonosticReferenceTable, option.after.contentText)) {
-            diagonosticReferenceTable[option.after.contentText] = option.after;
+        if (typeof option.after.contentText === 'number' && Object.hasOwn(diagnosticReferenceTable, option.after.contentText)) {
+            diagnosticReferenceTable[option.after.contentText] = option.after;
             diggnosticStateList.push(option.after.contentText);
         }
 
         diagnosticContentText[renderSignature].push([{
             get range() {
-                return diagonosticReferenceTable.rangeReference;
+                return diagnosticReferenceTable.rangeReference;
             },
             renderOptions: option
         }]);
     });
 };
 
-const diagonosticReferenceTable = {
+const diagnosticReferenceTable = {
     rangeReference: undefined as any | vscode.Range,
     [__0x.editorWarningTotal]: undefined as any,
     [__0x.editorErrorTotal]: undefined as any,
@@ -174,7 +174,7 @@ const decorationOptionBuffer: RenderOption = { ...DECORATION_OPTION_CONFIG };
 
 const stateBuffer: (number | number[])[] = [0, 0, [], 0, [], 0, 0, 0, 0, 0];
 
-const initializeStateBuffer = (digit: number) => {
+const initializeStateBuffer = (digit: number): void => {
     stateBuffer[0] = digit;
 };
 
@@ -184,7 +184,7 @@ const diagnosticRenderSignature = (state: typeof stateBuffer): number => {
     return (emask === 0 && wmask === 0) ? state[0] as number : ((emask ? emask << 5 : 1 << 5) | (wmask ? wmask << 2 : 1 << 2) | 0b10);
 };
 
-const refreshBuffer = (state: (number | number[])[]) => {
+const refreshBuffer = (state: (number | number[])[]): void => {
     let idx = state.length;
     while (idx--) {
         stateBuffer[idx] = state[idx];
@@ -203,7 +203,7 @@ const fnCollection: Record<number, D.Diagnostic.Tp.DiagnosticSignatureFuncSign> 
 const diggnosticStateList = [] as number[];
 
 const updateDiagnosticState = (context: any) => (hexKey: number) => {
-    diagonosticReferenceTable[hexKey].contentText = fnCollection[hexKey](context);
+    diagnosticReferenceTable[hexKey].contentText = fnCollection[hexKey](context);
 };
 
 const renderDiagnosticText = (setDecorations: vscode.TextEditor['setDecorations']) => (options: vscode.DecorationInstanceRenderOptions, idx: number) => {
@@ -215,14 +215,14 @@ const context = {
     state: Object.create(null)
 };
 
-const diagnosticInfo = (decorationState: Decoration.Intf.DecorationState) => (editor: vscode.TextEditor): void => {
+const diagnosticInfo = (decorationState: Decoration.Intf.State) => (editor: vscode.TextEditor): void => {
     if (decorationState.eventTrigger[0] === __0x.diagnosticChanged) {
         refreshBuffer(updateDiagnostic(editor.document.uri));
     }
     context.line = editor.selection.end.line;
     context.state = stateBuffer;
     diggnosticStateList.forEach(updateDiagnosticState(context));
-    diagonosticReferenceTable.rangeReference = diagnosticOf.rangeFunction(editor);
+    diagnosticReferenceTable.rangeReference = diagnosticOf.rangeFunction(editor);
     diagnosticContentText[diagnosticRenderSignature(stateBuffer)].forEach(renderDiagnosticText(editor.setDecorations));
 };
 

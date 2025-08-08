@@ -4,8 +4,8 @@ import { HIGHLIGHT_BORDER_POSITION_INFO, HIGHLIGHT_STYLE_LIST } from '../../cons
 import { createLineRange, createRangeSPEP, blankRange } from '../range';
 import { applyDecoration } from '../editor';
 
-import type * as D from '../../type/highlight';
-export type * from '../../type/highlight';
+import type * as D from '../../type/decoration';
+export type * from '../../type/decoration';
 
 const highlightStyleList = {
     ...HIGHLIGHT_STYLE_LIST

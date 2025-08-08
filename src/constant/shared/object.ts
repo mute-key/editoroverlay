@@ -15,7 +15,7 @@ export const DECORATION_STATE = {
     diagnosticSignature: [0],
     eventTrigger: [0],
     previousLine: [0],
-};
+} as const;
 
 export const SELECTION_KIND_LIST = [
     __0x.cursorOnly,
