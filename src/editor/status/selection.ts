@@ -398,6 +398,7 @@ const multiCursorState: Record<string, any | number | boolean | vscode.Selection
     selections: [] as vscode.Selection[],
     nthPosition: 1,
     statusIndex: 1,
+    duplicateEntryIdx: undefined,
     baseLine: -1,
     currentLine: -1,
     index: 0,
@@ -418,21 +419,21 @@ const clearMultiCursorState = () => {
     multiCursorState.selections = [];
     multiCursorState.index = 0;
     multiCursorState.statusIndex = 1;
-    multiCursorState.context.pos = 0;
     multiCursorState.duplicateEntryIdx = undefined;
     multiCursorState.baseLine = -1;
+    multiCursorState.context.pos = 0;
     multiCursorState.context.editor = {};
     multiCursorCounter.nth = 0;
     multiCursorCounter.count = 0;
     multiCursorCounter.ln = 0;
     multiCursorCounter.lc = 0;
     multiCursorCounter.char = 0;
-    multiCursorIndex.group = [];
-    multiCursorIndex.idx = 0;
+    multiCursorGroup.list = [];
+    multiCursorGroup.idx = 0;
 };
 
-const multiCursorIndex = {
-    group: [] as any | [][],
+const multiCursorGroup = {
+    list: [] as any | [][],
     idx: 0
 };
 
@@ -442,7 +443,7 @@ const multiCursorPosition = (placeholder: string, position: number): void => {
     }
 };
 
-const pushMultiCursorOption = (selectionIndex: number, nth: number) => (contentText: string | any, idx: number) => {
+const pushMultiCursorOption = (selectionIndex: number, nth: number) => (contentText: string | any, idx: number): void => {
 
     const ifNth = idx === nth;
 
@@ -450,6 +451,7 @@ const pushMultiCursorOption = (selectionIndex: number, nth: number) => (contentT
     if (ifNth) {
         renderOption.after = { ...contentText.after };
     }
+
     selectionDecorationOption[__0x.multiCursorText][idx].push({
         get range() {
             return multiCursorState.selections[selectionIndex];
@@ -474,24 +476,21 @@ const checkIfDuplicateLine = (lineNumber: number): number | undefined => {
 };
 
 const ifOnLastSelection = (selectionIndex: number): boolean => {
-    if (selectionIndex > 0) {
-        return multiCursorState.selections[selectionIndex].end.line === multiCursorState.selections[selectionIndex - 1].end.line;
-    }
-    return false;
+    return selectionIndex > 0 && multiCursorState.currentLine === multiCursorState.selections[selectionIndex - 1].end.line;
 };
 
 const ifDuplicateIndexIsNotlast = (): boolean => LineSelectionBuffer.length > multiCursorState.duplicateEntryIdx + 1;
 
 const pushCursorIndex = (calibration: number = 0): void => {
-    let l = multiCursorIndex.idx + calibration;
+    let l = multiCursorGroup.idx + calibration;
     while (l--) {
-        multiCursorIndex.group[l][0] += 1;
+        multiCursorGroup.list[l][0] += 1;
     }
 };
 
 const pushCursorGroup = (): void => {
-    multiCursorIndex.idx += 1;
-    multiCursorIndex.group.push([0]);
+    multiCursorGroup.idx += 1;
+    multiCursorGroup.list.push([0]);
 };
 
 const appendNthIndex = (index: number = 0): void => multiCursorState.indexList.push(index);
@@ -519,7 +518,7 @@ const nonDuplicateEntryStep: Record<number, any[]> = {
 
 const duplicateSelectionSignature = (selectionIndex: number): number => {
     return (multiCursorState.currentLine < multiCursorState.baseLine ? __0x.MULTI_CURSOR_SELECTION_SIGNATURE.TO_SHIFT_INDEX : 0)
-        + (multiCursorIndex.idx > 0 ? __0x.MULTI_CURSOR_SELECTION_SIGNATURE.INDEX_SHIFTED : 0)
+        + (multiCursorGroup.idx > 0 ? __0x.MULTI_CURSOR_SELECTION_SIGNATURE.INDEX_SHIFTED : 0)
         + (multiCursorState.currentLine === multiCursorState.baseLine ? __0x.MULTI_CURSOR_SELECTION_SIGNATURE.ON_BASELINE : 0)
         + (ifOnLastSelection(selectionIndex) ? __0x.MULTI_CURSOR_SELECTION_SIGNATURE.AS_LAST_SELECTION : 0)
         + (ifDuplicateIndexIsNotlast() ? __0x.MULTI_CURSOR_SELECTION_SIGNATURE.DUPLICATE_LINE_NOT_AS_LAST_SELECTION : 0);
@@ -527,8 +526,10 @@ const duplicateSelectionSignature = (selectionIndex: number): number => {
 
 const nonDuplicateSelectionSignature = (): number => {
     return ((multiCursorState.currentLine < multiCursorState.baseLine) ? __0x.MULTI_CURSOR_SELECTION_SIGNATURE.TO_SHIFT_INDEX : 0)
-        + ((multiCursorIndex.idx > 0) ? __0x.MULTI_CURSOR_SELECTION_SIGNATURE.INDEX_SHIFTED : 0);
+        + ((multiCursorGroup.idx > 0) ? __0x.MULTI_CURSOR_SELECTION_SIGNATURE.INDEX_SHIFTED : 0);
 };
+
+const fnStep = (fn: any): void => fn();
 
 /**
  * 
@@ -545,10 +546,10 @@ const multiCursorDecorationOption = (selectionIndex: number): void => {
     if (duplicateEntry !== undefined) {
         multiCursorState.duplicateEntryIdx = duplicateEntry;
         multiCursorState.indexList = selectionDecorationOption[__0x.multiCursorText][multiCursorState.nthPosition][multiCursorState.duplicateEntryIdx].renderOptions.after.indexList;
-        duplicateEntryStep[duplicateSelectionSignature(selectionIndex)].forEach(fn => fn());
+        duplicateEntryStep[duplicateSelectionSignature(selectionIndex)].forEach(fnStep);
         return;
     } else {
-        nonDuplicateEntryStep[nonDuplicateSelectionSignature()].forEach(fn => fn());
+        nonDuplicateEntryStep[nonDuplicateSelectionSignature()].forEach(fnStep);
     }
 
     LineSelectionBuffer.push([multiCursorState.selections[selectionIndex].end.line, selectionIndex]);
@@ -556,8 +557,8 @@ const multiCursorDecorationOption = (selectionIndex: number): void => {
     const nthRenderInstanceOption = selectionContentText[__0x.multiCursorText].contentText[nth];
     nthRenderInstanceOption.after = {
         ...selectionContentText[__0x.multiCursorText].contentText[nth].after,
-        groupIndex: parseInt(multiCursorIndex.idx.toString()),
-        baseIndex: multiCursorIndex.group[multiCursorIndex.idx],
+        groupIndex: parseInt(multiCursorGroup.idx.toString()),
+        baseIndex: multiCursorGroup.list[multiCursorGroup.idx],
         indexList: [multiCursorState.statusIndex],
         get contentText() {
             return this.indexList.map(i => i + this.baseIndex[0]).join(',');
@@ -593,7 +594,7 @@ const multiCursorSelection = (editor: vscode.TextEditor, previousKey: number[]):
     __0x.multiCursor !== previousKey[0] && (() => {
         clearBufferOfhexkey(editor.setDecorations, previousKey);
         clearMultiCursorState();
-        multiCursorIndex.group.push([0]);
+        multiCursorGroup.list.push([0]);
         multiCursorState.context.editor = editor;
         multiCursorState.context.pos = multiCursorState.index;
         addMultiCursorEntry(editor.selections[0]);
@@ -613,11 +614,10 @@ const clearSelectionTextBuffer = (editor: vscode.TextEditor): void => {
     SELECTION_KIND_LIST?.forEach(hexKey => clearBufferOfhexkey(editor.setDecorations, [hexKey]));
 };
 
-const clearDisposeBuffer = (setDecorations: vscode.TextEditor["setDecorations"]) =>
-    (buffer: vscode.TextEditorDecorationType): void => {
-        setDecorations(buffer, blankRange);
-        buffer.dispose();
-    };
+const clearDisposeBuffer = (setDecorations: vscode.TextEditor["setDecorations"]) => (buffer: vscode.TextEditorDecorationType): void => {
+    setDecorations(buffer, blankRange);
+    buffer.dispose();
+};
 
 const clearBufferOfhexkey = (setDecorations: vscode.TextEditor["setDecorations"], previousKey: number[]): void => {
     switch (previousKey[0]) {
