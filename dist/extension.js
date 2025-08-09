@@ -103,6 +103,17 @@ var diagnosticChanged = 4098 /* DIAGNOSTIC_CHANGED */;
 var selectionChanged = 4099 /* SELECTION_CHANGED */;
 var tabChanged = 4100 /* EDITOR_TAB_CHANGED */;
 var configruationCallerPreset = 4353 /* PRESET */;
+var recurringLine0 = 1 /* TO_SHIFT_INDEX */ + 4 /* ON_BASELINE */;
+var recurringLine1 = 1 /* TO_SHIFT_INDEX */;
+var recurringLine2 = 4 /* ON_BASELINE */ + 8 /* AS_LAST_SELECTION */;
+var recurringLine3 = 4 /* ON_BASELINE */;
+var recurringLine4 = 8 /* AS_LAST_SELECTION */;
+var recurringLine5 = 2 /* INDEX_SHIFTED */ + 4 /* ON_BASELINE */;
+var recurringLine6 = 2 /* INDEX_SHIFTED */ + 8 /* AS_LAST_SELECTION */;
+var recurringLine7 = 2 /* INDEX_SHIFTED */ + 4 /* ON_BASELINE */ + 8 /* AS_LAST_SELECTION */;
+var recurringLine8 = 2 /* INDEX_SHIFTED */ + 16 /* DUPLICATE_LINE_NOT_AS_LAST_SELECTION */;
+var nonRecurringLine0 = 1 /* TO_SHIFT_INDEX */;
+var nonRecurringLine1 = 2 /* INDEX_SHIFTED */;
 
 // src/constant/config/object.ts
 var CONFIG_SECTION = {
@@ -894,12 +905,13 @@ var multiCursorState = {
     char: 0
   },
   selections: [],
-  accumulate: false,
   nthPosition: 1,
   statusIndex: 1,
   baseLine: -1,
-  baseShift: false,
-  index: 0
+  currentLine: -1,
+  index: 0,
+  duplicateLine: void 0,
+  indexList: []
 };
 var multiCursorCounter = {
   nth: 0,
@@ -914,7 +926,7 @@ var clearMultiCursorState = () => {
   multiCursorState.index = 0;
   multiCursorState.statusIndex = 1;
   multiCursorState.context.pos = 0;
-  multiCursorState.baseShift = false;
+  multiCursorState.duplicateEntryIdx = void 0;
   multiCursorState.baseLine = -1;
   multiCursorState.context.editor = {};
   multiCursorCounter.nth = 0;
@@ -963,6 +975,7 @@ var ifOnLastSelection = (selectionIndex) => {
   }
   return false;
 };
+var ifDuplicateIndexIsNotlast = () => LineSelectionBuffer.length > multiCursorState.duplicateEntryIdx + 1;
 var pushCursorIndex = (calibration = 0) => {
   let l = multiCursorIndex.idx + calibration;
   while (l--) {
@@ -973,66 +986,45 @@ var pushCursorGroup = () => {
   multiCursorIndex.idx += 1;
   multiCursorIndex.group.push([0]);
 };
-var appendNthIndex = (nth2, line, index) => selectionDecorationOption[multiCursorText][nth2][line].renderOptions.after.indexList.push(index);
-var prependNthIndex = (nth2, line, index) => selectionDecorationOption[multiCursorText][nth2][line].renderOptions.after.indexList.unshift(index);
-var multiCursorDecorationOption = (selectionIndex) => {
-  const nth2 = multiCursorState.nthPosition;
-  const currentLine = multiCursorState.selections[selectionIndex].end.line;
-  const dupLine = checkIfDuplicateLine(multiCursorState.selections[selectionIndex].end.line);
-  const onLastSelection = ifOnLastSelection(selectionIndex);
-  const shift = currentLine < multiCursorState.baseLine;
-  const onBaseLine = currentLine === multiCursorState.baseLine;
-  if (dupLine !== void 0) {
-    if (shift) {
-      if (onBaseLine) {
-        appendNthIndex(nth2, dupLine, multiCursorState.statusIndex);
-      } else {
-        pushCursorIndex();
-        pushCursorGroup();
-        appendNthIndex(nth2, dupLine, multiCursorState.statusIndex);
-      }
-    } else if (!shift) {
-      if (multiCursorIndex.idx === 0) {
-        if (onBaseLine) {
-          if (onLastSelection) {
-            appendNthIndex(nth2, dupLine, multiCursorState.statusIndex);
-          } else {
-            pushCursorGroup();
-            pushCursorIndex();
-            const indexList = selectionDecorationOption[multiCursorText][nth2][dupLine].renderOptions.after.indexList;
-            const lastIndex = indexList[indexList.length - 1] - 1;
-            appendNthIndex(nth2, dupLine, lastIndex);
-          }
-        } else {
-          appendNthIndex(nth2, dupLine, multiCursorState.statusIndex);
-          pushCursorIndex();
-        }
-      } else {
-        if (onBaseLine) {
-          const indexList = selectionDecorationOption[multiCursorText][nth2][dupLine].renderOptions.after.indexList;
-          const lastIndex = indexList[indexList.length - 1] + 1;
-          appendNthIndex(nth2, dupLine, lastIndex);
-          pushCursorIndex();
-        } else {
-          if (onLastSelection) {
-            pushCursorIndex();
-            appendNthIndex(nth2, dupLine, multiCursorState.statusIndex);
-          } else {
-            pushCursorIndex();
-            multiCursorState.statusIndex = 1;
-            prependNthIndex(nth2, dupLine, 0);
-          }
-        }
-      }
-    }
-    return;
-  } else if (shift) {
+var appendNthIndex = (index = 0) => multiCursorState.indexList.push(index);
+var prependNthIndex = (index = 0) => multiCursorState.indexList.unshift(index);
+var prependNthLastIndex = (calibration = 0) => appendNthIndex(multiCursorState.indexList[multiCursorState.indexList.length - 1] + calibration);
+var duplicateEntryStep = {
+  [recurringLine0]: [appendNthIndex],
+  [recurringLine1]: [pushCursorIndex, pushCursorGroup, () => appendNthIndex(multiCursorState.statusIndex)],
+  [recurringLine2]: [() => appendNthIndex(multiCursorState.statusIndex)],
+  [recurringLine3]: [pushCursorGroup, pushCursorIndex, () => prependNthLastIndex(-1)],
+  [recurringLine4]: [() => appendNthIndex(multiCursorState.statusIndex)],
+  [recurringLine5]: [() => prependNthLastIndex(1), pushCursorIndex],
+  [recurringLine6]: [pushCursorIndex, () => appendNthIndex(multiCursorState.statusIndex)],
+  [recurringLine7]: [pushCursorIndex, () => appendNthIndex(multiCursorState.statusIndex)],
+  [recurringLine8]: [pushCursorIndex, () => prependNthIndex()]
+};
+var nonDuplicateEntryStep = {
+  [nonRecurringLine0]: [() => {
     multiCursorState.statusIndex = 1;
-    multiCursorState.baseLine = currentLine;
-    pushCursorGroup();
-  }
-  if (multiCursorIndex.idx > 0) {
-    pushCursorIndex();
+  }, () => {
+    multiCursorState.baseLine = multiCursorState.currentLine;
+  }, pushCursorGroup, pushCursorIndex],
+  [nonRecurringLine1]: [pushCursorIndex]
+};
+var duplicateSelectionSignature = (selectionIndex) => {
+  return (multiCursorState.currentLine < multiCursorState.baseLine ? 1 /* TO_SHIFT_INDEX */ : 0) + (multiCursorIndex.idx > 0 ? 2 /* INDEX_SHIFTED */ : 0) + (multiCursorState.currentLine === multiCursorState.baseLine ? 4 /* ON_BASELINE */ : 0) + (ifOnLastSelection(selectionIndex) ? 8 /* AS_LAST_SELECTION */ : 0) + (ifDuplicateIndexIsNotlast() ? 16 /* DUPLICATE_LINE_NOT_AS_LAST_SELECTION */ : 0);
+};
+var nonDuplicateSelectionSignature = () => {
+  return (multiCursorState.currentLine < multiCursorState.baseLine ? 1 /* TO_SHIFT_INDEX */ : 0) + (multiCursorIndex.idx > 0 ? 2 /* INDEX_SHIFTED */ : 0);
+};
+var multiCursorDecorationOption = (selectionIndex) => {
+  multiCursorState.currentLine = multiCursorState.selections[selectionIndex].end.line;
+  const nth2 = multiCursorState.nthPosition;
+  const duplicateEntry = checkIfDuplicateLine(multiCursorState.currentLine);
+  if (duplicateEntry !== void 0) {
+    multiCursorState.duplicateEntryIdx = duplicateEntry;
+    multiCursorState.indexList = selectionDecorationOption[multiCursorText][multiCursorState.nthPosition][multiCursorState.duplicateEntryIdx].renderOptions.after.indexList;
+    duplicateEntryStep[duplicateSelectionSignature(selectionIndex)].forEach((fn) => fn());
+    return;
+  } else {
+    nonDuplicateEntryStep[nonDuplicateSelectionSignature()].forEach((fn) => fn());
   }
   LineSelectionBuffer.push([multiCursorState.selections[selectionIndex].end.line, selectionIndex]);
   const nthRenderInstanceOption = selectionContentText[multiCursorText].contentText[nth2];
@@ -1059,7 +1051,6 @@ var increaseIndex = () => {
   multiCursorState.statusIndex++;
 };
 var addMultiCursorEntry = (selection) => {
-  console.clear();
   multiCursorState.selections.push(selection);
   selectionStatusFunctionChain[multiCursorText].forEach(functionChainAccumulate(multiCursorStatusRef, multiCursorState.context));
   multiCursorDecorationOption(multiCursorState.index);

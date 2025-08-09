@@ -69,8 +69,6 @@ const createStartEndRangeOfSelection = (selection: vscode.Selection): vscode.Ran
 
 const blankRange = [] as vscode.Range[];
 
-const lineCountOfRange = (selection: vscode.Range | vscode.Selection): boolean => selection.isSingleLine;
-
 export {
     createRangeNNNN,
     createRangeSPEP,
