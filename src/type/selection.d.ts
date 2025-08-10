@@ -18,4 +18,6 @@ export namespace Tp {
     ) => (
         [fnName, fnChain]: [string, (args: vscode.TextEditor | Intf.StatusRefContext) => number]
     ) => void
+
+    type IndexFnSignature = (number: number) => void
 }

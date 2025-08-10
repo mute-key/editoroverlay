@@ -112,6 +112,7 @@ var recurringLine5 = 2 /* INDEX_SHIFTED */ + 4 /* ON_BASELINE */;
 var recurringLine6 = 2 /* INDEX_SHIFTED */ + 8 /* AS_LAST_SELECTION */;
 var recurringLine7 = 2 /* INDEX_SHIFTED */ + 4 /* ON_BASELINE */ + 8 /* AS_LAST_SELECTION */;
 var recurringLine8 = 2 /* INDEX_SHIFTED */ + 16 /* DUPLICATE_LINE_NOT_AS_LAST_SELECTION */;
+var recurringLine9 = 4 /* ON_BASELINE */ + 16 /* DUPLICATE_LINE_NOT_AS_LAST_SELECTION */;
 var nonRecurringLine0 = 1 /* TO_SHIFT_INDEX */;
 var nonRecurringLine1 = 2 /* INDEX_SHIFTED */;
 
@@ -782,11 +783,11 @@ var setSelectionTextbuffer = (hexKey, length, placeholder) => {
   switch (hexKey) {
     case cursorOnlyText:
       setDeocorationOption(hexKey);
-      buildFunctionChain(cursorOnlyText, placeholder, { ...lineNumber2, ...columns });
+      buildFunctionChain(hexKey, placeholder, { ...lineNumber2, ...columns });
       break;
     case singleLineText:
       setDeocorationOption(hexKey);
-      buildFunctionChain(singleLineText, placeholder, { ...lineNumber2, ...characterCount });
+      buildFunctionChain(hexKey, placeholder, { ...lineNumber2, ...characterCount });
       break;
     case multiLineText:
       selectionDecorationOption[hexKey].length = length;
@@ -798,7 +799,7 @@ var setSelectionTextbuffer = (hexKey, length, placeholder) => {
           composeRenderOption(multiLineCursorText, selectionContentText[multiLineCursorText].contentText[idx])
         );
       });
-      buildFunctionChain(multiLineText, placeholder, { ...lineNumber2, ...multiLineFn });
+      buildFunctionChain(hexKey, placeholder, { ...lineNumber2, ...multiLineFn });
       break;
     case multiCursorText:
       selectionContentText[hexKey].contentText.forEach(() => {
@@ -907,9 +908,10 @@ var multiCursorState = {
   selections: [],
   nthPosition: 1,
   statusIndex: 1,
+  duplicateEntryIdx: void 0,
   baseLine: -1,
   currentLine: -1,
-  index: 0,
+  index: 1,
   duplicateLine: void 0,
   indexList: []
 };
@@ -923,22 +925,22 @@ var multiCursorCounter = {
 var clearMultiCursorState = () => {
   LineSelectionBuffer.splice(0);
   multiCursorState.selections = [];
-  multiCursorState.index = 0;
+  multiCursorState.index = 1;
   multiCursorState.statusIndex = 1;
-  multiCursorState.context.pos = 0;
   multiCursorState.duplicateEntryIdx = void 0;
   multiCursorState.baseLine = -1;
+  multiCursorState.context.pos = 0;
   multiCursorState.context.editor = {};
   multiCursorCounter.nth = 0;
   multiCursorCounter.count = 0;
   multiCursorCounter.ln = 0;
   multiCursorCounter.lc = 0;
   multiCursorCounter.char = 0;
-  multiCursorIndex.group = [];
-  multiCursorIndex.idx = 0;
+  multiCursorGroup.list = [];
+  multiCursorGroup.idx = 0;
 };
-var multiCursorIndex = {
-  group: [],
+var multiCursorGroup = {
+  list: [],
   idx: 0
 };
 var multiCursorPosition = (placeholder, position) => {
@@ -970,21 +972,18 @@ var checkIfDuplicateLine = (lineNumber3) => {
   return void 0;
 };
 var ifOnLastSelection = (selectionIndex) => {
-  if (selectionIndex > 0) {
-    return multiCursorState.selections[selectionIndex].end.line === multiCursorState.selections[selectionIndex - 1].end.line;
-  }
-  return false;
+  return selectionIndex > 0 && multiCursorState.currentLine === multiCursorState.selections[selectionIndex - 1].end.line;
 };
 var ifDuplicateIndexIsNotlast = () => LineSelectionBuffer.length > multiCursorState.duplicateEntryIdx + 1;
 var pushCursorIndex = (calibration = 0) => {
-  let l = multiCursorIndex.idx + calibration;
+  let l = multiCursorGroup.idx + calibration;
   while (l--) {
-    multiCursorIndex.group[l][0] += 1;
+    multiCursorGroup.list[l][0] += 1;
   }
 };
 var pushCursorGroup = () => {
-  multiCursorIndex.idx += 1;
-  multiCursorIndex.group.push([0]);
+  multiCursorGroup.idx += 1;
+  multiCursorGroup.list.push([0]);
 };
 var appendNthIndex = (index = 0) => multiCursorState.indexList.push(index);
 var prependNthIndex = (index = 0) => multiCursorState.indexList.unshift(index);
@@ -998,9 +997,15 @@ var duplicateEntryStep = {
   [recurringLine5]: [() => prependNthLastIndex(1), pushCursorIndex],
   [recurringLine6]: [pushCursorIndex, () => appendNthIndex(multiCursorState.statusIndex)],
   [recurringLine7]: [pushCursorIndex, () => appendNthIndex(multiCursorState.statusIndex)],
-  [recurringLine8]: [pushCursorIndex, () => prependNthIndex()]
+  [recurringLine8]: [pushCursorIndex, () => prependNthIndex()],
+  [recurringLine9]: [pushCursorGroup, pushCursorIndex, () => {
+    prependNthIndex();
+    multiCursorState.statusIndex = 1;
+    multiCursorState.baseLine = multiCursorState.currentLine;
+  }]
 };
 var nonDuplicateEntryStep = {
+  [0]: [],
   [nonRecurringLine0]: [() => {
     multiCursorState.statusIndex = 1;
   }, () => {
@@ -1009,29 +1014,30 @@ var nonDuplicateEntryStep = {
   [nonRecurringLine1]: [pushCursorIndex]
 };
 var duplicateSelectionSignature = (selectionIndex) => {
-  return (multiCursorState.currentLine < multiCursorState.baseLine ? 1 /* TO_SHIFT_INDEX */ : 0) + (multiCursorIndex.idx > 0 ? 2 /* INDEX_SHIFTED */ : 0) + (multiCursorState.currentLine === multiCursorState.baseLine ? 4 /* ON_BASELINE */ : 0) + (ifOnLastSelection(selectionIndex) ? 8 /* AS_LAST_SELECTION */ : 0) + (ifDuplicateIndexIsNotlast() ? 16 /* DUPLICATE_LINE_NOT_AS_LAST_SELECTION */ : 0);
+  return (multiCursorState.currentLine < multiCursorState.baseLine ? 1 /* TO_SHIFT_INDEX */ : 0) + (multiCursorGroup.idx > 0 ? 2 /* INDEX_SHIFTED */ : 0) + (multiCursorState.currentLine === multiCursorState.baseLine ? 4 /* ON_BASELINE */ : 0) + (ifOnLastSelection(selectionIndex) ? 8 /* AS_LAST_SELECTION */ : 0) + (ifDuplicateIndexIsNotlast() ? 16 /* DUPLICATE_LINE_NOT_AS_LAST_SELECTION */ : 0);
 };
 var nonDuplicateSelectionSignature = () => {
-  return (multiCursorState.currentLine < multiCursorState.baseLine ? 1 /* TO_SHIFT_INDEX */ : 0) + (multiCursorIndex.idx > 0 ? 2 /* INDEX_SHIFTED */ : 0);
+  return (multiCursorState.currentLine < multiCursorState.baseLine ? 1 /* TO_SHIFT_INDEX */ : 0) + (multiCursorGroup.idx > 0 ? 2 /* INDEX_SHIFTED */ : 0);
 };
+var fnStep = (fn) => fn();
 var multiCursorDecorationOption = (selectionIndex) => {
-  multiCursorState.currentLine = multiCursorState.selections[selectionIndex].end.line;
   const nth2 = multiCursorState.nthPosition;
-  const duplicateEntry = checkIfDuplicateLine(multiCursorState.currentLine);
+  const duplicateEntry = checkIfDuplicateLine(multiCursorState.context.editor.selections[multiCursorState.index].end.line);
   if (duplicateEntry !== void 0) {
     multiCursorState.duplicateEntryIdx = duplicateEntry;
     multiCursorState.indexList = selectionDecorationOption[multiCursorText][multiCursorState.nthPosition][multiCursorState.duplicateEntryIdx].renderOptions.after.indexList;
-    duplicateEntryStep[duplicateSelectionSignature(selectionIndex)].forEach((fn) => fn());
+    duplicateEntryStep[duplicateSelectionSignature(selectionIndex)].forEach(fnStep);
+    increaseIndex();
     return;
   } else {
-    nonDuplicateEntryStep[nonDuplicateSelectionSignature()].forEach((fn) => fn());
+    nonDuplicateEntryStep[nonDuplicateSelectionSignature()].forEach(fnStep);
   }
   LineSelectionBuffer.push([multiCursorState.selections[selectionIndex].end.line, selectionIndex]);
   const nthRenderInstanceOption = selectionContentText[multiCursorText].contentText[nth2];
   nthRenderInstanceOption.after = {
     ...selectionContentText[multiCursorText].contentText[nth2].after,
-    groupIndex: parseInt(multiCursorIndex.idx.toString()),
-    baseIndex: multiCursorIndex.group[multiCursorIndex.idx],
+    groupIndex: parseInt(multiCursorGroup.idx.toString()),
+    baseIndex: multiCursorGroup.list[multiCursorGroup.idx],
     indexList: [multiCursorState.statusIndex],
     get contentText() {
       return this.indexList.map((i) => i + this.baseIndex[0]).join(",");
@@ -1043,6 +1049,7 @@ var multiCursorDecorationOption = (selectionIndex) => {
       nth2
     )
   );
+  increaseIndex();
 };
 var setRangerPointer = (refObject) => (selection, idx) => refObject[idx] = selection;
 var renderMultiCursor = (setDecorations, decorationOption) => (decorationType, idx) => setDecorations(decorationType, decorationOption[idx]);
@@ -1052,23 +1059,29 @@ var increaseIndex = () => {
 };
 var addMultiCursorEntry = (selection) => {
   multiCursorState.selections.push(selection);
+  multiCursorState.currentLine = multiCursorState.selections[multiCursorState.index].end.line;
   selectionStatusFunctionChain[multiCursorText].forEach(functionChainAccumulate(multiCursorStatusRef, multiCursorState.context));
   multiCursorDecorationOption(multiCursorState.index);
-  increaseIndex();
 };
 var multiCursorSelection = (editor2, previousKey) => {
-  multiCursor !== previousKey[0] && (() => {
-    clearBufferOfhexkey(editor2.setDecorations, previousKey);
-    clearMultiCursorState();
-    multiCursorIndex.group.push([0]);
-    multiCursorState.context.editor = editor2;
-    multiCursorState.context.pos = multiCursorState.index;
-    addMultiCursorEntry(editor2.selections[0]);
-    multiCursorState.baseLine = editor2.selections[0].end.line;
-  })();
-  addMultiCursorEntry(editor2.selections[multiCursorState.index]);
-  multiCursorState.selections.forEach(setRangerPointer(rangePointerTable[multiCursorText]));
-  selectionTextBuffer[multiCursorText].forEach(renderMultiCursor(editor2.setDecorations, selectionDecorationOption[multiCursorText]));
+  if (multiCursorState.index + 1 === editor2.selections.length) {
+    console.log("nextOccurence");
+    multiCursor !== previousKey[0] && (() => {
+      clearBufferOfhexkey(editor2.setDecorations, previousKey);
+      clearMultiCursorState();
+      multiCursorState.index = 0;
+      multiCursorGroup.list.push([0]);
+      multiCursorState.context.editor = editor2;
+      multiCursorState.context.pos = multiCursorState.index;
+      multiCursorState.baseLine = editor2.selections[0].end.line;
+      addMultiCursorEntry(editor2.selections[0]);
+    })();
+    addMultiCursorEntry(editor2.selections[multiCursorState.index]);
+    multiCursorState.selections.forEach(setRangerPointer(rangePointerTable[multiCursorText]));
+    selectionTextBuffer[multiCursorText].forEach(renderMultiCursor(editor2.setDecorations, selectionDecorationOption[multiCursorText]));
+  } else {
+    console.log("allOccurence");
+  }
 };
 var clearSelectionTextBuffer = (editor2) => {
   SELECTION_KIND_LIST?.forEach((hexKey) => clearBufferOfhexkey(editor2.setDecorations, [hexKey]));

@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-const rangeMetadata = {
+const rangeMetadata: Record<string, number> = {
     diagnosticLineDelta: 1,
     autoInlineDatumPoint: 0,
     datumPointOfEditor: 0
@@ -68,6 +68,8 @@ const createStartEndRangeOfSelection = (selection: vscode.Selection): vscode.Ran
     createRangeSPEP(selection.start, selection.end);
 
 const blankRange = [] as vscode.Range[];
+
+const emptySelection = (selections: vscode.Selection[]) => selections.find(s => s.isEmpty);
 
 export {
     createRangeNNNN,
