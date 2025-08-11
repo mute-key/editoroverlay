@@ -64,12 +64,15 @@ const createCursorRangeLineAuto = (lineDelta: number) => (editor: vscode.TextEdi
 const createLineRange = (position: vscode.Position): vscode.Range =>
     new vscode.Range(position, position);
 
+const createLineEndSelection = (selection: vscode.Selection): vscode.Selection =>
+    new vscode.Selection(selection.end, selection.end);
+
 const createStartEndRangeOfSelection = (selection: vscode.Selection): vscode.Range =>
     createRangeSPEP(selection.start, selection.end);
 
-const blankRange = [] as vscode.Range[];
+const sortBasedEndLine = (a: vscode.Selection, b:vscode.Selection): number => a.end.line - b.end.line;
 
-const emptySelection = (selections: vscode.Selection[]) => selections.find(s => s.isEmpty);
+const blankRange = [] as vscode.Range[];
 
 export {
     createRangeNNNN,
@@ -80,6 +83,8 @@ export {
     createCursorRangeLine,
     createCursorRangeLineAuto,
     createStartEndRangeOfSelection,
+    createLineEndSelection,
+    sortBasedEndLine,
     blankRange,
     updateRangeMetadata,
     setAutoInlineDatumPoint

@@ -3,7 +3,7 @@ import * as __0x from '../../constant/shared/numeric';
 import { INDENT_INFO, SELECTION_CONTENT_TEXT, SELECTION_KIND_LIST } from '../../constant/shared/object';
 import { BORDER_POSITION_MASK, SELECTION_CONTENT_TEXT_CONFIG_KEY } from '../../constant/config/enum';
 import { DECORATION_OPTION_CONFIG } from '../../constant/config/object';
-import { createLineRange, blankRange } from '../range';
+import { createLineRange, createLineEndSelection, blankRange, sortBasedEndLine } from '../range';
 import { resetDecoration } from '../editor';
 
 import type * as D from '../../type/type.d';
@@ -414,7 +414,7 @@ const multiCursorCounter: Record<string, number> = {
     char: 0,
 };
 
-const clearMultiCursorState = () => {
+const clearMultiCursorState = (): void => {
     LineSelectionBuffer.splice(0);
     multiCursorState.selections = [];
     multiCursorState.index = 1;
@@ -493,11 +493,11 @@ const pushCursorGroup = (): void => {
     multiCursorGroup.list.push([0]);
 };
 
-const appendNthIndex: D.seleciton.Tp.IndexFnSignature = (index: number = 0): void => multiCursorState.indexList.push(index);
+const appendNthIndex: D.Selection.Tp.IndexFnSignature = (index = 0): void => multiCursorState.indexList.push(index);
 
-const prependNthIndex: D.seleciton.Tp.IndexFnSignature = (index: number = 0): void => multiCursorState.indexList.unshift(index);
+const prependNthIndex: D.Selection.Tp.IndexFnSignature = (index = 0): void => multiCursorState.indexList.unshift(index);
 
-const prependNthLastIndex: D.seleciton.Tp.IndexFnSignature = (calibration: number = 0): void => appendNthIndex(multiCursorState.indexList[multiCursorState.indexList.length - 1] + calibration);
+const prependNthLastIndex: D.Selection.Tp.IndexFnSignature = (calibration = 0): void => appendNthIndex(multiCursorState.indexList[multiCursorState.indexList.length - 1] + calibration);
 
 const duplicateEntryStep: Record<number, any[]> = {
     [__0x.recurringLine0]: [appendNthIndex],
@@ -508,8 +508,8 @@ const duplicateEntryStep: Record<number, any[]> = {
     [__0x.recurringLine5]: [() => prependNthLastIndex(1), pushCursorIndex,],
     [__0x.recurringLine6]: [pushCursorIndex, () => appendNthIndex(multiCursorState.statusIndex)],
     [__0x.recurringLine7]: [pushCursorIndex, () => appendNthIndex(multiCursorState.statusIndex)],
-    [__0x.recurringLine8]: [pushCursorIndex, () => prependNthIndex()],
-    [__0x.recurringLine9]: [pushCursorGroup, pushCursorIndex, () => { prependNthIndex(); multiCursorState.statusIndex = 1; multiCursorState.baseLine = multiCursorState.currentLine; }]
+    [__0x.recurringLine8]: [pushCursorIndex, prependNthIndex],
+    [__0x.recurringLine9]: [pushCursorGroup, pushCursorIndex, prependNthIndex, () => { ; multiCursorState.statusIndex = 1; multiCursorState.baseLine = multiCursorState.currentLine; }]
 };
 
 const nonDuplicateEntryStep: Record<number, any[]> = {
@@ -531,7 +531,7 @@ const nonDuplicateSelectionSignature = (): number => {
         + ((multiCursorGroup.idx > 0) ? __0x.MULTI_CURSOR_SELECTION_SIGNATURE.INDEX_SHIFTED : 0);
 };
 
-const fnStep = (fn: D.seleciton.Tp.IndexFnSignature): void => fn();
+const fnStep = (fn: D.Selection.Tp.IndexFnSignature): void => fn();
 
 /**
  * 
@@ -585,51 +585,72 @@ const increaseIndex = (): void => {
     multiCursorState.statusIndex++;
 };
 
-/**
- * 1. 한번에 모든 같은 단어선택 
- * 2. 다음 같은선택 
- * 3. 멀티커서 에딧모드 
- * 
- * @param selection 
- */
-
-const nextOccurence = () => {
-
+const prepareMultiCursor = (editor: vscode.TextEditor, baseLine: number): void => {
+    multiCursorState.index = 0;
+    multiCursorGroup.list.push([0]);
+    multiCursorState.context.editor = editor;
+    multiCursorState.context.pos = multiCursorState.index;
+    multiCursorState.baseLine = baseLine;
 };
 
-const allOccurence = () => {
-
-};
-
-const addMultiCursorEntry = (selection: vscode.Selection): void => {
+const addMultiCursorSelection = (selection: vscode.Selection): void => {
     multiCursorState.selections.push(selection);
     multiCursorState.currentLine = multiCursorState.selections[multiCursorState.index].end.line;
     selectionStatusFunctionChain[__0x.multiCursorText].forEach(functionChainAccumulate(multiCursorStatusRef, multiCursorState.context));
     multiCursorDecorationOption(multiCursorState.index);
 };
 
+const addMultiCursorEdit = () => {
+    // @TODO
+};
+
+
 const multiCursorSelection = (editor: vscode.TextEditor, previousKey: number[]): void => {
 
-    if (multiCursorState.index + 1 === editor.selections.length) {        
-        console.log('nextOccurence');
+    if (multiCursorState.index + 1 === editor.selections.length) {
+        /**
+         * next occurence selection
+         */
+        if (editor.selections[multiCursorState.index].isEmpty) {
+            if (!editor.selections[multiCursorState.index - 1].isEmpty) {
+                clearBufferOfhexkey(editor.setDecorations, previousKey);
+                editor.selections = [...editor.selections].sort(sortBasedEndLine).map(createLineEndSelection);
+                addMultiCursorEdit(); // add edit mode overlay
+                return;
+            }
+        }
+
         __0x.multiCursor !== previousKey[0] && (() => {
             clearBufferOfhexkey(editor.setDecorations, previousKey);
             clearMultiCursorState();
-            multiCursorState.index = 0;
-            multiCursorGroup.list.push([0]);
-            multiCursorState.context.editor = editor;
-            multiCursorState.context.pos = multiCursorState.index;
-            multiCursorState.baseLine = editor.selections[0].end.line;
-            addMultiCursorEntry(editor.selections[0]);
+            prepareMultiCursor(editor, editor.selections[0].end.line);
+            addMultiCursorSelection(editor.selections[0]);
         })();
 
-        addMultiCursorEntry(editor.selections[multiCursorState.index]);
+        addMultiCursorSelection(editor.selections[multiCursorState.index]);
         multiCursorState.selections.forEach(setRangerPointer(rangePointerTable[__0x.multiCursorText] as vscode.Range[]));
         selectionTextBuffer[__0x.multiCursorText].forEach(renderMultiCursor(editor.setDecorations, selectionDecorationOption[__0x.multiCursorText]));
     } else {
-        
+        /**
+         * cursors on end of selected lines
+         */
+        if (editor.selections[multiCursorState.index].isEmpty) {
+            if (editor.selections[multiCursorState.index].isSingleLine) {
+                addMultiCursorEdit(); // add edit mode overlay
+                return;
+            } else {
+                // @TODO
+                // return;
+            }
+        }
 
-        console.log('allOccurence');
+        clearBufferOfhexkey(editor.setDecorations, previousKey);
+        clearMultiCursorState();
+        editor.selections = [...editor.selections].sort(sortBasedEndLine);
+        prepareMultiCursor(editor, editor.selections[0].end.line);
+        editor.selections.forEach(addMultiCursorSelection);
+        editor.selections.forEach(setRangerPointer(rangePointerTable[__0x.multiCursorText] as vscode.Range[]));
+        selectionTextBuffer[__0x.multiCursorText].forEach(renderMultiCursor(editor.setDecorations, selectionDecorationOption[__0x.multiCursorText]));
     }
 };
 
@@ -690,3 +711,7 @@ export {
     syncrefernceTable,
     multiCursorPosition
 };
+
+function convertRangeToCursor(value: Selection, index: number, array: Selection[]): Selection {
+    throw new Error('Function not implemented.');
+}

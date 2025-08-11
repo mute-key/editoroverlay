@@ -555,6 +555,8 @@ var createCursorRangeLineAuto = (lineDelta) => (editor2) => {
   return editor2.document.lineAt(editor2.selection.end.line + (checkEndOfDocDelta(editor2, lineDelta) ? 0 : checkRangeLengthDatum(editor2, lineDelta) ? 0 : 1)).range;
 };
 var createLineRange = (position) => new vscode2.Range(position, position);
+var createLineEndSelection = (selection) => new vscode2.Selection(selection.end, selection.end);
+var sortBasedEndLine = (a, b) => a.end.line - b.end.line;
 var blankRange = [];
 
 // src/editor/editor.ts
@@ -997,9 +999,9 @@ var duplicateEntryStep = {
   [recurringLine5]: [() => prependNthLastIndex(1), pushCursorIndex],
   [recurringLine6]: [pushCursorIndex, () => appendNthIndex(multiCursorState.statusIndex)],
   [recurringLine7]: [pushCursorIndex, () => appendNthIndex(multiCursorState.statusIndex)],
-  [recurringLine8]: [pushCursorIndex, () => prependNthIndex()],
-  [recurringLine9]: [pushCursorGroup, pushCursorIndex, () => {
-    prependNthIndex();
+  [recurringLine8]: [pushCursorIndex, prependNthIndex],
+  [recurringLine9]: [pushCursorGroup, pushCursorIndex, prependNthIndex, () => {
+    ;
     multiCursorState.statusIndex = 1;
     multiCursorState.baseLine = multiCursorState.currentLine;
   }]
@@ -1057,30 +1059,55 @@ var increaseIndex = () => {
   multiCursorState.index++;
   multiCursorState.statusIndex++;
 };
-var addMultiCursorEntry = (selection) => {
+var prepareMultiCursor = (editor2, baseLine) => {
+  multiCursorState.index = 0;
+  multiCursorGroup.list.push([0]);
+  multiCursorState.context.editor = editor2;
+  multiCursorState.context.pos = multiCursorState.index;
+  multiCursorState.baseLine = baseLine;
+};
+var addMultiCursorSelection = (selection) => {
   multiCursorState.selections.push(selection);
   multiCursorState.currentLine = multiCursorState.selections[multiCursorState.index].end.line;
   selectionStatusFunctionChain[multiCursorText].forEach(functionChainAccumulate(multiCursorStatusRef, multiCursorState.context));
   multiCursorDecorationOption(multiCursorState.index);
 };
+var addMultiCursorEdit = () => {
+};
 var multiCursorSelection = (editor2, previousKey) => {
   if (multiCursorState.index + 1 === editor2.selections.length) {
-    console.log("nextOccurence");
+    if (editor2.selections[multiCursorState.index].isEmpty) {
+      if (!editor2.selections[multiCursorState.index - 1].isEmpty) {
+        clearBufferOfhexkey(editor2.setDecorations, previousKey);
+        editor2.selections = [...editor2.selections].sort(sortBasedEndLine).map(createLineEndSelection);
+        addMultiCursorEdit();
+        return;
+      }
+    }
     multiCursor !== previousKey[0] && (() => {
       clearBufferOfhexkey(editor2.setDecorations, previousKey);
       clearMultiCursorState();
-      multiCursorState.index = 0;
-      multiCursorGroup.list.push([0]);
-      multiCursorState.context.editor = editor2;
-      multiCursorState.context.pos = multiCursorState.index;
-      multiCursorState.baseLine = editor2.selections[0].end.line;
-      addMultiCursorEntry(editor2.selections[0]);
+      prepareMultiCursor(editor2, editor2.selections[0].end.line);
+      addMultiCursorSelection(editor2.selections[0]);
     })();
-    addMultiCursorEntry(editor2.selections[multiCursorState.index]);
+    addMultiCursorSelection(editor2.selections[multiCursorState.index]);
     multiCursorState.selections.forEach(setRangerPointer(rangePointerTable[multiCursorText]));
     selectionTextBuffer[multiCursorText].forEach(renderMultiCursor(editor2.setDecorations, selectionDecorationOption[multiCursorText]));
   } else {
-    console.log("allOccurence");
+    if (editor2.selections[multiCursorState.index].isEmpty) {
+      if (editor2.selections[multiCursorState.index].isSingleLine) {
+        addMultiCursorEdit();
+        return;
+      } else {
+      }
+    }
+    clearBufferOfhexkey(editor2.setDecorations, previousKey);
+    clearMultiCursorState();
+    editor2.selections = [...editor2.selections].sort(sortBasedEndLine);
+    prepareMultiCursor(editor2, editor2.selections[0].end.line);
+    editor2.selections.forEach(addMultiCursorSelection);
+    editor2.selections.forEach(setRangerPointer(rangePointerTable[multiCursorText]));
+    selectionTextBuffer[multiCursorText].forEach(renderMultiCursor(editor2.setDecorations, selectionDecorationOption[multiCursorText]));
   }
 };
 var clearSelectionTextBuffer = (editor2) => {
