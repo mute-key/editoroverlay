@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as __0x from '../../constant/shared/numeric';
 import * as __$ from '../../constant/shared/symbol';
+import * as regex from '../../collection/regex';
 import { createCursorRange } from '../range';
 import { DIAGNOSTIC_CONTENT_TEXT, DIAGNOSTIC_ENTRY_LIST, DIAGNOSTIC_GLYPH } from '../../constant/shared/object';
 import { DECORATION_OPTION_CONFIG, DIAGNOSTIC_VISIBILITY_CONFIG } from '../../constant/config/object';
@@ -153,24 +154,61 @@ const diagnosticOf = {
     },
 };
 
-type DecorationRenderAfterOption = {
-    contentText?: string | any,
-    color?: string,
-    backgroundColor?: string,
-    fontWeight?: string,
-    fontStyle?: string,
-    textDecoration?: string,
-    margin?: string
-} & {}
 
-type RenderOption = {
-    isWholeLine?: boolean,
-    rangeBehavior?: any,
-    after: {
-    } & DecorationRenderAfterOption
-}
+const okRegex = {
+    allok: regex.allok,
+};
 
-const decorationOptionBuffer: RenderOption = { ...DECORATION_OPTION_CONFIG };
+const problemRegex = {
+    editor: regex.editor,
+    workspace: regex.workspace,
+};
+
+const notationRegex = {
+    pre: regex.prefix,
+    post: regex.postfix,
+};
+
+const warningTotalRegex = {
+    wrn: regex.warning,
+};
+
+const sourceRegex = {
+    src: regex.source,
+};
+
+const errorTotalRegex = {
+    err: regex.error,
+};
+
+const diagnosticTextRegex: Record<string, D.Regex.Tp.DiagnosticContentTextUnion> = {
+    [DIAGNOSTIC_CONTENT_TEXT_KEY.PLACEHOLDER_PROBLEM_CONTENT_TEXT]: problemRegex,
+    [DIAGNOSTIC_CONTENT_TEXT_KEY.PLACEHOLDER_ALL_OK_CONTENT_TEXT]: okRegex,
+    [DIAGNOSTIC_CONTENT_TEXT_KEY.OK_ALL_CONTENT_TEXT]: notationRegex,
+    [DIAGNOSTIC_CONTENT_TEXT_KEY.OK_WORKSPACE_CONTENT_TEXT]: notationRegex,
+    [DIAGNOSTIC_CONTENT_TEXT_KEY.OK_EDITOR_CONTENT_TEXT]: notationRegex,
+    [DIAGNOSTIC_CONTENT_TEXT_KEY.WARNING_WORKSPACE_CONTENT_TEXT]: {
+        ...notationRegex,
+        ...sourceRegex,
+        ...warningTotalRegex
+    },
+    [DIAGNOSTIC_CONTENT_TEXT_KEY.WARNING_EDITOR_CONTENT_TEXT]: {
+        ...notationRegex,
+        ...warningTotalRegex,
+    },
+    [DIAGNOSTIC_CONTENT_TEXT_KEY.ERROR_WORKSPACE_CONTENT_TEXT]: {
+        ...notationRegex,
+        ...sourceRegex,
+        ...errorTotalRegex
+    },
+    [DIAGNOSTIC_CONTENT_TEXT_KEY.ERROR_EDITOR_CONTENT_TEXT]: {
+        ...notationRegex,
+        ...errorTotalRegex
+    }
+};
+
+
+const decorationOptionBuffer: D.Diagnostic.Intf.RenderOption = { ...DECORATION_OPTION_CONFIG };
 
 const stateBuffer: (number | number[])[] = [0, 0, [], 0, [], 0, 0, 0, 0, 0];
 
@@ -249,4 +287,5 @@ export {
     clearDiagnosticTextState,
     clearDiagnosticText,
     diagnosticInfo,
+    diagnosticTextRegex
 };

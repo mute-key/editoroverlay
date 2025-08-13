@@ -144,6 +144,23 @@ declare namespace Intf {
         state: number[][],
         line: number
     }
+
+    interface DecorationRenderAfterOption {
+        contentText?: string | any,
+        color?: string,
+        backgroundColor?: string,
+        fontWeight?: string,
+        fontStyle?: string,
+        textDecoration?: string,
+        margin?: string
+    } 
+
+    interface RenderOption {
+        isWholeLine?: boolean,
+        rangeBehavior?: any,
+        after: {
+        } & DecorationRenderAfterOption
+    }
 }
 
 declare namespace Tp {

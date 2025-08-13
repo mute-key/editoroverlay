@@ -159,6 +159,7 @@ export const enum SELECTION_CONTENT_TEXT_CONFIG_KEY {
     MULTI_LINE_CURSOR_TEXT = "multiLineCursorText",
     MULTI_LINE_ANCHOR_TEXT = "multiLineAnchorText",
     MULTI_CURSOR_TEXT = "multiCursorText",
+    MULTI_CURSOR_EDIT = "multiCursorEdit",
 }
 
 export const enum DIAGNOSTIC_SEVERITY_KEY {

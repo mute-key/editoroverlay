@@ -1,8 +1,7 @@
-import * as regex from '../../collection/regex';
 import * as __0x from '../../constant/shared/numeric';
 import { CONFIG_SECTION, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_NUMLINK, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE } from '../../constant/config/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
-import { bindStatusContentTextState, multiCursorPosition, setSelectionTextbuffer, syncrefernceTable } from '../../editor/status/selection';
+import { bindStatusContentTextState, multiCursorPosition, SelectionTextRegex, setSelectionTextbuffer, syncRefernceTable } from '../../editor/status/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 import { isEntriesEqual } from '../../util/util';
 
@@ -39,13 +38,13 @@ const createSharedObjectSync = (textOftarget, textOfSource: any) => {
     const cursorOnly = Object.entries(textOfSource.cursorOnlyText.position);
     cursorOnly.forEach(([pos, placeholder]) => {
         const referenceObject = textOftarget[__0x.cursorOnlyText].contentText[pos].after;
-        syncrefernceTable(placeholder as string, __0x.cursorOnly, referenceObject);
+        syncRefernceTable(placeholder as string, __0x.cursorOnly, referenceObject);
     });
 
     const singleLine = Object.entries(textOfSource.singleLineText.position);
     singleLine.forEach(([pos, placeholder]) => {
         const referenceObject = textOftarget[__0x.singleLineText].contentText[pos].after;
-        syncrefernceTable(placeholder as string, __0x.singleLine, referenceObject);
+        syncRefernceTable(placeholder as string, __0x.singleLine, referenceObject);
     });
 
     const anchor = Object.entries(textOfSource.multiLineAnchorText.position);
@@ -54,7 +53,7 @@ const createSharedObjectSync = (textOftarget, textOfSource: any) => {
         anchor.forEach(([pos, placeholder], idx) => {
             const referenceObject = textOftarget[__0x.multiLineAnchorText].contentText[pos].after;
             textOftarget[__0x.multiLineCursorText].contentText[pos].after = referenceObject;
-            syncrefernceTable(placeholder as string, __0x.multiLine, referenceObject);
+            syncRefernceTable(placeholder as string, __0x.multiLine, referenceObject);
         });
     } else {
         // should error
@@ -63,13 +62,12 @@ const createSharedObjectSync = (textOftarget, textOfSource: any) => {
     const multiCursor = Object.entries(textOfSource.multiCursorText.position);
     multiCursor.forEach(([pos, placeholder]) => {
         const referenceObject = textOftarget[__0x.multiCursorText].contentText[pos].after;
-        syncrefernceTable(placeholder as string, __0x.multiCursor, referenceObject);
+        syncRefernceTable(placeholder as string, __0x.multiCursor, referenceObject);
         multiCursorPosition(placeholder as string, pos as unknown as number);
     });
 };
 
 const buildStatusTextState = (textOftarget, textOfSource: D.Status.Intf.StatusContentTextBuffer, SelectionDecorationStyle, leftMargin): void => {
-
 
     Object.entries(textOfSource).forEach(([key, textPosition], idx) => {
         const contentTextStyled = convertPositionToDecorationRenderOption(textPosition, SelectionDecorationStyle);;
@@ -89,12 +87,14 @@ const buildStatusTextState = (textOftarget, textOfSource: D.Status.Intf.StatusCo
     const singleLineText = textOftarget[__0x.singleLineText];
     const multiLineAnchorText = textOftarget[__0x.multiLineAnchorText];
     const multiCursorText = textOftarget[__0x.multiCursorText];
+    const multiCursorEdit = textOftarget[__0x.multiCursorEdit];
 
     [
         [__0x.cursorOnlyText, cursorOnlyText.contentText.length, cursorOnlyText.position],
         [__0x.singleLineText, singleLineText.contentText.length, singleLineText.position],
         [__0x.multiLineText, multiLineAnchorText.contentText.length, multiLineAnchorText.position],
-        [__0x.multiCursorText, multiCursorText.contentText.length, multiCursorText.position]
+        [__0x.multiCursorText, multiCursorText.contentText.length, multiCursorText.position],
+        [__0x.multiCursorEdit, multiCursorEdit.contentText.length, multiCursorEdit.position]
     ].forEach(([hexKey, length, placeholder]) => {
         setSelectionTextbuffer(hexKey, length, placeholder);
     });
@@ -115,7 +115,7 @@ const updateSelectionTextConfig = (extenionName: string, configuratioChange: boo
     };
     
     // hm ...
-    workspaceProxyConfiguration(SelectionDecorationConfig, extenionName + '.' + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST, bindToBuffer, regex.SelectionTextRegex);
+    workspaceProxyConfiguration(SelectionDecorationConfig, extenionName + '.' + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST, bindToBuffer, SelectionTextRegex);
     buildSelectionTextDecorationRenderOption(SelectionDecorationConfig, SelectionDecorationStyle);
     buildStatusTextState(bindTo.textOf, bindToBuffer.textOf, SelectionDecorationStyle, SelectionDecorationConfig.leftMargin);
 

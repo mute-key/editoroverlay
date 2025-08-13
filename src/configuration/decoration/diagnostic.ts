@@ -8,7 +8,7 @@ import { convertToDecorationRenderOption, setContentTextOnDecorationRenderOption
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { sanitizeConfigValue } from '../shared/validation';
 import { createCursorRange, createCursorRangeLine, createCursorRangeLineAuto, setAutoInlineDatumPoint } from '../../editor/range';
-import { bindDiagnosticContentTextState, clearDiagnosticTextState, composeRenderOption, initializeStateBuffer, setDiagonosticTextbuffer } from '../../editor/status/diagnostic';
+import { bindDiagnosticContentTextState, clearDiagnosticTextState, composeRenderOption, diagnosticTextRegex, initializeStateBuffer, setDiagonosticTextbuffer } from '../../editor/status/diagnostic';
 import { setOverrideDigit } from '../../diagnostic/diagnostic';
 import { hexToRgbaStringLiteral, readBits } from '../../util/util';
 
@@ -361,7 +361,7 @@ const updateDiagnosticTextConfig = async (extenionName: string, configuratioChan
         clearDiagnosticTextState();
     }
 
-    workspaceProxyConfiguration(diagnosticConfig, extenionName + '.' + CONFIG_SECTION.diagnosticText, DIAGNOSTIC_CONTENT_TEXT_LIST, bindToBuffer, regex.diagnosticTextRegex);
+    workspaceProxyConfiguration(diagnosticConfig, extenionName + '.' + CONFIG_SECTION.diagnosticText, DIAGNOSTIC_CONTENT_TEXT_LIST, bindToBuffer, diagnosticTextRegex);
     const placeholderDigit = diagnosticConfig.visibility.overrideAllOk ? __0x.allOkOverride : __0x.allOkNoOverride;
     const diagnosticBiome = diagnosticVisibilityBiome(diagnosticConfig.visibility);
     const decorationStyleList = decorationStyleFromBiome(diagnosticBiome.workspace | diagnosticBiome.editor);

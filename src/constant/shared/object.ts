@@ -70,6 +70,7 @@ export const SELECTION_CONTENT_TEXT = {
     [__0x.multiLineCursorText]: undefined,
     [__0x.multiLineAnchorText]: undefined,
     [__0x.multiCursorText]: undefined,
+    [__0x.multiCursorEdit]: undefined,
 } as const;
 
 export const DIAGNOSTIC_CONTENT_TEXT = {

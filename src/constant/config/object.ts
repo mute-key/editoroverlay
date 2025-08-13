@@ -38,6 +38,7 @@ export const SELECTION_CONTENT_TEXT_NUMLINK = {
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: __0x.multiLineCursorText,
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: __0x.multiLineAnchorText,
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: __0x.multiCursorText,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_EDIT]: __0x.multiCursorEdit,
 } as const;
 
 export const SELECTION_DECORAITON_CONFIG = {
@@ -54,6 +55,7 @@ export const SELECTION_DECORAITON_CONFIG = {
     multiLineCursorText: undefined,
     multiLineAnchorText: undefined,
     multiCursorText: undefined,
+    multiCursorEdit: undefined,
     selectionCountTextStyle: {
         ln: undefined,
         col: undefined,
@@ -82,6 +84,7 @@ export const SELECTION_CONTENT_TEXT_LIST: D.Common.Tp.TextList = [
     "multiLineCursorText",
     "multiLineAnchorText",
     "multiCursorText",
+    "multiCursorEdit",
 ] as const;
 
 export const SELECTION_DECORATION_STYLE = {

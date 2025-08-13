@@ -65,11 +65,11 @@ declare namespace Intf {
     }
 
     interface RegexStatusContentText {
-        [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: Regex.Intf.CursorOnlyStatusText
-        [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: Regex.Intf.SingleLineStatusText
-        [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: Regex.Intf.MultiLineCursorStatusText
-        [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: Regex.Intf.MultiLineAnchorStatusText
-        [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: Regex.Intf.MultiCursorStatusText
+        [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: Regex.Intf.CursorOnlyText
+        [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: Regex.Intf.SingleLineText
+        [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: Regex.Intf.MultiLineCursorText
+        [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: Regex.Intf.MultiLineAnchorText
+        [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: Regex.Intf.MultiCursorText
     }
 
     interface SelectionDecorationConfig {
@@ -86,6 +86,7 @@ declare namespace Intf {
         multiLineCursorText?: string,
         multiLineAnchorText?: string,
         multiCursorText?: string,
+        multiCursorEdit?: string,
         selectionCountTextStyle: {
             ln?: string,
             col?: string,

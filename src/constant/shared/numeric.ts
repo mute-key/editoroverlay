@@ -71,6 +71,8 @@ export const enum HEX_SELECTION_TEXT {
     MULTI_LINE_CURSOR_TEXT = 0x0204,
     MULTI_LINE_ANCHOR_TEXT = 0x0205,
     MULTI_CURSOR_TEXT = 0x0206,
+    MULTI_CURSOR_EDIT = 0x0207,
+    MULTI_CURSOR_SELECT = 0x0208,
 }
 
 export const cursorOnlyText = HEX_SELECTION_TEXT.CURSOR_ONLY_TEXT;
@@ -79,11 +81,13 @@ export const multiLineText = HEX_SELECTION_TEXT.MULTI_LINE_TEXT;
 export const multiLineCursorText = HEX_SELECTION_TEXT.MULTI_LINE_CURSOR_TEXT;
 export const multiLineAnchorText = HEX_SELECTION_TEXT.MULTI_LINE_ANCHOR_TEXT;
 export const multiCursorText = HEX_SELECTION_TEXT.MULTI_CURSOR_TEXT;
+export const multiCursorEdit = HEX_SELECTION_TEXT.MULTI_CURSOR_EDIT;
+// export const multiCursorSelect = HEX_SELECTION_TEXT.MULTI_CURSOR_SELECT;
 
 export const enum HEX_MULTILINE_FN {
-    LC = 0x0207,            // 517
-    CHAR = 0x0208,          // 518
-    CHAR_ONLY = 0x0209,     // 519
+    LC = 0x0210,            // 517
+    CHAR = 0x0211,          // 518
+    CHAR_ONLY = 0x0212,     // 519
 }
 
 export const multiLineLineCountHex = HEX_MULTILINE_FN.LC;
@@ -91,11 +95,11 @@ export const multiLineChararcterHex = HEX_MULTILINE_FN.CHAR;
 export const multiLineChararcterOnlyHex = HEX_MULTILINE_FN.CHAR_ONLY;
 
 export const enum HEX_MULTI_CURSOR_FN {
-    NTH = 0x020A,
-    COUNT = 0x020B,
-    LN = 0x020C,
-    LC = 0x020D,
-    CHAR = 0x020F,
+    NTH = 0x0221,
+    COUNT = 0x0222,
+    LN = 0x0223,
+    LC = 0x0224,
+    CHAR = 0x0225,
 }
 
 export const multiCursorLineNthHex = HEX_MULTI_CURSOR_FN.NTH;

@@ -53,14 +53,15 @@ var multiLineText = 515 /* MULTI_LINE_TEXT */;
 var multiLineCursorText = 516 /* MULTI_LINE_CURSOR_TEXT */;
 var multiLineAnchorText = 517 /* MULTI_LINE_ANCHOR_TEXT */;
 var multiCursorText = 518 /* MULTI_CURSOR_TEXT */;
-var multiLineLineCountHex = 519 /* LC */;
-var multiLineChararcterHex = 520 /* CHAR */;
-var multiLineChararcterOnlyHex = 521 /* CHAR_ONLY */;
-var multiCursorLineNthHex = 522 /* NTH */;
-var multiCursorLineCountHex = 523 /* COUNT */;
-var multiCursorLineLineNumberHex = 524 /* LN */;
-var multiCursorLineLineCountHex = 525 /* LC */;
-var multiCursorLineCharacterHex = 527 /* CHAR */;
+var multiCursorEdit = 519 /* MULTI_CURSOR_EDIT */;
+var multiLineLineCountHex = 528 /* LC */;
+var multiLineChararcterHex = 529 /* CHAR */;
+var multiLineChararcterOnlyHex = 530 /* CHAR_ONLY */;
+var multiCursorLineNthHex = 545 /* NTH */;
+var multiCursorLineCountHex = 546 /* COUNT */;
+var multiCursorLineLineNumberHex = 547 /* LN */;
+var multiCursorLineLineCountHex = 548 /* LC */;
+var multiCursorLineCharacterHex = 549 /* CHAR */;
 var okContentText = 769 /* OK_CONTENT_TEXT */;
 var warningContentText = 770 /* WARNING_CONTENT_TEXT */;
 var errorContentText = 771 /* ERROR_CONTENT_TEXT */;
@@ -147,7 +148,8 @@ var SELECTION_CONTENT_TEXT_NUMLINK = {
   ["singleLineText" /* SINGLE_LINE_TEXT */]: singleLineText,
   ["multiLineCursorText" /* MULTI_LINE_CURSOR_TEXT */]: multiLineCursorText,
   ["multiLineAnchorText" /* MULTI_LINE_ANCHOR_TEXT */]: multiLineAnchorText,
-  ["multiCursorText" /* MULTI_CURSOR_TEXT */]: multiCursorText
+  ["multiCursorText" /* MULTI_CURSOR_TEXT */]: multiCursorText,
+  ["multiCursorEdit" /* MULTI_CURSOR_EDIT */]: multiCursorEdit
 };
 var SELECTION_DECORAITON_CONFIG = {
   enabled: void 0,
@@ -163,6 +165,7 @@ var SELECTION_DECORAITON_CONFIG = {
   multiLineCursorText: void 0,
   multiLineAnchorText: void 0,
   multiCursorText: void 0,
+  multiCursorEdit: void 0,
   selectionCountTextStyle: {
     ln: void 0,
     col: void 0,
@@ -188,7 +191,8 @@ var SELECTION_CONTENT_TEXT_LIST = [
   "singleLineText",
   "multiLineCursorText",
   "multiLineAnchorText",
-  "multiCursorText"
+  "multiCursorText",
+  "multiCursorEdit"
 ];
 var SELECTION_DECORATION_STYLE = {
   leftMargin: void 0,
@@ -472,7 +476,8 @@ var SELECTION_CONTENT_TEXT = {
   [singleLineText]: void 0,
   [multiLineCursorText]: void 0,
   [multiLineAnchorText]: void 0,
-  [multiCursorText]: void 0
+  [multiCursorText]: void 0,
+  [multiCursorEdit]: void 0
 };
 var DIAGNOSTIC_CONTENT_TEXT = {
   [allOkOverride]: [],
@@ -571,51 +576,6 @@ var error = /(\${err})/s;
 var editor = /(\${editor})/s;
 var workspace = /(\${workspace})/s;
 var allok = /(\${allok})/s;
-var okRegex = {
-  allok
-};
-var problemRegex = {
-  editor,
-  workspace
-};
-var notationRegex = {
-  pre: prefix,
-  post: postfix
-};
-var warningTotalRegex = {
-  wrn: warning
-};
-var sourceRegex = {
-  src: source
-};
-var errorTotalRegex = {
-  err: error
-};
-var diagnosticTextRegex = {
-  ["problemPlaceholderContentText" /* PLACEHOLDER_PROBLEM_CONTENT_TEXT */]: problemRegex,
-  ["allOkPlaceholderContentText" /* PLACEHOLDER_ALL_OK_CONTENT_TEXT */]: okRegex,
-  ["allOkContentText" /* OK_ALL_CONTENT_TEXT */]: notationRegex,
-  ["okWorkspaceContentText" /* OK_WORKSPACE_CONTENT_TEXT */]: notationRegex,
-  ["okEditorContentText" /* OK_EDITOR_CONTENT_TEXT */]: notationRegex,
-  ["warningWorkspaceContentText" /* WARNING_WORKSPACE_CONTENT_TEXT */]: {
-    ...notationRegex,
-    ...sourceRegex,
-    ...warningTotalRegex
-  },
-  ["warningEditorContentText" /* WARNING_EDITOR_CONTENT_TEXT */]: {
-    ...notationRegex,
-    ...warningTotalRegex
-  },
-  ["errorWorkspaceContentText" /* ERROR_WORKSPACE_CONTENT_TEXT */]: {
-    ...notationRegex,
-    ...sourceRegex,
-    ...errorTotalRegex
-  },
-  ["errorEditorContentText" /* ERROR_EDITOR_CONTENT_TEXT */]: {
-    ...notationRegex,
-    ...errorTotalRegex
-  }
-};
 var column = /(\${col})/s;
 var zeroColumn = /(\${zCol})/s;
 var lineCount = /(\${lc})/s;
@@ -624,36 +584,6 @@ var character = /(\${char})/s;
 var characterOnly = /(\${charOnly})/s;
 var nth = /(\${nth})/s;
 var selectionCount = /(\${count})/s;
-var SelectionTextRegex = {
-  ["cursorOnlyText" /* CURSOR_ONLY_TEXT */]: {
-    col: column,
-    zCol: zeroColumn,
-    ln: lineNumber
-  },
-  ["singleLineText" /* SINGLE_LINE_TEXT */]: {
-    char: character,
-    ln: lineNumber
-  },
-  ["multiLineCursorText" /* MULTI_LINE_CURSOR_TEXT */]: {
-    lc: lineCount,
-    ln: lineNumber,
-    char: character,
-    charOnly: characterOnly
-  },
-  ["multiLineAnchorText" /* MULTI_LINE_ANCHOR_TEXT */]: {
-    lc: lineCount,
-    ln: lineNumber,
-    char: character,
-    charOnly: characterOnly
-  },
-  ["multiCursorText" /* MULTI_CURSOR_TEXT */]: {
-    nth,
-    count: selectionCount,
-    lc: lineCount,
-    ln: lineNumber,
-    char: character
-  }
-};
 var indentAndEOLRegex = (indentSize) => new RegExp(`^( {${indentSize}}|[\r
 ]+)*`, "gm");
 var ifStringIsResourceScope = /^[%\.].*[%\.]$/s;
@@ -673,13 +603,15 @@ var selectionTextBuffer = {
   [cursorOnlyText]: [],
   [singleLineText]: [],
   [multiLineText]: [],
-  [multiCursorText]: []
+  [multiCursorText]: [],
+  [multiCursorEdit]: []
 };
 var selectionDecorationOption = {
   [cursorOnlyText]: [],
   [singleLineText]: [],
   [multiLineText]: [],
-  [multiCursorText]: []
+  [multiCursorText]: [],
+  [multiCursorEdit]: []
 };
 var rangePointerTable = {
   [cursorOnlyText]: void 0,
@@ -745,7 +677,32 @@ var selectionOf = {
   ["singleLineText" /* SINGLE_LINE_TEXT */]: { ...lineNumber2, ...characterCount },
   ["multiLineCursorText" /* MULTI_LINE_CURSOR_TEXT */]: { ...lineNumber2, ...multiLineOf },
   ["multiLineAnchorText" /* MULTI_LINE_ANCHOR_TEXT */]: { ...lineNumber2, ...multiLineOf },
-  ["multiCursorText" /* MULTI_CURSOR_TEXT */]: multiCursorOf
+  ["multiCursorText" /* MULTI_CURSOR_TEXT */]: multiCursorOf,
+  ["multiCursorEdit" /* MULTI_CURSOR_EDIT */]: { ...columns, ...multiCursorOf }
+};
+var cols = {
+  col: column,
+  zCol: zeroColumn
+};
+var line = {
+  char: character,
+  ln: lineNumber
+};
+var lineExtra = {
+  lc: lineCount,
+  charOnly: characterOnly
+};
+var cursor = {
+  nth,
+  count: selectionCount
+};
+var SelectionTextRegex = {
+  ["cursorOnlyText" /* CURSOR_ONLY_TEXT */]: { ...cols, ...line },
+  ["singleLineText" /* SINGLE_LINE_TEXT */]: { ...line },
+  ["multiLineCursorText" /* MULTI_LINE_CURSOR_TEXT */]: { ...line, ...lineExtra },
+  ["multiLineAnchorText" /* MULTI_LINE_ANCHOR_TEXT */]: { ...line, ...lineExtra },
+  ["multiCursorText" /* MULTI_CURSOR_TEXT */]: { ...cursor, ...line, ...lineExtra },
+  ["multiCursorEdit" /* MULTI_CURSOR_EDIT */]: { ...cursor, ...cols, ...line }
 };
 var composeRenderOption = (hexKey, contentText) => {
   return {
@@ -755,16 +712,43 @@ var composeRenderOption = (hexKey, contentText) => {
     renderOptions: contentText
   };
 };
-var setDeocorationOption = (hexKey) => {
-  selectionContentText[hexKey].contentText.forEach((contentText) => {
-    selectionDecorationOption[hexKey].push([composeRenderOption(hexKey, contentText)]);
+var setDeocorationOption = (hexKey, renderOptionHex) => {
+  selectionTextBuffer[hexKey].forEach((option, idx) => {
+    const renderOption = [];
+    renderOptionHex?.forEach((hex) => {
+      renderOption.push(composeRenderOption(hex, selectionContentText[hex].contentText[idx]));
+    });
+    selectionDecorationOption[hexKey].push(renderOption);
   });
 };
 var selectionStatusFunctionChain = {
   [cursorOnlyText]: [],
   [singleLineText]: [],
   [multiLineText]: [],
-  [multiCursorText]: []
+  [multiCursorText]: [],
+  [multiCursorEdit]: []
+};
+var selectionStatusDecorationOption = {
+  [cursorOnlyText]: {
+    renderOptionHex: [cursorOnlyText],
+    fnObject: { ...lineNumber2, ...columns }
+  },
+  [singleLineText]: {
+    renderOptionHex: [singleLineText],
+    fnObject: { ...lineNumber2, ...characterCount }
+  },
+  [multiLineText]: {
+    renderOptionHex: [multiLineAnchorText, multiLineCursorText],
+    fnObject: { ...lineNumber2, ...multiLineFn }
+  },
+  [multiCursorText]: {
+    renderOptionHex: [multiCursorText],
+    fnObject: { ...multiCursorFn }
+  },
+  [multiCursorEdit]: {
+    renderOptionHex: [multiCursorEdit],
+    fnObject: { ...lineNumber2, ...multiCursorFn }
+  }
 };
 var buildFunctionChain = (hexKey, placehoder, statusFunciton) => {
   placehoder.forEach((position) => {
@@ -781,39 +765,14 @@ var setSelectionTextbuffer = (hexKey, length, placeholder) => {
     const decorationType = vscode3.window.createTextEditorDecorationType(decorationOptionBuffer);
     selectionTextBuffer[hexKey].push(decorationType);
   }
-  selectionDecorationOption[hexKey]?.splice(0);
-  switch (hexKey) {
-    case cursorOnlyText:
-      setDeocorationOption(hexKey);
-      buildFunctionChain(hexKey, placeholder, { ...lineNumber2, ...columns });
-      break;
-    case singleLineText:
-      setDeocorationOption(hexKey);
-      buildFunctionChain(hexKey, placeholder, { ...lineNumber2, ...characterCount });
-      break;
-    case multiLineText:
-      selectionDecorationOption[hexKey].length = length;
-      selectionDecorationOption[hexKey].fill([]);
-      selectionTextBuffer[hexKey].forEach((option, idx) => {
-        selectionDecorationOption[hexKey][idx] = [];
-        selectionDecorationOption[hexKey][idx].push(
-          composeRenderOption(multiLineAnchorText, selectionContentText[multiLineAnchorText].contentText[idx]),
-          composeRenderOption(multiLineCursorText, selectionContentText[multiLineCursorText].contentText[idx])
-        );
-      });
-      buildFunctionChain(hexKey, placeholder, { ...lineNumber2, ...multiLineFn });
-      break;
-    case multiCursorText:
-      selectionContentText[hexKey].contentText.forEach(() => {
-        selectionDecorationOption[hexKey].push([]);
-      });
-      buildFunctionChain(hexKey, placeholder, { ...multiCursorFn });
-      break;
-    default:
-      break;
+  if (selectionDecorationOption[hexKey].length > 0) {
+    selectionDecorationOption[hexKey] = [];
   }
+  const option = selectionStatusDecorationOption[hexKey];
+  setDeocorationOption(hexKey, option.renderOptionHex);
+  buildFunctionChain(hexKey, placeholder, option.fnObject);
 };
-var syncrefernceTable = (placehoder, hexKey, refObj) => {
+var syncRefernceTable = (placehoder, hexKey, refObj) => {
   switch (hexKey) {
     case cursorOnly:
       cursorOnlyStatusRef[placehoder] = refObj;
@@ -1299,18 +1258,18 @@ var clearDiagnosticTextState = () => {
   }
 };
 var diagnosticVisibility = { ...DIAGNOSTIC_VISIBILITY_CONFIG };
-var problemLineGlyph = (lineNumber3, line) => {
+var problemLineGlyph = (lineNumber3, line2) => {
   const linePosition = [];
   let length = lineNumber3.length;
   let up = false;
   let down = false;
   let equal = false;
   while (length--) {
-    if (lineNumber3[length] > line && !down) {
+    if (lineNumber3[length] > line2 && !down) {
       down = true;
-    } else if (lineNumber3[length] < line && !up) {
+    } else if (lineNumber3[length] < line2 && !up) {
       up = true;
-    } else if (lineNumber3[length] === line && !equal) {
+    } else if (lineNumber3[length] === line2 && !equal) {
       equal = true;
       down = false;
       up = false;
@@ -1366,6 +1325,51 @@ var diagnosticOf = {
     wrn: workspaceWarningTotal
   }
 };
+var okRegex = {
+  allok
+};
+var problemRegex = {
+  editor,
+  workspace
+};
+var notationRegex = {
+  pre: prefix,
+  post: postfix
+};
+var warningTotalRegex = {
+  wrn: warning
+};
+var sourceRegex = {
+  src: source
+};
+var errorTotalRegex = {
+  err: error
+};
+var diagnosticTextRegex = {
+  ["problemPlaceholderContentText" /* PLACEHOLDER_PROBLEM_CONTENT_TEXT */]: problemRegex,
+  ["allOkPlaceholderContentText" /* PLACEHOLDER_ALL_OK_CONTENT_TEXT */]: okRegex,
+  ["allOkContentText" /* OK_ALL_CONTENT_TEXT */]: notationRegex,
+  ["okWorkspaceContentText" /* OK_WORKSPACE_CONTENT_TEXT */]: notationRegex,
+  ["okEditorContentText" /* OK_EDITOR_CONTENT_TEXT */]: notationRegex,
+  ["warningWorkspaceContentText" /* WARNING_WORKSPACE_CONTENT_TEXT */]: {
+    ...notationRegex,
+    ...sourceRegex,
+    ...warningTotalRegex
+  },
+  ["warningEditorContentText" /* WARNING_EDITOR_CONTENT_TEXT */]: {
+    ...notationRegex,
+    ...warningTotalRegex
+  },
+  ["errorWorkspaceContentText" /* ERROR_WORKSPACE_CONTENT_TEXT */]: {
+    ...notationRegex,
+    ...sourceRegex,
+    ...errorTotalRegex
+  },
+  ["errorEditorContentText" /* ERROR_EDITOR_CONTENT_TEXT */]: {
+    ...notationRegex,
+    ...errorTotalRegex
+  }
+};
 var decorationOptionBuffer2 = { ...DECORATION_OPTION_CONFIG };
 var stateBuffer = [0, 0, [], 0, [], 0, 0, 0, 0, 0];
 var initializeStateBuffer = (digit) => {
@@ -1383,8 +1387,8 @@ var refreshBuffer = (state) => {
   }
 };
 var fnCollection = {
-  [editorWarningTotal]: ({ state, line }) => String(state[3]) + problemLineGlyph(state[2], line),
-  [editorErrorTotal]: ({ state, line }) => String(state[5]) + problemLineGlyph(state[4], line),
+  [editorWarningTotal]: ({ state, line: line2 }) => String(state[3]) + problemLineGlyph(state[2], line2),
+  [editorErrorTotal]: ({ state, line: line2 }) => String(state[5]) + problemLineGlyph(state[4], line2),
   [workspaceWarningSource]: ({ state }) => String(state[6]),
   [workspaceWarningTotal]: ({ state }) => String(state[7]),
   [workspaceErrorSource]: ({ state }) => String(state[8]),
@@ -2130,27 +2134,27 @@ var createSharedObjectSync = (textOftarget, textOfSource) => {
   const cursorOnly2 = Object.entries(textOfSource.cursorOnlyText.position);
   cursorOnly2.forEach(([pos, placeholder]) => {
     const referenceObject = textOftarget[cursorOnlyText].contentText[pos].after;
-    syncrefernceTable(placeholder, cursorOnly, referenceObject);
+    syncRefernceTable(placeholder, cursorOnly, referenceObject);
   });
   const singleLine2 = Object.entries(textOfSource.singleLineText.position);
   singleLine2.forEach(([pos, placeholder]) => {
     const referenceObject = textOftarget[singleLineText].contentText[pos].after;
-    syncrefernceTable(placeholder, singleLine, referenceObject);
+    syncRefernceTable(placeholder, singleLine, referenceObject);
   });
   const anchor = Object.entries(textOfSource.multiLineAnchorText.position);
-  const cursor = Object.entries(textOfSource.multiLineCursorText.position);
-  if (isEntriesEqual(anchor, cursor)) {
+  const cursor2 = Object.entries(textOfSource.multiLineCursorText.position);
+  if (isEntriesEqual(anchor, cursor2)) {
     anchor.forEach(([pos, placeholder], idx) => {
       const referenceObject = textOftarget[multiLineAnchorText].contentText[pos].after;
       textOftarget[multiLineCursorText].contentText[pos].after = referenceObject;
-      syncrefernceTable(placeholder, multiLine, referenceObject);
+      syncRefernceTable(placeholder, multiLine, referenceObject);
     });
   } else {
   }
   const multiCursor2 = Object.entries(textOfSource.multiCursorText.position);
   multiCursor2.forEach(([pos, placeholder]) => {
     const referenceObject = textOftarget[multiCursorText].contentText[pos].after;
-    syncrefernceTable(placeholder, multiCursor, referenceObject);
+    syncRefernceTable(placeholder, multiCursor, referenceObject);
     multiCursorPosition(placeholder, pos);
   });
 };
@@ -2173,11 +2177,13 @@ var buildStatusTextState = (textOftarget, textOfSource, SelectionDecorationStyle
   const singleLineText2 = textOftarget[singleLineText];
   const multiLineAnchorText2 = textOftarget[multiLineAnchorText];
   const multiCursorText2 = textOftarget[multiCursorText];
+  const multiCursorEdit2 = textOftarget[multiCursorEdit];
   [
     [cursorOnlyText, cursorOnlyText2.contentText.length, cursorOnlyText2.position],
     [singleLineText, singleLineText2.contentText.length, singleLineText2.position],
     [multiLineText, multiLineAnchorText2.contentText.length, multiLineAnchorText2.position],
-    [multiCursorText, multiCursorText2.contentText.length, multiCursorText2.position]
+    [multiCursorText, multiCursorText2.contentText.length, multiCursorText2.position],
+    [multiCursorEdit, multiCursorEdit2.contentText.length, multiCursorEdit2.position]
   ].forEach(([hexKey, length, placeholder]) => {
     setSelectionTextbuffer(hexKey, length, placeholder);
   });

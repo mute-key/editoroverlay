@@ -413,15 +413,24 @@
                     },
                     "cursorlinehighlight.selectionText.multiCursorText": {
                         "type": "string",
-                        "default": "%placeholder.selectionText.multiCursorText.default%",
+                        "default": "%placeholder.selectionText.multiCursorSelectText.default%",
                         "pattern": "(\t|[\r\n]+)*$",
                         "patternErrorMessage": "Must be a single line text",
-                        "markdownDescription": "%description.selectionText.multiCursorText%",
+                        "markdownDescription": "%description.selectionText.multiCursorSelectText%",
                         "editPresentation": "singlelineText",
                         "order": 13
                     },
+                    "cursorlinehighlight.selectionText.multiCursorEdit": {
+                        "type": "string",
+                        "default": "%placeholder.selectionText.multiCursorEditText.default%",
+                        "pattern": "(\t|[\r\n]+)*$",
+                        "patternErrorMessage": "Must be a single line text",
+                        "markdownDescription": "%description.selectionText.multiCursorEditText%",
+                        "editPresentation": "singlelineText",
+                        "order": 14
+                    },
                     "cursorlinehighlight.selectionText.selectionCountTextStyle": {
-                        "order": 14,
+                        "order": 15,
                         "type": "object",
                         "scope": "resource",
                         "default": {

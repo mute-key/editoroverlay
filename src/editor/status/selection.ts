@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
 import * as __0x from '../../constant/shared/numeric';
+import * as regex from '../../collection/regex';
 import { INDENT_INFO, SELECTION_CONTENT_TEXT, SELECTION_KIND_LIST } from '../../constant/shared/object';
-import { BORDER_POSITION_MASK, SELECTION_CONTENT_TEXT_CONFIG_KEY } from '../../constant/config/enum';
+import { SELECTION_CONTENT_TEXT_CONFIG_KEY } from '../../constant/config/enum';
 import { DECORATION_OPTION_CONFIG } from '../../constant/config/object';
 import { createLineRange, createLineEndSelection, blankRange, sortBasedEndLine } from '../range';
 import { resetDecoration } from '../editor';
@@ -32,9 +33,9 @@ const selectionTextBuffer: Record<number, vscode.TextEditorDecorationType[]> = {
     [__0x.cursorOnlyText]: [],
     [__0x.singleLineText]: [],
     [__0x.multiLineText]: [],
-    [__0x.multiCursorText]: []
+    [__0x.multiCursorText]: [],
+    [__0x.multiCursorEdit]: []
 };
-
 
 /**
  * object that will store render options 
@@ -43,7 +44,8 @@ const selectionDecorationOption: Record<number, any[] | [][] | [D.Decoration.Int
     [__0x.cursorOnlyText]: [],
     [__0x.singleLineText]: [],
     [__0x.multiLineText]: [],
-    [__0x.multiCursorText]: []
+    [__0x.multiCursorText]: [],
+    [__0x.multiCursorEdit]: []
 };
 
 const rangePointerTable: Record<number, undefined | [] | vscode.Range | vscode.Range[]> = {
@@ -170,6 +172,36 @@ const selectionOf: D.Status.Tp.ContentTextState = {
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: { ...lineNumber, ...multiLineOf },
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: { ...lineNumber, ...multiLineOf },
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: multiCursorOf,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_EDIT]: { ...columns, ...multiCursorOf },
+};
+
+const cols: Record<string, RegExp> = {
+    col: regex.column,
+    zCol: regex.zeroColumn,
+};
+
+const line: Record<string, RegExp> = {
+    char: regex.character,
+    ln: regex.lineNumber
+};
+
+const lineExtra: Record<string, RegExp> = {
+    lc: regex.lineCount,
+    charOnly: regex.characterOnly
+};
+
+const cursor: Record<string, RegExp> = {
+    nth: regex.nth,
+    count: regex.selectionCount,
+};
+
+const SelectionTextRegex: Record<string, Record<string, RegExp>> = {
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: { ...cols, ...line, },
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: { ...line },
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: { ...line, ...lineExtra },
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: { ...line, ...lineExtra },
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: { ...cursor, ...line, ...lineExtra },
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_EDIT]: { ...cursor, ...cols, ...line },
 };
 
 const composeRenderOption = (hexKey: any, contentText: any): D.Decoration.Intf.RenderOption => {
@@ -181,17 +213,46 @@ const composeRenderOption = (hexKey: any, contentText: any): D.Decoration.Intf.R
     };
 };
 
-const setDeocorationOption = (hexKey: number) => {
-    selectionContentText[hexKey].contentText.forEach((contentText) => {
-        selectionDecorationOption[hexKey].push([composeRenderOption(hexKey, contentText)]);
+const setDeocorationOption = (hexKey: number, renderOptionHex?: number[]): void => {
+    selectionTextBuffer[hexKey].forEach((option, idx) => {
+        const renderOption: any = [];
+        renderOptionHex?.forEach(hex => {
+            renderOption.push(composeRenderOption(hex, selectionContentText[hex].contentText[idx]));
+        });
+        selectionDecorationOption[hexKey].push(renderOption);
     });
 };
 
+// 유니온 타입 필요함
 const selectionStatusFunctionChain: Record<number, any[]> = {
-    [__0x.cursorOnlyText]: [] as any,
-    [__0x.singleLineText]: [] as any,
-    [__0x.multiLineText]: [] as any,
-    [__0x.multiCursorText]: [] as any
+    [__0x.cursorOnlyText]: [],
+    [__0x.singleLineText]: [],
+    [__0x.multiLineText]: [],
+    [__0x.multiCursorText]: [],
+    [__0x.multiCursorEdit]: []
+};
+
+const selectionStatusDecorationOption = {
+    [__0x.cursorOnlyText]: {
+        renderOptionHex: [__0x.cursorOnlyText],
+        fnObject: { ...lineNumber, ...columns }
+    },
+    [__0x.singleLineText]: {
+        renderOptionHex: [__0x.singleLineText],
+        fnObject: { ...lineNumber, ...characterCount }
+    },
+    [__0x.multiLineText]: {
+        renderOptionHex: [__0x.multiLineAnchorText, __0x.multiLineCursorText],
+        fnObject: { ...lineNumber, ...multiLineFn }
+    },
+    [__0x.multiCursorText]: {
+        renderOptionHex: [__0x.multiCursorText],
+        fnObject: { ...multiCursorFn }
+    },
+    [__0x.multiCursorEdit]: {
+        renderOptionHex: [__0x.multiCursorEdit],
+        fnObject: { ...lineNumber, ...multiCursorFn }
+    }
 };
 
 const buildFunctionChain = (hexKey: number, placehoder: any[], statusFunciton: any) => {
@@ -223,37 +284,13 @@ const setSelectionTextbuffer = (hexKey: number, length: number, placeholder: any
         selectionTextBuffer[hexKey].push(decorationType);
     }
 
-    selectionDecorationOption[hexKey]?.splice(0);
-    switch (hexKey) {
-        case __0x.cursorOnlyText:
-            setDeocorationOption(hexKey);
-            buildFunctionChain(hexKey, placeholder, { ...lineNumber, ...columns });
-            break;
-        case __0x.singleLineText:
-            setDeocorationOption(hexKey);
-            buildFunctionChain(hexKey, placeholder, { ...lineNumber, ...characterCount });
-            break;
-        case __0x.multiLineText:
-            selectionDecorationOption[hexKey].length = length;
-            selectionDecorationOption[hexKey].fill([]);
-            selectionTextBuffer[hexKey].forEach((option, idx) => {
-                selectionDecorationOption[hexKey][idx] = [];
-                selectionDecorationOption[hexKey][idx].push(
-                    composeRenderOption(__0x.multiLineAnchorText, selectionContentText[__0x.multiLineAnchorText].contentText[idx]),
-                    composeRenderOption(__0x.multiLineCursorText, selectionContentText[__0x.multiLineCursorText].contentText[idx])
-                );
-            });
-            buildFunctionChain(hexKey, placeholder, { ...lineNumber, ...multiLineFn });
-            break;
-        case __0x.multiCursorText:
-            selectionContentText[hexKey].contentText.forEach(() => {
-                selectionDecorationOption[hexKey].push([]);
-            });
-            buildFunctionChain(hexKey, placeholder, { ...multiCursorFn });
-            break;
-        default:
-            break;
+    if (selectionDecorationOption[hexKey].length > 0) {
+        selectionDecorationOption[hexKey] = [];
     }
+
+    const option = selectionStatusDecorationOption[hexKey];
+    setDeocorationOption(hexKey, option.renderOptionHex);
+    buildFunctionChain(hexKey, placeholder, option.fnObject);
 };
 
 /**
@@ -262,7 +299,7 @@ const setSelectionTextbuffer = (hexKey: number, length: number, placeholder: any
  * @param placehoder 
  * @param object 
  */
-const syncrefernceTable = (placehoder: string, hexKey: number, refObj: object): void => {
+const syncRefernceTable = (placehoder: string, hexKey: number, refObj: object): void => {
     switch (hexKey) {
         case __0x.cursorOnly:
             cursorOnlyStatusRef[placehoder] = refObj;
@@ -280,18 +317,7 @@ const syncrefernceTable = (placehoder: string, hexKey: number, refObj: object): 
     }
 };
 
-/**
- * forEach callback function for multilines
- * 
- * @param setDecorations 
- * @param buffer 
- * @param channel 
- * @param countBuffer 
- * @returns 
- */
-type BufferedFuncSignature = (setDecorations: vscode.TextEditor['setDecorations'], buffer: vscode.TextEditorDecorationType[]) => (renderOption: any | vscode.DecorationRenderOptions, idx: number) => void
-
-const contentTextFuncBuffered: BufferedFuncSignature = (setDecorations, buffer) => (renderOption, idx) => {
+const contentTextFuncBuffered: D.Selection.Tp.BufferedFuncSignature = (setDecorations, buffer) => (renderOption, idx) => {
     setDecorations(buffer[idx], renderOption);
 };
 
@@ -320,7 +346,7 @@ const cursorOnlyStatusRef: Record<string, any | vscode.DecorationInstanceRenderO
  * @param editor 
  * @param previousKey 
  */
-const cursorOnlySelection = (editor: vscode.TextEditor, previousKey: number[]): void => {
+const cursorOnlySelection: D.Editor.Tp.RenderGroupFuncSign = (editor: vscode.TextEditor, previousKey: number[]): void => {
     clearSelectionTextBuffer(editor);
 
     selectionStatusFunctionChain[__0x.cursorOnlyText].forEach(functionChain(cursorOnlyStatusRef, { editor }));
@@ -345,7 +371,7 @@ const singleLinetatusRef: Record<string, undefined | vscode.DecorationInstanceRe
  * @param editor 
  * @param previousKey 
  */
-const singleLineSelection = (editor: vscode.TextEditor, previousKey: number[]): void => {
+const singleLineSelection: D.Editor.Tp.RenderGroupFuncSign = (editor: vscode.TextEditor, previousKey: number[]): void => {
     clearBufferOfhexkey(editor.setDecorations, previousKey);
 
     selectionStatusFunctionChain[__0x.singleLineText].forEach(functionChain(singleLinetatusRef, { editor }));
@@ -366,7 +392,7 @@ const multiLinetatusRef: Record<string, undefined | vscode.DecorationInstanceRen
     charOnly: undefined,
 };
 
-const multilineSelection = (editor: vscode.TextEditor, previousKey: number[]) => {
+const multilineSelection: D.Editor.Tp.RenderGroupFuncSign = (editor: vscode.TextEditor, previousKey: number[]): void => {
     __0x.multiLine !== previousKey[0] && clearBufferOfhexkey(editor.setDecorations, previousKey);
 
     selectionStatusFunctionChain[__0x.multiLineText].forEach(functionChain(multiLinetatusRef, editor));
@@ -604,9 +630,8 @@ const addMultiCursorEdit = () => {
     // @TODO
 };
 
-
-const multiCursorSelection = (editor: vscode.TextEditor, previousKey: number[]): void => {
-
+const multiCursorSelection: D.Editor.Tp.RenderGroupFuncSign = (editor: vscode.TextEditor, previousKey: number[]): void => {
+    // console.log(selectionContentText)
     if (multiCursorState.index + 1 === editor.selections.length) {
         /**
          * next occurence selection
@@ -686,13 +711,7 @@ const clearBufferOfhexkey = (setDecorations: vscode.TextEditor["setDecorations"]
     }
 };
 
-type BindContentTextStateType = {
-    functionOf: D.Status.Tp.ContentTextState,
-    textOf: D.Status.Intf.StatusContentText,
-    infoOf: D.Status.Intf.IndentInfo
-}
-
-const bindStatusContentTextState = (): BindContentTextStateType => {
+const bindStatusContentTextState = (): D.Selection.Intf.BindContentTextState => {
     return {
         functionOf: selectionOf,
         textOf: selectionContentText,
@@ -708,10 +727,7 @@ export {
     singleLineSelection,
     multilineSelection,
     multiCursorSelection,
-    syncrefernceTable,
-    multiCursorPosition
+    syncRefernceTable,
+    multiCursorPosition,
+    SelectionTextRegex
 };
-
-function convertRangeToCursor(value: Selection, index: number, array: Selection[]): Selection {
-    throw new Error('Function not implemented.');
-}
