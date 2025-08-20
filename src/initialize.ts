@@ -8,7 +8,7 @@ import * as __0x from './constant/shared/numeric';
 import Error from './util/error';
 import { clearDecorationState } from './editor/editor';
 import { prepareRenderGroup, renderGroupIs } from './editor/editor';
-import { checkActiveThemeKind } from './configuration/preset/preset';
+import { checkActiveThemeKind } from './command/preset';
 import { updateRangeMetadata } from './editor/range';
 
 import type * as D from './type/type';
@@ -22,8 +22,8 @@ import type * as D from './type/type';
  */
 const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vscode.Disposable[] | void> => {
     try {
-
         await extensionContext.extension.activate();        // this is suppose to wait for its turn to be activated 
+
         // when vscode startup, not sure if it is the best method, 
         // as i am not sure even if it needs to wait to be activated.
         // maybe need to revise the method.

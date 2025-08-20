@@ -1,7 +1,7 @@
 import * as __0x from '../../constant/shared/numeric';
 import { CONFIG_SECTION, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_NUMLINK, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE } from '../../constant/config/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
-import { bindStatusContentTextState, multiCursorPosition, SelectionTextRegex, setSelectionTextbuffer, syncRefernceTable } from '../../editor/status/selection';
+import { bindStatusContentTextState,  multiCursorTextPosition, multiCursorEditPosition, SelectionTextRegex, setSelectionTextbuffer, syncRefernceTable } from '../../editor/status/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 import { isEntriesEqual } from '../../util/util';
 
@@ -59,11 +59,18 @@ const createSharedObjectSync = (textOftarget, textOfSource: any) => {
         // should error
     }
 
-    const multiCursor = Object.entries(textOfSource.multiCursorText.position);
-    multiCursor.forEach(([pos, placeholder]) => {
+    const multiCursorText = Object.entries(textOfSource.multiCursorText.position);
+    multiCursorText.forEach(([pos, placeholder]) => {
         const referenceObject = textOftarget[__0x.multiCursorText].contentText[pos].after;
-        syncRefernceTable(placeholder as string, __0x.multiCursor, referenceObject);
-        multiCursorPosition(placeholder as string, pos as unknown as number);
+        syncRefernceTable(placeholder as string, __0x.multiCursorText, referenceObject);
+        multiCursorTextPosition(placeholder as string, parseInt(pos) as unknown as number);
+    });
+
+    const multiCursorEdit = Object.entries(textOfSource.multiCursorEdit.position);
+    multiCursorEdit.forEach(([pos, placeholder]) => {
+        const referenceObject = textOftarget[__0x.multiCursorEdit].contentText[pos].after;
+        syncRefernceTable(placeholder as string, __0x.multiCursorEdit, referenceObject);
+        multiCursorEditPosition(placeholder as string, parseInt(pos) as unknown as number);
     });
 };
 

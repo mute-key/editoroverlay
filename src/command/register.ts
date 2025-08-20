@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { clearConfiguration, quickPickPresetList, quickPickOientationList, quickPickColorList, restoreToDefault, quickPickContrastList } from '../configuration/preset/preset';
+import { clearConfiguration, quickPickPresetList, quickPickOientationList, quickPickColorList, restoreToDefault, quickPickContrastList } from './preset';
 
 import type * as D from "../type/type.d";
 

@@ -61,18 +61,25 @@ const createCursorRangeLineAuto = (lineDelta: number) => (editor: vscode.TextEdi
     return editor.document.lineAt(editor.selection.end.line + (checkEndOfDocDelta(editor, lineDelta) ? 0 : checkRangeLengthDatum(editor, lineDelta) ? 0 : 1)).range;
 };
 
-const createLineRange = (position: vscode.Position): vscode.Range =>
-    new vscode.Range(position, position);
+const createLineRange = (position: vscode.Position): vscode.Range => new vscode.Range(position, position);
 
-const createLineEndSelection = (selection: vscode.Selection): vscode.Selection =>
-    new vscode.Selection(selection.end, selection.end);
+const createLineSelection = (position: vscode.Position): vscode.Selection => new vscode.Selection(position, position);
 
-const createStartEndRangeOfSelection = (selection: vscode.Selection): vscode.Range =>
-    createRangeSPEP(selection.start, selection.end);
+const createLineEndSelection = (selection: vscode.Selection): vscode.Selection => new vscode.Selection(selection.end, selection.end);
 
-const sortBasedEndLine = (a: vscode.Selection, b:vscode.Selection): number => a.end.line - b.end.line;
+const createStartEndRangeOfSelection = (selection: vscode.Selection): vscode.Range => createRangeSPEP(selection.start, selection.end);
 
-const blankRange = [] as vscode.Range[];
+const sortBasedEndLine = (a: vscode.Selection, b: vscode.Selection): number => a.end.line - b.end.line;
+
+const isEmptyRange = (selection: vscode.Selection): boolean => selection.isEmpty;
+
+const hasEmptyRange = (selections: readonly vscode.Selection[]): boolean => selections.find(isEmptyRange) !== undefined;
+
+const blankRange: vscode.Range[] = [] ;
+
+const ifRangesNeedSort = (selection: vscode.Selection, index: number, selections: readonly vscode.Selection[]) => (index === 0) || selection >= selections[index - 1];
+
+const rangeToCursor = (selection: vscode.Selection) => createLineSelection(selection.end);
 
 export {
     createRangeNNNN,
@@ -85,6 +92,9 @@ export {
     createStartEndRangeOfSelection,
     createLineEndSelection,
     sortBasedEndLine,
+    ifRangesNeedSort,
+    rangeToCursor,
+    hasEmptyRange,
     blankRange,
     updateRangeMetadata,
     setAutoInlineDatumPoint

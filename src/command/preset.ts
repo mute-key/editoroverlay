@@ -1,16 +1,16 @@
 import * as vscode from 'vscode';
-import * as __0x from '../../constant/shared/numeric';
+import * as __0x from '../constant/shared/numeric';
 import path from 'path';
-import { CONTRAST, CONFIRM, PRESET, PRESET_ORIENTATION, SYSTEM_MESSAGE, SYSTEM_PATH, THEME_KIND } from '../../constant/config/enum';
-import { CONFIG_SECTION } from '../../constant/config/object';
-import { getWorkspaceConfiguration } from '../shared/configuration';
-import { prepareRenderGroup, resetAllDecoration } from '../../editor/editor';
-import { updateSelectionTextConfig } from '../decoration/selection';
-import { updateDiagnosticTextConfig } from '../decoration/diagnostic';
+import { CONTRAST, CONFIRM, PRESET, PRESET_ORIENTATION, SYSTEM_MESSAGE, SYSTEM_PATH, THEME_KIND } from '../constant/config/enum';
+import { CONFIG_SECTION } from '../constant/config/object';
+import { getWorkspaceConfiguration } from '../configuration/shared/configuration';
+import { prepareRenderGroup, resetAllDecoration } from '../editor/editor';
+import { updateSelectionTextConfig } from '../configuration/decoration/selection';
+import { updateDiagnosticTextConfig } from '../configuration/decoration/diagnostic';
 import { readFile } from 'node:fs/promises';
-import { updateGeneralConfig, updateHighlightStyleConfiguration } from '../decoration/highlight';
+import { updateGeneralConfig, updateHighlightStyleConfiguration } from '../configuration/decoration/highlight';
 
-import type * as D from "../../type/type";
+import type * as D from "../type/type";
 
 const clearConfiguration = (context: D.Command.Intf.Context) => (value: string | undefined): void => {
     if (value === CONFIRM.YES) {

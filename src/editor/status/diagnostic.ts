@@ -244,7 +244,7 @@ const updateDiagnosticState = (context: any) => (hexKey: number) => {
     diagnosticReferenceTable[hexKey].contentText = fnCollection[hexKey](context);
 };
 
-const renderDiagnosticText = (setDecorations: vscode.TextEditor['setDecorations']) => (options: vscode.DecorationInstanceRenderOptions, idx: number) => {
+const renderDiagnosticText = (setDecorations: D.Editor.Tp.RenderOverlay) => (options: vscode.DecorationInstanceRenderOptions, idx: number) => {
     setDecorations(diagnosticStatusBuffer[idx], options as any);
 };
 
@@ -253,7 +253,7 @@ const context = {
     state: Object.create(null)
 };
 
-const diagnosticInfo = (decorationState: Decoration.Intf.State) => (editor: vscode.TextEditor): void => {
+const diagnosticInfo = (decorationState: D.Decoration.Intf.State) => (editor: vscode.TextEditor): void => {
     if (decorationState.eventTrigger[0] === __0x.diagnosticChanged) {
         refreshBuffer(updateDiagnostic(editor.document.uri));
     }
@@ -264,7 +264,7 @@ const diagnosticInfo = (decorationState: Decoration.Intf.State) => (editor: vsco
     diagnosticContentText[diagnosticRenderSignature(stateBuffer)].forEach(renderDiagnosticText(editor.setDecorations));
 };
 
-const clearDiagnosticText = (setDecorations: vscode.TextEditor['setDecorations']): void => {
+const clearDiagnosticText = (setDecorations: D.Editor.Tp.RenderOverlay): void => {
     diagnosticStatusBuffer.forEach(resetDecoration(setDecorations));
 };
 

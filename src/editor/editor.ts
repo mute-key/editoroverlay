@@ -10,11 +10,21 @@ import { blankRange, updateRangeMetadata } from './range';
 
 import type * as D from '../type/type.d';
 
+/**
+ * buffer for rendering function call stack
+ */
+const renderFnStack: Record<number, any[]> = {
+    [__0x.cursorOnly]: [] as any[],
+    [__0x.singleLine]: [] as any[],
+    [__0x.multiLine]: [] as any[],
+    [__0x.multiCursor]: [] as any[]
+};
+
 const decorationState = { ...DECORATION_STATE } as unknown as D.Decoration.Intf.State;
 
 const createEditorDecorationType = (styleAppliedConfig: any): vscode.TextEditorDecorationType => vscode.window.createTextEditorDecorationType(styleAppliedConfig as vscode.DecorationRenderOptions);;
 
-const applyDecoration = (setDecorations: vscode.TextEditor['setDecorations'], decoraiton: vscode.TextEditorDecorationType, range: vscode.Range[]): void => setDecorations(decoraiton, range);
+const applyDecoration = (setDecorations: D.Editor.Tp.RenderOverlay, decoraiton: vscode.TextEditorDecorationType, range: vscode.Range[]): void => setDecorations(decoraiton, range);
 
 /**
  * [ self-explantory ]
@@ -24,7 +34,7 @@ const applyDecoration = (setDecorations: vscode.TextEditor['setDecorations'], de
  * @param setDecorations 
  * @returns 
  */
-const resetDecoration = (setDecorations: vscode.TextEditor['setDecorations']) => (decoration: vscode.TextEditorDecorationType) => setDecorations(decoration, blankRange);
+const resetDecoration = (setDecorations: D.Editor.Tp.RenderOverlay) => (decoration: vscode.TextEditorDecorationType) => setDecorations(decoration, blankRange);
 
 /**
  * I assuemd using array to store value in object would be faster than mutating the object as it would be a reference.
@@ -60,16 +70,30 @@ const updateIndentOption = (editor: vscode.TextEditor): void => {
         : regex.tabAndEOLRegex;
 };
 
+const setFunctionList = (config: D.Config.Intf.ConfigReady, highlightList: D.Editor.Intf.RenderGroup, selectionList: D.Editor.Intf.RenderGroup) => (numKey: number): void => {
+    const renderFuList: any[] = [];
+
+    renderFuList.push(highlightList[numKey]);
+
+    if (config.generalConfigInfo.selectionTextEnabled) {
+        renderFuList.push(selectionList[numKey]);
+    }
+
+    if (config.generalConfigInfo.diagnosticTextEnabled && (numKey === __0x.cursorOnly || numKey === __0x.singleLine)) {
+        renderFuList.push(editModeCheck);
+    } else if (config.generalConfigInfo.diagnosticTextEnabled) {
+        renderFuList.push(diagnosticInfo(decorationState));
+    }
+
+    renderFnStack[numKey].push(...renderFuList);
+};
+
 /**
  * build render function list.
  * 
  * @param config 
  */
 const prepareRenderGroup = (config: D.Config.Intf.ConfigReady): void => {
-    renderFnStack[__0x.cursorOnly].splice(0);
-    renderFnStack[__0x.singleLine].splice(0);
-    renderFnStack[__0x.multiLine].splice(0);
-    renderFnStack[__0x.multiCursor].splice(0);
 
     const highlightList: D.Editor.Intf.RenderGroup = {
         [__0x.cursorOnly]: cursorOnlyHighlightRange,
@@ -85,24 +109,7 @@ const prepareRenderGroup = (config: D.Config.Intf.ConfigReady): void => {
         [__0x.multiCursor]: multiCursorSelection
     };
 
-    SELECTION_KIND_LIST.forEach(numKey => {
-
-        const callList: any[] = [];
-
-        callList.push(highlightList[numKey]);
-
-        if (config.generalConfigInfo.selectionTextEnabled) {
-            callList.push(selectionList[numKey]);
-        }
-
-        if (config.generalConfigInfo.diagnosticTextEnabled && (numKey === __0x.cursorOnly || numKey === __0x.singleLine)) {
-            callList.push(editModeCheck);
-        } else if (config.generalConfigInfo.diagnosticTextEnabled) {
-            callList.push(diagnosticInfo(decorationState));
-        }
-
-        renderFnStack[numKey].push(...callList);
-    });
+    SELECTION_KIND_LIST.forEach(setFunctionList(config, highlightList, selectionList));
 };
 
 /**
@@ -125,15 +132,6 @@ const editModeCheck = (editor: vscode.TextEditor): void => {
     decorationState.previousLine[0] = editor.selections[0].start.line;
 };
 
-/**
- * buffer for rendering function call stack
- */
-const renderFnStack: Record<number, any[]> = {
-    [__0x.cursorOnly]: [] as any[],
-    [__0x.singleLine]: [] as any[],
-    [__0x.multiLine]: [] as any[],
-    [__0x.multiCursor]: [] as any[]
-};
 
 type LineFn = (arg0: vscode.TextEditor, arg1: number[]) => void
 
@@ -154,7 +152,9 @@ const fnList = (editor: vscode.TextEditor, numKey: number[]) => (fn: LineFn) => 
  * @returns 
  */
 const renderGroupIs = (editor: vscode.TextEditor, numKey: number[]): number => {
+
     const fnBind = fnList(editor, numKey);
+
     if (editor.selections.length === 1) {
         if (editor.selections[0].isEmpty) {                 // cursor only
             renderFnStack[__0x.cursorOnly].forEach(fnBind);
