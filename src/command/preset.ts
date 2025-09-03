@@ -1,3 +1,5 @@
+import type * as D from "../type/type.d";
+
 import * as vscode from 'vscode';
 import * as __0x from '../constant/shared/numeric';
 import path from 'path';
@@ -10,7 +12,6 @@ import { updateDiagnosticTextConfig } from '../configuration/decoration/diagnost
 import { readFile } from 'node:fs/promises';
 import { updateGeneralConfig, updateHighlightStyleConfiguration } from '../configuration/decoration/highlight';
 
-import type * as D from "../type/type";
 
 const clearConfiguration = (context: D.Command.Intf.Context) => (value: string | undefined): void => {
     if (value === CONFIRM.YES) {

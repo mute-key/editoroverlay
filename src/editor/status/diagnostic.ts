@@ -1,3 +1,5 @@
+import type * as D from '../../type/type';
+
 import * as vscode from 'vscode';
 import * as __0x from '../../constant/shared/numeric';
 import * as __$ from '../../constant/shared/symbol';
@@ -8,9 +10,7 @@ import { DECORATION_OPTION_CONFIG, DIAGNOSTIC_VISIBILITY_CONFIG } from '../../co
 import { DIAGNOSTIC_CONTENT_TEXT_KEY } from '../../constant/config/enum';
 import { updateDiagnostic } from '../../diagnostic/diagnostic';
 import { resetDecoration } from '../editor';
-import * as Decoration from '../highlight/highlight';
 
-import type * as D from '../../type/type';
 
 const diagnosticContentText = {
     ...DIAGNOSTIC_CONTENT_TEXT

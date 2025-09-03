@@ -1,3 +1,5 @@
+import type * as D from '../../type/type';
+
 import * as __0x from '../../constant/shared/numeric';
 import * as __$ from '../../constant/shared/symbol';
 import * as regex from '../../collection/regex';
@@ -12,7 +14,6 @@ import { bindDiagnosticContentTextState, clearDiagnosticTextState, composeRender
 import { setOverrideDigit } from '../../diagnostic/diagnostic';
 import { hexToRgbaStringLiteral, readBits } from '../../util/util';
 
-import type * as D from '../../type/type';
 
 const positionKeyList = ['pre', 'post'] as const;
 

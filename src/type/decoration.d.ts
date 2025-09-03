@@ -1,3 +1,5 @@
+import type * as Numeric from './numeric.d';
+
 import * as vscode from 'vscode';
 import { DECORATION_STYLE_PREFIX } from '../constant/config/object';
 import { DECORATION_STYLE_CONFIG_KEY, DECORATION_TYPE_MASK, SELECTION_TYPE } from 'src/constant/config/enum';
@@ -16,7 +18,7 @@ declare namespace Intf {
     }
 
     interface State {
-        appliedHighlight: number[]
+        appliedHighlight: Numeric.Key.Hex[]
         diagnosticSignature: number[]
         eventTrigger: number[]
         previousLine: number[]

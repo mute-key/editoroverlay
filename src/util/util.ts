@@ -66,7 +66,7 @@ const fnv1aHash = (str: string): string => {
  * @param regex 
  * @returns 
  */
-const splitAndPosition = (str: string, regex: RegExp): Type.RegexSplitType | undefined => {
+const splitAndPosition = (str: string, regex: RegExp): D.Config.Intf.RegexSplit | undefined => {
 
     const match: RegExpMatchArray | null = str.match(regex);
     let split: string[] = [];
@@ -148,6 +148,10 @@ const isObjectShallowEqual = (obj1: object, obj2: object) => {
 
 const isEntriesEqual = (a, b) => a.length === b.length && a.every((element, index) => element[0] === b[index][0] && element[1] === b[index][1]);
 
+const toReadonlyProperty = (object: any, propertyName: string[]) => propertyName.forEach(property => {
+    Object.defineProperty(object, property, { writable: false });
+});
+
 export {
     fnv1aHash,
     readBits,
@@ -157,5 +161,6 @@ export {
     autoArrayPropertyObject,
     compareNumbers,
     isObjectShallowEqual,
-    isEntriesEqual
+    isEntriesEqual,
+    toReadonlyProperty
 };

@@ -1,10 +1,10 @@
+import type * as D from '../../type/type.d';
+
 import * as vscode from 'vscode';
 import * as __0x from '../../constant/shared/numeric';
 import { HIGHLIGHT_BORDER_POSITION_INFO, HIGHLIGHT_STYLE_LIST } from '../../constant/shared/object';
 import { createLineRange, createRangeSPEP, blankRange } from '../range';
 import { applyDecoration } from '../editor';
-
-import type * as D from '../../type/type.d';
 
 const highlightStyleList = {
     ...HIGHLIGHT_STYLE_LIST
@@ -15,13 +15,12 @@ const borderPositionInfo = {
 } as unknown as D.Decoration.Tp.BorderPositionInfoType;
 
 const cursorOnlyHighlightRange = (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]): void => {
-    (__0x.cursorOnly !== previousKey[0]) && clearEveryHighlight(editor);
+    __0x.cursorOnly !== previousKey[0] && clearEveryHighlight(editor);
     applyDecoration(editor.setDecorations, highlightStyleList[__0x.cursorOnly][0], [createLineRange(editor.selection.active)]);
 };
 
 const singelLineHighlightRange = (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]): void => {
-    (__0x.singleLine !== previousKey[0]) && clearHighlight(editor.setDecorations, previousKey, blankRange);
-
+    __0x.singleLine !== previousKey[0] && clearHighlight(editor.setDecorations, previousKey, blankRange);
     applyDecoration(editor.setDecorations, highlightStyleList[__0x.singleLine][0], [createRangeSPEP(editor.selection.start, editor.selection.end)]);
 };
 
@@ -34,11 +33,10 @@ const multiLineRangeCH = [
 const renderMultiLineHighlight = (setDecorations: D.Editor.Tp.RenderOverlay, range: vscode.Range[]) => (highlight: vscode.TextEditorDecorationType, idx: number) => setDecorations(highlight, range[idx] as unknown as readonly vscode.Range[] | readonly vscode.DecorationOptions[]);
 
 const multiLineHighlightRange = (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]) => {
-    (__0x.multiLine !== previousKey[0]) && clearHighlight(editor.setDecorations, previousKey, blankRange);
+    __0x.multiLine !== previousKey[0] && clearHighlight(editor.setDecorations, previousKey, blankRange);
     multiLineRangeCH[0][0] = editor.document.lineAt(editor.selection.start).range; // createLineRange();
     multiLineRangeCH[1][0] = editor.document.lineAt(editor.selection.end).range; // createLineRange();
     multiLineRangeCH[2][0] = editor.selection;
-
     highlightStyleList[__0x.multiLine].forEach(renderMultiLineHighlight(editor.setDecorations, multiLineRangeCH));
 };
 

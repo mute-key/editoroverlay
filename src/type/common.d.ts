@@ -4,11 +4,9 @@ export type {
 };
 
 declare namespace Intf {
-
+    
 }
 
 declare namespace Tp {
     type TextList = string[];
-
-
 }

@@ -1,3 +1,5 @@
+import type * as D from '../type/type.d';
+
 import * as vscode from 'vscode';
 import * as __0x from '../constant/shared/numeric';
 import * as regex from '../collection/regex';
@@ -8,12 +10,11 @@ import { cursorOnlyHighlightRange, singelLineHighlightRange, multiLineHighlightR
 import { cursorOnlySelection, singleLineSelection, multilineSelection, multiCursorSelection } from './status/selection';
 import { blankRange, updateRangeMetadata } from './range';
 
-import type * as D from '../type/type.d';
 
 /**
  * buffer for rendering function call stack
  */
-const renderFnStack: Record<number, any[]> = {
+const renderFnStack: Record<D.Numeric.Key.Hex, any[]> = {
     [__0x.cursorOnly]: [] as any[],
     [__0x.singleLine]: [] as any[],
     [__0x.multiLine]: [] as any[],
@@ -70,7 +71,7 @@ const updateIndentOption = (editor: vscode.TextEditor): void => {
         : regex.tabAndEOLRegex;
 };
 
-const setFunctionList = (config: D.Config.Intf.ConfigReady, highlightList: D.Editor.Intf.RenderGroup, selectionList: D.Editor.Intf.RenderGroup) => (numKey: number): void => {
+const setFunctionList = (config: D.Config.Intf.ConfigReady, highlightList: D.Editor.Intf.RenderGroup, selectionList: D.Editor.Intf.RenderGroup) => (numKey: D.Numeric.Key.Hex): void => {
     const renderFuList: any[] = [];
 
     renderFuList.push(highlightList[numKey]);
@@ -133,7 +134,7 @@ const editModeCheck = (editor: vscode.TextEditor): void => {
 };
 
 
-type LineFn = (arg0: vscode.TextEditor, arg1: number[]) => void
+type LineFn = (arg0: vscode.TextEditor, arg1: D.Numeric.Key.Hex[]) => void
 
 /**
  * function call chain
@@ -142,7 +143,7 @@ type LineFn = (arg0: vscode.TextEditor, arg1: number[]) => void
  * @param numKey previous selection type hexKey in array to unset previous selection decoration
  * @returns 
  */
-const fnList = (editor: vscode.TextEditor, numKey: number[]) => (fn: LineFn) => fn(editor, numKey);
+const fnList = (editor: vscode.TextEditor, numKey: D.Numeric.Key.Hex[]) => (fn: LineFn) => fn(editor, numKey);
 
 /**
  * call function call chain based on user cursor/selelction type
@@ -151,7 +152,7 @@ const fnList = (editor: vscode.TextEditor, numKey: number[]) => (fn: LineFn) => 
  * @param numKey previous selection type hexKey in array to unset previous selection decoration
  * @returns 
  */
-const renderGroupIs = (editor: vscode.TextEditor, numKey: number[]): number => {
+const renderGroupIs = (editor: vscode.TextEditor, numKey: D.Numeric.Key.Hex[]): D.Numeric.Key.Hex => {
 
     const fnBind = fnList(editor, numKey);
 

@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as D from '../type/type';
 import { CONFIG_INFO } from '../constant/config/object';
 import { generateHighlightDecoration } from './decoration/highlight';
-import { updateLegacyConfig } from './collection/patch.v.1.0';
+import { updateLegacyConfig } from './collection/patch';
 import { updateSelectionTextConfig } from './decoration/selection';
 import { updateDiagnosticTextConfig } from './decoration/diagnostic';
 import { writeEditorConfiguration } from './shared/editor';

@@ -1,12 +1,13 @@
+import type * as D from '../type/type.d';
+
 import * as vscode from 'vscode';
 import * as __0x from '../constant/shared/numeric';
 import Error from '../util/error';
 import { resetAllDecoration } from '../editor/editor';
 import { renderGroupIs, updateIndentOption } from '../editor/editor';
-import { resetEditorDiagnosticStatistics, resetWorkspaceDiagnosticStatistics, updateDiagnostic } from '../diagnostic/diagnostic';
+import { resetEditorDiagnosticStatistics, resetWorkspaceDiagnosticStatistics } from '../diagnostic/diagnostic';
 import { updateRangeMetadata } from '../editor/range';
-
-import type * as D from '../type/type.d';
+import { forceDispatchEditorChange } from '../editor/status/selection';
 
 const windowStateChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
     const onDidChangeWindowState = vscode.window.onDidChangeWindowState((event: vscode.WindowState): void => {
@@ -31,17 +32,27 @@ const windowStateChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState })
 const activeEditorChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decorationState }): vscode.Disposable => {
     return vscode.window.onDidChangeActiveTextEditor((editor: vscode.TextEditor | undefined) => {
         if (editor) {
-            if (decorationState.eventTrigger[0] === __0x.tabChanged) {
-                resetAllDecoration();
-                return;
-            }
+
+            /**
+             * recent build of vscode have change the behavior of tab change event
+             * 
+             * tab change event is triggered even it is only 1 tab is openned for some reasons.
+             * due to that change, this part of condition chech should have been disabled by 
+             * commenting out; or it is always true on every editor change. 
+             * it is the other way around for some reasons.
+             */
+            // if (decorationState.eventTrigger[0] === __0x.tabChanged) {
+            //     resetAllDecoration();
+            //     return;
+            // }
 
             if (Error.check()) {
                 Error.notify(1500);
             }
 
             resetAllDecoration();
-
+            
+            forceDispatchEditorChange(editor);
             updateRangeMetadata(editor);
 
             if (configInfo.generalConfigInfo.diagnosticTextEnabled) {
@@ -88,7 +99,10 @@ const selectionChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): 
 
 const tabChanged = ({ decorationState }): vscode.Disposable => {
     return vscode.window.tabGroups.onDidChangeTabs((event: vscode.TabChangeEvent) => {
-        decorationState.eventTrigger[0] =  __0x.tabChanged;
+        if (event.changed) {
+            console.log('tabChanged');
+            decorationState.eventTrigger[0] = __0x.tabChanged;
+        }
     });
 };
 

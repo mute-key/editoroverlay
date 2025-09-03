@@ -1,3 +1,5 @@
+import type * as D from './type/type';
+
 import * as vscode from 'vscode';
 import * as config from './configuration/load';
 import * as commands from './command/register';
@@ -10,8 +12,6 @@ import { clearDecorationState } from './editor/editor';
 import { prepareRenderGroup, renderGroupIs } from './editor/editor';
 import { checkActiveThemeKind } from './command/preset';
 import { updateRangeMetadata } from './editor/range';
-
-import type * as D from './type/type';
 
 /**
  * Main initialisation of the extension. 
@@ -43,7 +43,7 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
         prepareRenderGroup(configInfo as D.Config.Intf.ConfigReady);
 
         if (activeEditor) {                                 // if user is on editor
-            updateRangeMetadata(activeEditor);              // set selection range meta data for the editor
+            updateRangeMetadata(activeEditor);              // set selection range metadata for the editor
             clearDecorationState(loadConfig.decoration);    // initialize decoration state
             loadConfig.decoration.appliedHighlight[0] = renderGroupIs(activeEditor, [__0x.cursorOnly]);
         }
@@ -70,7 +70,6 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
             windowEvent.activeEditorChanged(eventContext),
             windowEvent.selectionChanged(eventContext),
             windowEvent.editorOptionChanged(eventContext),
-            windowEvent.tabChanged(eventContext),
             languagesEvent.diagnosticChanged(eventContext),
             workspaceEvent.configChanged(eventContext),
         ];

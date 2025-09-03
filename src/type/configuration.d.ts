@@ -79,10 +79,6 @@ declare namespace Tp {
         next?: string | string[]
     }
 
-    type RegexSplit = {
-        position: number,
-        array: string[]
-    }
 
     type ContentTextPositionBuffer = {
         contentText?: any[],
@@ -115,6 +111,12 @@ declare namespace Intf {
     interface InitialisedConfig {
         config: ConfigReady,
         decoration: Decoration.Intf.State
+    }
+
+    
+    interface RegexSplit {
+        position: number,
+        array: string[]
     }
 }
 

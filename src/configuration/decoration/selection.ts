@@ -1,11 +1,12 @@
+import type * as D from '../../type/type';
+
 import * as __0x from '../../constant/shared/numeric';
 import { CONFIG_SECTION, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_NUMLINK, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE } from '../../constant/config/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
-import { bindStatusContentTextState,  multiCursorTextPosition, multiCursorEditPosition, SelectionTextRegex, setSelectionTextbuffer, syncRefernceTable } from '../../editor/status/selection';
+import { bindStatusContentTextState,  setMultiCursorTextPosition, setMultiCursorEditPosition, SelectionTextRegex, setSelectionTextbuffer, syncRefernceTable, setMultiCursorContext } from '../../editor/status/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 import { isEntriesEqual } from '../../util/util';
 
-import type * as D from '../../type/type';
 
 const convertPositionToDecorationRenderOption = (textPosition, SelectionDecorationStyle): void => {
     return textPosition.contentText.map((text, idx) => {
@@ -63,15 +64,18 @@ const createSharedObjectSync = (textOftarget, textOfSource: any) => {
     multiCursorText.forEach(([pos, placeholder]) => {
         const referenceObject = textOftarget[__0x.multiCursorText].contentText[pos].after;
         syncRefernceTable(placeholder as string, __0x.multiCursorText, referenceObject);
-        multiCursorTextPosition(placeholder as string, parseInt(pos) as unknown as number);
+        setMultiCursorTextPosition(placeholder as string, parseInt(pos) as unknown as number);
     });
+    
 
     const multiCursorEdit = Object.entries(textOfSource.multiCursorEdit.position);
     multiCursorEdit.forEach(([pos, placeholder]) => {
         const referenceObject = textOftarget[__0x.multiCursorEdit].contentText[pos].after;
         syncRefernceTable(placeholder as string, __0x.multiCursorEdit, referenceObject);
-        multiCursorEditPosition(placeholder as string, parseInt(pos) as unknown as number);
+        setMultiCursorEditPosition(placeholder as string, parseInt(pos) as unknown as number);
     });
+    
+    setMultiCursorContext();
 };
 
 const buildStatusTextState = (textOftarget, textOfSource: D.Status.Intf.StatusContentTextBuffer, SelectionDecorationStyle, leftMargin): void => {

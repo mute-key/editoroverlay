@@ -1,3 +1,9 @@
+import * as vscode from 'vscode';
+
+export type {
+    Intf, Tp
+};
+
 declare namespace Intf {
     interface DiagnosticAllOkText {
         allok: RegExp
@@ -82,6 +88,3 @@ declare namespace Tp {
         | Intf.MultiCursorEdit
 }
 
-export type {
-    Intf, Tp
-};

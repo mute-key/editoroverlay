@@ -5,7 +5,6 @@ import { resetAllDecoration, prepareRenderGroup } from '../../editor/editor';
 import { updateGeneralConfig, updateHighlightStyleConfiguration } from '../decoration/highlight';
 import { updateDiagnosticTextConfig } from '../decoration/diagnostic';
 import { updateSelectionTextConfig } from '../decoration/selection';
-import { config } from 'process';
 
 const configurationChanged = (configInfo: any, section: string): void => {
     try {

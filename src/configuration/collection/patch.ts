@@ -1,5 +1,6 @@
+import type * as D from '../../type/type';
+
 import * as vscode from 'vscode';
-import * as D from '../../type/type';
 import { getWorkspaceConfiguration } from '../shared/configuration';
 
 const legacyConfig = {

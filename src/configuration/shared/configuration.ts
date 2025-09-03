@@ -1,10 +1,11 @@
+import type * as D from '../../type/type';
+
 import * as vscode from 'vscode';
 import Error from '../../util/error';
 import { convertNullStringToNull } from './validation';
 import { hexToRgbaStringLiteral, } from '../../util/util';
 import { parseContentText } from '../shared/decoration';
 
-import type * as D from '../../type/type';
 
 const getWorkspaceConfiguration = (section: string): vscode.WorkspaceConfiguration => vscode.workspace.getConfiguration(section);
 

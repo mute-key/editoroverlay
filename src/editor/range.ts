@@ -75,9 +75,9 @@ const isEmptyRange = (selection: vscode.Selection): boolean => selection.isEmpty
 
 const hasEmptyRange = (selections: readonly vscode.Selection[]): boolean => selections.find(isEmptyRange) !== undefined;
 
-const blankRange: vscode.Range[] = [] ;
+const blankRange: vscode.Range[] = [];
 
-const ifRangesNeedSort = (selection: vscode.Selection, index: number, selections: readonly vscode.Selection[]) => (index === 0) || selection >= selections[index - 1];
+const ifRangesNeedSort = (selection: vscode.Selection, index: number, selections: readonly vscode.Selection[]) => (index === 0) || selections[index - 1].end.line <= selection.end.line;
 
 const rangeToCursor = (selection: vscode.Selection) => createLineSelection(selection.end);
 

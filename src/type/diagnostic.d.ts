@@ -10,11 +10,36 @@ export type {
     Tp
 };
 
+
+
+
 declare namespace Intf {
 
-}
+    interface State {
+        override: number,
+        severity: number,
+        editor: {
+            warning: {
+                line: number[]
+                total: number
+            },
+            error: {
+                line: number[]
+                total: number
+            }
+        },
+        workspace: {
+            warning: {
+                source: number,
+                total: number
+            },
+            error: {
+                source: number,
+                total: number
+            },
+        }
+    }
 
-declare namespace Intf {
     interface DiagnosticContentText {
         [key: number]: any[]
     }
@@ -40,7 +65,7 @@ declare namespace Intf {
         [key: string]: vscode.Diagnostic[]
     }
 
-    interface DiagnosticSource {
+    interface Source {
         [key: string]: DiagnosticFsBind
     }
 
@@ -153,7 +178,7 @@ declare namespace Intf {
         fontStyle?: string,
         textDecoration?: string,
         margin?: string
-    } 
+    }
 
     interface RenderOption {
         isWholeLine?: boolean,

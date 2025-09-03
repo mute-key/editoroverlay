@@ -1,3 +1,5 @@
+import type * as D from '../../type/type';
+
 import * as vscode from 'vscode';
 import * as __0x from '../../constant/shared/numeric';
 import { BORDER_WIDTH_DEFINITION, CONFIG_KEY_LINKER_SECTION, CONFIG_SECTION, DECORATION_STYLE_PREFIX, NO_CONFIGURATION_DEOCORATION_DEFAULT, NO_CONFIGURATION_GENERAL_DEFAULT } from '../../constant/config/object';
@@ -8,7 +10,6 @@ import { colorConfigTransform, getConfigValue, getWorkspaceConfiguration } from 
 import { createEditorDecorationType } from '../../editor/editor';
 import { readBits } from '../../util/util';
 
-import type * as D from '../../type/type';
 
 const checkConfigKeyAndCast = <T extends D.Config.Tp.DecorationStyleConfigName | D.Config.Tp.GeneralConfigNameOnly>(key: string): T => {
     return key as T;

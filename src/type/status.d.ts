@@ -45,10 +45,10 @@ declare namespace Intf {
     }
 
     interface StatusContentText {
-        [key: number]: ContentTextSymlinkKind
+        [key: number]: ContentTextBody
     }
 
-    interface ContentTextSymlinkKind {
+    interface ContentTextBody {
         contentText: any[],
         position: [number, symbol][]
     }

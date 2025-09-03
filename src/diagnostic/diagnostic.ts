@@ -1,36 +1,13 @@
+import type * as D from '../type/type';
+
 /* eslint-disable semi */
 import * as vscode from 'vscode';
-import * as D from '../type/type';
 import { DIAGNOSTIC_SEVERITY_TO_KEY } from '../constant/config/object';
 import { DIAGNOSTIC_STATE } from '../constant/shared/object';
 import { DIAGNOSTIC_BIOME } from '../constant/config/enum';
 
-const diagnosticState = { ...DIAGNOSTIC_STATE } as unknown as DiagnosticState;
 
-export interface DiagnosticState {
-    override: number,
-    severity: number,
-    editor: {
-        warning: {
-            line: number[]
-            total: number
-        },
-        error: {
-            line: number[]
-            total: number
-        }
-    },
-    workspace: {
-        warning: {
-            source: number,
-            total: number
-        },
-        error: {
-            source: number,
-            total: number
-        },
-    }
-}
+const diagnosticState = { ...DIAGNOSTIC_STATE } as unknown as D.Diagnostic.Intf.State;
 
 const resetEditorDiagnosticStatistics = (): void => {
     diagnosticState.editor.warning.line.splice(0);
@@ -46,7 +23,7 @@ const resetWorkspaceDiagnosticStatistics = (): void => {
     diagnosticState.workspace.error.total = 0;
 };
 
-const parseDiagnostic = (state: DiagnosticState, severity: D.Diagnostic.Intf.DiagnosticFsBind, fsPath: string, activeEditorfsPath: string | undefined = undefined): void => {
+const parseDiagnostic = (state: D.Diagnostic.Intf.State, severity: D.Diagnostic.Intf.DiagnosticFsBind, fsPath: string, activeEditorfsPath: string | undefined = undefined): void => {
     Object.keys(severity).forEach((severityType: string) => {
         if (fsPath === activeEditorfsPath) {
             state.editor[severityType].line = [
@@ -66,7 +43,7 @@ const parseDiagnostic = (state: DiagnosticState, severity: D.Diagnostic.Intf.Dia
     });
 };
 
-const buildDiagnostic = (source: D.Diagnostic.Intf.DiagnosticSource, diagnosticList: vscode.Diagnostic[], uri: vscode.Uri): void => {
+const buildDiagnostic = (source: D.Diagnostic.Intf.Source, diagnosticList: vscode.Diagnostic[], uri: vscode.Uri): void => {
     for (const diagnostic of diagnosticList) {
         if (diagnostic.severity <= vscode.DiagnosticSeverity.Warning) {
             if (typeof source[uri.fsPath] !== 'object') {
@@ -81,7 +58,7 @@ const buildDiagnostic = (source: D.Diagnostic.Intf.DiagnosticSource, diagnosticL
     }
 };
 
-const maxSeverity = (state: DiagnosticState): number => {
+const maxSeverity = (state: D.Diagnostic.Intf.State): number => {
     const ifEditorProblem = state.editor.error.total !== 0 || state.editor.warning.total !== 0;
     const ifWorkspaceProblem = state.workspace.error.total !== 0 || state.workspace.warning.total !== 0;
     if (!ifEditorProblem && !ifWorkspaceProblem) {
@@ -92,7 +69,7 @@ const maxSeverity = (state: DiagnosticState): number => {
     return Math.max(editorSeverity, workspaceSeverity);
 };
 
-const convertTo1DArray = (state: DiagnosticState): (number | number[])[] => [
+const convertTo2DArray = (state: D.Diagnostic.Intf.State): (number | number[])[] => [
     state.override,
     state.severity,
     [...state.editor.warning.line],
@@ -105,13 +82,13 @@ const convertTo1DArray = (state: DiagnosticState): (number | number[])[] => [
     state.workspace.error.total,
 ];
 
-const diagnosticSource: D.Diagnostic.Intf.DiagnosticSource = {};
+const diagnosticSource: D.Diagnostic.Intf.Source = {};
 
-const setOverrideDigit = (digit: number) => {
+const setOverrideDigit = (digit: number): void => {
     diagnosticState.override = digit;
 }
 
-const updateDiagnostic = (activeEditorUri: vscode.Uri | undefined = undefined) => {
+const updateDiagnostic = (activeEditorUri: vscode.Uri | undefined = undefined): (number | number[])[] => {
 
     for (let fs in diagnosticSource) {
         delete diagnosticSource[fs];
@@ -131,7 +108,7 @@ const updateDiagnostic = (activeEditorUri: vscode.Uri | undefined = undefined) =
 
     diagnosticState.severity = maxSeverity(diagnosticState);
 
-    return convertTo1DArray(diagnosticState);
+    return convertTo2DArray(diagnosticState);
 };
 
 export {

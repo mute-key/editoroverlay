@@ -1,7 +1,8 @@
+import type * as D from '../../type/type';
+
 import * as regex from '../../collection/regex';
 import { updateEditorConfiguration } from './editor';
 
-import type * as D from '../../type/type';
 
 const configCondition = <T extends string | number | boolean | null>(configReady: D.Config.Intf.ConfigReady, configKeyWithScope: string, value: T, defaultValue: T) => {
     return {
