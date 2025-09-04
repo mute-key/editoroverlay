@@ -13,6 +13,10 @@ import { prepareRenderGroup, renderGroupIs } from './editor/editor';
 import { checkActiveThemeKind } from './command/preset';
 import { updateRangeMetadata } from './editor/range';
 
+export {
+    initialize
+};
+
 /**
  * Main initialisation of the extension. 
  * wraps all extenion configuration and prepare the extension subscriptions. 
@@ -77,8 +81,4 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
         console.error('Error during extension initialization: ', err);
         vscode.window.showErrorMessage('Extension initialization failed!', err);
     }
-};
-
-export {
-    initialize
 };

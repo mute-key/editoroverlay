@@ -92,9 +92,7 @@ export const multiCursor = HEX_SELECTION_TYPE.MULTI_CURSOR as D.Numeric.Key.Hex
 
 //::==============================================================================
 //::[ SELECTION STATUS ] 0x020
-// 
-0
-// ==============================================================================
+//::==============================================================================
 export const enum HEX_SELECTION_TEXT {
     CURSOR_ONLY_TEXT = 0x0201,          // 513
     SINGLE_LINE_TEXT = 0x0202,          // 514
@@ -123,12 +121,12 @@ export const multiCursorEdit = HEX_SELECTION_TEXT.MULTI_CURSOR_EDIT as D.Numeric
  */
 export const enum HEX_MULTI_CURSOR_ACTION {
     BAES = 0x0210,                      // 528 | ... 0000
-    ALL_OCCURRENCE = 0x021A,            // 530 | ... 1010
+    ALL_OCCURRENCE = 0x021A,            // 538 | ... 1010
     NEXT_OCCURRENCE_INIT = 0x021C,      // 540 | ... 1100
     NEXT_OCCURRENCE = 0x0216,           // 534 | ... 0110
     CURSOR_ON_END_OF_LINES = 0x021F,    // 543 | ... 1111
     MOVEMENT = 0x0219,                  // 537 | ... 0111
-    ADD_CURSOR = 0x021B,                // 539 | ... 0011
+    ADD_CURSOR = 0x0213,                // 531 | ... 0011
 }
 
 export const allOccurrence = HEX_MULTI_CURSOR_ACTION.ALL_OCCURRENCE as D.Numeric.Key.Hex
@@ -162,17 +160,28 @@ export const multiCursorLineLineNumberHex = HEX_MULTI_CURSOR_FN.LN as D.Numeric.
 export const multiCursorLineLineCountHex = HEX_MULTI_CURSOR_FN.LC as D.Numeric.Key.Hex
 export const multiCursorLineCharacterHex = HEX_MULTI_CURSOR_FN.CHAR as D.Numeric.Key.Hex
 
+
 export const enum HEX_MULTI_CURSOR_INDEX_CONTROL_SIGNATURE {
-    STATE_ONLY = 0x0240, // 576
-    INDEX_ONLY = 0x0241, // 577
-    OVERLAY_ONLY = 0x0242, // 578
-    CONTEXT_ONLY = 0x0243, // 579
+    STATE_ONLY = 0x0242,                // 578 | 0010 (stt)
+    CONTEXT_ONLY = 0x0244,              // 580 | 0100 (ctx)
+    STATE_CONTEXT_CONTROL = 0x0241,     // 577 | 0001 (stt, ctx)
+    INDEXLIST_CONTROL = 0x0243,         // 579 | 0011 (stt, ctx)
+    BASEINDEX_CONTROL = 0x0245,         // 581 | 0101 (stt, ctx)
+    OVERLAY_CONTROL = 0x0247,           // 583 | 0111 (stt, ctx)
 };
 
 export const stateOnlyControl = HEX_MULTI_CURSOR_INDEX_CONTROL_SIGNATURE.STATE_ONLY as D.Numeric.Key.Hex
-export const indexOnlyControl = HEX_MULTI_CURSOR_INDEX_CONTROL_SIGNATURE.INDEX_ONLY as D.Numeric.Key.Hex
-export const overlayControl = HEX_MULTI_CURSOR_INDEX_CONTROL_SIGNATURE.OVERLAY_ONLY as D.Numeric.Key.Hex
-export const contextControl = HEX_MULTI_CURSOR_INDEX_CONTROL_SIGNATURE.CONTEXT_ONLY as D.Numeric.Key.Hex
+export const stateContextControl = HEX_MULTI_CURSOR_INDEX_CONTROL_SIGNATURE.STATE_CONTEXT_CONTROL as D.Numeric.Key.Hex
+export const contextOnlyControl = HEX_MULTI_CURSOR_INDEX_CONTROL_SIGNATURE.CONTEXT_ONLY as D.Numeric.Key.Hex
+export const indexListControl = HEX_MULTI_CURSOR_INDEX_CONTROL_SIGNATURE.INDEXLIST_CONTROL as D.Numeric.Key.Hex
+export const baseIndexControl = HEX_MULTI_CURSOR_INDEX_CONTROL_SIGNATURE.BASEINDEX_CONTROL as D.Numeric.Key.Hex
+export const overlayControl = HEX_MULTI_CURSOR_INDEX_CONTROL_SIGNATURE.OVERLAY_CONTROL as D.Numeric.Key.Hex
+
+/** if call sign & 0b0001 !== 0 => (stt, ctx) */
+export const isSttCtxFnSign = 0b01 as D.Numeric.Key.Bin;
+
+/** if call sign & 0b0010 !== 0 ? (stt only) OR (ctx only) */
+export const sttOrCtxFnSign = 0b10 as D.Numeric.Key.Bin;
 
 //::==============================================================================
 //::[ DIAGNOSTIC STATUS ] 0x0300
@@ -346,13 +355,13 @@ export const configruationCallerSettingJSon = CONFIGURATION_CHANGE_CALLER.SETTIN
  * 
  */
 export const enum MULTI_CURSOR_SELECTION_FLAG {
-    NOT_FOUND = 0b0000,           // 0
-    TO_SHIFT_INDEX = 0x01,        // 1
-    INDEX_SHIFTED = 0x02,         // 2
-    ON_BASELINE = 0x04,           // 4
-    AS_LAST_SELECTION = 0x08,     // 8 
-    NOT_AS_LAST_SELECTION = 0x10, // 16
-    INIT = 0x20,                  // 32
+    NOT_FOUND = 0b0000,
+    TO_SHIFT_INDEX = 0x01,
+    INDEX_SHIFTED = 0x02,
+    ON_BASELINE = 0x04,
+    AS_LAST_SELECTION = 0x08,
+    NOT_AS_LAST_SELECTION = 0x10,
+    INIT = 0x20,
 }
 
 /**
@@ -364,22 +373,23 @@ export const enum MULTI_CURSOR_SELECTION_FLAG {
  * #TODO: need better const names
  * 
  */
-export const recurringLine0 /* 5 */ = MULTI_CURSOR_SELECTION_FLAG.TO_SHIFT_INDEX + MULTI_CURSOR_SELECTION_FLAG.ON_BASELINE as D.Numeric.Key.Bin
-export const recurringLine1 /* 1 */ = MULTI_CURSOR_SELECTION_FLAG.TO_SHIFT_INDEX as D.Numeric.Key.Bin
-export const recurringLine2 /* 12 */ = MULTI_CURSOR_SELECTION_FLAG.ON_BASELINE + MULTI_CURSOR_SELECTION_FLAG.AS_LAST_SELECTION as D.Numeric.Key.Bin
-export const recurringLine3 /* 4 */ = MULTI_CURSOR_SELECTION_FLAG.ON_BASELINE as D.Numeric.Key.Bin
-export const recurringLine4 /* 8 */ = MULTI_CURSOR_SELECTION_FLAG.AS_LAST_SELECTION as D.Numeric.Key.Bin
-export const recurringLine5 /* 6 */ = MULTI_CURSOR_SELECTION_FLAG.INDEX_SHIFTED + MULTI_CURSOR_SELECTION_FLAG.ON_BASELINE as D.Numeric.Key.Bin
-export const recurringLine6 /* 10 */ = MULTI_CURSOR_SELECTION_FLAG.INDEX_SHIFTED + MULTI_CURSOR_SELECTION_FLAG.AS_LAST_SELECTION as D.Numeric.Key.Bin
-export const recurringLine7 /* 14 */ = MULTI_CURSOR_SELECTION_FLAG.INDEX_SHIFTED + MULTI_CURSOR_SELECTION_FLAG.ON_BASELINE + MULTI_CURSOR_SELECTION_FLAG.AS_LAST_SELECTION as D.Numeric.Key.Bin
-export const recurringLine8 /* 18 */ = MULTI_CURSOR_SELECTION_FLAG.INDEX_SHIFTED + MULTI_CURSOR_SELECTION_FLAG.NOT_AS_LAST_SELECTION as D.Numeric.Key.Bin
-export const recurringLine9 /* 20 */ = MULTI_CURSOR_SELECTION_FLAG.ON_BASELINE + MULTI_CURSOR_SELECTION_FLAG.NOT_AS_LAST_SELECTION as D.Numeric.Key.Bin
 
-export const nonRecurringLine0 /* 0 */ = MULTI_CURSOR_SELECTION_FLAG.NOT_FOUND as D.Numeric.Key.Bin
-export const nonRecurringLine1 /* 1 */ = MULTI_CURSOR_SELECTION_FLAG.TO_SHIFT_INDEX as D.Numeric.Key.Bin
-export const nonRecurringLine2 /* 2 */ = MULTI_CURSOR_SELECTION_FLAG.INDEX_SHIFTED as D.Numeric.Key.Bin
-export const nonRecurringLine3 /* 3 */ = MULTI_CURSOR_SELECTION_FLAG.INDEX_SHIFTED + MULTI_CURSOR_SELECTION_FLAG.TO_SHIFT_INDEX as D.Numeric.Key.Bin
-export const nonRecurringLine4 /* 32 */ = MULTI_CURSOR_SELECTION_FLAG.INIT as D.Numeric.Key.Bin
+/** _5 */ export const recurringLine0 = MULTI_CURSOR_SELECTION_FLAG.TO_SHIFT_INDEX + MULTI_CURSOR_SELECTION_FLAG.ON_BASELINE as D.Numeric.Key.Bin
+/** _1 */ export const recurringLine1 = MULTI_CURSOR_SELECTION_FLAG.TO_SHIFT_INDEX as D.Numeric.Key.Bin
+/** 12 */ export const recurringLine2 = MULTI_CURSOR_SELECTION_FLAG.ON_BASELINE + MULTI_CURSOR_SELECTION_FLAG.AS_LAST_SELECTION as D.Numeric.Key.Bin
+/** _4 */ export const recurringLine3 = MULTI_CURSOR_SELECTION_FLAG.ON_BASELINE as D.Numeric.Key.Bin
+/** _8 */ export const recurringLine4 = MULTI_CURSOR_SELECTION_FLAG.AS_LAST_SELECTION as D.Numeric.Key.Bin
+/** _6 */ export const recurringLine5 = MULTI_CURSOR_SELECTION_FLAG.INDEX_SHIFTED + MULTI_CURSOR_SELECTION_FLAG.ON_BASELINE as D.Numeric.Key.Bin
+/** 10 */ export const recurringLine6 = MULTI_CURSOR_SELECTION_FLAG.INDEX_SHIFTED + MULTI_CURSOR_SELECTION_FLAG.AS_LAST_SELECTION as D.Numeric.Key.Bin
+/** 14 */ export const recurringLine7 = MULTI_CURSOR_SELECTION_FLAG.INDEX_SHIFTED + MULTI_CURSOR_SELECTION_FLAG.ON_BASELINE + MULTI_CURSOR_SELECTION_FLAG.AS_LAST_SELECTION as D.Numeric.Key.Bin
+/** 18 */ export const recurringLine8 = MULTI_CURSOR_SELECTION_FLAG.INDEX_SHIFTED + MULTI_CURSOR_SELECTION_FLAG.NOT_AS_LAST_SELECTION as D.Numeric.Key.Bin
+/** 20 */ export const recurringLine9 = MULTI_CURSOR_SELECTION_FLAG.ON_BASELINE + MULTI_CURSOR_SELECTION_FLAG.NOT_AS_LAST_SELECTION as D.Numeric.Key.Bin
+
+/** _0 */ export const nonRecurringLine0 = MULTI_CURSOR_SELECTION_FLAG.NOT_FOUND as D.Numeric.Key.Bin
+/** _1 */ export const nonRecurringLine1 = MULTI_CURSOR_SELECTION_FLAG.TO_SHIFT_INDEX as D.Numeric.Key.Bin
+/** _2 */ export const nonRecurringLine2 = MULTI_CURSOR_SELECTION_FLAG.INDEX_SHIFTED as D.Numeric.Key.Bin
+/** _3 */ export const nonRecurringLine3 = MULTI_CURSOR_SELECTION_FLAG.INDEX_SHIFTED + MULTI_CURSOR_SELECTION_FLAG.TO_SHIFT_INDEX as D.Numeric.Key.Bin
+/** 32 */ export const nonRecurringLine4 = MULTI_CURSOR_SELECTION_FLAG.INIT as D.Numeric.Key.Bin
 
 
 

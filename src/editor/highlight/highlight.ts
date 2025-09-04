@@ -6,6 +6,16 @@ import { HIGHLIGHT_BORDER_POSITION_INFO, HIGHLIGHT_STYLE_LIST } from '../../cons
 import { createLineRange, createRangeSPEP, blankRange } from '../range';
 import { applyDecoration } from '../editor';
 
+export {
+    hightlightCoordinator,
+    bindHighlightStyleState,
+    clearEveryHighlight,
+    cursorOnlyHighlightRange,
+    singelLineHighlightRange,
+    multiLineHighlightRange,
+    multiCursorHighlightRange,
+};
+
 const highlightStyleList = {
     ...HIGHLIGHT_STYLE_LIST
 } as unknown as D.Decoration.Tp.HighlightStyleList;
@@ -89,14 +99,4 @@ const bindHighlightStyleState = () => {
         styleOf: highlightStyleList,
         infoOf: borderPositionInfo
     };
-};
-
-export {
-    hightlightCoordinator,
-    bindHighlightStyleState,
-    clearEveryHighlight,
-    cursorOnlyHighlightRange,
-    singelLineHighlightRange,
-    multiLineHighlightRange,
-    multiCursorHighlightRange,
 };

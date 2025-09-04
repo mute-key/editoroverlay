@@ -1,5 +1,18 @@
 import * as D from '../type/type.d';
 
+export {
+    fnv1aHash,
+    readBits,
+    hrtimeToMS,
+    splitAndPosition,
+    hexToRgbaStringLiteral,
+    autoArrayPropertyObject,
+    compareNumbers,
+    isObjectShallowEqual,
+    isEntriesEqual,
+    toReadonlyProperty
+};
+
 /**
  * 
  * @param newProp 
@@ -151,16 +164,3 @@ const isEntriesEqual = (a, b) => a.length === b.length && a.every((element, inde
 const toReadonlyProperty = (object: any, propertyName: string[]) => propertyName.forEach(property => {
     Object.defineProperty(object, property, { writable: false });
 });
-
-export {
-    fnv1aHash,
-    readBits,
-    hrtimeToMS,
-    splitAndPosition,
-    hexToRgbaStringLiteral,
-    autoArrayPropertyObject,
-    compareNumbers,
-    isObjectShallowEqual,
-    isEntriesEqual,
-    toReadonlyProperty
-};

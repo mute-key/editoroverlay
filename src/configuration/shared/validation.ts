@@ -3,6 +3,12 @@ import type * as D from '../../type/type';
 import * as regex from '../../collection/regex';
 import { updateEditorConfiguration } from './editor';
 
+export {
+    sanitizeConfigValue,
+    configCondition,
+    sanitizeContentText,
+    convertNullStringToNull
+};
 
 const configCondition = <T extends string | number | boolean | null>(configReady: D.Config.Intf.ConfigReady, configKeyWithScope: string, value: T, defaultValue: T) => {
     return {
@@ -54,12 +60,4 @@ const convertNullStringToNull = (value: string): string | null => {
         return null;
     }
     return value;
-};
-
-
-export {
-    sanitizeConfigValue,
-    configCondition,
-    sanitizeContentText,
-    convertNullStringToNull
 };

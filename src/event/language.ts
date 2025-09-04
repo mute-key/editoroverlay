@@ -4,6 +4,9 @@ import * as vscode from 'vscode';
 import * as __0x from '../constant/shared/numeric';
 import { diagnosticInfo } from '../editor/status/diagnostic';
 
+export {
+    diagnosticChanged
+};
 
 const diagnosticChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decorationState }): vscode.Disposable => {
     return vscode.languages.onDidChangeDiagnostics(async (event: vscode.DiagnosticChangeEvent) => {
@@ -15,8 +18,4 @@ const diagnosticChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decorat
             diagnosticInfo(decorationState)(editor);                    // refresh diagnostic status block
         }
     });
-};
-
-export {
-    diagnosticChanged
 };

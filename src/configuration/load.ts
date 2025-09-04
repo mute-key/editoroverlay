@@ -8,6 +8,10 @@ import { updateDiagnosticTextConfig } from './decoration/diagnostic';
 import { writeEditorConfiguration } from './shared/editor';
 import { bindEditorDecoration } from '../editor/editor';
 
+export { 
+    loadConfiguration 
+};
+
 const configInfo = { 
     ...CONFIG_INFO
 } as unknown as D.Config.Intf.ConfigReady;
@@ -52,8 +56,4 @@ const loadConfiguration = (context?: vscode.ExtensionContext): D.Config.Intf.Ini
         };
     }
     return;
-};
-
-export { 
-    loadConfiguration 
 };

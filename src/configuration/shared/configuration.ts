@@ -6,6 +6,12 @@ import { convertNullStringToNull } from './validation';
 import { hexToRgbaStringLiteral, } from '../../util/util';
 import { parseContentText } from '../shared/decoration';
 
+export {
+    getConfigValue,
+    colorConfigTransform,
+    workspaceProxyConfiguration,
+    getWorkspaceConfiguration
+};
 
 const getWorkspaceConfiguration = (section: string): vscode.WorkspaceConfiguration => vscode.workspace.getConfiguration(section);
 
@@ -59,11 +65,4 @@ const workspaceProxyConfiguration = (config: any, workspaceConfigSectionName: st
             workspaceProxyConfiguration(config[sectionKey], workspaceConfigSectionName + '.' + sectionKey, ifContentTextArray, bindTo);
         }
     });
-};
-
-export {
-    getConfigValue,
-    colorConfigTransform,
-    workspaceProxyConfiguration,
-    getWorkspaceConfiguration
 };

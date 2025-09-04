@@ -1,5 +1,33 @@
 import type * as D from '../type/type.d';
 
+export {
+    indentAndEOLRegex,
+    ifStringIsResourceScope,
+    tabAndEOLRegex,
+    isValidHexColor,
+    isValidWidth,
+    ifContentTextHasPlaceholder,
+    contentTextKeysOnly,
+    prefix,
+    postfix,
+    source,
+    warning,
+    error,
+    editor,
+    workspace,
+    allok,
+    column,
+    zeroColumn,
+    lineCount,
+    linePosition,
+    lineNumber,
+    character,
+    characterOnly,
+    nth,
+    selectionCount,
+    D
+};
+
 //:==============================================================================
 //:  [ REGEX COLLECTION ], self-explanatory
 //:==============================================================================
@@ -29,31 +57,3 @@ const isValidHexColor = /^#[A-Fa-f0-9]{6}$/;
 const isValidWidth = /^[0-9]px$|^[0-9]em$/;
 const ifContentTextHasPlaceholder = /(\${[A-z]*})/g;
 const contentTextKeysOnly = /\${([^{}]+)}/s;
-
-export {
-    indentAndEOLRegex,
-    ifStringIsResourceScope,
-    tabAndEOLRegex,
-    isValidHexColor,
-    isValidWidth,
-    ifContentTextHasPlaceholder,
-    contentTextKeysOnly,
-    prefix,
-    postfix,
-    source,
-    warning,
-    error,
-    editor,
-    workspace,
-    allok,
-    column,
-    zeroColumn,
-    lineCount,
-    linePosition,
-    lineNumber,
-    character,
-    characterOnly,
-    nth,
-    selectionCount,
-    D
-};

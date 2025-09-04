@@ -14,6 +14,9 @@ import { bindDiagnosticContentTextState, clearDiagnosticTextState, composeRender
 import { setOverrideDigit } from '../../diagnostic/diagnostic';
 import { hexToRgbaStringLiteral, readBits } from '../../util/util';
 
+export {
+    updateDiagnosticTextConfig
+};
 
 const positionKeyList = ['pre', 'post'] as const;
 
@@ -384,8 +387,4 @@ const updateDiagnosticTextConfig = async (extenionName: string, configuratioChan
     delete bindTo.textof;
     delete bindTo.configOf;
     return true;
-};
-
-export {
-    updateDiagnosticTextConfig
 };

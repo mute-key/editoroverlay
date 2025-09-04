@@ -7,7 +7,17 @@ import { resetAllDecoration } from '../editor/editor';
 import { renderGroupIs, updateIndentOption } from '../editor/editor';
 import { resetEditorDiagnosticStatistics, resetWorkspaceDiagnosticStatistics } from '../diagnostic/diagnostic';
 import { updateRangeMetadata } from '../editor/range';
-import { forceDispatchEditorChange } from '../editor/status/selection';
+import { forceDispatchEditorChange } from '../editor/selection/selection';
+
+export {
+    windowStateChanged,
+    activeEditorChanged,
+    editorOptionChanged,
+    selectionChanged,
+    tabChanged
+    // visibleRangeChanged
+    // documentModifified
+};
 
 const windowStateChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
     const onDidChangeWindowState = vscode.window.onDidChangeWindowState((event: vscode.WindowState): void => {
@@ -127,13 +137,3 @@ const tabChanged = ({ decorationState }): vscode.Disposable => {
 //         }
 //     });
 // };
-
-export {
-    windowStateChanged,
-    activeEditorChanged,
-    editorOptionChanged,
-    selectionChanged,
-    tabChanged
-    // visibleRangeChanged
-    // documentModifified
-};

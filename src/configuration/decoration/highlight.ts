@@ -10,6 +10,11 @@ import { colorConfigTransform, getConfigValue, getWorkspaceConfiguration } from 
 import { createEditorDecorationType } from '../../editor/editor';
 import { readBits } from '../../util/util';
 
+export {
+    updateGeneralConfig,
+    updateHighlightStyleConfiguration,
+    generateHighlightDecoration
+};
 
 const checkConfigKeyAndCast = <T extends D.Config.Tp.DecorationStyleConfigName | D.Config.Tp.GeneralConfigNameOnly>(key: string): T => {
     return key as T;
@@ -155,11 +160,4 @@ const generateHighlightDecoration = (configReady: D.Config.Intf.ConfigReady): bo
         updateHighlightStyleConfiguration(configReady, selectionType);
     }
     return true;
-};
-
-
-export {
-    updateGeneralConfig,
-    updateHighlightStyleConfiguration,
-    generateHighlightDecoration
 };

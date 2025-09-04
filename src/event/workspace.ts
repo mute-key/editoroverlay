@@ -5,6 +5,9 @@ import * as __0x from '../constant/shared/numeric';
 import { CONFIG_SECTION } from '../constant/config/object';
 import { configurationChanged } from '../configuration/shared/update';
 
+export {
+    configChanged
+};
 
 const configChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decorationState }): vscode.Disposable => {
     return vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
@@ -19,6 +22,3 @@ const configChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decorationS
     });
 };
 
-export {
-    configChanged
-};

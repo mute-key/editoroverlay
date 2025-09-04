@@ -1,49 +1,62 @@
 ### Backlog
 
+this is a temporary note & backlog, until i find something i like
+
 ```plain
-************************************************************************************************************
+| symbols ===================================================================================================
 
-|Sticky List| [!]: issues [?]: not decided [~]: planning, on going
+  [+]: new, added
+  [o]: completed
+  [!]: issues
+  [~]: on going, unfinished or planning
+  [,]: not decided 
+  [_]: drop, ideas or features
+  [?]: unknown unknown, lost track of the topic
+  
+| sticky_list ===============================================================================================
 
-- [!] sometimes created decorationTypes does not have ascending decorationTypeID base on sequence, 
+- [!] continues trigger of 'select next occurrences' will not cause render lag until when it reach 
+      round 300 cursor. they will be rendered with some delay. one way to solving this would be
+      paging the render obejct but this will require major data structure refactoring. 
+      i would like to work on this eventually.
+
+- [?] sometimes created decorationTypes does not have ascending decorationTypeID base on sequence, 
       causing malformed statsus block to be displayed. the only fix is to reload the vscode.
       need better method to have correct display order to prevent such an event.
-- [!] direct config update on settings.json leaves selection status text. 
-
-- [?] throttling or debouncing for multi-line selection and multi-cursor selection
+- [?] direct config update on settings.json leaves selection status text. 
 - [?] backgroundColor configuration or auto appply background color based on border colour. not sure yet.
-- [?] maybe applying preset should have some sort of indicator or message popup that configurations are 
-      being updated and will reload. 
-- [?] probably document state indicator could be useful? not sure
 
+- [~] maybe applying preset should have some sort of indicator or message popup that configurations are 
+      being updated and will reload. 
+- [~] probably document state indicator could be useful? not sure
 - [~] configuration pattern improvement.
 - [~] configuration code clean up.
 - [~] implement new status block for tasks in vscode or from terminal.
 - [~] to get back to configuration code at some point and clean up.
-- [~] mutline highlight/status has high rendering cost. have been constantly optimizing the cost ever 
+
+| version log ===============================================================================================
+
+| 1.4.8 |
+
++ [o] my initial design of multiCursor was incomplete to cover a lot of edge cases. 
+      multiCursor now can handle most of edge cases. 
++ [o] there was a bug with margin-left spacing with diagnostic render option overlays. 
+      it was hotfixed in 1.4.7.
++ [o] i am not sure if the api have changed or not but the behaviour tab change event is different 
+      than as i remembered. regardless, tab change event no longer need to be subscribed. 
++ [o] mutline highlight/status has high rendering cost. have been constantly optimizing the cost ever 
       since. this will be onging until no longer spikes even with rapid-fire but maybe it is very 
       difficult without debounce. the problem with debounce or throttlign will introduce some delays 
-      with input response. im not sure if i will like that instead cripy response as of now.
-- [~] implement new diggnostic position (auto-before) just like (auto-inline).
+      inbetween of responses. now that i am thinking an map could be an option here but the map object 
+      still will be slower than object literal. the performance of multline is not as bad as before, 
+      so i am going to keep it as is unless i come up with a better idea. 
+
+- [_] implement new diggnostic position (auto-before) just like (auto-inline).
+- [_] throttling or debouncing for multi-line selection and multi-cursor selection
 
 ************************************************************************************************************
 
-i think some people actually prefer top-bottom border, as i saw in vscode release note.
-not sure if the one that i saw is my extension or not though
-maybe change the way the borders are being handled in configuration to make it more intuitive? 
-hm, 
-
-i quite like the syles of this backlog, maybe i can make the app or extenion out of it 
-no todo apps ever scratched my itchings. perhaps this is the time to make myself one. 
-
-- [+] new command to set auto next line for status
-- [+] 
-
-
-
-************************************************************************************************************
-
-|1.4.5 Update|
+| 1.4.5 |
 
 - [+] new configuration nextLine (auto) or previousLine (auto) for diagnotic visiblity has been added.
 - [+] new autoLinePositionDatumPoint has been added to serve a base range point to auto inline 
@@ -61,7 +74,7 @@ no todo apps ever scratched my itchings. perhaps this is the time to make myself
 
 ************************************************************************************************************
 
-|1.3.4 Update| ... and before, (list has not been kept up)
+| pre 1.3.4 | ... and before, (list has not been kept up)
 
 - [o] preset format and color preset
 - [o] changing config recreate all decoroation, de-refernce to previous decoroationType from the object.

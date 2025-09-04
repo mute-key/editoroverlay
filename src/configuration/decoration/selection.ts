@@ -3,10 +3,13 @@ import type * as D from '../../type/type';
 import * as __0x from '../../constant/shared/numeric';
 import { CONFIG_SECTION, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_NUMLINK, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE } from '../../constant/config/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
-import { bindStatusContentTextState,  setMultiCursorTextPosition, setMultiCursorEditPosition, SelectionTextRegex, setSelectionTextbuffer, syncRefernceTable, setMultiCursorContext } from '../../editor/status/selection';
+import { bindStatusContentTextState,  setMultiCursorTextPosition, setMultiCursorEditPosition, SelectionTextRegex, setSelectionTextbuffer, syncRefernceTable, setMultiCursorContext } from '../../editor/selection/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 import { isEntriesEqual } from '../../util/util';
 
+export {
+    updateSelectionTextConfig
+};
 
 const convertPositionToDecorationRenderOption = (textPosition, SelectionDecorationStyle): void => {
     return textPosition.contentText.map((text, idx) => {
@@ -137,8 +140,3 @@ const updateSelectionTextConfig = (extenionName: string, configuratioChange: boo
     delete bindToBuffer.functionOf;
     return true;
 };
-
-export {
-    updateSelectionTextConfig
-};
-

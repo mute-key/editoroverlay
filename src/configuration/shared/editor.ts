@@ -1,6 +1,11 @@
 import * as vscode from 'vscode';
 import { getWorkspaceConfiguration } from './configuration';
 
+export {
+    writeEditorConfiguration,
+    updateEditorConfiguration
+};
+
 const updateEditorConfiguration = (key: string, value: any): void => {
     const editorConfig = vscode.workspace.getConfiguration("editor");
     if (value === null || value === 'null' || String(value).length === 0) {
@@ -18,9 +23,4 @@ const writeEditorConfiguration = (): void => {
     // this is cool but not necessary.
     // editorConfig.update("cursorBlinking", 'phase', vscode.ConfigurationTarget.Global);
     // editorConfig.update("cursorSmoothCaretAnimation", 'on', vscode.ConfigurationTarget.Global);
-};
-
-export {
-    writeEditorConfiguration,
-    updateEditorConfiguration
 };

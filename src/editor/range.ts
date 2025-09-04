@@ -1,5 +1,22 @@
 import * as vscode from 'vscode';
 
+export {
+    createRangeNNNN,
+    createRangeSPEP,
+    createRangeNNEP,
+    createCursorRange,
+    createLineRange,
+    createCursorRangeLine,
+    createCursorRangeLineAuto,
+    createStartEndRangeOfSelection,
+    createLineEndSelection,
+    createLineSelection,
+    hasEmptyRange,
+    blankRange,
+    updateRangeMetadata,
+    setAutoInlineDatumPoint
+};
+
 const rangeMetadata: Record<string, number> = {
     diagnosticLineDelta: 1,
     autoInlineDatumPoint: 0,
@@ -69,33 +86,8 @@ const createLineEndSelection = (selection: vscode.Selection): vscode.Selection =
 
 const createStartEndRangeOfSelection = (selection: vscode.Selection): vscode.Range => createRangeSPEP(selection.start, selection.end);
 
-const sortBasedEndLine = (a: vscode.Selection, b: vscode.Selection): number => a.end.line - b.end.line;
-
 const isEmptyRange = (selection: vscode.Selection): boolean => selection.isEmpty;
 
 const hasEmptyRange = (selections: readonly vscode.Selection[]): boolean => selections.find(isEmptyRange) !== undefined;
 
 const blankRange: vscode.Range[] = [];
-
-const ifRangesNeedSort = (selection: vscode.Selection, index: number, selections: readonly vscode.Selection[]) => (index === 0) || selections[index - 1].end.line <= selection.end.line;
-
-const rangeToCursor = (selection: vscode.Selection) => createLineSelection(selection.end);
-
-export {
-    createRangeNNNN,
-    createRangeSPEP,
-    createRangeNNEP,
-    createCursorRange,
-    createLineRange,
-    createCursorRangeLine,
-    createCursorRangeLineAuto,
-    createStartEndRangeOfSelection,
-    createLineEndSelection,
-    sortBasedEndLine,
-    ifRangesNeedSort,
-    rangeToCursor,
-    hasEmptyRange,
-    blankRange,
-    updateRangeMetadata,
-    setAutoInlineDatumPoint
-};

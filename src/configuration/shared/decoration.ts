@@ -7,6 +7,14 @@ import { DECORATION_OPTION_AFTER_CONFIG, DECORATION_OPTION_CONFIG } from '../../
 import { sanitizeContentText } from './validation';
 import { hexToRgbaStringLiteral, splitAndPosition } from '../../util/util';
 
+export {    
+    leftMarginToMarginString,
+    castToFuncSignature,
+    setContentTextOnDecorationRenderOption,
+    searchPlaceholderPosition,
+    parseContentText,
+    convertToDecorationRenderOption,
+};
 
 const leftMarginToMarginString = (leftMargin: string | undefined) => `0 0 0 ${leftMargin}`;
 
@@ -113,13 +121,4 @@ const convertToDecorationRenderOption = (config: D.Decoration.Intf.DecorationTex
     delete decorationOption.after.margin;
     delete decorationOption.after.textDecoration;
     return decorationOption;
-};
-
-export {    
-    leftMarginToMarginString,
-    castToFuncSignature,
-    setContentTextOnDecorationRenderOption,
-    searchPlaceholderPosition,
-    parseContentText,
-    convertToDecorationRenderOption,
 };

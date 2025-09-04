@@ -4,12 +4,22 @@ import * as vscode from 'vscode';
 import * as __0x from '../constant/shared/numeric';
 import * as regex from '../collection/regex';
 import { DECORATION_STATE, SELECTION_KIND_LIST } from '../constant/shared/object';
-import { bindStatusContentTextState, clearSelectionTextBuffer } from './status/selection';
 import { clearDiagnosticText, diagnosticInfo } from './status/diagnostic';
 import { cursorOnlyHighlightRange, singelLineHighlightRange, multiLineHighlightRange, multiCursorHighlightRange, clearEveryHighlight } from './highlight/highlight';
-import { cursorOnlySelection, singleLineSelection, multilineSelection, multiCursorSelection } from './status/selection';
+import { cursorOnlySelection, singleLineSelection, multilineSelection, multiCursorSelection, bindStatusContentTextState, clearSelectionTextBuffer } from './selection/selection';
 import { blankRange, updateRangeMetadata } from './range';
 
+export {
+    updateIndentOption,
+    clearDecorationState,
+    applyDecoration,
+    createEditorDecorationType,
+    resetAllDecoration,
+    prepareRenderGroup,
+    renderGroupIs,
+    bindEditorDecoration,
+    resetDecoration
+};
 
 /**
  * buffer for rendering function call stack
@@ -41,6 +51,12 @@ const resetDecoration = (setDecorations: D.Editor.Tp.RenderOverlay) => (decorati
  * I assuemd using array to store value in object would be faster than mutating the object as it would be a reference.
  * at this point, i am not sure if there is a significant advantage, however this respond smoother in my experience so far. 
  * maybe drop the array in future but keeping it as is for now.
+ * 
+ * now that i am thinking making those state tracking numeric values as array, 
+ * existing in stack, instead of heap perhaps; making not be targeted by garbage collector
+ * unless it is explicitly uses references of array that hold numeric value ot state.
+ * 
+ * this, in fact could be slower but it will guarantee to stay on the memory.
  * 
  */
 const clearDecorationState = (decorationState: D.Decoration.Intf.State): void => {
@@ -178,16 +194,4 @@ const bindEditorDecoration = () => {
     return {
         stateOf: decorationState
     };
-};
-
-export {
-    updateIndentOption,
-    clearDecorationState,
-    applyDecoration,
-    createEditorDecorationType,
-    resetAllDecoration,
-    prepareRenderGroup,
-    renderGroupIs,
-    bindEditorDecoration,
-    resetDecoration
 };

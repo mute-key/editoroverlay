@@ -3,6 +3,10 @@ import type * as D from '../../type/type';
 import * as vscode from 'vscode';
 import { getWorkspaceConfiguration } from '../shared/configuration';
 
+export {
+    updateLegacyConfig
+};
+
 const legacyConfig = {
     borderOpacity: 'general.borderOpacity',
     backgroundOpacity: 'general.backgroundOpacity',
@@ -56,8 +60,3 @@ const updateLegacyConfig = async (configReady: D.Config.Intf.ConfigReady) => {
         }
     });
 };
-
-export {
-    updateLegacyConfig
-};
-

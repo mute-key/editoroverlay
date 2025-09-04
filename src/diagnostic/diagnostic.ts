@@ -6,6 +6,12 @@ import { DIAGNOSTIC_SEVERITY_TO_KEY } from '../constant/config/object';
 import { DIAGNOSTIC_STATE } from '../constant/shared/object';
 import { DIAGNOSTIC_BIOME } from '../constant/config/enum';
 
+export {
+    updateDiagnostic,
+    resetEditorDiagnosticStatistics,
+    resetWorkspaceDiagnosticStatistics,
+    setOverrideDigit
+};
 
 const diagnosticState = { ...DIAGNOSTIC_STATE } as unknown as D.Diagnostic.Intf.State;
 
@@ -109,11 +115,4 @@ const updateDiagnostic = (activeEditorUri: vscode.Uri | undefined = undefined): 
     diagnosticState.severity = maxSeverity(diagnosticState);
 
     return convertTo2DArray(diagnosticState);
-};
-
-export {
-    updateDiagnostic,
-    resetEditorDiagnosticStatistics,
-    resetWorkspaceDiagnosticStatistics,
-    setOverrideDigit
 };

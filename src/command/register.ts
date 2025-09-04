@@ -3,6 +3,13 @@ import type * as D from "../type/type.d";
 import * as vscode from 'vscode';
 import { clearConfiguration, quickPickPresetList, quickPickOientationList, quickPickColorList, restoreToDefault, quickPickContrastList } from './preset';
 
+export {
+    setPreset,
+    setColor,
+    setContrast,
+    setOrientation,
+    resetConfiguration
+};
 
 const setPreset = (context: D.Command.Intf.Context): vscode.Disposable => {
     return vscode.commands.registerCommand("cursorlinehighlight.applyPreset", () => quickPickPresetList(context));
@@ -22,12 +29,4 @@ const setOrientation = (context: D.Command.Intf.Context): vscode.Disposable => {
 
 const resetConfiguration = (context: D.Command.Intf.Context): vscode.Disposable => {
     return vscode.commands.registerCommand("cursorlinehighlight.restoreToDefaultConfiguration", () => restoreToDefault().then(clearConfiguration(context)));
-};
-
-export {
-    setPreset,
-    setColor,
-    setContrast,
-    setOrientation,
-    resetConfiguration
 };

@@ -12,6 +12,16 @@ import { updateDiagnosticTextConfig } from '../configuration/decoration/diagnost
 import { readFile } from 'node:fs/promises';
 import { updateGeneralConfig, updateHighlightStyleConfiguration } from '../configuration/decoration/highlight';
 
+export {
+    readPreset,
+    quickPickPresetList,
+    quickPickColorList,
+    quickPickContrastList,
+    quickPickOientationList,
+    restoreToDefault,
+    clearConfiguration,
+    checkActiveThemeKind
+};
 
 const clearConfiguration = (context: D.Command.Intf.Context) => (value: string | undefined): void => {
     if (value === CONFIRM.YES) {
@@ -169,15 +179,4 @@ const checkActiveThemeKind = async (context: D.Command.Intf.Context): Promise<vo
             await writeSelectedPreset(context.configInfo, packageName, json);
         }
     }
-};
-
-export {
-    readPreset,
-    quickPickPresetList,
-    quickPickColorList,
-    quickPickContrastList,
-    quickPickOientationList,
-    restoreToDefault,
-    clearConfiguration,
-    checkActiveThemeKind
 };

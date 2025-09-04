@@ -25,8 +25,7 @@ declare namespace Intf {
     interface MultiCursorOverlay {
         baseIndexRefBuffer: number[][],
         indexListRefBuffer: number[],
-        calibration: number,
-        newBase: boolean
+        calibration: number
     }
 
     interface MultiCursorState {
@@ -40,10 +39,10 @@ declare namespace Intf {
         baseLine: number,
         currentLine: number,
         previousLine: number,
-        duplicateOverlayIndex: number,
+        duplicateOverlayIndex?: number,
         /* --- LAST SELECTION STATE --- */
         lastSelection?: vscode.Selection | {},
-        lastSelectionCount: number,
+        lastCount: number,
         /* --- OVERLAY STATE --- */
         overlayIndex: number,
         overlay: MultiCursorOverlay

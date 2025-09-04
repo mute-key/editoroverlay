@@ -11,6 +11,16 @@ import { DIAGNOSTIC_CONTENT_TEXT_KEY } from '../../constant/config/enum';
 import { updateDiagnostic } from '../../diagnostic/diagnostic';
 import { resetDecoration } from '../editor';
 
+export {
+    bindDiagnosticContentTextState,
+    composeRenderOption,
+    setDiagonosticTextbuffer,
+    initializeStateBuffer,
+    clearDiagnosticTextState,
+    clearDiagnosticText,
+    diagnosticInfo,
+    diagnosticTextRegex
+};
 
 const diagnosticContentText = {
     ...DIAGNOSTIC_CONTENT_TEXT
@@ -277,15 +287,4 @@ const bindDiagnosticContentTextState = () => {
         },
         configOf: diagnosticVisibility
     };
-};
-
-export {
-    bindDiagnosticContentTextState,
-    composeRenderOption,
-    setDiagonosticTextbuffer,
-    initializeStateBuffer,
-    clearDiagnosticTextState,
-    clearDiagnosticText,
-    diagnosticInfo,
-    diagnosticTextRegex
 };

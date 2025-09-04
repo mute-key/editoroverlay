@@ -6,6 +6,10 @@ import { updateGeneralConfig, updateHighlightStyleConfiguration } from '../decor
 import { updateDiagnosticTextConfig } from '../decoration/diagnostic';
 import { updateSelectionTextConfig } from '../decoration/selection';
 
+export {
+    configurationChanged
+};
+
 const configurationChanged = (configInfo: any, section: string): void => {
     try {
         Error.configurationUpdated();
@@ -34,8 +38,4 @@ const configurationChanged = (configInfo: any, section: string): void => {
     } finally {
         prepareRenderGroup(configInfo);
     }
-};
-
-export {
-    configurationChanged
 };
