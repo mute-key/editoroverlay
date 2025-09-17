@@ -3,8 +3,8 @@
     "publisher": "mutekey",
     "displayName": "Cursor/Selection Line Highlight",
     "description": "Highly configurable highlights on cursor line and selection lines in editor real-time.",
-    "version": "1.4.7",
-    "icon": "./resource/icon.png",
+    "version": "1.4.8",
+    "icon": "resource/icon.png",
     "license": "LicenseRef-NoCommercial-UseOnly",
     "engines": {
         "vscode": "^1.96.0"
