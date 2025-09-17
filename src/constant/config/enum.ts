@@ -203,7 +203,21 @@ export const enum DIAGNOSTIC_BIOME {
     ERR = 1 << 2,
 }
 
+export const enum DIAGNOSTIC_KIND {
+    WORKSPACE_ONLY = "workspace Only",
+    EDITOR_ONLY = "editor Only",
+}
+
 export const enum NULL_COLLECTION { 
     STRING = ""
+}
+
+export const enum LINE_POSITION{
+    INITIAL_CURSOR = "initial cursor",
+    LAST_CURSOR = "last cursor",
+    PREVIOUS_LINE = "previousLine",
+    PREVIOUS_LINE_AUTO_INLINE = "previousLine (auto-inline)",
+    NEXTLINE = "nextLine",
+    NEXTLINE_AUTO_INLINE = "nextLine (auto-inline)",
 }
 

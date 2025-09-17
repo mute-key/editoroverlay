@@ -1,8 +1,7 @@
 # Introduction
 
-Highly customizable cursor/selection highlight extension.
-This extension can display selection status text which is equivelant of `Editor Selection` in `Status Bar` as well as diagnostic count of editor/workspace in `Problem view`.
-You can enabled/disabled the features that you only need, if you don't need them all. Here are the examples of this extension with default confuguration as out of the box.
+Highly customizable cursor/selection overlay extension. 
+This extension displays selection status overlay on real time as you change the cursor/selection position,  which is equivelant of `Editor Selection` in `Status Bar` as well as diagnostic count of editor/workspace in `Problem view`. You can enabled/disabled the features that you only need, if you don't need them all. Here are the examples of this extension with default confuguration as out of the box.
 
 #### <ins>Preview: Cursor Only Highlight</ins>
 

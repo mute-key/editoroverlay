@@ -1,7 +1,7 @@
 import type * as D from '../../type/type';
 
 import * as vscode from 'vscode';
-import * as __0x from '../../constant/shared/numeric';
+import * as hex from '../../numeric/hex';
 import * as __$ from '../../constant/shared/symbol';
 import * as regex from '../../collection/regex';
 import { createCursorRange } from '../range';
@@ -50,12 +50,12 @@ const composeRenderOption = (renderSignature: number, renderOptions: any[]) => {
 
 const diagnosticReferenceTable = {
     rangeReference: undefined as any | vscode.Range,
-    [__0x.editorWarningTotal]: undefined as any,
-    [__0x.editorErrorTotal]: undefined as any,
-    [__0x.workspaceWarningSource]: undefined as any,
-    [__0x.workspaceWarningTotal]: undefined as any,
-    [__0x.workspaceErrorSource]: undefined as any,
-    [__0x.workspaceErrorTotal]: undefined as any,
+    [hex.editorWarningTotal]: undefined as any,
+    [hex.editorErrorTotal]: undefined as any,
+    [hex.workspaceWarningSource]: undefined as any,
+    [hex.workspaceWarningTotal]: undefined as any,
+    [hex.workspaceErrorSource]: undefined as any,
+    [hex.workspaceErrorTotal]: undefined as any,
 };
 
 const setDiagonosticTextbuffer = (): void => {
@@ -115,21 +115,21 @@ const problemLineGlyph = (lineNumber: number[], line: number) => {
         }
     }
     linePosition.push(
-        lineGlyph[__0x.openningBracket],
-        equal ? lineGlyph[__0x.lineEqual] : "",
-        up ? lineGlyph[__0x.lineUp] : "",
-        down ? lineGlyph[__0x.lineDown] : "",
-        lineGlyph[__0x.closingBracket]);
+        lineGlyph[hex.openningBracket],
+        equal ? lineGlyph[hex.lineEqual] : "",
+        up ? lineGlyph[hex.lineUp] : "",
+        down ? lineGlyph[hex.lineDown] : "",
+        lineGlyph[hex.closingBracket]);
     return linePosition.join('');
 };
 
 const allOkOf = {
-    allok: __0x.allOkHexKey
+    allok: hex.allOkHexKey
 };
 
 const problemOf = {
-    editor: __0x.editorHexKey,
-    workspace: __0x.workspaceHexKey
+    editor: hex.editorHexKey,
+    workspace: hex.workspaceHexKey
 };
 
 const notationOf = {
@@ -146,21 +146,21 @@ const diagnosticOf = {
     [DIAGNOSTIC_CONTENT_TEXT_KEY.OK_EDITOR_CONTENT_TEXT]: notationOf,
     [DIAGNOSTIC_CONTENT_TEXT_KEY.WARNING_EDITOR_CONTENT_TEXT]: {
         ...notationOf,
-        wrn: __0x.editorWarningTotal,
+        wrn: hex.editorWarningTotal,
     },
     [DIAGNOSTIC_CONTENT_TEXT_KEY.ERROR_EDITOR_CONTENT_TEXT]: {
         ...notationOf,
-        err: __0x.editorErrorTotal,
+        err: hex.editorErrorTotal,
     },
     [DIAGNOSTIC_CONTENT_TEXT_KEY.ERROR_WORKSPACE_CONTENT_TEXT]: {
         ...notationOf,
-        src: __0x.workspaceErrorSource,
-        err: __0x.workspaceErrorTotal
+        src: hex.workspaceErrorSource,
+        err: hex.workspaceErrorTotal
     },
     [DIAGNOSTIC_CONTENT_TEXT_KEY.WARNING_WORKSPACE_CONTENT_TEXT]: {
         ...notationOf,
-        src: __0x.workspaceWarningSource,
-        wrn: __0x.workspaceWarningTotal,
+        src: hex.workspaceWarningSource,
+        wrn: hex.workspaceWarningTotal,
     },
 };
 
@@ -240,12 +240,12 @@ const refreshBuffer = (state: (number | number[])[]): void => {
 };
 
 const fnCollection: Record<number, D.Diagnostic.Tp.DiagnosticSignatureFuncSign> = {
-    [__0x.editorWarningTotal]: ({ state, line }) => String(state[3]) + problemLineGlyph(state[2], line),
-    [__0x.editorErrorTotal]: ({ state, line }) => String(state[5]) + problemLineGlyph(state[4], line),
-    [__0x.workspaceWarningSource]: ({ state }) => String(state[6]),
-    [__0x.workspaceWarningTotal]: ({ state }) => String(state[7]),
-    [__0x.workspaceErrorSource]: ({ state }) => String(state[8]),
-    [__0x.workspaceErrorTotal]: ({ state }) => String(state[9])
+    [hex.editorWarningTotal]: ({ state, line }) => String(state[3]) + problemLineGlyph(state[2], line),
+    [hex.editorErrorTotal]: ({ state, line }) => String(state[5]) + problemLineGlyph(state[4], line),
+    [hex.workspaceWarningSource]: ({ state }) => String(state[6]),
+    [hex.workspaceWarningTotal]: ({ state }) => String(state[7]),
+    [hex.workspaceErrorSource]: ({ state }) => String(state[8]),
+    [hex.workspaceErrorTotal]: ({ state }) => String(state[9])
 };
 
 const diggnosticStateList = [] as number[];
@@ -264,7 +264,7 @@ const context = {
 };
 
 const diagnosticInfo = (decorationState: D.Decoration.Intf.State) => (editor: vscode.TextEditor): void => {
-    if (decorationState.eventTrigger[0] === __0x.diagnosticChanged) {
+    if (decorationState.eventTrigger[0] === hex.diagnosticChanged) {
         refreshBuffer(updateDiagnostic(editor.document.uri));
     }
     context.line = editor.selection.end.line;

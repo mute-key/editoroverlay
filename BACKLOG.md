@@ -9,16 +9,16 @@ this is a temporary note & backlog, until i find something i like
   [o]: completed
   [!]: issues
   [~]: on going, unfinished or planning
-  [,]: not decided 
+  [,]: not decided, pause
   [_]: drop, ideas or features
   [?]: unknown unknown, lost track of the topic
   
 | sticky_list ===============================================================================================
 
 - [!] continues trigger of 'select next occurrences' will not cause render lag until when it reach 
-      round 300 cursor. they will be rendered with some delay. one way to solving this would be
-      paging the render obejct but this will require major data structure refactoring. 
-      i would like to work on this eventually.
+      round 300 cursor. they will be rendered with some delay after reaching certain numbers. 
+      one way to solving this would be paging the render obejct but this will require major data
+      structure refactoring. i would like to work on this eventually.
 
 - [?] sometimes created decorationTypes does not have ascending decorationTypeID base on sequence, 
       causing malformed statsus block to be displayed. the only fix is to reload the vscode.
@@ -34,17 +34,31 @@ this is a temporary note & backlog, until i find something i like
 - [~] implement new status block for tasks in vscode or from terminal.
 - [~] to get back to configuration code at some point and clean up.
 
+- [~] better type definitions
+- [~] refactor some of unpolished configuration files
+
 | version log ===============================================================================================
 
 | 1.4.8 |
 
-+ [o] my initial design of multiCursor was incomplete to cover a lot of edge cases. 
+- [+] new configuration, multi-cursor overlay position has been added. 
+      the configuration problems -> visibility -> overlayPosition will allow to choose
+      between inital cursor position to last cursor position.
+- [+] multi-cursor empty/non-empty decoration has been split/added
+      + overlay configuration for both empty selection and non empty selections 
+      + new modules has been added | code split from selection.ts to selection/*.ts
+- [+] split numeric.ts to hex.ts, bin.tx
+- [+] added top level namespace in numeric collection.
+- [o] my initial design of multiCursor was incomplete to cover a lot of edge cases. 
       multiCursor now can handle most of edge cases. 
-+ [o] there was a bug with margin-left spacing with diagnostic render option overlays. 
+      + random edit cursor insert in any position 
+      + un-select inconsistant cursor insert in a sequence
+      + col, zcol position metadata has been added to overlay
+- [o] there was a bug with margin-left spacing with diagnostic render option overlays. 
       it was hotfixed in 1.4.7.
-+ [o] i am not sure if the api have changed or not but the behaviour tab change event is different 
+- [o] i am not sure if the api have changed or not but the behaviour tab change event is different 
       than as i remembered. regardless, tab change event no longer need to be subscribed. 
-+ [o] mutline highlight/status has high rendering cost. have been constantly optimizing the cost ever 
+- [o] mutline highlight/status has high rendering cost. have been constantly optimizing the cost ever 
       since. this will be onging until no longer spikes even with rapid-fire but maybe it is very 
       difficult without debounce. the problem with debounce or throttlign will introduce some delays 
       inbetween of responses. now that i am thinking an map could be an option here but the map object 

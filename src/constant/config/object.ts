@@ -1,7 +1,7 @@
 import type* as D from '../../type/type';
 
 import * as vscode from 'vscode';
-import * as __0x from '../shared/numeric';
+import * as hex from '../../numeric/hex';
 import { BORDER_POSITION_MASK, BORDER_POSITION_VARIATION, CONFIG_SECTION_KEY, DECORATION_GENERAL_STYLE_CONFIG_KEY, DECORATION_SELECTION_STYLE_CONFIG_KEY, DECORATION_STYLE_CONFIG_KEY, DECORATION_TYPE_MASK, DIAGNOSTIC_SEVERITY_KEY, DIAGNOSTIC_TEXT_STYLE_KEY, SELECTION_CONTENT_TEXT_CONFIG_KEY } from './enum';
 
 export namespace configuration {
@@ -37,12 +37,12 @@ export const CONFIG_KEY_LINKER_SECTION = {
 };
 
 export const SELECTION_CONTENT_TEXT_NUMLINK = {
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: __0x.cursorOnlyText,
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: __0x.singleLineText,
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: __0x.multiLineCursorText,
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: __0x.multiLineAnchorText,
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: __0x.multiCursorText,
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_EDIT]: __0x.multiCursorEdit,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: hex.cursorOnlyText,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: hex.singleLineText,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: hex.multiLineCursorText,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: hex.multiLineAnchorText,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: hex.multiCursorText,
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_EDIT]: hex.multiCursorEdit,
 } as const;
 
 export const SELECTION_DECORAITON_CONFIG = {
@@ -76,10 +76,10 @@ export const SELECTION_DECORAITON_CONFIG = {
 } as const;
 
 export const DECORATION_STYLE_PREFIX = {
-    [__0x.cursorOnly]: 'cursorOnly',
-    [__0x.singleLine]: 'singleLine',
-    [__0x.multiLine]: 'multiLine',
-    [__0x.multiCursor]: 'multiCursor'
+    [hex.cursorOnly]: 'cursorOnly',
+    [hex.singleLine]: 'singleLine',
+    [hex.multiLine]: 'multiLine',
+    [hex.multiCursor]: 'multiCursor'
 } as const;
 
 export const SELECTION_CONTENT_TEXT_LIST: D.Common.Tp.TextList = [
@@ -123,24 +123,24 @@ export const DECORATION_OPTION_AFTER_CONFIG = {
 } as const;
 
 export const SELECTION_KIND: D.Decoration.Tp.DecorationInfo = {
-    [__0x.reset]: {
-        KEY: __0x.reset,
+    [hex.reset]: {
+        KEY: hex.reset,
         MASK: DECORATION_TYPE_MASK.RESET
     } as const,
-    [__0x.cursorOnly]: {
-        KEY: __0x.cursorOnly,
+    [hex.cursorOnly]: {
+        KEY: hex.cursorOnly,
         MASK: DECORATION_TYPE_MASK.CURSOR_ONLY
     } as const,
-    [__0x.singleLine]: {
-        KEY: __0x.singleLine,
+    [hex.singleLine]: {
+        KEY: hex.singleLine,
         MASK: DECORATION_TYPE_MASK.SINGLE_LINE
     } as const,
-    [__0x.multiLine]: {
-        KEY: __0x.multiLine,
+    [hex.multiLine]: {
+        KEY: hex.multiLine,
         MASK: DECORATION_TYPE_MASK.MULTI_LINE
     } as const,
-    [__0x.multiCursor]: {
-        KEY: __0x.multiCursor,
+    [hex.multiCursor]: {
+        KEY: hex.multiCursor,
         MASK: DECORATION_TYPE_MASK.MULTI_CURSOR
     } as const
 } as const;
@@ -148,6 +148,7 @@ export const SELECTION_KIND: D.Decoration.Tp.DecorationInfo = {
 export const DIAGNOSTIC_VISIBILITY_CONFIG = {
     DiagnosticKind: undefined,
     placeTextOnPreviousOrNextLine: undefined,
+    overlayCursorPosition: undefined,
     overrideLayoutPlaceholderColorToHighestSeverity: undefined,
     overrideAllOk: undefined,
     autoInlineDatumPoint: undefined
@@ -185,19 +186,19 @@ export const DIAGNOSTIC_CONFIG = {
 } as const;
 
 export const DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER = {
-    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: __0x.okEditorContentText,
-    [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: __0x.warningEditorContentText,
-    [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: __0x.errorEditorContentText,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: hex.okEditorContentText,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: hex.warningEditorContentText,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: hex.errorEditorContentText,
 } as const;
 
 export const DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER = {
-    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: __0x.okWorkspaceContentText,
-    [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: __0x.warningWorkspaceContentText,
-    [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: __0x.errorWorkspaceContentText,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: hex.okWorkspaceContentText,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: hex.warningWorkspaceContentText,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: hex.errorWorkspaceContentText,
 } as const;
 
 export const DIAGNOSTIC_ALL_PLACEHOLDER_LINKER = {
-    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: __0x.allOkContentText,
+    [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: hex.allOkContentText,
 } as const;
 
 export const DIAGNOSTIC_DECORATION_TEXT_KIND = {
@@ -218,15 +219,15 @@ export const DECORATION_OPTION_LINKER = {
 } as const;
 
 export const DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM = {
-    problemPlaceholderContentText: __0x.problemPlaceholderContentText,
-    allOkPlaceholderContentText: __0x.allOkPlaceholderContentText,
-    allOkContentText: __0x.allOkContentText,
-    okEditorContentText: __0x.okEditorContentText,
-    warningEditorContentText: __0x.warningEditorContentText,
-    errorEditorContentText: __0x.errorEditorContentText,
-    okWorkspaceContentText: __0x.okWorkspaceContentText,
-    warningWorkspaceContentText: __0x.warningWorkspaceContentText,
-    errorWorkspaceContentText: __0x.errorWorkspaceContentText,
+    problemPlaceholderContentText: hex.problemPlaceholderContentText,
+    allOkPlaceholderContentText: hex.allOkPlaceholderContentText,
+    allOkContentText: hex.allOkContentText,
+    okEditorContentText: hex.okEditorContentText,
+    warningEditorContentText: hex.warningEditorContentText,
+    errorEditorContentText: hex.errorEditorContentText,
+    okWorkspaceContentText: hex.okWorkspaceContentText,
+    warningWorkspaceContentText: hex.warningWorkspaceContentText,
+    errorWorkspaceContentText: hex.errorWorkspaceContentText,
 } as const;
 
 export const DIAGNOSTIC_STYLE_LIST: D.Common.Tp.TextList[] = [
@@ -306,10 +307,10 @@ export const MULTILINE_BORDER_SELECTION = {
 } as const;
 
 export const BORDER_WIDTH_DEFINITION = {
-    [__0x.cursorOnly]: SINGLE_BORDER_SELECTION,
-    [__0x.singleLine]: SINGLE_BORDER_SELECTION,
-    [__0x.multiLine]: MULTILINE_BORDER_SELECTION,
-    [__0x.multiCursor]: SINGLE_BORDER_SELECTION,
+    [hex.cursorOnly]: SINGLE_BORDER_SELECTION,
+    [hex.singleLine]: SINGLE_BORDER_SELECTION,
+    [hex.multiLine]: MULTILINE_BORDER_SELECTION,
+    [hex.multiCursor]: SINGLE_BORDER_SELECTION,
 } as const;
 
 export const NO_CONFIGURATION_DEOCORATION_DEFAULT = {

@@ -1,7 +1,7 @@
 import type * as D from "../type/type.d";
 
 import * as vscode from 'vscode';
-import * as __0x from '../constant/shared/numeric';
+import * as hex from '../numeric/hex';
 import path from 'path';
 import { CONTRAST, CONFIRM, PRESET, PRESET_ORIENTATION, SYSTEM_MESSAGE, SYSTEM_PATH, THEME_KIND } from '../constant/config/enum';
 import { CONFIG_SECTION } from '../constant/config/object';
@@ -69,7 +69,7 @@ const checkDuplciateOverride = (packageName: string, json: any): boolean => {
 };
 
 const writeSelectedPreset = async (configInfo: any, packageName: string, json: object): Promise<void> => {
-    configInfo.updateCaller = __0x.configruationCallerPreset; // block all configuration change event trigger
+    configInfo.updateCaller = hex.configruationCallerPreset; // block all configuration change event trigger
     vscode.commands.executeCommand("workbench.view.explorer");
     const config = getWorkspaceConfiguration(packageName);
     const section = Object.keys(json);
@@ -86,10 +86,10 @@ const writeSelectedPreset = async (configInfo: any, packageName: string, json: o
 
     resetAllDecoration();
     updateGeneralConfig(configInfo);
-    updateHighlightStyleConfiguration(configInfo, __0x.cursorOnly);
-    updateHighlightStyleConfiguration(configInfo, __0x.singleLine);
-    updateHighlightStyleConfiguration(configInfo, __0x.multiLine);
-    updateHighlightStyleConfiguration(configInfo, __0x.multiCursor);
+    updateHighlightStyleConfiguration(configInfo, hex.cursorOnly);
+    updateHighlightStyleConfiguration(configInfo, hex.singleLine);
+    updateHighlightStyleConfiguration(configInfo, hex.multiLine);
+    updateHighlightStyleConfiguration(configInfo, hex.multiCursor);
     updateSelectionTextConfig(packageName, true);
     updateDiagnosticTextConfig(packageName, true);
     prepareRenderGroup(configInfo as any);

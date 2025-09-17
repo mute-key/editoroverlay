@@ -1,7 +1,8 @@
 import type * as D from '../type/type.d';
 
 import * as vscode from 'vscode';
-import * as __0x from '../constant/shared/numeric';
+import * as hex from '../numeric/hex';
+import * as bin from '../numeric/bin';
 import * as regex from '../collection/regex';
 import { DECORATION_STATE, SELECTION_KIND_LIST } from '../constant/shared/object';
 import { clearDiagnosticText, diagnosticInfo } from './status/diagnostic';
@@ -25,10 +26,10 @@ export {
  * buffer for rendering function call stack
  */
 const renderFnStack: Record<D.Numeric.Key.Hex, any[]> = {
-    [__0x.cursorOnly]: [] as any[],
-    [__0x.singleLine]: [] as any[],
-    [__0x.multiLine]: [] as any[],
-    [__0x.multiCursor]: [] as any[]
+    [hex.cursorOnly]: [] as any[],
+    [hex.singleLine]: [] as any[],
+    [hex.multiLine]: [] as any[],
+    [hex.multiCursor]: [] as any[]
 };
 
 const decorationState = { ...DECORATION_STATE } as unknown as D.Decoration.Intf.State;
@@ -60,9 +61,9 @@ const resetDecoration = (setDecorations: D.Editor.Tp.RenderOverlay) => (decorati
  * 
  */
 const clearDecorationState = (decorationState: D.Decoration.Intf.State): void => {
-    decorationState.eventTrigger[0] = __0x.noEvent;
-    decorationState.appliedHighlight[0] = __0x.cursorOnly;
-    decorationState.diagnosticSignature[0] = __0x.allOkOverride;
+    decorationState.eventTrigger[0] = hex.noEvent;
+    decorationState.appliedHighlight[0] = hex.cursorOnly;
+    decorationState.diagnosticSignature[0] = bin.allOkOverride;
 };
 
 const clearAll = (editor: vscode.TextEditor): void => {
@@ -96,7 +97,7 @@ const setFunctionList = (config: D.Config.Intf.ConfigReady, highlightList: D.Edi
         renderFuList.push(selectionList[numKey]);
     }
 
-    if (config.generalConfigInfo.diagnosticTextEnabled && (numKey === __0x.cursorOnly || numKey === __0x.singleLine)) {
+    if (config.generalConfigInfo.diagnosticTextEnabled && (numKey === hex.cursorOnly || numKey === hex.singleLine)) {
         renderFuList.push(editModeCheck);
     } else if (config.generalConfigInfo.diagnosticTextEnabled) {
         renderFuList.push(diagnosticInfo(decorationState));
@@ -113,17 +114,17 @@ const setFunctionList = (config: D.Config.Intf.ConfigReady, highlightList: D.Edi
 const prepareRenderGroup = (config: D.Config.Intf.ConfigReady): void => {
 
     const highlightList: D.Editor.Intf.RenderGroup = {
-        [__0x.cursorOnly]: cursorOnlyHighlightRange,
-        [__0x.singleLine]: singelLineHighlightRange,
-        [__0x.multiLine]: multiLineHighlightRange,
-        [__0x.multiCursor]: multiCursorHighlightRange
+        [hex.cursorOnly]: cursorOnlyHighlightRange,
+        [hex.singleLine]: singelLineHighlightRange,
+        [hex.multiLine]: multiLineHighlightRange,
+        [hex.multiCursor]: multiCursorHighlightRange
     };
 
     const selectionList: D.Editor.Intf.RenderGroup = {
-        [__0x.cursorOnly]: cursorOnlySelection,
-        [__0x.singleLine]: singleLineSelection,
-        [__0x.multiLine]: multilineSelection,
-        [__0x.multiCursor]: multiCursorSelection
+        [hex.cursorOnly]: cursorOnlySelection,
+        [hex.singleLine]: singleLineSelection,
+        [hex.multiLine]: multilineSelection,
+        [hex.multiCursor]: multiCursorSelection
     };
 
     SELECTION_KIND_LIST.forEach(setFunctionList(config, highlightList, selectionList));
@@ -149,7 +150,6 @@ const editModeCheck = (editor: vscode.TextEditor): void => {
     decorationState.previousLine[0] = editor.selections[0].start.line;
 };
 
-
 type LineFn = (arg0: vscode.TextEditor, arg1: D.Numeric.Key.Hex[]) => void
 
 /**
@@ -174,19 +174,19 @@ const renderGroupIs = (editor: vscode.TextEditor, numKey: D.Numeric.Key.Hex[]): 
 
     if (editor.selections.length === 1) {
         if (editor.selections[0].isEmpty) {                 // cursor only
-            renderFnStack[__0x.cursorOnly].forEach(fnBind);
-            return __0x.cursorOnly;
+            renderFnStack[hex.cursorOnly].forEach(fnBind);
+            return hex.cursorOnly;
         }
         if (!editor.selections[0].isSingleLine) {           // multi-line, wanted to reduce the execution step
-            renderFnStack[__0x.multiLine].forEach(fnBind);
-            return __0x.multiLine;
+            renderFnStack[hex.multiLine].forEach(fnBind);
+            return hex.multiLine;
         } else {                                            // single-line
-            renderFnStack[__0x.singleLine].forEach(fnBind);
-            return __0x.singleLine;
+            renderFnStack[hex.singleLine].forEach(fnBind);
+            return hex.singleLine;
         }
     } else {                                                // multi-cursor
-        renderFnStack[__0x.multiCursor].forEach(fnBind);
-        return __0x.multiCursor;
+        renderFnStack[hex.multiCursor].forEach(fnBind);
+        return hex.multiCursor;
     }
 };
 

@@ -1,7 +1,7 @@
 import type * as D from '../../type/type.d';
 
 import * as vscode from 'vscode';
-import * as __0x from '../../constant/shared/numeric';
+import * as hex from '../../numeric/hex';
 import { HIGHLIGHT_BORDER_POSITION_INFO, HIGHLIGHT_STYLE_LIST } from '../../constant/shared/object';
 import { createLineRange, createRangeSPEP, blankRange } from '../range';
 import { applyDecoration } from '../editor';
@@ -25,13 +25,13 @@ const borderPositionInfo = {
 } as unknown as D.Decoration.Tp.BorderPositionInfoType;
 
 const cursorOnlyHighlightRange = (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]): void => {
-    __0x.cursorOnly !== previousKey[0] && clearEveryHighlight(editor);
-    applyDecoration(editor.setDecorations, highlightStyleList[__0x.cursorOnly][0], [createLineRange(editor.selection.active)]);
+    hex.cursorOnly !== previousKey[0] && clearEveryHighlight(editor);
+    applyDecoration(editor.setDecorations, highlightStyleList[hex.cursorOnly][0], [createLineRange(editor.selection.active)]);
 };
 
 const singelLineHighlightRange = (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]): void => {
-    __0x.singleLine !== previousKey[0] && clearHighlight(editor.setDecorations, previousKey, blankRange);
-    applyDecoration(editor.setDecorations, highlightStyleList[__0x.singleLine][0], [createRangeSPEP(editor.selection.start, editor.selection.end)]);
+    hex.singleLine !== previousKey[0] && clearHighlight(editor.setDecorations, previousKey, blankRange);
+    applyDecoration(editor.setDecorations, highlightStyleList[hex.singleLine][0], [createRangeSPEP(editor.selection.start, editor.selection.end)]);
 };
 
 const multiLineRangeCH = [
@@ -43,51 +43,51 @@ const multiLineRangeCH = [
 const renderMultiLineHighlight = (setDecorations: D.Editor.Tp.RenderOverlay, range: vscode.Range[]) => (highlight: vscode.TextEditorDecorationType, idx: number) => setDecorations(highlight, range[idx] as unknown as readonly vscode.Range[] | readonly vscode.DecorationOptions[]);
 
 const multiLineHighlightRange = (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]) => {
-    __0x.multiLine !== previousKey[0] && clearHighlight(editor.setDecorations, previousKey, blankRange);
+    hex.multiLine !== previousKey[0] && clearHighlight(editor.setDecorations, previousKey, blankRange);
     multiLineRangeCH[0][0] = editor.document.lineAt(editor.selection.start).range; // createLineRange();
     multiLineRangeCH[1][0] = editor.document.lineAt(editor.selection.end).range; // createLineRange();
     multiLineRangeCH[2][0] = editor.selection;
-    highlightStyleList[__0x.multiLine].forEach(renderMultiLineHighlight(editor.setDecorations, multiLineRangeCH));
+    highlightStyleList[hex.multiLine].forEach(renderMultiLineHighlight(editor.setDecorations, multiLineRangeCH));
 };
 
 const multiCursorHighlightRange = (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]): void => {
     clearHighlight(editor.setDecorations, previousKey, blankRange);
-    applyDecoration(editor.setDecorations, highlightStyleList[__0x.multiCursor][0], [...editor.selections]);
-    applyDecoration(editor.setDecorations, highlightStyleList[__0x.multiCursor][1], [...editor.selections]);
+    applyDecoration(editor.setDecorations, highlightStyleList[hex.multiCursor][0], [...editor.selections]);
+    applyDecoration(editor.setDecorations, highlightStyleList[hex.multiCursor][1], [...editor.selections]);
 };
 
 const clearBuffer = (setDecorations: vscode.TextEditor["setDecorations"], resetRange: vscode.Range[]) => (buffer: vscode.TextEditorDecorationType): void => setDecorations(buffer, resetRange);
 
 const clearHighlight = (setDecorations: vscode.TextEditor["setDecorations"], previousKey: D.Numeric.Key.Hex[], resetRange: vscode.Range[]): void => {
     switch (previousKey[0]) {
-        case __0x.cursorOnly:
-            highlightStyleList[__0x.cursorOnly].forEach(clearBuffer(setDecorations, resetRange));
+        case hex.cursorOnly:
+            highlightStyleList[hex.cursorOnly].forEach(clearBuffer(setDecorations, resetRange));
             break;
-        case __0x.singleLine:
-            highlightStyleList[__0x.singleLine].forEach(clearBuffer(setDecorations, resetRange));
+        case hex.singleLine:
+            highlightStyleList[hex.singleLine].forEach(clearBuffer(setDecorations, resetRange));
             break;
-        case __0x.multiLine:
-            highlightStyleList[__0x.multiLine].forEach(clearBuffer(setDecorations, resetRange));
+        case hex.multiLine:
+            highlightStyleList[hex.multiLine].forEach(clearBuffer(setDecorations, resetRange));
             break;
-        case __0x.multiCursor:
-            highlightStyleList[__0x.multiCursor].forEach(clearBuffer(setDecorations, resetRange));
+        case hex.multiCursor:
+            highlightStyleList[hex.multiCursor].forEach(clearBuffer(setDecorations, resetRange));
             break;
         default: break;
     }
 };
 
 const clearEveryHighlight = (editor: vscode.TextEditor) => {
-    clearHighlight(editor.setDecorations, [__0x.cursorOnly], blankRange);
-    clearHighlight(editor.setDecorations, [__0x.singleLine], blankRange);
-    clearHighlight(editor.setDecorations, [__0x.multiLine], blankRange);
-    clearHighlight(editor.setDecorations, [__0x.multiCursor], blankRange);
+    clearHighlight(editor.setDecorations, [hex.cursorOnly], blankRange);
+    clearHighlight(editor.setDecorations, [hex.singleLine], blankRange);
+    clearHighlight(editor.setDecorations, [hex.multiLine], blankRange);
+    clearHighlight(editor.setDecorations, [hex.multiCursor], blankRange);
 };
 
 const coordinatorSplit: D.Decoration.Intf.CoordinatorSplitType = {
-    [__0x.cursorOnly]: (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]) => cursorOnlyHighlightRange(editor, previousKey),
-    [__0x.singleLine]: (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]) => singelLineHighlightRange(editor, previousKey),
-    [__0x.multiLine]: (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]) => multiLineHighlightRange(editor, previousKey),
-    [__0x.multiCursor]: (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]) => multiCursorHighlightRange(editor, previousKey)
+    [hex.cursorOnly]: (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]) => cursorOnlyHighlightRange(editor, previousKey),
+    [hex.singleLine]: (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]) => singelLineHighlightRange(editor, previousKey),
+    [hex.multiLine]: (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]) => multiLineHighlightRange(editor, previousKey),
+    [hex.multiCursor]: (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]) => multiCursorHighlightRange(editor, previousKey)
 };
 
 const hightlightCoordinator = (currentKey: number, previousKey: D.Numeric.Key.Hex[]) => {

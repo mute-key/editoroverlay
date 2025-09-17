@@ -1,15 +1,16 @@
 import type * as D from '../../type/type';
 
-import * as __0x from '../../constant/shared/numeric';
+import * as hex from '../../numeric/hex';
+import * as bin from '../../numeric/bin';
 import * as __$ from '../../constant/shared/symbol';
 import * as regex from '../../collection/regex';
 import { CONFIG_SECTION, DECORATION_OPTION_LINKER, DIAGNOSTIC_ALL_PLACEHOLDER_LINKER, DIAGNOSTIC_CONFIG, DIAGNOSTIC_CONTENT_TEXT_LIST, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM, DIAGNOSTIC_DECORATION_STYLE, DIAGNOSTIC_DECORATION_TEXT_KIND, DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER, DIAGNOSTIC_STYLE_LIST, DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER } from '../../constant/config/object';
-import { DIAGNOSTIC_BIOME, DIAGNOSTIC_TEXT_STYLE_KEY } from '../../constant/config/enum';
+import { DIAGNOSTIC_BIOME, DIAGNOSTIC_KIND, DIAGNOSTIC_TEXT_STYLE_KEY, LINE_POSITION } from '../../constant/config/enum';
 import { DIAGNOSTIC_PROBLEM_LIST } from '../../constant/shared/object';
 import { convertToDecorationRenderOption, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { sanitizeConfigValue } from '../shared/validation';
-import { createCursorRange, createCursorRangeLine, createCursorRangeLineAuto, setAutoInlineDatumPoint } from '../../editor/range';
+import { createCursorRange, createCursorRangeLastLine, createCursorRangeLine, createCursorRangeLineAuto, createCursorRangeLineLastAuto, setAutoInlineDatumPoint } from '../../editor/range';
 import { bindDiagnosticContentTextState, clearDiagnosticTextState, composeRenderOption, diagnosticTextRegex, initializeStateBuffer, setDiagonosticTextbuffer } from '../../editor/status/diagnostic';
 import { setOverrideDigit } from '../../diagnostic/diagnostic';
 import { hexToRgbaStringLiteral, readBits } from '../../util/util';
@@ -104,46 +105,46 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: D.
     };
 
 
-    preset.layout[__0x.allOkPlaceholderContentText].contentText.forEach(decoration => {
-        if (decoration.after.contentText === __0x.allOkHexKey) {
-            const ok = concatinateNotation(preset.all[__0x.allOkContentText]);
-            composeRenderOption(__0x.allOkOverride, [...ok]);
+    preset.layout[hex.allOkPlaceholderContentText].contentText.forEach(decoration => {
+        if (decoration.after.contentText === hex.allOkHexKey) {
+            const ok = concatinateNotation(preset.all[hex.allOkContentText]);
+            composeRenderOption(bin.allOkOverride, [...ok]);
         } else {
-            composeRenderOption(__0x.allOkOverride, [{ ...decoration }]);
+            composeRenderOption(bin.allOkOverride, [{ ...decoration }]);
         }
     });
 
-    preset.layout[__0x.problemPlaceholderContentText].contentText.forEach(decoration => {
-        if (decoration.after.contentText === __0x.editorHexKey) {
-            const ok = concatinateNotation(preset.editor[__0x.okEditorContentText]);
-            const warn = concatinateNotation(preset.editor[__0x.warningEditorContentText]);
-            const err = concatinateNotation(preset.editor[__0x.errorEditorContentText]);
-            composeRenderOption(__0x.allOkNoOverride, [...ok]);
-            composeRenderOption(__0x.editorOkWorkspaceWarn, [...ok]);
-            composeRenderOption(__0x.editorOkWorkspaceErr, [...ok]);
-            composeRenderOption(__0x.editorOkWorkspaceWarnErr, [...ok]);
-            composeRenderOption(__0x.editorWarnWorkspaceWarn, [...warn]);
-            composeRenderOption(__0x.editorWarnWorkspaceErr, [...warn]);
-            composeRenderOption(__0x.editorWarnWorkspaceWarnErr, [...warn]);
-            composeRenderOption(__0x.editorErrWorkspaceErr, [...err]);
-            composeRenderOption(__0x.editorErrWorkspaceWarnErr, [...err]);
-            composeRenderOption(__0x.editorWarnErrWorkspaceWarnErr, [...warn, ...err]);
+    preset.layout[hex.problemPlaceholderContentText].contentText.forEach(decoration => {
+        if (decoration.after.contentText === hex.editorHexKey) {
+            const ok = concatinateNotation(preset.editor[hex.okEditorContentText]);
+            const warn = concatinateNotation(preset.editor[hex.warningEditorContentText]);
+            const err = concatinateNotation(preset.editor[hex.errorEditorContentText]);
+            composeRenderOption(bin.allOkNoOverride, [...ok]);
+            composeRenderOption(bin.editorOkWorkspaceWarn, [...ok]);
+            composeRenderOption(bin.editorOkWorkspaceErr, [...ok]);
+            composeRenderOption(bin.editorOkWorkspaceWarnErr, [...ok]);
+            composeRenderOption(bin.editorWarnWorkspaceWarn, [...warn]);
+            composeRenderOption(bin.editorWarnWorkspaceErr, [...warn]);
+            composeRenderOption(bin.editorWarnWorkspaceWarnErr, [...warn]);
+            composeRenderOption(bin.editorErrWorkspaceErr, [...err]);
+            composeRenderOption(bin.editorErrWorkspaceWarnErr, [...err]);
+            composeRenderOption(bin.editorWarnErrWorkspaceWarnErr, [...warn, ...err]);
             return;
         }
-        if (decoration.after.contentText === __0x.workspaceHexKey) {
-            const ok = concatinateNotation(preset.workspace[__0x.okWorkspaceContentText]);
-            const warn = concatinateNotation(preset.workspace[__0x.warningWorkspaceContentText]);
-            const err = concatinateNotation(preset.workspace[__0x.errorWorkspaceContentText]);
-            composeRenderOption(__0x.allOkNoOverride, [...ok]);
-            composeRenderOption(__0x.editorOkWorkspaceWarn, [...warn]);
-            composeRenderOption(__0x.editorOkWorkspaceErr, [...err]);
-            composeRenderOption(__0x.editorOkWorkspaceWarnErr, [...warn, ...err]);
-            composeRenderOption(__0x.editorWarnWorkspaceWarn, [...warn]);
-            composeRenderOption(__0x.editorWarnWorkspaceErr, [...err]);
-            composeRenderOption(__0x.editorWarnWorkspaceWarnErr, [...warn, ...err]);
-            composeRenderOption(__0x.editorErrWorkspaceErr, [...err]);
-            composeRenderOption(__0x.editorErrWorkspaceWarnErr, [...warn, ...err]);
-            composeRenderOption(__0x.editorWarnErrWorkspaceWarnErr, [...warn, ...err]);
+        if (decoration.after.contentText === hex.workspaceHexKey) {
+            const ok = concatinateNotation(preset.workspace[hex.okWorkspaceContentText]);
+            const warn = concatinateNotation(preset.workspace[hex.warningWorkspaceContentText]);
+            const err = concatinateNotation(preset.workspace[hex.errorWorkspaceContentText]);
+            composeRenderOption(bin.allOkNoOverride, [...ok]);
+            composeRenderOption(bin.editorOkWorkspaceWarn, [...warn]);
+            composeRenderOption(bin.editorOkWorkspaceErr, [...err]);
+            composeRenderOption(bin.editorOkWorkspaceWarnErr, [...warn, ...err]);
+            composeRenderOption(bin.editorWarnWorkspaceWarn, [...warn]);
+            composeRenderOption(bin.editorWarnWorkspaceErr, [...err]);
+            composeRenderOption(bin.editorWarnWorkspaceWarnErr, [...warn, ...err]);
+            composeRenderOption(bin.editorErrWorkspaceErr, [...err]);
+            composeRenderOption(bin.editorErrWorkspaceWarnErr, [...warn, ...err]);
+            composeRenderOption(bin.editorWarnErrWorkspaceWarnErr, [...warn, ...err]);
             return;
         }
 
@@ -210,11 +211,11 @@ const overrideStyle = (config, overrideBiome) => {
         }
     });
     return {
-        [__0x.problemPlaceholderContentText]: {
+        [hex.problemPlaceholderContentText]: {
             override: Object.keys(problemOverrideColor).length > 0 ? problemOverrideColor : undefined,
 
         },
-        [__0x.allOkPlaceholderContentText]: {
+        [hex.allOkPlaceholderContentText]: {
             override: Object.keys(allOkOverrideColor).length > 0 ? allOkOverrideColor : undefined,
         },
     };
@@ -226,8 +227,8 @@ const buildDiagnosticStyle = (config: D.Diagnostic.Intf.DiagnosticConfig, style:
         editor: {},
         all: {},
         layout: {
-            [__0x.problemPlaceholderContentText]: {},
-            [__0x.allOkPlaceholderContentText]: {}
+            [hex.problemPlaceholderContentText]: {},
+            [hex.allOkPlaceholderContentText]: {}
         },
     };
     if (config.leftMargin) {
@@ -261,8 +262,8 @@ const buildDiagnosticStyle = (config: D.Diagnostic.Intf.DiagnosticConfig, style:
     return {
         ...result,
         layout: {
-            [__0x.problemPlaceholderContentText]: {},
-            [__0x.allOkPlaceholderContentText]: {},
+            [hex.problemPlaceholderContentText]: {},
+            [hex.allOkPlaceholderContentText]: {},
             ...ifOverrride,
 
         }
@@ -284,11 +285,11 @@ type DiagnosticBiomeType = {
 const diagnosticVisibilityBiome = (visibility: D.Diagnostic.Intf.DiagnosticVisibility): DiagnosticBiomeType => {
     let workspacMask: number = DIAGNOSTIC_BIOME.ALL;
     let editorMask: number = DIAGNOSTIC_BIOME.ALL;
-    if (visibility.DiagnosticKind === "workspace Only") {
+    if (visibility.DiagnosticKind === DIAGNOSTIC_KIND.WORKSPACE_ONLY) {
         editorMask = DIAGNOSTIC_BIOME.NONE;
         workspacMask &= hideMkask(visibility.hideOk, visibility.hideWarning);
     }
-    if (visibility.DiagnosticKind === "editor Only") {
+    if (visibility.DiagnosticKind === DIAGNOSTIC_KIND.EDITOR_ONLY) {
         workspacMask = DIAGNOSTIC_BIOME.NONE;
         editorMask &= hideMkask(visibility.hideOk, visibility.hideWarning);
     }
@@ -311,36 +312,47 @@ const decorationStyleFromBiome = (diagnosticBiome: number): string[] =>
     DIAGNOSTIC_TEXT_STYLE_KEY.DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE];
 
 const setGlyph = (glyphList, config) => {
-    glyphList[__0x.openningBracket] = config.openningBracket;
-    glyphList[__0x.closingBracket] = config.closingBracket;
-    glyphList[__0x.lineEqual] = config.lineEqual;
-    glyphList[__0x.lineUp] = config.lineUp;
-    glyphList[__0x.lineDown] = config.lineDown;
+    glyphList[hex.openningBracket] = config.openningBracket;
+    glyphList[hex.closingBracket] = config.closingBracket;
+    glyphList[hex.lineEqual] = config.lineEqual;
+    glyphList[hex.lineUp] = config.lineUp;
+    glyphList[hex.lineDown] = config.lineDown;
 };
 
-const setCursorLine = (bindTo, visibility) => {
-    
-    if (visibility.placeTextOnPreviousOrNextLine === "previousLine") {
-        bindTo.rangeFunction = createCursorRangeLine(-1);
-        return;
+const overlayPosition = {
+    initalCursor: {
+        default: createCursorRangeLine,
+        auto: createCursorRangeLineAuto
+    },
+    lastCursor: {
+        default: createCursorRangeLastLine,
+        auto: createCursorRangeLineLastAuto
     }
-    if (visibility.placeTextOnPreviousOrNextLine === "previousLine (auto-inline)") {
-        bindTo.rangeFunction = createCursorRangeLineAuto(-1);
-        return;
-    }
-    if (visibility.placeTextOnPreviousOrNextLine === "nextLine") {
-        bindTo.rangeFunction = createCursorRangeLine(1);
-        return;
-    }
-    if (visibility.placeTextOnPreviousOrNextLine === "nextLine (auto-inline)") {
-        bindTo.rangeFunction = createCursorRangeLineAuto(1);
-        return;
-    }
+};
 
-    setAutoInlineDatumPoint(visibility.autoInlineDatumPoint);
-    bindTo.rangeFunction = createCursorRange;
+const setCursorLine = (bindTo, visibility): void => {
+    const rangeFunc = visibility.overlayCursorPosition === LINE_POSITION.INITIAL_CURSOR
+        ? overlayPosition.initalCursor
+        : overlayPosition.lastCursor;
 
-    return;
+    switch (visibility.placeTextOnPreviousOrNextLine) {
+        case LINE_POSITION.PREVIOUS_LINE:
+            bindTo.rangeFunction = rangeFunc.default(-1);
+            break;
+        case LINE_POSITION.PREVIOUS_LINE_AUTO_INLINE:
+            bindTo.rangeFunction = rangeFunc.auto(-1);
+            break;
+        case LINE_POSITION.NEXTLINE:
+            bindTo.rangeFunction = rangeFunc.default(1);
+            break;
+        case LINE_POSITION.NEXTLINE_AUTO_INLINE:
+            bindTo.rangeFunction = rangeFunc.auto(1);
+            break;
+        default:
+            setAutoInlineDatumPoint(visibility.autoInlineDatumPoint);
+            bindTo.rangeFunction = createCursorRange;
+            break;
+    }
 };
 
 const updateDiagnosticTextConfig = async (extenionName: string, configuratioChange: boolean = false) => {
@@ -366,7 +378,7 @@ const updateDiagnosticTextConfig = async (extenionName: string, configuratioChan
     }
 
     workspaceProxyConfiguration(diagnosticConfig, extenionName + '.' + CONFIG_SECTION.diagnosticText, DIAGNOSTIC_CONTENT_TEXT_LIST, bindToBuffer, diagnosticTextRegex);
-    const placeholderDigit = diagnosticConfig.visibility.overrideAllOk ? __0x.allOkOverride : __0x.allOkNoOverride;
+    const placeholderDigit = diagnosticConfig.visibility.overrideAllOk ? bin.allOkOverride : bin.allOkNoOverride;
     const diagnosticBiome = diagnosticVisibilityBiome(diagnosticConfig.visibility);
     const decorationStyleList = decorationStyleFromBiome(diagnosticBiome.workspace | diagnosticBiome.editor);
     Object.assign(dignosticContentTextPreset, buildDiagnosticStyle(diagnosticConfig, diagnosticDecorationStyle, decorationStyleList, diagnosticConfig.visibility, diagnosticBiome));

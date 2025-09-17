@@ -108,6 +108,7 @@ const updateDiagnostic = (activeEditorUri: vscode.Uri | undefined = undefined): 
     for (const [uri, diagnosticList] of diagnostics) {
         buildDiagnostic(diagnosticSource, diagnosticList, uri);
     }
+    
     for (const [fsPath, severity] of Object.entries(diagnosticSource)) {
         parseDiagnostic(diagnosticState, severity, fsPath, activeEditorUri?.fsPath);
     };

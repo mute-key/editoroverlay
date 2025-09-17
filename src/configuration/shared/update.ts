@@ -1,4 +1,4 @@
-import * as __0x from '../../constant/shared/numeric';
+import * as hex from '../../numeric/hex';
 import Error from '../../util/error';
 import { CONFIG_SECTION_KEY } from '../../constant/config/enum';
 import { resetAllDecoration, prepareRenderGroup } from '../../editor/editor';
@@ -15,10 +15,10 @@ const configurationChanged = (configInfo: any, section: string): void => {
         Error.configurationUpdated();
         const sectionChanged = {
             [CONFIG_SECTION_KEY.GENERAL]: () => updateGeneralConfig(configInfo),
-            [CONFIG_SECTION_KEY.CURSOR_ONLY]: () => updateHighlightStyleConfiguration(configInfo, __0x.cursorOnly),
-            [CONFIG_SECTION_KEY.SINGLE_LINE]: () => updateHighlightStyleConfiguration(configInfo, __0x.singleLine),
-            [CONFIG_SECTION_KEY.MULTI_LINE]: () => updateHighlightStyleConfiguration(configInfo, __0x.multiLine),
-            [CONFIG_SECTION_KEY.MULTI_CURSOR]: () => updateHighlightStyleConfiguration(configInfo, __0x.multiCursor),
+            [CONFIG_SECTION_KEY.CURSOR_ONLY]: () => updateHighlightStyleConfiguration(configInfo, hex.cursorOnly),
+            [CONFIG_SECTION_KEY.SINGLE_LINE]: () => updateHighlightStyleConfiguration(configInfo, hex.singleLine),
+            [CONFIG_SECTION_KEY.MULTI_LINE]: () => updateHighlightStyleConfiguration(configInfo, hex.multiLine),
+            [CONFIG_SECTION_KEY.MULTI_CURSOR]: () => updateHighlightStyleConfiguration(configInfo, hex.multiCursor),
             [CONFIG_SECTION_KEY.SELECTION_TEXT]: () => {
                 if (configInfo.generalConfigInfo.selectionTextEnabled) {
                     updateSelectionTextConfig(configInfo.name, true);

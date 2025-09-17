@@ -149,7 +149,7 @@ const hrtimeToMS = (hrtime: [number, number]): number => (process.hrtime(hrtime)
  */
 const compareNumbers = (a: number, b: number): number => (a - b);
 
-const isObjectShallowEqual = (obj1: object, obj2: object) => {
+const isObjectShallowEqual = (obj1: object, obj2: object): boolean => {
     const keys1 = Object.keys(obj1);
     const keys2 = Object.keys(obj2);
     if (keys1.length !== keys2.length) {
@@ -161,6 +161,8 @@ const isObjectShallowEqual = (obj1: object, obj2: object) => {
 
 const isEntriesEqual = (a, b) => a.length === b.length && a.every((element, index) => element[0] === b[index][0] && element[1] === b[index][1]);
 
-const toReadonlyProperty = (object: any, propertyName: string[]) => propertyName.forEach(property => {
-    Object.defineProperty(object, property, { writable: false });
-});
+const toReadonlyProperty = (object: any, propertyName: string[]): void => {
+    return propertyName.forEach(property => {
+        Object.defineProperty(object, property, { writable: false });
+    });
+};

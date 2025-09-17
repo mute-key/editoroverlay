@@ -1,7 +1,7 @@
 import type * as D from '../type/type.d';
 
 import * as vscode from 'vscode';
-import * as __0x from '../constant/shared/numeric';
+import * as hex from '../numeric/hex';
 import Error from '../util/error';
 import { resetAllDecoration } from '../editor/editor';
 import { renderGroupIs, updateIndentOption } from '../editor/editor';
@@ -24,7 +24,7 @@ const windowStateChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState })
         if (event.focused) {
             if (vscode.window.activeTextEditor) {
                 updateIndentOption(vscode.window.activeTextEditor);
-                decorationState.appliedHighlight[0] = renderGroupIs(vscode.window.activeTextEditor, [__0x.cursorOnly]);
+                decorationState.appliedHighlight[0] = renderGroupIs(vscode.window.activeTextEditor, [hex.cursorOnly]);
             }
 
         } else {
@@ -51,7 +51,7 @@ const activeEditorChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decor
              * commenting out; or it is always true on every editor change. 
              * it is the other way around for some reasons.
              */
-            // if (decorationState.eventTrigger[0] === __0x.tabChanged) {
+            // if (decorationState.eventTrigger[0] === hex.tabChanged) {
             //     resetAllDecoration();
             //     return;
             // }
@@ -68,17 +68,17 @@ const activeEditorChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decor
             if (configInfo.generalConfigInfo.diagnosticTextEnabled) {
                 resetEditorDiagnosticStatistics();
                 resetWorkspaceDiagnosticStatistics();
-                decorationState.eventTrigger[0] = __0x.diagnosticChanged;
+                decorationState.eventTrigger[0] = hex.diagnosticChanged;
             }
 
             updateIndentOption(editor);
 
-            decorationState.appliedHighlight[0] = renderGroupIs(editor, [__0x.cursorOnly]);
+            decorationState.appliedHighlight[0] = renderGroupIs(editor, [hex.cursorOnly]);
         }
     });
 };
 
-const editorOptionChanged = (context): vscode.Disposable => {
+const editorOptionChanged = (): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorOptions((event: vscode.TextEditorOptionsChangeEvent): void => {
         if (event.textEditor) {
             updateIndentOption(event.textEditor);
@@ -102,16 +102,16 @@ const selectionChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): 
          * 
          * 
          */
-        decorationState.eventTrigger[0] = __0x.selectionChanged;
+        decorationState.eventTrigger[0] = hex.selectionChanged;
         decorationState.appliedHighlight[0] = renderGroupIs(vscode.window.activeTextEditor as vscode.TextEditor, decorationState.appliedHighlight);
     });
 };
 
-const tabChanged = ({ decorationState }): vscode.Disposable => {
+const tabChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
     return vscode.window.tabGroups.onDidChangeTabs((event: vscode.TabChangeEvent) => {
         if (event.changed) {
             console.log('tabChanged');
-            decorationState.eventTrigger[0] = __0x.tabChanged;
+            decorationState.eventTrigger[0] = hex.tabChanged;
         }
     });
 };
@@ -133,7 +133,7 @@ const tabChanged = ({ decorationState }): vscode.Disposable => {
 //     return vscode.workspace.onDidChangeTextDocument((event: vscode.TextDocumentChangeEvent) => {
 //         if (event) {
 //             console.log('document changed');
-//             context.eventTrigger = __0x.documentChanged;
+//             context.eventTrigger = hex.documentChanged;
 //         }
 //     });
 // };

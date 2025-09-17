@@ -1,7 +1,7 @@
 import type * as D from '../type/type.d';
 
 import * as vscode from 'vscode';
-import * as __0x from '../constant/shared/numeric';
+import * as hex from '../numeric/hex';
 import { diagnosticInfo } from '../editor/status/diagnostic';
 
 export {
@@ -14,7 +14,7 @@ const diagnosticChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decorat
         const editor = vscode.window.activeTextEditor;                  // when active editor 
         
         if (editor && event && configInfo.generalConfigInfo.diagnosticTextEnabled) {
-            decorationState.eventTrigger[0] = __0x.diagnosticChanged;   // set event caller before render
+            decorationState.eventTrigger[0] = hex.diagnosticChanged;   // set event caller before render
             diagnosticInfo(decorationState)(editor);                    // refresh diagnostic status block
         }
     });

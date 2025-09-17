@@ -6,7 +6,7 @@ import * as commands from './command/register';
 import * as windowEvent from './event/window';
 import * as workspaceEvent from './event/workspace';
 import * as languagesEvent from './event/language';
-import * as __0x from './constant/shared/numeric';
+import * as hex from './numeric/hex';
 import Error from './util/error';
 import { clearDecorationState } from './editor/editor';
 import { prepareRenderGroup, renderGroupIs } from './editor/editor';
@@ -26,7 +26,7 @@ export {
  */
 const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vscode.Disposable[] | void> => {
     try {
-        await extensionContext.extension.activate();        // this is suppose to wait for its turn to be activated 
+        await extensionContext.extension.activate();        //
 
         // when vscode startup, not sure if it is the best method, 
         // as i am not sure even if it needs to wait to be activated.
@@ -49,7 +49,7 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
         if (activeEditor) {                                 // if user is on editor
             updateRangeMetadata(activeEditor);              // set selection range metadata for the editor
             clearDecorationState(loadConfig.decoration);    // initialize decoration state
-            loadConfig.decoration.appliedHighlight[0] = renderGroupIs(activeEditor, [__0x.cursorOnly]);
+            loadConfig.decoration.appliedHighlight[0] = renderGroupIs(activeEditor, [hex.cursorOnly]);
         }
 
         const commandContext: D.Command.Intf.Context = {    // context for extension commands

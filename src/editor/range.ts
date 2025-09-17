@@ -8,10 +8,11 @@ export {
     createLineRange,
     createCursorRangeLine,
     createCursorRangeLineAuto,
+    createCursorRangeLastLine,
+    createCursorRangeLineLastAuto,
     createStartEndRangeOfSelection,
     createLineEndSelection,
     createLineSelection,
-    hasEmptyRange,
     blankRange,
     updateRangeMetadata,
     setAutoInlineDatumPoint
@@ -56,6 +57,10 @@ const checkRangeLengthDatum = (editor: vscode.TextEditor, delta: number): boolea
  */
 const checkEndOfDocDelta = (editor: vscode.TextEditor, delta: number): boolean => ((editor.selection.end.line + delta) === editor.document.lineCount);
 
+const getLastLineNumberOfLastSelection = (selections: readonly vscode.Selection[]) => {
+    return selections[selections.length - 1].end.line;
+};
+
 const createRangeNNNN = (startLine: number, startChar: number, endLine: number, endChar: number): vscode.Range =>
     new vscode.Range(new vscode.Position(startLine, startChar), new vscode.Position(endLine, endChar));
 
@@ -78,6 +83,14 @@ const createCursorRangeLineAuto = (lineDelta: number) => (editor: vscode.TextEdi
     return editor.document.lineAt(editor.selection.end.line + (checkEndOfDocDelta(editor, lineDelta) ? 0 : checkRangeLengthDatum(editor, lineDelta) ? 0 : 1)).range;
 };
 
+const createCursorRangeLastLine = (lineDelta: number) => (editor: vscode.TextEditor): vscode.Range => {
+    return editor.document.lineAt(getLastLineNumberOfLastSelection(editor.selections) + (checkEndOfDocDelta(editor, lineDelta) ? 0 : rangeMetadata.diagnosticLineDelta)).range;
+};
+
+const createCursorRangeLineLastAuto = (lineDelta: number) => (editor: vscode.TextEditor): vscode.Range => {
+    return editor.document.lineAt(getLastLineNumberOfLastSelection(editor.selections) + (checkEndOfDocDelta(editor, lineDelta) ? 0 : checkRangeLengthDatum(editor, lineDelta) ? 0 : 1)).range;
+};
+
 const createLineRange = (position: vscode.Position): vscode.Range => new vscode.Range(position, position);
 
 const createLineSelection = (position: vscode.Position): vscode.Selection => new vscode.Selection(position, position);
@@ -85,9 +98,5 @@ const createLineSelection = (position: vscode.Position): vscode.Selection => new
 const createLineEndSelection = (selection: vscode.Selection): vscode.Selection => new vscode.Selection(selection.end, selection.end);
 
 const createStartEndRangeOfSelection = (selection: vscode.Selection): vscode.Range => createRangeSPEP(selection.start, selection.end);
-
-const isEmptyRange = (selection: vscode.Selection): boolean => selection.isEmpty;
-
-const hasEmptyRange = (selections: readonly vscode.Selection[]): boolean => selections.find(isEmptyRange) !== undefined;
 
 const blankRange: vscode.Range[] = [];

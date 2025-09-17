@@ -1,9 +1,9 @@
 import type * as D from '../../type/type';
 
-import * as __0x from '../../constant/shared/numeric';
+import * as hex from '../../numeric/hex';
 import { CONFIG_SECTION, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_NUMLINK, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE } from '../../constant/config/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
-import { bindStatusContentTextState,  setMultiCursorTextPosition, setMultiCursorEditPosition, SelectionTextRegex, setSelectionTextbuffer, syncRefernceTable, setMultiCursorContext } from '../../editor/selection/selection';
+import { bindStatusContentTextState,  setMultiCursorTextPosition, setMultiCursorEditPosition, SelectionTextRegex, setSelectionTextbuffer, syncRefernceTable, setMultiCursorContentRef, setMultiCursorContext } from '../../editor/selection/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 import { isEntriesEqual } from '../../util/util';
 
@@ -41,23 +41,23 @@ const createSharedObjectSync = (textOftarget, textOfSource: any) => {
 
     const cursorOnly = Object.entries(textOfSource.cursorOnlyText.position);
     cursorOnly.forEach(([pos, placeholder]) => {
-        const referenceObject = textOftarget[__0x.cursorOnlyText].contentText[pos].after;
-        syncRefernceTable(placeholder as string, __0x.cursorOnly, referenceObject);
+        const referenceObject = textOftarget[hex.cursorOnlyText].contentText[pos].after;
+        syncRefernceTable(placeholder as string, hex.cursorOnly, referenceObject);
     });
 
     const singleLine = Object.entries(textOfSource.singleLineText.position);
     singleLine.forEach(([pos, placeholder]) => {
-        const referenceObject = textOftarget[__0x.singleLineText].contentText[pos].after;
-        syncRefernceTable(placeholder as string, __0x.singleLine, referenceObject);
+        const referenceObject = textOftarget[hex.singleLineText].contentText[pos].after;
+        syncRefernceTable(placeholder as string, hex.singleLine, referenceObject);
     });
 
     const anchor = Object.entries(textOfSource.multiLineAnchorText.position);
     const cursor = Object.entries(textOfSource.multiLineCursorText.position);
     if (isEntriesEqual(anchor, cursor)) {
         anchor.forEach(([pos, placeholder], idx) => {
-            const referenceObject = textOftarget[__0x.multiLineAnchorText].contentText[pos].after;
-            textOftarget[__0x.multiLineCursorText].contentText[pos].after = referenceObject;
-            syncRefernceTable(placeholder as string, __0x.multiLine, referenceObject);
+            const referenceObject = textOftarget[hex.multiLineAnchorText].contentText[pos].after;
+            textOftarget[hex.multiLineCursorText].contentText[pos].after = referenceObject;
+            syncRefernceTable(placeholder as string, hex.multiLine, referenceObject);
         });
     } else {
         // should error
@@ -65,19 +65,20 @@ const createSharedObjectSync = (textOftarget, textOfSource: any) => {
 
     const multiCursorText = Object.entries(textOfSource.multiCursorText.position);
     multiCursorText.forEach(([pos, placeholder]) => {
-        const referenceObject = textOftarget[__0x.multiCursorText].contentText[pos].after;
-        syncRefernceTable(placeholder as string, __0x.multiCursorText, referenceObject);
+        const referenceObject = textOftarget[hex.multiCursorText].contentText[pos].after;
+        syncRefernceTable(placeholder as string, hex.multiCursorText, referenceObject);
         setMultiCursorTextPosition(placeholder as string, parseInt(pos) as unknown as number);
     });
     
 
     const multiCursorEdit = Object.entries(textOfSource.multiCursorEdit.position);
     multiCursorEdit.forEach(([pos, placeholder]) => {
-        const referenceObject = textOftarget[__0x.multiCursorEdit].contentText[pos].after;
-        syncRefernceTable(placeholder as string, __0x.multiCursorEdit, referenceObject);
+        const referenceObject = textOftarget[hex.multiCursorEdit].contentText[pos].after;
+        syncRefernceTable(placeholder as string, hex.multiCursorEdit, referenceObject);
         setMultiCursorEditPosition(placeholder as string, parseInt(pos) as unknown as number);
     });
     
+    setMultiCursorContentRef(),
     setMultiCursorContext();
 };
 
@@ -97,18 +98,18 @@ const buildStatusTextState = (textOftarget, textOfSource: D.Status.Intf.StatusCo
         }
     });
 
-    const cursorOnlyText = textOftarget[__0x.cursorOnlyText];
-    const singleLineText = textOftarget[__0x.singleLineText];
-    const multiLineAnchorText = textOftarget[__0x.multiLineAnchorText];
-    const multiCursorText = textOftarget[__0x.multiCursorText];
-    const multiCursorEdit = textOftarget[__0x.multiCursorEdit];
+    const cursorOnlyText = textOftarget[hex.cursorOnlyText];
+    const singleLineText = textOftarget[hex.singleLineText];
+    const multiLineAnchorText = textOftarget[hex.multiLineAnchorText];
+    const multiCursorText = textOftarget[hex.multiCursorText];
+    const multiCursorEdit = textOftarget[hex.multiCursorEdit];
 
     [
-        [__0x.cursorOnlyText, cursorOnlyText.contentText.length, cursorOnlyText.position],
-        [__0x.singleLineText, singleLineText.contentText.length, singleLineText.position],
-        [__0x.multiLineText, multiLineAnchorText.contentText.length, multiLineAnchorText.position],
-        [__0x.multiCursorText, multiCursorText.contentText.length, multiCursorText.position],
-        [__0x.multiCursorEdit, multiCursorEdit.contentText.length, multiCursorEdit.position]
+        [hex.cursorOnlyText, cursorOnlyText.contentText.length, cursorOnlyText.position],
+        [hex.singleLineText, singleLineText.contentText.length, singleLineText.position],
+        [hex.multiLineText, multiLineAnchorText.contentText.length, multiLineAnchorText.position],
+        [hex.multiCursorText, multiCursorText.contentText.length, multiCursorText.position],
+        [hex.multiCursorEdit, multiCursorEdit.contentText.length, multiCursorEdit.position]
     ].forEach(([hexKey, length, placeholder]) => {
         setSelectionTextbuffer(hexKey, length, placeholder);
     });

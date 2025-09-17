@@ -1,7 +1,7 @@
 import type * as D from '../../type/type';
 
 import * as vscode from 'vscode';
-import * as __0x from '../../constant/shared/numeric';
+import * as hex from '../../numeric/hex';
 import { BORDER_WIDTH_DEFINITION, CONFIG_KEY_LINKER_SECTION, CONFIG_SECTION, DECORATION_STYLE_PREFIX, NO_CONFIGURATION_DEOCORATION_DEFAULT, NO_CONFIGURATION_GENERAL_DEFAULT } from '../../constant/config/object';
 import { CONFIG_KEY_LINKER } from '../../constant/config/enum';
 import { SELECTION_KIND_LIST } from '../../constant/shared/object';
@@ -58,7 +58,7 @@ const createDecorationType = (config: D.Decoration.Tp.DecorationStyleConfig, dec
             styledConfig.push(conf);
             return styledConfig;
         }, [] as D.Decoration.Tp.DecorationStyleConfig[]).reduce((textEditorDecoration, styleAppliedConfig, idx) => {
-            if (decorationKey === __0x.multiLine && idx !== 2) {
+            if (decorationKey === hex.multiLine && idx !== 2) {
                 delete styleAppliedConfig.backgroundColor;
             }
             textEditorDecoration.push(createEditorDecorationType(combineBorderStyle(styleAppliedConfig)));
@@ -106,7 +106,7 @@ const borderPositionParser = (selectionType: number, borderPosition: string): D.
         afterCursor = /afterCursor/s.test(position[1]);
         atLineStart = /atLineStart/s.test(position[1]);
         selectionOnly = /selectionOnly/s.test(position[1]);
-        if (selectionType === __0x.multiLine && position[0] === 'left') { // if multi-line
+        if (selectionType === hex.multiLine && position[0] === 'left') { // if multi-line
             isWholeLine = true;
         }
     }

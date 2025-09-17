@@ -534,6 +534,7 @@
                         "default": {
                             "DiagnosticKind": "editor | workspace",
                             "placeTextOnPreviousOrNextLine": "currentLine",
+                            "overlayCursorPosition": "initial cursor",
                             "overrideLayoutPlaceholderColorToHighestSeverity": false,
                             "overrideAllOk": true,
                             "autoInlineDatumPoint": 60
@@ -561,6 +562,14 @@
                                 ],
                                 "default": "currentLine"
                             },
+                            "overlayCursorPosition": {
+                                "type": "string",
+                                "enum": [
+                                    "initial cursor",
+                                    "last cursor"
+                                ],
+                                "default": "initial cursor"
+                            },
                             "overrideLayoutPlaceholderColorToHighestSeverity": {
                                 "type": "boolean",
                                 "default": false
@@ -572,7 +581,7 @@
                             "autoInlineDatumPoint": {
                                 "type": "number",
                                 "default": 60,
-                                "minimum":0,
+                                "minimum": 0,
                                 "maximum": 100
                             }
                         }

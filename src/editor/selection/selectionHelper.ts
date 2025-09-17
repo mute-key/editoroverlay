@@ -1,39 +1,59 @@
+/** 
+ * it think its more descrte to hint that reader the function will be 
+ * linear, fragment of function chain if the function is/can 
+ * be-complete without return statement. 
+ * 
+ * thie module has collection of the funcitons that to help editor selection references 
+ * and direct mutations if they are malformed.
+ * 
+ * 
+ */
 import type * as D from '../../type/type';
 
 import * as vscode from 'vscode';
-import { createLineSelection, hasEmptyRange } from '../range';
+import { createLineSelection } from '../range';
 
 export {
-    sortSelectionsIfNeeded,
+    sortSelection,
+    sortSelectionsIfNot,
     normalizeToEmptySelections,
-    firstSelectionAsBaseLine,
-    lastSelectionAsBaseLine,
 };
 
-const firstSelectionAsBaseLine = (state: D.Selection.Intf.MultiCursorState, context: any): void => {
-    state.baseLine = context.lineFn.editor.selection.end.line;
-    state.cursorIndex = 0;
-};
+/**
+ * local type declaration, that should or will strictly stay in this module only
+ */
+declare namespace L {
+    type SelectionMutation = (editor: vscode.TextEditor) => vscode.Selection[];
+}
 
-const lastSelectionAsBaseLine = (state: D.Selection.Intf.MultiCursorState, context: any): void => {
-    state.baseLine = context.lineFn.editor.selections[state.lastCount - 1].end.line;
-};
-
-const rangeToCursor = (selection: vscode.Selection) => createLineSelection(selection.end);
+const rangeToCursor = (selection: vscode.Selection): vscode.Selection => createLineSelection(selection.end);
 
 const sortBasedEndLine = (a: vscode.Selection, b: vscode.Selection): number => a.end.line - b.end.line;
 
-const ifRangesNeedSort = (selection: vscode.Selection, index: number, selections: readonly vscode.Selection[]): boolean => (index === 0) || selections[index - 1] <= selection;
+const ifRangesNeedSort = (selection: vscode.Selection, index: number, selections: readonly vscode.Selection[]): boolean => index === 0 || selections[index - 1] <= selection;
 
-const toEmptySelections = (selections: readonly vscode.Selection[]): vscode.Selection[] => [...selections].map(rangeToCursor);
+const isEmptyRange = (selection: vscode.Selection): boolean => selection.isEmpty;
 
-const sortSelection = (selections: readonly vscode.Selection[]): vscode.Selection[] => [...selections].sort(sortBasedEndLine);
+const sortSelection: L.SelectionMutation = (editor: vscode.TextEditor): vscode.Selection[] =>  editor.selections = [...editor.selections].sort(sortBasedEndLine);
 
-const sortSelectionsIfNeeded = (editor: vscode.TextEditor): boolean => editor.selections.every(ifRangesNeedSort) && mutateSelections(editor, sortSelection);
+const toEmptySelections: L.SelectionMutation = (editor: vscode.TextEditor): vscode.Selection[] => editor.selections = editor.selections.map(rangeToCursor);
 
-const normalizeToEmptySelections = (editor: vscode.TextEditor): boolean => hasEmptyRange(editor.selections) && mutateSelections(editor, toEmptySelections);
+const hasEmptyRange = (selections: readonly vscode.Selection[]): boolean => selections.find(isEmptyRange) !== undefined;
 
-const mutateSelections = (editor: vscode.TextEditor, mutation: any): boolean => {
-    editor.selections = mutation(editor.selections);
-    return true;
+const sortSelectionsIfNot = (editor: vscode.TextEditor): boolean => {
+    if (editor.selections.every(ifRangesNeedSort)) {
+        mutateSelections(editor, sortSelection);
+        return true;
+    }
+    return false;
 };
+
+const normalizeToEmptySelections = (editor: vscode.TextEditor) : boolean => {
+    if (hasEmptyRange(editor.selections)) {
+        mutateSelections(editor, toEmptySelections);
+        return true;
+    }
+    return false;
+};
+
+const mutateSelections = async (editor: vscode.TextEditor, resolve: L.SelectionMutation) => await resolve(editor);

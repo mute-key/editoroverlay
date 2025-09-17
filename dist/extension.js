@@ -41,7 +41,7 @@ var vscode17 = __toESM(require("vscode"));
 // src/constant/config/object.ts
 var vscode = __toESM(require("vscode"));
 
-// src/constant/shared/numeric.ts
+// src/numeric/hex.ts
 var reset = 256 /* RESET */;
 var cursorOnly = 257 /* CURSOR_ONLY */;
 var singleLine = 258 /* SINGLE_LINE */;
@@ -54,12 +54,6 @@ var multiLineCursorText = 516 /* MULTI_LINE_CURSOR_TEXT */;
 var multiLineAnchorText = 517 /* MULTI_LINE_ANCHOR_TEXT */;
 var multiCursorText = 518 /* MULTI_CURSOR_TEXT */;
 var multiCursorEdit = 519 /* MULTI_CURSOR_EDIT */;
-var allOccurrence = 538 /* ALL_OCCURRENCE */;
-var nextOccurrenceInit = 540 /* NEXT_OCCURRENCE_INIT */;
-var nextOccurrence = 534 /* NEXT_OCCURRENCE */;
-var cursorOnEndOfLines = 543 /* CURSOR_ON_END_OF_LINES */;
-var movement = 537 /* MOVEMENT */;
-var addCursor = 531 /* ADD_CURSOR */;
 var multiLineLineCountHex = 544 /* LC */;
 var multiLineChararcterHex = 545 /* CHAR */;
 var multiLineChararcterOnlyHex = 546 /* CHAR_ONLY */;
@@ -68,14 +62,8 @@ var multiCursorLineCountHex = 561 /* COUNT */;
 var multiCursorLineLineNumberHex = 562 /* LN */;
 var multiCursorLineLineCountHex = 563 /* LC */;
 var multiCursorLineCharacterHex = 564 /* CHAR */;
-var stateOnlyControl = 578 /* STATE_ONLY */;
-var stateContextControl = 577 /* STATE_CONTEXT_CONTROL */;
-var contextOnlyControl = 580 /* CONTEXT_ONLY */;
-var indexListControl = 579 /* INDEXLIST_CONTROL */;
-var baseIndexControl = 581 /* BASEINDEX_CONTROL */;
-var overlayControl = 583 /* OVERLAY_CONTROL */;
-var isSttCtxFnSign = 1;
-var sttOrCtxFnSign = 2;
+var multiCursorLineLineColHex = 565 /* COL */;
+var multiCursorLineLineZColHex = 566 /* ZCOL */;
 var okContentText = 769 /* OK_CONTENT_TEXT */;
 var warningContentText = 770 /* WARNING_CONTENT_TEXT */;
 var errorContentText = 771 /* ERROR_CONTENT_TEXT */;
@@ -102,36 +90,10 @@ var workspaceWarningSource = 775 /* WORKSPACE */ + 786 /* WARNING */ + 789 /* SO
 var workspaceWarningTotal = 775 /* WORKSPACE */ + 786 /* WARNING */ + 787 /* TOTAL */;
 var workspaceErrorSource = 775 /* WORKSPACE */ + 788 /* ERROR */ + 789 /* SOURCE */;
 var workspaceErrorTotal = 775 /* WORKSPACE */ + 788 /* ERROR */ + 787 /* TOTAL */;
-var allOkOverride = 37 /* ALL_OK_OVERRIDE */;
-var allOkNoOverride = 38 /* ALL_OK_NO_OVERRIDE */;
-var editorOkWorkspaceWarn = 42 /* E_OK_W_WARN */;
-var editorOkWorkspaceErr = 50 /* E_OK_W_ERR */;
-var editorOkWorkspaceWarnErr = 58 /* E_OK_W_WARN_ERR */;
-var editorWarnWorkspaceWarn = 74 /* E_WARN_W_WARN */;
-var editorWarnWorkspaceErr = 82 /* E_WARN_W_ERR */;
-var editorWarnWorkspaceWarnErr = 90 /* E_WARN_W_WARN_ERR */;
-var editorErrWorkspaceErr = 146 /* E_ERR_W_ERR */;
-var editorErrWorkspaceWarnErr = 154 /* E_ERR_W_WARN_ERR */;
-var editorWarnErrWorkspaceWarnErr = 218 /* E_WARN_ERR_W_WARN_ERR */;
 var noEvent = 4097 /* NO_EVENT */;
 var diagnosticChanged = 4098 /* DIAGNOSTIC_CHANGED */;
 var selectionChanged = 4099 /* SELECTION_CHANGED */;
 var configruationCallerPreset = 4353 /* PRESET */;
-var recurringLine0 = 1 /* TO_SHIFT_INDEX */ + 4 /* ON_BASELINE */;
-var recurringLine1 = 1 /* TO_SHIFT_INDEX */;
-var recurringLine2 = 4 /* ON_BASELINE */ + 8 /* AS_LAST_SELECTION */;
-var recurringLine3 = 4 /* ON_BASELINE */;
-var recurringLine4 = 8 /* AS_LAST_SELECTION */;
-var recurringLine5 = 2 /* INDEX_SHIFTED */ + 4 /* ON_BASELINE */;
-var recurringLine6 = 2 /* INDEX_SHIFTED */ + 8 /* AS_LAST_SELECTION */;
-var recurringLine7 = 2 /* INDEX_SHIFTED */ + 4 /* ON_BASELINE */ + 8 /* AS_LAST_SELECTION */;
-var recurringLine8 = 2 /* INDEX_SHIFTED */ + 16 /* NOT_AS_LAST_SELECTION */;
-var recurringLine9 = 4 /* ON_BASELINE */ + 16 /* NOT_AS_LAST_SELECTION */;
-var nonRecurringLine0 = 0 /* NOT_FOUND */;
-var nonRecurringLine1 = 1 /* TO_SHIFT_INDEX */;
-var nonRecurringLine2 = 2 /* INDEX_SHIFTED */;
-var nonRecurringLine3 = 2 /* INDEX_SHIFTED */ + 1 /* TO_SHIFT_INDEX */;
-var nonRecurringLine4 = 32 /* INIT */;
 
 // src/constant/config/object.ts
 var CONFIG_SECTION = {
@@ -263,6 +225,7 @@ var SELECTION_KIND = {
 var DIAGNOSTIC_VISIBILITY_CONFIG = {
   DiagnosticKind: void 0,
   placeTextOnPreviousOrNextLine: void 0,
+  overlayCursorPosition: void 0,
   overrideLayoutPlaceholderColorToHighestSeverity: void 0,
   overrideAllOk: void 0,
   autoInlineDatumPoint: void 0
@@ -432,6 +395,51 @@ var SELECTION_DEFAULT = {
   ["selectionTextFontWeight" /* SELECTION_TEXT_FONT_WEIGHT */]: "bold"
 };
 
+// src/numeric/bin.ts
+var stateOnlyControl = 578 /* STATE_ONLY */;
+var stateContextControl = 577 /* STATE_CONTEXT_CONTROL */;
+var contextOnlyControl = 580 /* CONTEXT_ONLY */;
+var indexListControl = 579 /* INDEXLIST_CONTROL */;
+var baseIndexControl = 581 /* BASEINDEX_CONTROL */;
+var overlayControl = 583 /* OVERLAY_CONTROL */;
+var resetToCursorOnly = 1 /* EDIT_BASE_BIT */;
+var allOccurrence = 2884896 /* ALL_OCCURRENCE */;
+var nextOccurrenceInit = 2883872 /* NEXT_OCCURRENCE_INIT */;
+var nextOccurrence = 2884608 /* NEXT_OCCURRENCE */;
+var cursorOnEndOfLines = 65 /* CURSOR_ON_END_OF_LINES */;
+var addCursorSequential = 17 /* ADD_CURSOR_ASCENDING */;
+var addCursorReorder = 33 /* ADD_CURSOR_REORDER */;
+var movement = 129 /* MOVEMENT */;
+var editBitPosition = 1;
+var isSttCtxFnSign = 1;
+var isSttOrCtxFnSign = 2;
+var firstToLast = 1 /* TO_SHIFT_INDEX */ + 4 /* ON_BASELINE */;
+var firstToLastWithExistingDup = 1 /* TO_SHIFT_INDEX */;
+var baseAndLast = 4 /* ON_BASELINE */ + 8 /* AS_LAST_SELECTION */;
+var lastOnly = 8 /* AS_LAST_SELECTION */;
+var asLastWithExistingDup = 2 /* INDEX_SHIFTED */ + 8 /* AS_LAST_SELECTION */;
+var asLastOnBaseWithWithExistingDup = 2 /* INDEX_SHIFTED */ + 4 /* ON_BASELINE */ + 8 /* AS_LAST_SELECTION */;
+var notAsLastWithoutExistingDup = 2 /* INDEX_SHIFTED */ + 16 /* NOT_AS_LAST_SELECTION */;
+var withExistingDup = 2 /* INDEX_SHIFTED */;
+var baseAndNotLast = 4 /* ON_BASELINE */ + 16 /* NOT_AS_LAST_SELECTION */;
+var noIndexControl = 0 /* NOT_FOUND */;
+var increaseIndex = 1 /* TO_SHIFT_INDEX */;
+var withDup = 2 /* INDEX_SHIFTED */;
+var newBeforeBaseWithDup = 2 /* INDEX_SHIFTED */ + 1 /* TO_SHIFT_INDEX */;
+var init = 32 /* INIT */;
+var initButNewBeforeInit = 32 /* INIT */ + 1 /* TO_SHIFT_INDEX */;
+var allOkOverride = 37 /* ALL_OK_OVERRIDE */;
+var allOkNoOverride = 38 /* ALL_OK_NO_OVERRIDE */;
+var editorOkWorkspaceWarn = 42 /* E_OK_W_WARN */;
+var editorOkWorkspaceErr = 50 /* E_OK_W_ERR */;
+var editorOkWorkspaceWarnErr = 58 /* E_OK_W_WARN_ERR */;
+var editorWarnWorkspaceWarn = 74 /* E_WARN_W_WARN */;
+var editorWarnWorkspaceErr = 82 /* E_WARN_W_ERR */;
+var editorWarnWorkspaceWarnErr = 90 /* E_WARN_W_WARN_ERR */;
+var editorErrWorkspaceErr = 146 /* E_ERR_W_ERR */;
+var editorErrWorkspaceWarnErr = 154 /* E_ERR_W_WARN_ERR */;
+var editorWarnErrWorkspaceWarnErr = 218 /* E_WARN_ERR_W_WARN_ERR */;
+
 // src/constant/shared/object.ts
 var INDENT_INFO = {
   size: void 0,
@@ -564,6 +572,9 @@ var checkRangeLengthDatum = (editor2, delta) => {
   return nextLineLength > currentLineLineLength && nextLineLength > rangeMetadata.datumPointOfEditor;
 };
 var checkEndOfDocDelta = (editor2, delta) => editor2.selection.end.line + delta === editor2.document.lineCount;
+var getLastLineNumberOfLastSelection = (selections) => {
+  return selections[selections.length - 1].end.line;
+};
 var createRangeSPEP = (start, end) => new vscode2.Range(start, end);
 var createCursorRange = (editor2) => {
   const position = new vscode2.Position(editor2.selection.end.line, editor2.selection.end.character);
@@ -575,10 +586,14 @@ var createCursorRangeLine = (lineDelta) => (editor2) => {
 var createCursorRangeLineAuto = (lineDelta) => (editor2) => {
   return editor2.document.lineAt(editor2.selection.end.line + (checkEndOfDocDelta(editor2, lineDelta) ? 0 : checkRangeLengthDatum(editor2, lineDelta) ? 0 : 1)).range;
 };
+var createCursorRangeLastLine = (lineDelta) => (editor2) => {
+  return editor2.document.lineAt(getLastLineNumberOfLastSelection(editor2.selections) + (checkEndOfDocDelta(editor2, lineDelta) ? 0 : rangeMetadata.diagnosticLineDelta)).range;
+};
+var createCursorRangeLineLastAuto = (lineDelta) => (editor2) => {
+  return editor2.document.lineAt(getLastLineNumberOfLastSelection(editor2.selections) + (checkEndOfDocDelta(editor2, lineDelta) ? 0 : checkRangeLengthDatum(editor2, lineDelta) ? 0 : 1)).range;
+};
 var createLineRange = (position) => new vscode2.Range(position, position);
 var createLineSelection = (position) => new vscode2.Selection(position, position);
-var isEmptyRange = (selection) => selection.isEmpty;
-var hasEmptyRange = (selections) => selections.find(isEmptyRange) !== void 0;
 var blankRange = [];
 
 // src/editor/editor.ts
@@ -939,21 +954,28 @@ var bindDiagnosticContentTextState = () => {
 var vscode5 = __toESM(require("vscode"));
 
 // src/editor/selection/selectionHelper.ts
-var firstSelectionAsBaseLine = (state, context2) => {
-  state.baseLine = context2.lineFn.editor.selection.end.line;
-  state.cursorIndex = 0;
-};
 var rangeToCursor = (selection) => createLineSelection(selection.end);
 var sortBasedEndLine = (a, b) => a.end.line - b.end.line;
 var ifRangesNeedSort = (selection, index, selections) => index === 0 || selections[index - 1] <= selection;
-var toEmptySelections = (selections) => [...selections].map(rangeToCursor);
-var sortSelection = (selections) => [...selections].sort(sortBasedEndLine);
-var sortSelectionsIfNeeded = (editor2) => editor2.selections.every(ifRangesNeedSort) && mutateSelections(editor2, sortSelection);
-var normalizeToEmptySelections = (editor2) => hasEmptyRange(editor2.selections) && mutateSelections(editor2, toEmptySelections);
-var mutateSelections = (editor2, mutation) => {
-  editor2.selections = mutation(editor2.selections);
-  return true;
+var isEmptyRange = (selection) => selection.isEmpty;
+var sortSelection = (editor2) => editor2.selections = [...editor2.selections].sort(sortBasedEndLine);
+var toEmptySelections = (editor2) => editor2.selections = editor2.selections.map(rangeToCursor);
+var hasEmptyRange = (selections) => selections.find(isEmptyRange) !== void 0;
+var sortSelectionsIfNot = (editor2) => {
+  if (editor2.selections.every(ifRangesNeedSort)) {
+    mutateSelections(editor2, sortSelection);
+    return true;
+  }
+  return false;
 };
+var normalizeToEmptySelections = (editor2) => {
+  if (hasEmptyRange(editor2.selections)) {
+    mutateSelections(editor2, toEmptySelections);
+    return true;
+  }
+  return false;
+};
+var mutateSelections = async (editor2, resolve) => await resolve(editor2);
 
 // src/editor/selection/renderOption.ts
 var addBaseIndex = (baseIndex) => (i) => {
@@ -966,9 +988,13 @@ var nthContentText = {
     return this.indexList.map(addBaseIndex(this.baseIndex)).join(",");
   }
 };
+var getColumnContentText = (columns2, columnFunc, editor2, delta) => {
+  return columns2.map((index) => columnFunc(editor2, index, delta)).join(", ");
+};
 var colContentText = {
   get contentText() {
-    return this.column.join(", ");
+    const { columnList, columnFunc, editor: editor2, detla } = this;
+    return getColumnContentText(columnList, columnFunc, editor2, detla);
   }
 };
 var renderOptionRange = {
@@ -982,98 +1008,65 @@ var rangeDescriptor = Object.getOwnPropertyDescriptor(renderOptionRange, rangeGe
 var setGetterProp = (target, getterName, getterDescriptor) => {
   Object.defineProperty(target, getterName, getterDescriptor);
 };
-
-// src/editor/selection/multiCursor.ts
-var duplicateLineSignature = (duplicateEntryIdx = -1, calibration, baseline, currentLine, previousLine, lineBufferLength) => {
-  return (currentLine < baseline ? 1 /* TO_SHIFT_INDEX */ : 0) + (calibration > 0 ? 2 /* INDEX_SHIFTED */ : 0) + (currentLine === baseline ? 4 /* ON_BASELINE */ : 0) + (currentLine === previousLine ? 8 /* AS_LAST_SELECTION */ : 0) + (lineBufferLength > duplicateEntryIdx + 1 ? 16 /* NOT_AS_LAST_SELECTION */ : 0);
-};
-var nonDuplicateLineSignature = (selectionLength, baseLine, currentLine, calibration) => {
-  return (currentLine < baseLine ? 1 /* TO_SHIFT_INDEX */ : 0) + (calibration > 0 ? 2 /* INDEX_SHIFTED */ : 0) + (selectionLength === 1 && calibration === 0 ? 32 /* INIT */ : 0);
-};
-var pushMultiCursorOption = (selectionBuffer, overlay, cursorIndex, context2) => (contentText, idx) => {
-  let contentTextBuffer = contentText;
-  if (context2.positionList.find((e) => e === idx) !== void 0) {
-    contentTextBuffer = { ...contentText };
-    contentTextBuffer.after = {
-      ...contentText.after,
-      baseIndex: context2.baseIndex,
-      indexList: [cursorIndex]
-    };
-    setGetterProp(contentTextBuffer.after, contentTextGetter, nthDescriptor);
-    context2.baseIndex = contentTextBuffer.after.baseIndex;
-    context2.indexList = contentTextBuffer.after.indexList;
-    overlay.indexListRefBuffer.push(context2.indexList);
-  }
-  const renderOption = {
-    selectionBufferIndex: selectionBuffer.length - 1,
-    selectionBuffer,
-    renderOptions: contentTextBuffer
+var replicateNthRenderOption = (contentText, state, context2) => {
+  const contentTextBuffer = { ...contentText };
+  contentTextBuffer.after = {
+    ...contentText.after,
+    baseIndex: context2.baseIndex,
+    indexList: [state.cursorIndex]
   };
-  setGetterProp(renderOption, rangeGetter, rangeDescriptor);
-  context2.renderOption[idx].push(renderOption);
+  setGetterProp(contentTextBuffer.after, contentTextGetter, nthDescriptor);
+  context2.baseIndex = contentTextBuffer.after.baseIndex;
+  context2.indexList = contentTextBuffer.after.indexList;
+  const indexes = Array.isArray(context2.indexList);
+  indexes ? state.overlay.indexListRefBuffer.push(...context2.indexList) : state.overlay.indexListRefBuffer.push(context2.indexList);
+  return contentTextBuffer;
 };
-var multiCursorIndexControl = (state, context2) => {
-  state.duplicateOverlayIndex = state.lineBuffer.get(state.currentLine);
-  const dispatcher = fnStepDispatcher(state, context2);
-  if (state.duplicateOverlayIndex !== void 0) {
-    const signature2 = duplicateLineSignature(state.duplicateOverlayIndex, state.overlay.calibration, state.baseLine, state.currentLine, state.previousLine, state.lineBuffer.size);
-    const fnStep = duplicateEntryStep[signature2];
-    fnStep.forEach(dispatcher);
-    return true;
+var replicateColsRenderOption = (contentText, state, context2) => {
+  const contentTextBuffer = { ...contentText };
+  contentTextBuffer.after = {
+    ...contentText.after,
+    editor: context2.lineFn.editor,
+    columnList: [state.selectionBuffer.length - 1]
+  };
+  context2.columnList = contentTextBuffer.after.columnList;
+  setGetterProp(contentTextBuffer.after, contentTextGetter, colDescriptor);
+  return contentTextBuffer;
+};
+var nthRenderOptionOverride = (contentText, context2) => {
+  contentText.after.baseIndex = [0];
+  contentText.after.indexList = [];
+  context2.baseIndex = contentText.after.baseIndex;
+  context2.indexList = contentText.after.indexList;
+  setGetterProp(contentText.after, contentTextGetter, nthDescriptor);
+};
+var colRenderOptionOverride = (contentText, columnOfIndex2, delta = 0, context2) => {
+  contentText.after.delta = delta;
+  contentText.after.columnFunc = columnOfIndex2;
+  contentText.after.columnList = [];
+  context2.columnList = contentText.after.columnList;
+  setGetterProp(contentText.after, contentTextGetter, colDescriptor);
+};
+
+// src/editor/selection/overlayPosition.ts
+var dispatchFnStep = (state, context2) => (fn) => {
+  switch (fn.sign & isSttCtxFnSign) {
+    case isSttCtxFnSign:
+      return stepFuncSignature[fn.sign](fn.body, state, context2);
+    case 0:
+      switch (fn.sign & isSttOrCtxFnSign) {
+        case isSttOrCtxFnSign:
+          const stateFn = stepFuncSignature[fn.sign];
+          return stateFn(fn.body, state);
+        case 0:
+          const contextFn = stepFuncSignature[fn.sign];
+          return contextFn(fn.body, context2);
+        default:
+          return null;
+      }
+    default:
+      return null;
   }
-  const signature = nonDuplicateLineSignature(state.selectionBuffer.length, state.baseLine, state.currentLine, state.overlay.calibration);
-  entryStep[signature].forEach(dispatcher);
-  return false;
-};
-var multiCursorTextDecoration = (state, context2) => {
-  if (multiCursorIndexControl(state, context2)) {
-    finalizeIndexState(state);
-    return;
-  }
-  state.lineBuffer.set(state.currentLine, state.overlayIndex);
-  finalizeIndexState(state);
-  context2.contentText.forEach(pushMultiCursorOption(state.selectionBuffer, state.overlay, state.cursorIndex, context2));
-};
-var multiCursorEditDecoration = (state, context2) => {
-  if (multiCursorIndexControl(state, context2)) {
-    finalizeIndexState(state);
-    return;
-  }
-  state.lineBuffer.set(state.currentLine, state.cursorIndex);
-  finalizeIndexState(state);
-  context2.contentText.forEach(pushMultiCursorOption(state.selectionBuffer, state.overlay, state.cursorIndex, context2));
-};
-var decoratorBinder = (selection, decorator, state, context2) => {
-  state.currentLine = selection.end.line;
-  state.selectionBuffer.push(selection);
-  context2.statusFnChain.forEach(context2.accumulate);
-  decorator(state, context2);
-};
-var cursorOnEndOfLines2 = (state, context2) => {
-  normalizeToEmptySelections(context2.lineFn.editor);
-  decoratorBinder(context2.lineFn.editor.selections[0], multiCursorEditDecoration, state, context2);
-  decoratorBinder(context2.lineFn.editor.selections[1], multiCursorEditDecoration, state, context2);
-};
-var addCursor2 = (state, context2) => {
-  console.log("addCursor", state.lastCount);
-  decoratorBinder(context2.lineFn.editor.selections[state.lastCount], multiCursorEditDecoration, state, context2);
-};
-var allOccurrence2 = (state, context2) => {
-  sortSelectionsIfNeeded(context2.lineFn.editor) && context2.lineFn.editor.selections.forEach((selection) => {
-    decoratorBinder(selection, multiCursorTextDecoration, state, context2);
-  });
-};
-var nextOccurrenceInit2 = (state, context2) => {
-  decoratorBinder(context2.lineFn.editor.selections[0], multiCursorTextDecoration, state, context2);
-  decoratorBinder(context2.lineFn.editor.selections[1], multiCursorTextDecoration, state, context2);
-};
-var nextOccurrence2 = (state, context2) => {
-  decoratorBinder(context2.lineFn.editor.selections[state.lastCount], multiCursorTextDecoration, state, context2);
-};
-var finalizeIndexState = (state) => {
-  state.previousLine = state.currentLine;
-  state.cursorIndex++;
-  state.overlayIndex++;
 };
 var pushCursorIndex = {
   sign: overlayControl,
@@ -1099,25 +1092,20 @@ var appendNthIndex = {
 var prependNthIndex = {
   sign: indexListControl,
   body: (index = 0, indexList) => {
+    console.log(indexList);
     indexList.unshift(indexList[0] - 1);
-  }
-};
-var prependNthLastIndex = {
-  sign: indexListControl,
-  body: (indexPadding = 0, indexList) => {
-    appendNthIndex.body(indexList[indexList.length - 1] + indexPadding, indexList);
   }
 };
 var increaseCalibration = {
   sign: overlayControl,
-  body: (overlay, ctx) => {
+  body: (overlay, context2) => {
     overlay.calibration++;
   }
 };
 var createBaseIndex = {
   sign: contextOnlyControl,
-  body: (ctx) => {
-    ctx.baseIndex = [0];
+  body: (context2) => {
+    context2.baseIndex = [0];
   }
 };
 var resetCurrentIndex = {
@@ -1134,22 +1122,23 @@ var equalizeLineState = {
 };
 var allocateIndexList = {
   sign: stateContextControl,
-  body: (state, ctx) => {
-    ctx.indexList = state.overlay.indexListRefBuffer[state.duplicateOverlayIndex];
+  body: (state, context2) => {
+    context2.indexList = state.overlay.indexListRefBuffer[state.duplicateOverlayIndex];
   }
 };
 var duplicateEntryStep = {
-  [recurringLine0]: [appendNthIndex],
-  [recurringLine1]: [pushCursorIndex, pushCursorGroup, appendNthIndex],
-  [recurringLine2]: [pushCursorGroup, appendNthIndex],
-  [recurringLine3]: [pushCursorGroup, pushCursorIndex, (indexList) => prependNthLastIndex.body(-1, indexList)],
-  [recurringLine4]: [appendNthIndex],
-  [recurringLine5]: [(indexList) => prependNthLastIndex.body(1, indexList), pushCursorIndex],
-  [recurringLine6]: [pushCursorIndex, appendNthIndex],
-  [recurringLine7]: [pushCursorIndex, appendNthIndex],
-  [recurringLine8]: [allocateIndexList, prependNthIndex, pushCursorIndex],
+  [firstToLast]: [appendNthIndex],
+  [firstToLastWithExistingDup]: [pushCursorIndex, pushCursorGroup, appendNthIndex],
+  [baseAndLast]: [pushCursorGroup, appendNthIndex],
+  [lastOnly]: [appendNthIndex],
+  [asLastWithExistingDup]: [pushCursorIndex, appendNthIndex],
+  [asLastOnBaseWithWithExistingDup]: [pushCursorIndex, appendNthIndex],
+  [notAsLastWithoutExistingDup]: [allocateIndexList, prependNthIndex, pushCursorIndex],
   // #FIX
-  [recurringLine9]: [increaseCalibration, pushCursorIndex, createBaseIndex, pushCursorGroup, resetCurrentIndex, equalizeLineState, allocateIndexList, prependNthIndex]
+  [withExistingDup]: [],
+  [baseAndNotLast]: [increaseCalibration, pushCursorIndex, createBaseIndex, pushCursorGroup, resetCurrentIndex, equalizeLineState, allocateIndexList, prependNthIndex]
+  // [/* 04 */ bin.recurringLine3]: [pushCursorGroup, pushCursorIndex, (indexList: number[]) => prependNthLastIndex.body(-1, indexList)],
+  // [/* 06 */ bin.recurringLine5]: [(indexList: number[]) => prependNthLastIndex.body(1, indexList), pushCursorIndex,],
 };
 var initBaseIndex = {
   sign: overlayControl,
@@ -1158,40 +1147,130 @@ var initBaseIndex = {
   }
 };
 var entryStep = {
-  [nonRecurringLine0]: [],
-  [nonRecurringLine1]: [increaseCalibration, pushCursorIndex, createBaseIndex, pushCursorGroup, resetCurrentIndex, equalizeLineState],
-  [nonRecurringLine2]: [pushCursorIndex],
-  [nonRecurringLine3]: [createBaseIndex, pushCursorIndex, resetCurrentIndex, equalizeLineState],
-  [nonRecurringLine4]: [initBaseIndex, pushCursorGroup]
+  [noIndexControl]: [],
+  [increaseIndex]: [increaseCalibration, pushCursorIndex, createBaseIndex, pushCursorGroup, resetCurrentIndex, equalizeLineState],
+  [withDup]: [pushCursorIndex],
+  [newBeforeBaseWithDup]: [createBaseIndex, pushCursorIndex, resetCurrentIndex, equalizeLineState],
+  [init]: [initBaseIndex, pushCursorGroup],
+  [initButNewBeforeInit]: [initBaseIndex, pushCursorGroup]
 };
+var stateControlFunc = (fn, state) => fn(state);
+var contextControlFunc = (fn, ctx) => fn(ctx);
+var stateContextControlFunc = (fn, state, ctx) => fn(state, ctx);
+var overlayControlFunc = (fn, state, ctx) => fn(state.overlay, ctx);
+var indexListControlFunc = (fn, state, ctx) => fn(state.cursorIndex, ctx.indexList);
+var baseIndexControlFunc = (fn, state, ctx) => fn(state.overlay, ctx.baseIndex);
 var stepFuncSignature = {
-  [stateOnlyControl]: (fn, state) => fn(state),
-  [contextOnlyControl]: (fn, ctx) => fn(ctx),
-  [stateContextControl]: (fn, state, ctx) => fn(state, ctx),
-  [overlayControl]: (fn, state, ctx) => fn(state.overlay, ctx),
-  [indexListControl]: (fn, state, ctx) => fn(state.cursorIndex, ctx.indexList),
-  [baseIndexControl]: (fn, state, ctx) => fn(state.overlay, ctx.baseIndex)
+  // state only 
+  [stateOnlyControl]: stateControlFunc,
+  // context only 
+  [contextOnlyControl]: contextControlFunc,
+  // both state and context
+  [stateContextControl]: stateContextControlFunc,
+  [overlayControl]: overlayControlFunc,
+  [indexListControl]: indexListControlFunc,
+  [baseIndexControl]: baseIndexControlFunc
 };
-var fnStepDispatcher = (state, context2) => (fn) => {
-  return fn.sign & isSttCtxFnSign ? stepFuncSignature[fn.sign](fn.body, state, context2) : fn.sign & sttOrCtxFnSign ? stepFuncSignature[fn.sign](fn.body, state) : stepFuncSignature[fn.sign](fn.body, context2);
+
+// src/editor/selection/multiCursor.ts
+var duplicateLineSignature = (duplicateEntryIdx = -1, calibration, baseline, currentLine, previousLine, lineBufferLength) => {
+  return (currentLine < baseline ? 1 /* TO_SHIFT_INDEX */ : 0) + (calibration > 0 ? 2 /* INDEX_SHIFTED */ : 0) + (currentLine === baseline ? 4 /* ON_BASELINE */ : 0) + (currentLine === previousLine ? 8 /* AS_LAST_SELECTION */ : 0) + (lineBufferLength > duplicateEntryIdx + 1 ? 16 /* NOT_AS_LAST_SELECTION */ : 0);
 };
-var nthRenderOptionOverride = (contentText, context2) => {
-  contentText.after = {
-    ...contentText.after,
-    baseIndex: [0],
-    indexList: []
+var nonDuplicateLineSignature = (selectionLength, baseLine, currentLine, calibration) => {
+  return (currentLine < baseLine ? 1 /* TO_SHIFT_INDEX */ : 0) + (calibration > 0 ? 2 /* INDEX_SHIFTED */ : 0) + (selectionLength === 1 && calibration === 0 ? 32 /* INIT */ : 0);
+};
+var pushMultiCursorOption = (state, context2) => (contentText, idx) => {
+  let contentTextBuffer = contentText;
+  const positionData = context2.positionList.get(idx);
+  if (positionData !== void 0) {
+    contentTextBuffer = positionData(contentText, state, context2);
+  }
+  const renderOption = {
+    selectionBufferIndex: state.selectionBuffer.length - 1,
+    selectionBuffer: state.selectionBuffer,
+    renderOptions: contentTextBuffer
   };
-  setGetterProp(contentText.after, contentTextGetter, nthDescriptor);
-  context2.baseIndex = contentText.after.baseIndex;
-  context2.indexList = contentText.after.indexList;
+  setGetterProp(renderOption, rangeGetter, rangeDescriptor);
+  context2.renderOption[idx].push(renderOption);
 };
-var colRenderOptionOverride = (contentText, context2) => {
-  contentText.after = {
-    ...contentText.after,
-    column: []
-  };
-  setGetterProp(contentText.after, contentTextGetter, colDescriptor);
-  context2.columnList = contentText.after.column;
+var multiCursorIndexControl = (state, context2) => {
+  state.duplicateOverlayIndex = state.lineBuffer.get(state.currentLine);
+  const dispatcher = dispatchFnStep(state, context2);
+  if (state.duplicateOverlayIndex !== void 0) {
+    const signature2 = duplicateLineSignature(state.duplicateOverlayIndex, state.overlay.calibration, state.baseLine, state.currentLine, state.previousLine, state.lineBuffer.size);
+    const fnStep = duplicateEntryStep[signature2];
+    fnStep.forEach(dispatcher);
+    return true;
+  }
+  const signature = nonDuplicateLineSignature(state.selectionBuffer.length, state.baseLine, state.currentLine, state.overlay.calibration);
+  entryStep[signature].forEach(dispatcher);
+  return false;
+};
+var multiCursorTextDecoration = (state, context2) => {
+  if (multiCursorIndexControl(state, context2)) {
+    finalizeIndexState(state);
+    return;
+  }
+  state.lineBuffer.set(state.currentLine, state.overlayIndex);
+  finalizeIndexState(state);
+  context2.contentText.forEach(pushMultiCursorOption(state, context2));
+};
+var multiCursorEditDecoration = (state, context2) => {
+  if (multiCursorIndexControl(state, context2)) {
+    finalizeIndexState(state);
+    context2.columnList?.push(state.selectionBuffer.length - 1);
+    return;
+  }
+  state.lineBuffer.set(state.currentLine, state.overlayIndex);
+  finalizeIndexState(state);
+  context2.contentText.forEach(pushMultiCursorOption(state, context2));
+};
+var decoratorBinder = (selection, decorator, state, context2) => {
+  context2.lineFn.idx = state.cursorIndex;
+  state.currentLine = selection.end.line;
+  state.selectionBuffer.push(selection);
+  context2.statusFnChain.forEach(context2.accumulate);
+  decorator(state, context2);
+};
+var decoratorIterator = (decorationKind, state, context2) => (selection) => {
+  decoratorBinder(selection, decorationKind, state, context2);
+};
+var cursorOnEndOfLines2 = (state, context2) => {
+  context2.lineFn.editor.selections.forEach(decoratorIterator(multiCursorEditDecoration, state, context2));
+};
+var cursorMovement = (state, context2) => {
+  context2.lineFn.editor.selections.forEach(decoratorIterator(multiCursorEditDecoration, state, context2));
+};
+var addCursor = (state, context2) => {
+  decoratorBinder(context2.lineFn.editor.selections[state.lastCount], multiCursorEditDecoration, state, context2);
+};
+var allOccurrence2 = (state, context2) => {
+  context2.lineFn.editor.selections.forEach(decoratorIterator(multiCursorTextDecoration, state, context2));
+};
+var nextOccurrenceInit2 = (state, context2) => {
+  decoratorBinder(context2.lineFn.editor.selections[0], multiCursorTextDecoration, state, context2);
+  decoratorBinder(context2.lineFn.editor.selections[1], multiCursorTextDecoration, state, context2);
+};
+var nextOccurrence2 = (state, context2) => {
+  decoratorBinder(context2.lineFn.editor.selections[state.lastCount], multiCursorTextDecoration, state, context2);
+};
+var finalizeIndexState = (state) => {
+  state.previousLine = state.currentLine;
+  state.cursorIndex++;
+  state.overlayIndex++;
+};
+var firstSelectionAsBaseLine = (state, context2) => {
+  state.baseLine = context2.lineFn.editor.selection.end.line;
+  state.cursorIndex = 0;
+};
+var sortEditorSelection = (state, context2) => {
+  if (sortSelectionsIfNot(context2.lineFn.editor)) {
+    state.baseLine = context2.lineFn.editor.selection.end.line;
+    state.currentLine = context2.lineFn.editor.selections[context2.lineFn.editor.selections.length - 1].end.line;
+  }
+};
+var normalizeEditorSelection = (state, context2) => {
+  normalizeToEmptySelections(context2.lineFn.editor);
 };
 
 // src/editor/selection/selection.ts
@@ -1252,14 +1331,12 @@ var multiLineFn = {
   char: (editor2) => editor2.document.getText(editor2.selection).length,
   charOnly: (editor2) => editor2.document.getText(editor2.selection).replace(indentInfo.regex, "").length
 };
-var columnFromSelection = (editor2, idx = 0, delta = 0) => {
+var columnOfIndex = (editor2, idx = 0, delta = 0) => {
   const col = editor2.selections[idx].active.character + delta;
   const end = editor2.document.lineAt(editor2.selections[idx].active.line).text.length + delta;
   return col === end ? col : col + "/" + end;
 };
 var multiCursorFn = {
-  col: ({ editor: editor2, idx }) => columnFromSelection(editor2, idx, 1),
-  zCol: ({ editor: editor2, idx }) => columnFromSelection(editor2, idx),
   count: ({ editor: editor2 }) => editor2.selections.length,
   ln: ({ editor: editor2, idx }) => editor2.selections[idx].end.line + 1,
   lc: ({ editor: editor2, pos }) => {
@@ -1274,6 +1351,8 @@ var multiCursorFn = {
   }
 };
 var multiCursorOf = {
+  col: multiCursorLineLineColHex,
+  zCol: multiCursorLineLineZColHex,
   nth: multiCursorLineNthHex,
   count: multiCursorLineCountHex,
   ln: multiCursorLineLineNumberHex,
@@ -1286,7 +1365,7 @@ var selectionOf = {
   ["multiLineCursorText" /* MULTI_LINE_CURSOR_TEXT */]: { ...lineNumber2, ...multiLineOf },
   ["multiLineAnchorText" /* MULTI_LINE_ANCHOR_TEXT */]: { ...lineNumber2, ...multiLineOf },
   ["multiCursorText" /* MULTI_CURSOR_TEXT */]: multiCursorOf,
-  ["multiCursorEdit" /* MULTI_CURSOR_EDIT */]: { ...columns, ...multiCursorOf }
+  ["multiCursorEdit" /* MULTI_CURSOR_EDIT */]: multiCursorOf
 };
 var cols = {
   col: column,
@@ -1354,8 +1433,8 @@ var selectionStatusDecorationOption = {
     fnObject: { ...multiCursorFn }
   },
   [multiCursorEdit]: {
-    renderOptionHex: [],
-    // __0x.multiCursorEdit
+    renderOptionHex: [multiCursorEdit],
+    // 
     fnObject: { ...multiCursorFn }
   }
 };
@@ -1423,22 +1502,25 @@ var setMultiCursorEditPosition = (placeholder, position) => {
     multiCursorEditKeyPosition[placeholder] = position;
   }
 };
-var setMultiCursorContext = () => {
-  textContext.positionList.push(...Object.values(multiCursorTextKeyPosition).filter((pos) => pos !== null));
+var setMultiCursorContentRef = () => {
   textContext.contentText = selectionContentText[multiCursorText].contentText;
+  editContext.contentText = selectionContentText[multiCursorEdit].contentText;
+};
+var setMultiCursorContext = () => {
   if (multiCursorTextKeyPosition.nth) {
     nthRenderOptionOverride(selectionContentText[multiCursorText].contentText[multiCursorTextKeyPosition.nth], textContext);
+    textContext.positionList.set(multiCursorTextKeyPosition.nth, replicateNthRenderOption);
   }
-  editContext.positionList.push(...Object.values(multiCursorEditKeyPosition).filter((pos) => pos !== null));
-  editContext.contentText = selectionContentText[multiCursorEdit].contentText;
   if (multiCursorEditKeyPosition.nth) {
     nthRenderOptionOverride(selectionContentText[multiCursorEdit].contentText[multiCursorEditKeyPosition.nth], editContext);
+    editContext.positionList.set(multiCursorEditKeyPosition.nth, replicateNthRenderOption);
   }
   if (multiCursorEditKeyPosition.col) {
-    colRenderOptionOverride(selectionContentText[multiCursorEdit].contentText[multiCursorEditKeyPosition.col], editContext);
-  }
-  if (multiCursorEditKeyPosition.zCol) {
-    colRenderOptionOverride(selectionContentText[multiCursorEdit].contentText[multiCursorEditKeyPosition.zCol], editContext);
+    colRenderOptionOverride(selectionContentText[multiCursorEdit].contentText[multiCursorEditKeyPosition.col], columnOfIndex, 1, editContext);
+    editContext.positionList.set(multiCursorEditKeyPosition.col, replicateColsRenderOption);
+  } else if (multiCursorEditKeyPosition.zCol) {
+    colRenderOptionOverride(selectionContentText[multiCursorEdit].contentText[multiCursorEditKeyPosition.zCol], columnOfIndex, 0, editContext);
+    editContext.positionList.set(multiCursorEditKeyPosition.zCol, replicateColsRenderOption);
   }
 };
 var clearBufferOfhexkey = (previousCursor, setDecorations) => {
@@ -1454,15 +1536,6 @@ var clearBufferOfhexkey = (previousCursor, setDecorations) => {
       break;
     case multiCursor:
       clearMultiCursorState();
-      resetMultiCursorCounters();
-      clearMultiCursor(multiCursorText, setDecorations);
-      clearMultiCursor(multiCursorEdit, setDecorations);
-      break;
-    case multiCursorText:
-      clearMultiCursor(multiCursorText, setDecorations);
-      break;
-    case multiCursorEdit:
-      clearMultiCursor(multiCursorEdit, setDecorations);
       break;
     default:
       break;
@@ -1512,49 +1585,6 @@ var multilineSelection = (editor2, previousCursor) => {
     )
   );
 };
-var multiCursorOeverlay = {
-  baseIndexRefBuffer: [],
-  indexListRefBuffer: [],
-  calibration: 0
-};
-var multiCursorState = {
-  // 
-  // ...SELECTION_STATE...
-  selectionBuffer: [],
-  lineBuffer: /* @__PURE__ */ new Map(),
-  cursorIndex: 0,
-  // ...LINE_STATE...
-  indexList: [],
-  columnList: [],
-  baseLine: -1,
-  currentLine: -1,
-  previousLine: -1,
-  duplicateOverlayIndex: -1,
-  // ...LAST_SELECTION...
-  lastSelection: void 0,
-  lastCount: 0,
-  // lastCount: 0,
-  // ...OVERLAY_STATE...
-  overlayIndex: 0,
-  overlay: multiCursorOeverlay
-};
-var clearMultiCursorState = () => {
-  multiCursorState.selectionBuffer.length = 0;
-  multiCursorState.lineBuffer.clear();
-  multiCursorState.indexList.length = 0;
-  multiCursorState.columnList.length = 0;
-  multiCursorState.overlayIndex = 0;
-  multiCursorState.cursorIndex = 0;
-  multiCursorState.baseLine = -1;
-  multiCursorState.currentLine = -1;
-  multiCursorState.duplicateOverlayIndex = -1;
-  multiCursorState.lastSelection = void 0;
-  multiCursorState.lastCount = 0;
-  multiCursorOeverlay.baseIndexRefBuffer.length = 0;
-  multiCursorOeverlay.indexListRefBuffer.length = 0;
-  multiCursorOeverlay.calibration = 0;
-  return true;
-};
 var multiCursorTextRef = {
   nth: void 0,
   count: void 0,
@@ -1569,40 +1599,27 @@ var multiCursorEditRef = {
   col: void 0,
   zCol: void 0
 };
-var functionChainAccumulater = (context2, statusRef) => ([fnName, fnChain]) => {
-  if (fnName === "char") {
-    multiCursorAccumulated[fnName] += fnChain(context2);
-    statusRef[fnName].contentText = multiCursorAccumulated[fnName].toString();
-  } else {
-    statusRef[fnName].contentText = fnChain(context2).toString();
+var functionChainAccumulater = (context2, Accumulated, statusRef) => ([fnName, fnChain]) => {
+  switch (fnName) {
+    case "char":
+      Accumulated[fnName] += fnChain(context2);
+      statusRef[fnName].contentText = Accumulated[fnName].toString();
+      break;
+    default:
+      statusRef[fnName].contentText = fnChain(context2).toString();
+      break;
   }
+};
+var multiCursorOeverlay = {
+  baseIndexRefBuffer: [],
+  indexListRefBuffer: [],
+  calibration: 0
 };
 var multiCursorFnContext = {
   editor: vscode5.window.activeTextEditor,
   pos: 0,
   char: 0,
   idx: 0
-};
-var textContext = {
-  renderOption: selectionDecorationOption[multiCursorText],
-  statusFnChain: selectionStatusFunctionChain[multiCursorText],
-  accumulate: functionChainAccumulater(multiCursorFnContext, multiCursorTextRef),
-  lineFn: multiCursorFnContext,
-  positionList: [],
-  baseIndex: [],
-  indexList: [],
-  contentText: {}
-};
-var editContext = {
-  renderOption: selectionDecorationOption[multiCursorEdit],
-  statusFnChain: selectionStatusFunctionChain[multiCursorEdit],
-  accumulate: functionChainAccumulater(multiCursorFnContext, multiCursorEditRef),
-  lineFn: multiCursorFnContext,
-  positionList: [],
-  baseIndex: [],
-  indexList: [],
-  columnList: void 0,
-  contentText: {}
 };
 var multiCursorAccumulated = {
   nth: 0,
@@ -1628,6 +1645,65 @@ var multiCursorEditKeyPosition = {
   col: null,
   zCol: null
 };
+var multiCursorState = {
+  strategyKey: 0,
+  // ... SELECTION_STATE ...
+  selectionReference: [],
+  selectionBuffer: [],
+  lineBuffer: /* @__PURE__ */ new Map(),
+  cursorIndex: 0,
+  // ... LINE_STATE ...
+  baseLine: -1,
+  currentLine: -1,
+  previousLine: -1,
+  duplicateOverlayIndex: -1,
+  // ... LAST_SELECTION ...
+  lastCount: 0,
+  // ... OVERLAY_STATE ...
+  overlayIndex: 0,
+  overlay: multiCursorOeverlay
+};
+var textContext = {
+  renderOption: selectionDecorationOption[multiCursorText],
+  statusFnChain: selectionStatusFunctionChain[multiCursorText],
+  accumulate: functionChainAccumulater(multiCursorFnContext, multiCursorAccumulated, multiCursorTextRef),
+  lineFn: multiCursorFnContext,
+  positionList: /* @__PURE__ */ new Map(),
+  baseIndex: [],
+  indexList: [],
+  contentText: []
+};
+var editContext = {
+  renderOption: selectionDecorationOption[multiCursorEdit],
+  statusFnChain: selectionStatusFunctionChain[multiCursorEdit],
+  accumulate: functionChainAccumulater(multiCursorFnContext, multiCursorAccumulated, multiCursorEditRef),
+  lineFn: multiCursorFnContext,
+  positionList: /* @__PURE__ */ new Map(),
+  baseIndex: [],
+  indexList: [],
+  columnList: [],
+  contentText: []
+};
+var clearMultiCursorState = () => {
+  multiCursorState.strategyKey = 0;
+  multiCursorState.selectionBuffer.length = 0;
+  multiCursorState.lineBuffer.clear();
+  multiCursorState.cursorIndex = 0;
+  multiCursorState.baseLine = -1;
+  multiCursorState.currentLine = -1;
+  multiCursorState.previousLine = -1;
+  multiCursorState.duplicateOverlayIndex = -1;
+  multiCursorState.lastCount = 0;
+  multiCursorState.overlayIndex = 0;
+  multiCursorState.overlay.baseIndexRefBuffer.length = 0;
+  multiCursorState.overlay.indexListRefBuffer.length = 0;
+  multiCursorState.overlay.calibration = 0;
+  setMultiCursorContentRef();
+  resetMultiCursorCounters();
+  clearMultiCursorRenderOption(multiCursorText, multiCursorFnContext.editor.setDecorations);
+  clearMultiCursorRenderOption(multiCursorEdit, multiCursorFnContext.editor.setDecorations);
+  return true;
+};
 var renderMultiCursor = (setDecorations, decorationOption) => (decorationType, idx) => setDecorations(decorationType, decorationOption[idx]);
 var renderMultiCursorWrapper = (cursorType, setDecorations) => {
   return selectionTextBuffer[cursorType].forEach(
@@ -1637,37 +1713,106 @@ var renderMultiCursorWrapper = (cursorType, setDecorations) => {
     )
   );
 };
-var clearMultiCursor = (cursorType, setDecorations) => {
+var clearMultiCursorRenderOption = (cursorType, setDecorations) => {
   selectionTextBuffer[cursorType].forEach(resetDecoration(setDecorations));
   selectionDecorationOption[cursorType].forEach((option, idx) => {
     selectionDecorationOption[cursorType][idx].length = 0;
   });
 };
-var multiCursorFnStack = {
-  [allOccurrence]: [firstSelectionAsBaseLine, allOccurrence2],
+var multiCursorResetInfusion = (state, context2) => {
+  clearMultiCursorState();
+  clearMultiCursorRenderOption(multiCursorText, context2.lineFn.editor.setDecorations);
+  clearMultiCursorRenderOption(multiCursorEdit, context2.lineFn.editor.setDecorations);
+};
+var getContextKind = (isEditMode2) => {
+  return isEditMode2 ? editContext : textContext;
+};
+var getMultiCursorKind = (isEditMode2) => {
+  return isEditMode2 ? multiCursorText + editBitPosition : multiCursorText;
+};
+var isEditMode = (strategyKey) => {
+  return (strategyKey & editBitPosition) === editBitPosition;
+};
+var multiCursorStatusAxiom = (isFirstEmpty, isCurrentEmpty, currentCount, lastCount, baseLine, previousLine, currentLine) => {
+  const initalizeState = baseLine === -1;
+  const normalizeSelectios = isFirstEmpty !== isCurrentEmpty;
+  const lastCountzero = lastCount === 0;
+  const countIsEqaul = lastCount === currentCount;
+  const countLeap = currentCount > 2;
+  const isIncreaseCursorByOne = currentCount - lastCount === 1;
+  const newPositionBeforePrevious = currentLine < previousLine;
+  ;
+  const newPositionEqualPrevious = currentLine === previousLine;
+  const newPositionNextPrevious = currentLine > previousLine;
+  const basePositionBeforePosition = previousLine < currentLine;
+  const basePositionEqualPosition = currentLine === baseLine;
+  const basePositionNextPosition = currentLine > baseLine;
+  const state = 0 | (isFirstEmpty ? 1 << 0 : 0) | (isCurrentEmpty ? 1 << 1 : 0) | (normalizeSelectios ? 1 << 4 : 0) | (initalizeState ? 1 << 5 : 0) | (lastCountzero ? 1 << 8 : 0) | (countIsEqaul ? 1 << 9 : 0) | (countLeap ? 1 << 10 : 0) | (isIncreaseCursorByOne ? 1 << 12 : 0) | (newPositionBeforePrevious ? 1 << 16 : 0) | (newPositionEqualPrevious ? 1 << 17 : 0) | (newPositionNextPrevious ? 1 << 18 : 0) | (basePositionBeforePosition ? 1 << 19 : 0) | (basePositionEqualPosition ? 1 << 20 : 0) | (basePositionNextPosition ? 1 << 21 : 0);
+  const stateRoute = {
+    [2883872 /* NEXT_OCCURRENCE_INIT */]: nextOccurrenceInit,
+    [2888704 /* NEXT_OCCURRENCE_0 */]: nextOccurrence,
+    [2233344 /* NEXT_OCCURRENCE_1 */]: nextOccurrence,
+    [1119232 /* NEXT_OCCURRENCE_2 */]: nextOccurrence,
+    [1184768 /* NEXT_OCCURRENCE_3 */]: nextOccurrence,
+    [70656 /* NEXT_OCCURRENCE_4 */]: nextOccurrence,
+    [66560 /* NEXT_OCCURRENCE_5 */]: nextOccurrence,
+    [2884896 /* ALL_OCCURRENCE */]: allOccurrence,
+    [2884899 /* CURSOR_ON_END_OF_LINES_0 */]: cursorOnEndOfLines,
+    [2883875 /* CURSOR_ON_END_OF_LINES_1 */]: cursorOnEndOfLines,
+    [2888707 /* ADD_CURSOR_SEQUENTIAL */]: addCursorSequential,
+    [2233347 /* ADD_CURSOR_REORDER_0 */]: addCursorReorder,
+    [2167811 /* ADD_CURSOR_REORDER_1 */]: addCursorReorder,
+    [70659 /* ADD_CURSOR_REORDER_2 */]: addCursorReorder,
+    [66563 /* ADD_CURSOR_REORDER_3 */]: addCursorReorder,
+    [2229763 /* MOVEMENT_0 */]: movement,
+    [2885123 /* MOVEMENT_1 */]: movement,
+    [2884611 /* MOVEMENT_2 */]: movement,
+    [2229251 /* MOVEMENT_3 */]: movement,
+    [2163715 /* MOVEMENT_4 */]: movement,
+    [2164227 /* MOVEMENT_5 */]: movement,
+    [2229265 /* RESET_TO_CURSOR_ONLY_0 */]: resetToCursorOnly,
+    [2228241 /* RESET_TO_CURSOR_ONLY_1 */]: resetToCursorOnly,
+    [2229777 /* RESET_TO_CURSOR_ONLY_2 */]: resetToCursorOnly,
+    [1114115 /* RESET_TO_CURSOR_ONLY_3 */]: resetToCursorOnly,
+    [2162691 /* RESET_TO_CURSOR_ONLY_4 */]: resetToCursorOnly,
+    [2228739 /* RESET_TO_CURSOR_ONLY_5 */]: resetToCursorOnly
+  };
+  return stateRoute[state];
+};
+var multiCursorFuncMap = {
+  [nextOccurrenceInit]: [multiCursorResetInfusion, firstSelectionAsBaseLine, nextOccurrenceInit2],
   [nextOccurrence]: [nextOccurrence2],
-  [nextOccurrenceInit]: [firstSelectionAsBaseLine, nextOccurrenceInit2],
-  [cursorOnEndOfLines]: [firstSelectionAsBaseLine, cursorOnEndOfLines2],
-  [movement]: [],
-  [addCursor]: [addCursor2]
-  // [__0x.cursorOnEndOfLines]: [firstSelectionAsBaseLine, cursorOnEndOfLines],
-  // [__0x.movement]: [firstSelectionAsBaseLine, cursorMovement],
-  // [__0x.addCursor]: [lastSelectionAsBaseLine, addCursor],
+  [allOccurrence]: [multiCursorResetInfusion, firstSelectionAsBaseLine, sortEditorSelection, allOccurrence2],
+  [cursorOnEndOfLines]: [multiCursorResetInfusion, firstSelectionAsBaseLine, sortEditorSelection, cursorOnEndOfLines2],
+  [addCursorSequential]: [normalizeEditorSelection, addCursor],
+  [addCursorReorder]: [multiCursorResetInfusion, firstSelectionAsBaseLine, sortEditorSelection, normalizeEditorSelection, cursorOnEndOfLines2],
+  [movement]: [multiCursorResetInfusion, firstSelectionAsBaseLine, cursorMovement],
+  [resetToCursorOnly]: [sortEditorSelection, normalizeEditorSelection, multiCursorResetInfusion, firstSelectionAsBaseLine, cursorOnEndOfLines2]
+  // [/** 0__ */ bin.resetToCursorOnlyFromSelection]: [sortEditorSelection, normalizeEditorSelection, multiCursorResetInfusion, firstSelectionAsBaseLine, cursorOnEndOfLines],
+};
+var cursorMalformationGuard = (editor2) => {
+  if (editor2.selection.isEmpty !== editor2.selections[editor2.selections.length - 1].isEmpty) {
+    editor2.selections = [...editor2.selections.slice(0, editor2.selections.length - 1)];
+    return true;
+  }
+  return false;
 };
 var callFnChain = (state, context2) => (fn) => fn(state, context2);
-var multiCursorStrategy = (isEmpty, lastCount, length) => {
-  return !isEmpty ? lastCount === 0 && length === 2 ? nextOccurrenceInit : lastCount + 2 < length ? allOccurrence : nextOccurrence : lastCount === 0 ? cursorOnEndOfLines : lastCount === length && lastCount !== 0 ? movement : addCursor;
-};
 var multiCursorSelection = (editor2, previousCursor) => {
-  const stratKey = multiCursorStrategy(
+  cursorMalformationGuard(editor2) && (previousCursor[0] = multiCursor);
+  multiCursor !== previousCursor[0] && clearBufferOfhexkey(previousCursor, editor2.setDecorations);
+  multiCursorState.strategyKey = multiCursorStatusAxiom(
     editor2.selection.isEmpty,
+    editor2.selections[editor2.selections.length - 1].isEmpty,
+    editor2.selections.length,
     multiCursorState.lastCount,
-    editor2.selections.length
-  ) | 0;
-  const isEdit = stratKey & 1;
-  stratKey & 8 && clearMultiCursorState() && clearBufferOfhexkey(previousCursor, editor2.setDecorations);
-  multiCursorFnStack[stratKey].forEach(callFnChain(multiCursorState, isEdit ? editContext : textContext));
-  renderMultiCursorWrapper(multiCursorText + isEdit, editor2.setDecorations);
+    multiCursorState.baseLine,
+    multiCursorState.previousLine,
+    editor2.selections[editor2.selections.length - 1].end.line
+  );
+  const editMode = isEditMode(multiCursorState.strategyKey);
+  multiCursorFuncMap[multiCursorState.strategyKey].forEach(callFnChain(multiCursorState, getContextKind(editMode)));
+  renderMultiCursorWrapper(getMultiCursorKind(editMode), editor2.setDecorations);
   multiCursorState.lastCount = editor2.selections.length;
 };
 var forceDispatchEditorChange = (editor2) => {
@@ -2415,7 +2560,7 @@ var createSharedObjectSync = (textOftarget, textOfSource) => {
     syncRefernceTable(placeholder, multiCursorEdit, referenceObject);
     setMultiCursorEditPosition(placeholder, parseInt(pos));
   });
-  setMultiCursorContext();
+  setMultiCursorContentRef(), setMultiCursorContext();
 };
 var buildStatusTextState = (textOftarget, textOfSource, SelectionDecorationStyle, leftMargin) => {
   Object.entries(textOfSource).forEach(([key, textPosition], idx) => {
@@ -2707,11 +2852,11 @@ var hideMkask = (hideOk = false, hideWarning = false) => {
 var diagnosticVisibilityBiome = (visibility) => {
   let workspacMask = 7 /* ALL */;
   let editorMask = 7 /* ALL */;
-  if (visibility.DiagnosticKind === "workspace Only") {
+  if (visibility.DiagnosticKind === "workspace Only" /* WORKSPACE_ONLY */) {
     editorMask = 0 /* NONE */;
     workspacMask &= hideMkask(visibility.hideOk, visibility.hideWarning);
   }
-  if (visibility.DiagnosticKind === "editor Only") {
+  if (visibility.DiagnosticKind === "editor Only" /* EDITOR_ONLY */) {
     workspacMask = 0 /* NONE */;
     editorMask &= hideMkask(visibility.hideOk, visibility.hideWarning);
   }
@@ -2736,26 +2881,36 @@ var setGlyph = (glyphList, config) => {
   glyphList[lineUp] = config.lineUp;
   glyphList[lineDown] = config.lineDown;
 };
+var overlayPosition = {
+  initalCursor: {
+    default: createCursorRangeLine,
+    auto: createCursorRangeLineAuto
+  },
+  lastCursor: {
+    default: createCursorRangeLastLine,
+    auto: createCursorRangeLineLastAuto
+  }
+};
 var setCursorLine = (bindTo, visibility) => {
-  if (visibility.placeTextOnPreviousOrNextLine === "previousLine") {
-    bindTo.rangeFunction = createCursorRangeLine(-1);
-    return;
+  const rangeFunc = visibility.overlayCursorPosition === "initial cursor" /* INITIAL_CURSOR */ ? overlayPosition.initalCursor : overlayPosition.lastCursor;
+  switch (visibility.placeTextOnPreviousOrNextLine) {
+    case "previousLine" /* PREVIOUS_LINE */:
+      bindTo.rangeFunction = rangeFunc.default(-1);
+      break;
+    case "previousLine (auto-inline)" /* PREVIOUS_LINE_AUTO_INLINE */:
+      bindTo.rangeFunction = rangeFunc.auto(-1);
+      break;
+    case "nextLine" /* NEXTLINE */:
+      bindTo.rangeFunction = rangeFunc.default(1);
+      break;
+    case "nextLine (auto-inline)" /* NEXTLINE_AUTO_INLINE */:
+      bindTo.rangeFunction = rangeFunc.auto(1);
+      break;
+    default:
+      setAutoInlineDatumPoint(visibility.autoInlineDatumPoint);
+      bindTo.rangeFunction = createCursorRange;
+      break;
   }
-  if (visibility.placeTextOnPreviousOrNextLine === "previousLine (auto-inline)") {
-    bindTo.rangeFunction = createCursorRangeLineAuto(-1);
-    return;
-  }
-  if (visibility.placeTextOnPreviousOrNextLine === "nextLine") {
-    bindTo.rangeFunction = createCursorRangeLine(1);
-    return;
-  }
-  if (visibility.placeTextOnPreviousOrNextLine === "nextLine (auto-inline)") {
-    bindTo.rangeFunction = createCursorRangeLineAuto(1);
-    return;
-  }
-  setAutoInlineDatumPoint(visibility.autoInlineDatumPoint);
-  bindTo.rangeFunction = createCursorRange;
-  return;
 };
 var updateDiagnosticTextConfig = async (extenionName, configuratioChange = false) => {
   const diagnosticConfig = { ...DIAGNOSTIC_CONFIG };
@@ -3028,7 +3183,7 @@ var activeEditorChanged = ({ configInfo: configInfo2, decorationState: decoratio
     }
   });
 };
-var editorOptionChanged = (context2) => {
+var editorOptionChanged = () => {
   return vscode14.window.onDidChangeTextEditorOptions((event) => {
     if (event.textEditor) {
       updateIndentOption(event.textEditor);

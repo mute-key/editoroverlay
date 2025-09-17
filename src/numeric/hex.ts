@@ -2,7 +2,6 @@
 
 /**
  * D.Numeric.Key.Hex
- * D.Numeric.Key.Bin
  *
  * at the engine level, object keys can only be strings or symbols.
  * (although symbols exist, i'm not using them here.)
@@ -16,17 +15,17 @@
  * sometimes, a javascript engine might show better performance by perfectly inlining
  * numeric keys, but this behavior is inconsistent.
  * 
- * my goal was to create unique, meaningful keys, hoping that native
- * support for numeric keys with better performance might be introduced in the future.
- * the performance difference between string and number keys is almost non-existent
- * (though some difference remains) since both are primitives with minimal overhead.
- * the exact performance depends on the specific use case, which i have yet to fully 
- * distinguish.
+ * my goal was to create unique, meaningful keys, hoping that native support for numeric 
+ * keys with better performance might be introduced in the future. the performance 
+ * difference between string and number keys is almost non-existent (though some difference
+ * remains) since both are primitives with minimal overhead. the exact performance depends
+ * on the specific use case, which i have yet to fully distinguish.
  * 
- * it was my thought that current design brings more advantage than using string literals
+ * it was my thought that current design brings more advantage than using string literals. 
  * 
  */
-import * as D from '../../type/type'
+
+import * as D from '../type/type'
 
 //::==============================================================================
 //:: [ GLOBAL ] 0x00
@@ -111,30 +110,7 @@ export const multiLineAnchorText = HEX_SELECTION_TEXT.MULTI_LINE_ANCHOR_TEXT as 
 export const multiCursorText = HEX_SELECTION_TEXT.MULTI_CURSOR_TEXT as D.Numeric.Key.Hex
 export const multiCursorEdit = HEX_SELECTION_TEXT.MULTI_CURSOR_EDIT as D.Numeric.Key.Hex
 
-/**
- * allOccurrence (selection)
- * nextOccurrence (selection)
- * cursorOnEndOfLines (cursor, empty selections)
- * movement (cursor, empty selections)
- * addCursor (cursor, empty selections)
- * 
- */
-export const enum HEX_MULTI_CURSOR_ACTION {
-    BAES = 0x0210,                      // 528 | ... 0000
-    ALL_OCCURRENCE = 0x021A,            // 538 | ... 1010
-    NEXT_OCCURRENCE_INIT = 0x021C,      // 540 | ... 1100
-    NEXT_OCCURRENCE = 0x0216,           // 534 | ... 0110
-    CURSOR_ON_END_OF_LINES = 0x021F,    // 543 | ... 1111
-    MOVEMENT = 0x0219,                  // 537 | ... 0111
-    ADD_CURSOR = 0x0213,                // 531 | ... 0011
-}
-
-export const allOccurrence = HEX_MULTI_CURSOR_ACTION.ALL_OCCURRENCE as D.Numeric.Key.Hex
-export const nextOccurrenceInit = HEX_MULTI_CURSOR_ACTION.NEXT_OCCURRENCE_INIT as D.Numeric.Key.Hex
-export const nextOccurrence = HEX_MULTI_CURSOR_ACTION.NEXT_OCCURRENCE as D.Numeric.Key.Hex
-export const cursorOnEndOfLines = HEX_MULTI_CURSOR_ACTION.CURSOR_ON_END_OF_LINES as D.Numeric.Key.Hex
-export const movement = HEX_MULTI_CURSOR_ACTION.MOVEMENT as D.Numeric.Key.Hex
-export const addCursor = HEX_MULTI_CURSOR_ACTION.ADD_CURSOR as D.Numeric.Key.Hex
+export const multiCursorBase = HEX_SELECTION_TEXT.MULTI_CURSOR_TEXT as D.Numeric.Key.Hex
 
 export const enum HEX_MULTILINE_FN {
     LC = 0x0220,            // 544
@@ -152,6 +128,8 @@ export const enum HEX_MULTI_CURSOR_FN {
     LN = 0x0232,        // 562
     LC = 0x0233,        // 563
     CHAR = 0x0234,      // 564
+    COL = 0x0235,       // 563
+    ZCOL = 0x0236,      // 564
 }
 
 export const multiCursorLineNthHex = HEX_MULTI_CURSOR_FN.NTH as D.Numeric.Key.Hex
@@ -159,29 +137,8 @@ export const multiCursorLineCountHex = HEX_MULTI_CURSOR_FN.COUNT as D.Numeric.Ke
 export const multiCursorLineLineNumberHex = HEX_MULTI_CURSOR_FN.LN as D.Numeric.Key.Hex
 export const multiCursorLineLineCountHex = HEX_MULTI_CURSOR_FN.LC as D.Numeric.Key.Hex
 export const multiCursorLineCharacterHex = HEX_MULTI_CURSOR_FN.CHAR as D.Numeric.Key.Hex
-
-
-export const enum HEX_MULTI_CURSOR_INDEX_CONTROL_SIGNATURE {
-    STATE_ONLY = 0x0242,                // 578 | 0010 (stt)
-    CONTEXT_ONLY = 0x0244,              // 580 | 0100 (ctx)
-    STATE_CONTEXT_CONTROL = 0x0241,     // 577 | 0001 (stt, ctx)
-    INDEXLIST_CONTROL = 0x0243,         // 579 | 0011 (stt, ctx)
-    BASEINDEX_CONTROL = 0x0245,         // 581 | 0101 (stt, ctx)
-    OVERLAY_CONTROL = 0x0247,           // 583 | 0111 (stt, ctx)
-};
-
-export const stateOnlyControl = HEX_MULTI_CURSOR_INDEX_CONTROL_SIGNATURE.STATE_ONLY as D.Numeric.Key.Hex
-export const stateContextControl = HEX_MULTI_CURSOR_INDEX_CONTROL_SIGNATURE.STATE_CONTEXT_CONTROL as D.Numeric.Key.Hex
-export const contextOnlyControl = HEX_MULTI_CURSOR_INDEX_CONTROL_SIGNATURE.CONTEXT_ONLY as D.Numeric.Key.Hex
-export const indexListControl = HEX_MULTI_CURSOR_INDEX_CONTROL_SIGNATURE.INDEXLIST_CONTROL as D.Numeric.Key.Hex
-export const baseIndexControl = HEX_MULTI_CURSOR_INDEX_CONTROL_SIGNATURE.BASEINDEX_CONTROL as D.Numeric.Key.Hex
-export const overlayControl = HEX_MULTI_CURSOR_INDEX_CONTROL_SIGNATURE.OVERLAY_CONTROL as D.Numeric.Key.Hex
-
-/** if call sign & 0b0001 !== 0 => (stt, ctx) */
-export const isSttCtxFnSign = 0b01 as D.Numeric.Key.Bin;
-
-/** if call sign & 0b0010 !== 0 ? (stt only) OR (ctx only) */
-export const sttOrCtxFnSign = 0b10 as D.Numeric.Key.Bin;
+export const multiCursorLineLineColHex = HEX_MULTI_CURSOR_FN.COL as D.Numeric.Key.Hex
+export const multiCursorLineLineZColHex = HEX_MULTI_CURSOR_FN.ZCOL as D.Numeric.Key.Hex
 
 //::==============================================================================
 //::[ DIAGNOSTIC STATUS ] 0x0300
@@ -231,7 +188,6 @@ export const okWorkspaceContentText = HEX_DIAGNOSTIC_STATUS_TEXT_SPLIT.WORKSPACE
 export const warningWorkspaceContentText = HEX_DIAGNOSTIC_STATUS_TEXT_SPLIT.WORKSPACE_WARNING as D.Numeric.Key.Hex
 export const errorWorkspaceContentText = HEX_DIAGNOSTIC_STATUS_TEXT_SPLIT.WORKSPACE_ERROR as D.Numeric.Key.Hex
 
-
 export const enum DIAGNOSTIC_STATE {
     SEVERITY = 0x0311,  // 785
     WARNING = 0x0312,   // 786
@@ -278,36 +234,6 @@ export const workspaceErrorSource = HEX_DIAGNOSTIC_STATUS_TEXT_KIND.WORKSPACE + 
 export const workspaceErrorTotal = HEX_DIAGNOSTIC_STATUS_TEXT_KIND.WORKSPACE + DIAGNOSTIC_STATE.ERROR + DIAGNOSTIC_STATE.TOTAL as D.Numeric.Key.Hex
 
 //::==============================================================================
-//::[ DIAGNOSTIC STATUS ] 0x00, 37 -> 218
-//::==============================================================================
-
-export const enum DIAGNOSTIC_STATE_SIGNATURE {
-    ALL_OK_OVERRIDE = 0b00100101,       // 37 
-    ALL_OK_NO_OVERRIDE = 0b00100110,    // 38
-    E_OK_W_WARN = 0b00101010,           // 42
-    E_OK_W_ERR = 0b00110010,            // 50
-    E_OK_W_WARN_ERR = 0b00111010,       // 58
-    E_WARN_W_WARN = 0b01001010,         // 74
-    E_WARN_W_ERR = 0b01010010,          // 82
-    E_WARN_W_WARN_ERR = 0b01011010,     // 90
-    E_ERR_W_ERR = 0b10010010,           // 146
-    E_ERR_W_WARN_ERR = 0b10011010,      // 154
-    E_WARN_ERR_W_WARN_ERR = 0b11011010, // 218
-}
-
-export const allOkOverride = DIAGNOSTIC_STATE_SIGNATURE.ALL_OK_OVERRIDE as D.Numeric.Key.Bin
-export const allOkNoOverride = DIAGNOSTIC_STATE_SIGNATURE.ALL_OK_NO_OVERRIDE as D.Numeric.Key.Bin
-export const editorOkWorkspaceWarn = DIAGNOSTIC_STATE_SIGNATURE.E_OK_W_WARN as D.Numeric.Key.Bin
-export const editorOkWorkspaceErr = DIAGNOSTIC_STATE_SIGNATURE.E_OK_W_ERR as D.Numeric.Key.Bin
-export const editorOkWorkspaceWarnErr = DIAGNOSTIC_STATE_SIGNATURE.E_OK_W_WARN_ERR as D.Numeric.Key.Bin
-export const editorWarnWorkspaceWarn = DIAGNOSTIC_STATE_SIGNATURE.E_WARN_W_WARN as D.Numeric.Key.Bin
-export const editorWarnWorkspaceErr = DIAGNOSTIC_STATE_SIGNATURE.E_WARN_W_ERR as D.Numeric.Key.Bin
-export const editorWarnWorkspaceWarnErr = DIAGNOSTIC_STATE_SIGNATURE.E_WARN_W_WARN_ERR as D.Numeric.Key.Bin
-export const editorErrWorkspaceErr = DIAGNOSTIC_STATE_SIGNATURE.E_ERR_W_ERR as D.Numeric.Key.Bin
-export const editorErrWorkspaceWarnErr = DIAGNOSTIC_STATE_SIGNATURE.E_ERR_W_WARN_ERR as D.Numeric.Key.Bin
-export const editorWarnErrWorkspaceWarnErr = DIAGNOSTIC_STATE_SIGNATURE.E_WARN_ERR_W_WARN_ERR as D.Numeric.Key.Bin
-
-//::==============================================================================
 //::[ MISC ] 0x1000, 00 is reserved.
 //::==============================================================================
 
@@ -335,62 +261,3 @@ export const configruationCallerPreset = CONFIGURATION_CHANGE_CALLER.PRESET as D
 export const configruationCallerPresetComplete = CONFIGURATION_CHANGE_CALLER.PRESET_COMPLETE as D.Numeric.Key.Hex
 export const configruationCallerSettingTab = CONFIGURATION_CHANGE_CALLER.SETTING_TAB as D.Numeric.Key.Hex
 export const configruationCallerSettingJSon = CONFIGURATION_CHANGE_CALLER.SETTING_JSON as D.Numeric.Key.Hex
-
-
-
-//::==============================================================================
-//::[ Numeric.Tp MASKS ] 
-//::==============================================================================
-
-/**
- * baseline only changes when new selection is go above it's initial selection of multi-cursor mode. 
- * as in, new index is going to be in reverse, without mutation.
- * 
- * [ NOT_FOUND ]               as named
- * [ TO_SHIFT_INDEX ]          if nth index need to be incrased by 1
- * [ INDEX_SHIFTED ]           if duplicate occured previously and nth index need to be appended on most recent overlay.
- * [ ON_BASELINE ]             if new selection is on same line as base selection. 
- * [ AS_LAST_SELECTION ]       if new selection is on same line of previous selection
- * [ NOT_AS_LAST_SELECTION ]   if new selection is not on same line as previous selection
- * 
- */
-export const enum MULTI_CURSOR_SELECTION_FLAG {
-    NOT_FOUND = 0b0000,
-    TO_SHIFT_INDEX = 0x01,
-    INDEX_SHIFTED = 0x02,
-    ON_BASELINE = 0x04,
-    AS_LAST_SELECTION = 0x08,
-    NOT_AS_LAST_SELECTION = 0x10,
-    INIT = 0x20,
-}
-
-/**
- * prob these constants can have better name to indiciate when/which situation they are belong to
- * it is too ambiguius at the moment
- * recurringLine(s) as when the cursor is more than 1 in same line.
- * nonRecurringLine as when cursor does not collapse on any of the selected lines
- * 
- * #TODO: need better const names
- * 
- */
-
-/** _5 */ export const recurringLine0 = MULTI_CURSOR_SELECTION_FLAG.TO_SHIFT_INDEX + MULTI_CURSOR_SELECTION_FLAG.ON_BASELINE as D.Numeric.Key.Bin
-/** _1 */ export const recurringLine1 = MULTI_CURSOR_SELECTION_FLAG.TO_SHIFT_INDEX as D.Numeric.Key.Bin
-/** 12 */ export const recurringLine2 = MULTI_CURSOR_SELECTION_FLAG.ON_BASELINE + MULTI_CURSOR_SELECTION_FLAG.AS_LAST_SELECTION as D.Numeric.Key.Bin
-/** _4 */ export const recurringLine3 = MULTI_CURSOR_SELECTION_FLAG.ON_BASELINE as D.Numeric.Key.Bin
-/** _8 */ export const recurringLine4 = MULTI_CURSOR_SELECTION_FLAG.AS_LAST_SELECTION as D.Numeric.Key.Bin
-/** _6 */ export const recurringLine5 = MULTI_CURSOR_SELECTION_FLAG.INDEX_SHIFTED + MULTI_CURSOR_SELECTION_FLAG.ON_BASELINE as D.Numeric.Key.Bin
-/** 10 */ export const recurringLine6 = MULTI_CURSOR_SELECTION_FLAG.INDEX_SHIFTED + MULTI_CURSOR_SELECTION_FLAG.AS_LAST_SELECTION as D.Numeric.Key.Bin
-/** 14 */ export const recurringLine7 = MULTI_CURSOR_SELECTION_FLAG.INDEX_SHIFTED + MULTI_CURSOR_SELECTION_FLAG.ON_BASELINE + MULTI_CURSOR_SELECTION_FLAG.AS_LAST_SELECTION as D.Numeric.Key.Bin
-/** 18 */ export const recurringLine8 = MULTI_CURSOR_SELECTION_FLAG.INDEX_SHIFTED + MULTI_CURSOR_SELECTION_FLAG.NOT_AS_LAST_SELECTION as D.Numeric.Key.Bin
-/** 20 */ export const recurringLine9 = MULTI_CURSOR_SELECTION_FLAG.ON_BASELINE + MULTI_CURSOR_SELECTION_FLAG.NOT_AS_LAST_SELECTION as D.Numeric.Key.Bin
-
-/** _0 */ export const nonRecurringLine0 = MULTI_CURSOR_SELECTION_FLAG.NOT_FOUND as D.Numeric.Key.Bin
-/** _1 */ export const nonRecurringLine1 = MULTI_CURSOR_SELECTION_FLAG.TO_SHIFT_INDEX as D.Numeric.Key.Bin
-/** _2 */ export const nonRecurringLine2 = MULTI_CURSOR_SELECTION_FLAG.INDEX_SHIFTED as D.Numeric.Key.Bin
-/** _3 */ export const nonRecurringLine3 = MULTI_CURSOR_SELECTION_FLAG.INDEX_SHIFTED + MULTI_CURSOR_SELECTION_FLAG.TO_SHIFT_INDEX as D.Numeric.Key.Bin
-/** 32 */ export const nonRecurringLine4 = MULTI_CURSOR_SELECTION_FLAG.INIT as D.Numeric.Key.Bin
-
-
-
-
