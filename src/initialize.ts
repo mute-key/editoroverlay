@@ -73,12 +73,12 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
             windowEvent.windowStateChanged(eventContext),
             windowEvent.activeEditorChanged(eventContext),
             windowEvent.selectionChanged(eventContext),
-            windowEvent.editorOptionChanged(eventContext),
+            windowEvent.editorOptionChanged(),
             languagesEvent.diagnosticChanged(eventContext),
             workspaceEvent.configChanged(eventContext),
         ];
     } catch (err) {
         console.error('Error during extension initialization: ', err);
-        vscode.window.showErrorMessage('Extension initialization failed!', err);
+        vscode.window.showErrorMessage('Extension initialization failed!');
     }
 };

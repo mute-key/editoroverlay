@@ -168,7 +168,7 @@ const fnList = (editor: vscode.TextEditor, numKey: D.Numeric.Key.Hex[]) => (fn: 
  * @param numKey previous selection type hexKey in array to unset previous selection decoration
  * @returns 
  */
-const renderGroupIs = (editor: vscode.TextEditor, numKey: D.Numeric.Key.Hex[]): D.Numeric.Key.Hex => {
+const renderGroupIs = (editor: vscode.TextEditor, numKey: D.Numeric.Key.Hex[]) => {
 
     const fnBind = fnList(editor, numKey);
 

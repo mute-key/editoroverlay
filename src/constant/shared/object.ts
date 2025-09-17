@@ -1,5 +1,7 @@
 /* eslint-disable semi */
+import type * as D from '../../type/type.d';
 
+import * as vscode from 'vscode';
 import * as hex from '../../numeric/hex'
 import * as bin from '../../numeric/bin'
 
@@ -14,11 +16,11 @@ export const INDENT_INFO = {
 }
 
 export const DECORATION_STATE = {
-    appliedHighlight: [0],
-    diagnosticSignature: [0],
-    eventTrigger: [0],
-    previousLine: [0],
-} as const
+    appliedHighlight: [0] as D.Numeric.Key.Hex[],
+    eventTrigger: [0] as D.Numeric.Key.Hex[],
+    diagnosticSignature: [0] as D.Numeric.Key.Bin[],
+    previousLine: [0] as number[],
+}
 
 export const SELECTION_KIND_LIST = [
     hex.cursorOnly,
@@ -28,12 +30,12 @@ export const SELECTION_KIND_LIST = [
 ];
 
 export const HIGHLIGHT_STYLE_LIST = {
-    [hex.reset]: [],
-    [hex.cursorOnly]: [],
-    [hex.singleLine]: [],
-    [hex.multiLine]: [],
-    [hex.multiCursor]: []
-} as const
+    [hex.reset]: [] as vscode.TextEditorDecorationType[],
+    [hex.cursorOnly]: [] as vscode.TextEditorDecorationType[],
+    [hex.singleLine]: [] as vscode.TextEditorDecorationType[],
+    [hex.multiLine]: [] as vscode.TextEditorDecorationType[],
+    [hex.multiCursor]: [] as vscode.TextEditorDecorationType[]
+}
 
 export const HIGHLIGHT_BORDER_POSITION_INFO = {
     [hex.cursorOnly]: undefined,
@@ -105,7 +107,7 @@ export const DIAGNOSTIC_PROBLEM_LIST = [
 
 export const DIAGNOSTIC_GLYPH = {
     [hex.openningBracket]: undefined,
-    [hex.closingBracket]: undefined,    
+    [hex.closingBracket]: undefined,
     [hex.lineEqual]: undefined,
     [hex.lineUp]: undefined,
     [hex.lineDown]: undefined,

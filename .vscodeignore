@@ -14,5 +14,6 @@ vsc-extension-quickstart.md
 **/.vscode-test.*
 BACKLOG.md
 .note
+..note
 bench.js
 .markdownlint.json

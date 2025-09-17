@@ -1,6 +1,8 @@
 import type * as Numeric from './numeric.d';
 
 import * as vscode from 'vscode';
+
+
 import { DECORATION_STYLE_PREFIX } from '../constant/config/object';
 import { DECORATION_STYLE_CONFIG_KEY, DECORATION_TYPE_MASK, SELECTION_TYPE } from 'src/constant/config/enum';
 
@@ -186,7 +188,7 @@ declare namespace Tp {
 
     type DecorationStyleKeyOnly = keyof typeof DECORATION_STYLE_PREFIX
 
-    type HighlightStyleList = Record<DecorationStyleKeyOnly, vscode.TextEditorDecorationType[]>;
+    type HighlightStyleList = Record<Numeric.Key.Hex, vscode.TextEditorDecorationType[]>;
 
     type UnsetDecorationFunctionType = (editor: vscode.TextEditor, highlightStatus: Intf.State) => (selectionKind: Intf.DecorationInfoPropType) => void;
 

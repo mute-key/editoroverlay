@@ -429,7 +429,7 @@ const clearBufferOfhexkey = (previousCursor: D.Numeric.Key.Hex[], setDecorations
  * @param editor 
  * @param previousCursor 
  */
-const cursorOnlySelection: D.Editor.Tp.RenderGroupFuncSign<D.Common.Tp.Unused> = (editor: vscode.TextEditor, previousCursor: D.Common.Tp.Unused): void => {
+const cursorOnlySelection: D.Editor.Tp.RenderGroupFuncSign<D.Common.Tp.Unused> = (editor, previousCursor): void => {
     clearSelectionTextBuffer(editor);
 
     selectionStatusFunctionChain[hex.cursorOnlyText].forEach(functionChain({ editor }, cursorOnlyStatusRef));
@@ -454,7 +454,7 @@ const singleLinetatusRef: Record<string, undefined | vscode.DecorationInstanceRe
  * @param editor 
  * @param previousCursor 
  */
-const singleLineSelection: D.Editor.Tp.RenderGroupFuncSign<D.Numeric.Key.Hex[]> = (editor: vscode.TextEditor, previousCursor: D.Numeric.Key.Hex[]): void => {
+const singleLineSelection = (editor: vscode.TextEditor, previousCursor: D.Numeric.Key.Hex[]): void => {
     clearBufferOfhexkey(previousCursor, editor.setDecorations);
 
     selectionStatusFunctionChain[hex.singleLineText].forEach(functionChain({ editor }, singleLinetatusRef));
@@ -475,7 +475,7 @@ const multiLinetatusRef: Record<string, undefined | vscode.DecorationInstanceRen
     charOnly: undefined,
 };
 
-const multilineSelection: D.Editor.Tp.RenderGroupFuncSign<D.Numeric.Key.Hex[]> = (editor: vscode.TextEditor, previousCursor: D.Numeric.Key.Hex[]): void => {
+const multilineSelection = (editor: vscode.TextEditor, previousCursor: D.Numeric.Key.Hex[]): void => {
 
     hex.multiLine !== previousCursor[0] && clearBufferOfhexkey(previousCursor, editor.setDecorations);
 
@@ -805,7 +805,7 @@ const callFnChain: D.Selection.Tp.FnChainSignature = (state, context) => (fn: an
  * @param editor 
  * @param previousCursor 
  */
-const multiCursorSelection: D.Editor.Tp.RenderGroupFuncSign<D.Numeric.Key.Hex[]> = (editor, previousCursor): void => {
+const multiCursorSelection = (editor: vscode.TextEditor, previousCursor: D.Numeric.Key.Hex[]): void => {
 
     cursorMalformationGuard(editor) && (previousCursor[0] = hex.multiCursor);
 

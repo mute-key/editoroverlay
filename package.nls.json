@@ -66,7 +66,7 @@
     "color.selectionText.placeholder.text.count": "#c0c0c0",
     "regex.singleLine.pattern" :"(\t|[\r\n]+)*$",
     "regex.color.pattern": "^#[A-Fa-f0-9]{6}$|^null$|^$",
-    "regex.column.pattern.": "^((?!.*zCol).*col|.*zCol(?!.*col).*)$",
+    "regex.column.pattern": "^((?!.*zCol).*col|.*zCol(?!.*col).*)$",
     "regex.column.errorMessage": "Only one of col or zCol should be used, not both",
     "description.general.borderOpacity": "📌: Opacity of decoration border in __```%```__. __```1```__ being opaque.",
     "description.general.backgroundOpacity": "📌: Opacity of background color of selection in __```%```__. __```1```__ being opaque.",
