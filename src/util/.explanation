@@ -5,7 +5,7 @@ i very much like the elegancy of references in js, and how you can maximize the
 memory intergrity. 
 
 pure functions are good as is, and i understand why it is useful, however it is a 
-stupid function in my perspectives. in extenions like this, considering the 
+limited function in my perspectives. in extenions like this, considering the 
 relatively small size of codebase, it could be well be a performance bottleneck 
 and overcomplicate the context and data intergrity. 
 

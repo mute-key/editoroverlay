@@ -39,6 +39,12 @@ this is a temporary note & backlog, until i find something i like
 
 | version log ===============================================================================================
 
+| 1.4.9 |
+- [0] forgot to build with correct package opiton, vsce package --no-dependencies.
+      this is kinda of hotfix. removed vsix packages that were included in last commit.
+- [+] readme update
+
+
 | 1.4.8 |
 
 - [+] new configuration, multi-cursor overlay position has been added. 

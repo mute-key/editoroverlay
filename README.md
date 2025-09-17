@@ -3,6 +3,8 @@
 Highly customizable cursor/selection overlay extension. 
 This extension displays selection status overlay on real time as you change the cursor/selection position,  which is equivelant of `Editor Selection` in `Status Bar` as well as diagnostic count of editor/workspace in `Problem view`. You can enabled/disabled the features that you only need, if you don't need them all. Here are the examples of this extension with default confuguration as out of the box.
 
+If you want to build this extension from the source code, you should run `vsce package --no-dependencies`, otherwise it will not build properly.
+
 #### <ins>Preview: Cursor Only Highlight</ins>
 
 <img src="./resource/doc/cursorOnly.png" alt ="GIF" style=""><br>
@@ -211,6 +213,11 @@ i will try to list the template strucutre briefly.
 - [~] refactor some of unpolished configuration files
 
 | version log ===============================================================================================
+
+| 1.4.9 |
+- [0] forgot to build with correct package opiton, vsce package --no-dependencies.
+      this is kinda of hotfix. removed vsix packages that were included in last commit.
+- [+] readme update
 
 | 1.4.8 |
 
