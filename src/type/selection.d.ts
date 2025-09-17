@@ -129,8 +129,8 @@ declare namespace Tp {
     type IndexControl = () => void
 
     type FunctionChain = (
-        args: vscode.TextEditor | Intf.StatusRefContext,
         statusRef: StatusRef,
+        args: vscode.TextEditor | Intf.StatusRefContext,
     ) => (
         [fnName, fnChain]: [string, (context: vscode.TextEditor | Intf.StatusRefContext) => number]
     ) => void

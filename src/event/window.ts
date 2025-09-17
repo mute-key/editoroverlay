@@ -88,22 +88,24 @@ const editorOptionChanged = (): vscode.Disposable => {
 
 const selectionChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) => {
-        /**
-         * using event.editor cause an issue with tab chagne event. 
-         * event.editor in this event references both editor that become on top 
-         * on view column as well as the one that has shift in editor tab 
-         * causing both editor to have decoration rendered. 
-         * 
-         * i initially thought maybe dispose this event and re-bind the event if 
-         * tab change event occurs but that would be the wrong approach to solve the issue. 
-         * 
-         * the case for this event to be triggered already guarantees that 'vscode.window.activeTextEditor'
-         * to not to be undefined. 
-         * 
-         * 
-         */
-        decorationState.eventTrigger[0] = hex.selectionChanged;
-        decorationState.appliedHighlight[0] = renderGroupIs(vscode.window.activeTextEditor as vscode.TextEditor, decorationState.appliedHighlight);
+        if (event) {
+            /**
+             * using event.editor cause an issue with tab chagne event. 
+             * event.editor in this event references both editor that become on top 
+             * on view column as well as the one that has shift in editor tab 
+             * causing both editor to have decoration rendered. 
+             * 
+             * i initially thought maybe dispose this event and re-bind the event if 
+             * tab change event occurs but that would be the wrong approach to solve the issue. 
+             * 
+             * the case for this event to be triggered already guarantees that 'vscode.window.activeTextEditor'
+             * to not to be undefined. 
+             * 
+             * 
+             */
+            decorationState.eventTrigger[0] = hex.selectionChanged;
+            decorationState.appliedHighlight[0] = renderGroupIs(vscode.window.activeTextEditor as vscode.TextEditor, decorationState.appliedHighlight);
+        }
     });
 };
 

@@ -102,15 +102,15 @@ const columnDelta = (editor: vscode.TextEditor, delta = 0): number | string => {
  * index type 
  */
 const columns = {
-    col: ({ editor }: { editor: vscode.TextEditor }) => columnDelta(editor, 1),
-    zCol: ({ editor }: { editor: vscode.TextEditor }) => columnDelta(editor)
+    col: (editor: vscode.TextEditor) => columnDelta(editor, 1),
+    zCol: (editor: vscode.TextEditor) => columnDelta(editor)
 };
 
 /**
  * character count in single line
  */
 const characterCount = {
-    char: ({ editor }: { editor: vscode.TextEditor }): number => {
+    char: (editor: vscode.TextEditor): number => {
         return editor.selection.end.character - editor.selection.start.character;
     }
 };
@@ -119,7 +119,7 @@ const characterCount = {
  * current line number, (.line is zero based)
  */
 const lineNumber = {
-    ln: ({ editor }: { editor: vscode.TextEditor }): number => {
+    ln: (editor: vscode.TextEditor): number => {
         return editor.selection.active.line + 1;
     }
 };
@@ -173,6 +173,19 @@ const multiCursorFn: D.Selection.Intf.MultiCursorFunc = {
     },
 };
 
+const columnsOf = {
+    col: 0,
+    zCol: 0
+};
+
+const lineNumberOf = {
+    ln: 0
+};
+
+const characterCountOf = {
+    char: 0
+}
+
 const multiCursorOf = {
     col: hex.multiCursorLineLineColHex,
     zCol: hex.multiCursorLineLineZColHex,
@@ -195,10 +208,10 @@ const multiCursorOf = {
  * 
  */
 const selectionOf: D.Status.Tp.ContentTextState = {
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: { ...columns, ...lineNumber },
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: { ...lineNumber, ...characterCount },
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: { ...lineNumber, ...multiLineOf },
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: { ...lineNumber, ...multiLineOf },
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: { ...columnsOf, ...lineNumberOf },
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: { ...lineNumberOf, ...characterCountOf },
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: { ...lineNumberOf, ...multiLineOf },
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: { ...lineNumberOf, ...multiLineOf },
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: multiCursorOf,
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_EDIT]: multiCursorOf,
 };
@@ -259,28 +272,6 @@ const selectionStatusFunctionChain: Record<D.Numeric.Key.Hex, any[]> = {
     [hex.multiCursorEdit]: []
 };
 
-const selectionStatusDecorationOption = {
-    [hex.cursorOnlyText]: {
-        renderOptionHex: [hex.cursorOnlyText],
-        fnObject: { ...lineNumber, ...columns }
-    },
-    [hex.singleLineText]: {
-        renderOptionHex: [hex.singleLineText],
-        fnObject: { ...lineNumber, ...characterCount }
-    },
-    [hex.multiLineText]: {
-        renderOptionHex: [hex.multiLineAnchorText, hex.multiLineCursorText],
-        fnObject: { ...lineNumber, ...multiLineFn }
-    },
-    [hex.multiCursorText]: {
-        renderOptionHex: [hex.multiCursorText],
-        fnObject: { ...multiCursorFn }
-    },
-    [hex.multiCursorEdit]: {
-        renderOptionHex: [hex.multiCursorEdit], // 
-        fnObject: { ...multiCursorFn }
-    }
-};
 
 const buildFunctionChain = (cursorType: D.Numeric.Key.Hex, placeholder: any[], statusFunciton: any) => {
     placeholder.forEach((position) => {
@@ -314,6 +305,30 @@ const setSelectionTextbuffer = (cursorType: D.Numeric.Key.Hex, length: number, p
     if (selectionDecorationOption[cursorType].length > 0) {
         selectionDecorationOption[cursorType] = [];
     }
+
+
+    const selectionStatusDecorationOption = {
+        [hex.cursorOnlyText]: {
+            renderOptionHex: [hex.cursorOnlyText],
+            fnObject: { ...lineNumber, ...columns }
+        },
+        [hex.singleLineText]: {
+            renderOptionHex: [hex.singleLineText],
+            fnObject: { ...lineNumber, ...characterCount }
+        },
+        [hex.multiLineText]: {
+            renderOptionHex: [hex.multiLineAnchorText, hex.multiLineCursorText],
+            fnObject: { ...lineNumber, ...multiLineFn }
+        },
+        [hex.multiCursorText]: {
+            renderOptionHex: [hex.multiCursorText],
+            fnObject: { ...multiCursorFn }
+        },
+        [hex.multiCursorEdit]: {
+            renderOptionHex: [hex.multiCursorEdit], 
+            fnObject: { ...multiCursorFn }
+        }
+    };
 
     const option = selectionStatusDecorationOption[cursorType];
     setDeocorationOption(cursorType, option.renderOptionHex);
@@ -351,7 +366,7 @@ const contentTextFuncBuffered: D.Selection.Tp.BufferedFuncSignature = (setDecora
     return setDecorations(buffer[idx], renderOption);
 };
 
-const functionChain: D.Selection.Tp.FunctionChain = (args, statusRef) => ([fnName, fnChain]) => {
+const functionChain: D.Selection.Tp.FunctionChain = (statusRef, args) => ([fnName, fnChain]) => {
     statusRef[fnName].contentText = fnChain(args).toString();
 };
 
@@ -407,13 +422,13 @@ const setMultiCursorContext = (): void => {
 const clearBufferOfhexkey = (previousCursor: D.Numeric.Key.Hex[], setDecorations: D.Editor.Tp.RenderOverlay,): void => {
     switch (previousCursor[0]) {
         case hex.cursorOnly:
-            selectionTextBuffer[hex.cursorOnlyText].forEach(resetDecoration(setDecorations));
+            selectionTextBuffer[hex.cursorOnlyText]?.forEach(resetDecoration(setDecorations));
             break;
         case hex.singleLine:
-            selectionTextBuffer[hex.singleLineText].forEach(resetDecoration(setDecorations));
+            selectionTextBuffer[hex.singleLineText]?.forEach(resetDecoration(setDecorations));
             break;
         case hex.multiLine:
-            selectionTextBuffer[hex.multiLineText].forEach(resetDecoration(setDecorations));
+            selectionTextBuffer[hex.multiLineText]?.forEach(resetDecoration(setDecorations));
             break;
         case hex.multiCursor:
             clearMultiCursorState();
@@ -430,9 +445,9 @@ const clearBufferOfhexkey = (previousCursor: D.Numeric.Key.Hex[], setDecorations
  * @param previousCursor 
  */
 const cursorOnlySelection = (editor: vscode.TextEditor, previousCursor: D.Numeric.Key.Hex[]): void => {
-    clearSelectionTextBuffer(editor);
+    hex.cursorOnly !== previousCursor[0] && clearBufferOfhexkey(previousCursor, editor.setDecorations);
 
-    selectionStatusFunctionChain[hex.cursorOnlyText].forEach(functionChain({ editor }, cursorOnlyStatusRef));
+    selectionStatusFunctionChain[hex.cursorOnlyText].forEach(functionChain(cursorOnlyStatusRef, editor));
 
     rangePointerTable[hex.cursorOnlyText] = createLineRange(editor.selection.active);
 
@@ -457,7 +472,7 @@ const singleLinetatusRef: Record<string, undefined | vscode.DecorationInstanceRe
 const singleLineSelection = (editor: vscode.TextEditor, previousCursor: D.Numeric.Key.Hex[]): void => {
     clearBufferOfhexkey(previousCursor, editor.setDecorations);
 
-    selectionStatusFunctionChain[hex.singleLineText].forEach(functionChain({ editor }, singleLinetatusRef));
+    selectionStatusFunctionChain[hex.singleLineText].forEach(functionChain(singleLinetatusRef, editor));
 
     rangePointerTable[hex.singleLineText] = createLineRange(editor.selection.active);
 
@@ -479,7 +494,7 @@ const multilineSelection = (editor: vscode.TextEditor, previousCursor: D.Numeric
 
     hex.multiLine !== previousCursor[0] && clearBufferOfhexkey(previousCursor, editor.setDecorations);
 
-    selectionStatusFunctionChain[hex.multiLineText].forEach(functionChain(editor, multiLinetatusRef));
+    selectionStatusFunctionChain[hex.multiLineText].forEach(functionChain(multiLinetatusRef, editor));
 
     rangePointerTable[hex.multiLineAnchorText] = createLineRange(editor.selection.anchor);
     rangePointerTable[hex.multiLineCursorText] = createLineRange(editor.selection.active);
@@ -687,20 +702,20 @@ const multiCursorStatusAxiom = (isFirstEmpty: boolean, isCurrentEmpty: boolean, 
      * 16-23: Line position type comparisons
      */
 
-    const initalizeState: boolean               = baseLine === -1;
-    const normalizeSelectios: boolean           = isFirstEmpty !== isCurrentEmpty;
-    const lastCountzero: boolean                = lastCount === 0;
-    const countIsEqaul: boolean                 = lastCount === currentCount;
-    const countLeap: boolean                    = currentCount > 2;
-    const isIncreaseCursorByOne: boolean        = currentCount - lastCount === 1;
+    const initalizeState: boolean = baseLine === -1;
+    const normalizeSelectios: boolean = isFirstEmpty !== isCurrentEmpty;
+    const lastCountzero: boolean = lastCount === 0;
+    const countIsEqaul: boolean = lastCount === currentCount;
+    const countLeap: boolean = currentCount > 2;
+    const isIncreaseCursorByOne: boolean = currentCount - lastCount === 1;
 
-    const newPositionBeforePrevious: boolean    = currentLine < previousLine;;
-    const newPositionEqualPrevious: boolean     = currentLine === previousLine;
-    const newPositionNextPrevious: boolean      = currentLine > previousLine;
+    const newPositionBeforePrevious: boolean = currentLine < previousLine;;
+    const newPositionEqualPrevious: boolean = currentLine === previousLine;
+    const newPositionNextPrevious: boolean = currentLine > previousLine;
 
-    const basePositionBeforePosition: boolean   = previousLine < currentLine;
-    const basePositionEqualPosition: boolean    = currentLine === baseLine;
-    const basePositionNextPosition: boolean     = currentLine > baseLine;
+    const basePositionBeforePosition: boolean = previousLine < currentLine;
+    const basePositionEqualPosition: boolean = currentLine === baseLine;
+    const basePositionNextPosition: boolean = currentLine > baseLine;
 
     /**
      * these magic numbers does not need to be in constant module as these
@@ -709,24 +724,24 @@ const multiCursorStatusAxiom = (isFirstEmpty: boolean, isCurrentEmpty: boolean, 
      */
     const state = 0 // placeholder 0.
         /* matadata section, 0-3 */
-        | (isFirstEmpty                     ? 1 << 0 : 0)
-        | (isCurrentEmpty                   ? 1 << 1 : 0)
+        | (isFirstEmpty ? 1 << 0 : 0)
+        | (isCurrentEmpty ? 1 << 1 : 0)
         /* selection malformation section, 4-7 */
-        | (normalizeSelectios               ? 1 << 4 : 0)
-        | (initalizeState                   ? 1 << 5 : 0)
+        | (normalizeSelectios ? 1 << 4 : 0)
+        | (initalizeState ? 1 << 5 : 0)
         /* count section, 8-11 */
-        | (lastCountzero                    ? 1 << 8 : 0)
-        | (countIsEqaul                     ? 1 << 9 : 0)
-        | (countLeap                        ? 1 << 10 : 0)
+        | (lastCountzero ? 1 << 8 : 0)
+        | (countIsEqaul ? 1 << 9 : 0)
+        | (countLeap ? 1 << 10 : 0)
         /* if new status is predictable sequence, 12-15 */
-        | (isIncreaseCursorByOne            ? 1 << 12 : 0)
+        | (isIncreaseCursorByOne ? 1 << 12 : 0)
         /* line position type comparions, 16-23 */
-        | (newPositionBeforePrevious        ? 1 << 16 : 0)
-        | (newPositionEqualPrevious         ? 1 << 17 : 0)
-        | (newPositionNextPrevious          ? 1 << 18 : 0)
-        | (basePositionBeforePosition       ? 1 << 19 : 0)
-        | (basePositionEqualPosition        ? 1 << 20 : 0)
-        | (basePositionNextPosition         ? 1 << 21 : 0)
+        | (newPositionBeforePrevious ? 1 << 16 : 0)
+        | (newPositionEqualPrevious ? 1 << 17 : 0)
+        | (newPositionNextPrevious ? 1 << 18 : 0)
+        | (basePositionBeforePosition ? 1 << 19 : 0)
+        | (basePositionEqualPosition ? 1 << 20 : 0)
+        | (basePositionNextPosition ? 1 << 21 : 0)
         ;
 
     // state route table
@@ -832,7 +847,9 @@ const forceDispatchEditorChange = (editor: vscode.TextEditor): void => {
 };
 
 const clearSelectionTextBuffer = (editor: vscode.TextEditor): void => {
-    SELECTION_KIND_LIST?.forEach(cursorType => clearBufferOfhexkey([cursorType], editor.setDecorations));
+    for (const cursorType of SELECTION_KIND_LIST) {
+        clearBufferOfhexkey([cursorType], editor.setDecorations);
+    }
 };
 
 const clearDisposeBuffer = (setDecorations: vscode.TextEditor["setDecorations"]) => (buffer: vscode.TextEditorDecorationType): void => {
