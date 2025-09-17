@@ -1,4 +1,4 @@
-import * as D from '../../type/type';
+import type * as D from '../../type/type';
 
 import * as vscode from 'vscode';
 import * as hex from '../../numeric/hex';
@@ -429,7 +429,7 @@ const clearBufferOfhexkey = (previousCursor: D.Numeric.Key.Hex[], setDecorations
  * @param editor 
  * @param previousCursor 
  */
-const cursorOnlySelection: D.Editor.Tp.RenderGroupFuncSign<D.Common.Tp.Unused> = (editor, previousCursor): void => {
+const cursorOnlySelection = (editor: vscode.TextEditor, previousCursor: D.Numeric.Key.Hex[]): void => {
     clearSelectionTextBuffer(editor);
 
     selectionStatusFunctionChain[hex.cursorOnlyText].forEach(functionChain({ editor }, cursorOnlyStatusRef));

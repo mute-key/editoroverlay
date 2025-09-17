@@ -39,6 +39,11 @@ this is a temporary note & backlog, until i find something i like
 
 | version log ===============================================================================================
 
+| 1.5.2 |
+- [0] there was a type D.Editor.Tp.RenderGroupFuncSign<T>, which i wish did auto arguement type overlading, 
+      which works really well on debug but it fails on build. had to remove the type completely. 
+      i assume it somewhat useful during the runtime but not on the build time. 
+
 | 1.4.9 |
 - [0] forgot to build with correct package opiton, vsce package --no-dependencies.
       this is kinda of hotfix. removed vsix packages that were included in last commit.
