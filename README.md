@@ -178,47 +178,68 @@ i will try to list the template strucutre briefly.
 ```plain
 ************************************************************************************************************
 
-|Sticky List| [!]: issues [?]: not decided [~]: planning, on going
+  [+]: new, added
+  [o]: completed
+  [!]: issues
+  [~]: on going, unfinished or planning
+  [,]: not decided, pause
+  [_]: drop, ideas or features
+  [?]: unknown unknown, lost track of the topic
+  
+| sticky_list ===============================================================================================
 
-- [!] sometimes created decorationTypes does not have ascending decorationTypeID base on sequence, 
+- [!] continues trigger of 'select next occurrences' will not cause render lag until when it reach 
+      round 300 cursor. they will be rendered with some delay after reaching certain numbers. 
+      one way to solving this would be paging the render obejct but this will require major data
+      structure refactoring. i would like to work on this eventually.
+
+- [?] sometimes created decorationTypes does not have ascending decorationTypeID base on sequence, 
       causing malformed statsus block to be displayed. the only fix is to reload the vscode.
       need better method to have correct display order to prevent such an event.
-- [!] direct config update on settings.json leaves selection status text. 
-
-- [?] throttling or debouncing for multi-line selection and multi-cursor selection
+- [?] direct config update on settings.json leaves selection status text. 
 - [?] backgroundColor configuration or auto appply background color based on border colour. not sure yet.
-- [?] maybe applying preset should have some sort of indicator or message popup that configurations are 
-      being updated and will reload. 
-- [?] probably document state indicator could be useful? not sure
 
+- [~] maybe applying preset should have some sort of indicator or message popup that configurations are 
+      being updated and will reload. 
+- [~] probably document state indicator could be useful? not sure
 - [~] configuration pattern improvement.
 - [~] configuration code clean up.
 - [~] implement new status block for tasks in vscode or from terminal.
 - [~] to get back to configuration code at some point and clean up.
-- [~] mutline highlight/status has high rendering cost. have been constantly optimizing the cost ever 
+
+- [~] better type definitions
+- [~] refactor some of unpolished configuration files
+
+| version log ===============================================================================================
+
+| 1.4.8 |
+
+- [+] new configuration, multi-cursor overlay position has been added. 
+      the configuration problems -> visibility -> overlayPosition will allow to choose
+      between inital cursor position to last cursor position.
+- [+] multi-cursor empty/non-empty decoration has been split/added
+      + overlay configuration for both empty selection and non empty selections 
+      + new modules has been added | code split from selection.ts to selection/*.ts
+- [+] split numeric.ts to hex.ts, bin.tx
+- [+] added top level namespace in numeric collection.
+- [o] my initial design of multiCursor was incomplete to cover a lot of edge cases. 
+      multiCursor now can handle most of edge cases. 
+      + random edit cursor insert in any position 
+      + un-select inconsistant cursor insert in a sequence
+      + col, zcol position metadata has been added to overlay
+- [o] there was a bug with margin-left spacing with diagnostic render option overlays. 
+      it was hotfixed in 1.4.7.
+- [o] i am not sure if the api have changed or not but the behaviour tab change event is different 
+      than as i remembered. regardless, tab change event no longer need to be subscribed. 
+- [o] mutline highlight/status has high rendering cost. have been constantly optimizing the cost ever 
       since. this will be onging until no longer spikes even with rapid-fire but maybe it is very 
       difficult without debounce. the problem with debounce or throttlign will introduce some delays 
-      with input response. im not sure if i will like that instead cripy response as of now.
-- [~] implement new diggnostic position (auto-before) just like (auto-inline).
+      inbetween of responses. now that i am thinking an map could be an option here but the map object 
+      still will be slower than object literal. the performance of multline is not as bad as before, 
+      so i am going to keep it as is unless i come up with a better idea. 
 
-************************************************************************************************************
-
-|1.4.5 Update|
-
-- [+] new configuration nextLine (auto) or previousLine (auto) for diagnotic visiblity has been added.
-- [+] new autoLinePositionDatumPoint has been added to serve a base range point to auto inline 
-      diagnotic status when next line length exceed datum point.
-- [+] performance improvment for multiLine highlight as well as all types of staus selection status. 
-      multi-cursor selection status no longer lags nor slowed on render on UI even when rapid-trigger.
-      some large performance improvement refactoring has been done for all selection status.
-      the refactoring was focused on maximum usage of references and pointer-like handling. 
-- [+] new placeholder 'charOnly' has been added for multi-line that ignores indents and carriage returns. 
-- [+] dignostic text placement next line will be displayed on same line when the cursor is on the 
-      last line of the document
-- [+] bug has been fixed for reloading the configuration when diagnotic was enabled/disabled is changed.
-- [+] composite range has been fixed as to be handled by multi-cursor correctly.
-- [+] fixed a bug where decoration being rendered on both tab column on editor shift tabs. 
-- [+] some partial tweaks on multi-line highlight and diagnostic function.
+- [_] implement new diggnostic position (auto-before) just like (auto-inline).
+- [_] throttling or debouncing for multi-line selection and multi-cursor selection
 
 ************************************************************************************************************
 ```
