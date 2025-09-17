@@ -71,6 +71,13 @@ this is a temporary note & backlog, until i find something i like
       still will be slower than object literal. the performance of multline is not as bad as before, 
       so i am going to keep it as is unless i come up with a better idea. 
 
+      after using the dev tool to get the profile of all rendering tasks, i was able to identify the 
+      one of the performance bottleneck but not sure if it is my code or the api, (i forgot which it was)
+      i was able to identify why and where in stack trace but i forogt to exactly where it was. 
+      regardless, it is not much of an issues as of now to use this extenion so i will move on.
+
+      
+
 - [_] implement new diggnostic position (auto-before) just like (auto-inline).
 - [_] throttling or debouncing for multi-line selection and multi-cursor selection
 
