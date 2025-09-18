@@ -2,8 +2,8 @@
 import type * as D from '../../type/type.d';
 
 import * as vscode from 'vscode';
-import * as hex from '../../numeric/hex'
-import * as bin from '../../numeric/bin'
+import * as hex from '../../numeric/hexadecimal'
+import * as bin from '../../numeric/binary'
 
 // ==============================================================================
 // [ RUNTIME READONLY CONSTANT/ENUM ]
@@ -27,7 +27,13 @@ export const SELECTION_KIND_LIST = [
     hex.singleLine,
     hex.multiLine,
     hex.multiCursor,
-];
+] as const;
+
+export const SELECTION_KIND_LIST_EXCLUDE_MULTI_CURSOR = [
+    hex.cursorOnly,
+    hex.singleLine,
+    hex.multiLine,
+] as const;
 
 export const HIGHLIGHT_STYLE_LIST = {
     [hex.reset]: [] as vscode.TextEditorDecorationType[],
@@ -69,14 +75,14 @@ export const DIAGNOSTIC_STATE = {
     }
 } as const
 
-export const SELECTION_CONTENT_TEXT = {
+export const SELECTION_CONTENT_TEXT: D.Status.Intf.StatusContentText = {
     [hex.cursorOnlyText]: undefined,
     [hex.singleLineText]: undefined,
     [hex.multiLineCursorText]: undefined,
     [hex.multiLineAnchorText]: undefined,
     [hex.multiCursorText]: undefined,
     [hex.multiCursorEdit]: undefined,
-} as const
+}
 
 export const DIAGNOSTIC_CONTENT_TEXT = {
     [bin.allOkOverride]: [] as any[],

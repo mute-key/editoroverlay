@@ -1,7 +1,7 @@
 import type * as D from '../type/type.d';
 
 import * as vscode from 'vscode';
-import * as hex from '../numeric/hex';
+import * as hex from '../numeric/hexadecimal';
 import { diagnosticInfo } from '../editor/status/diagnostic';
 
 export {

@@ -6,7 +6,7 @@ import * as commands from './command/register';
 import * as windowEvent from './event/window';
 import * as workspaceEvent from './event/workspace';
 import * as languagesEvent from './event/language';
-import * as hex from './numeric/hex';
+import * as hex from './numeric/hexadecimal';
 import Error from './util/error';
 import { clearDecorationState } from './editor/editor';
 import { prepareRenderGroup, renderGroupIs } from './editor/editor';
@@ -26,12 +26,7 @@ export {
  */
 const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vscode.Disposable[] | void> => {
     try {
-        await extensionContext.extension.activate();        //
-
-        // when vscode startup, not sure if it is the best method, 
-        // as i am not sure even if it needs to wait to be activated.
-        // maybe need to revise the method.
-
+        
         Error.setPackageName(extensionContext.extension.packageJSON.name);
 
         const loadConfig = await config.loadConfiguration(extensionContext);
@@ -48,7 +43,7 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
 
         if (activeEditor) {                                 // if user is on editor
             updateRangeMetadata(activeEditor);              // set selection range metadata for the editor
-            clearDecorationState(loadConfig.decoration);    // initialize decoration state
+            clearDecorationState(loadConfig.decoration as D.Editor.Tp.DecorationState);    // initialize decoration state
             loadConfig.decoration.appliedHighlight[0] = renderGroupIs(activeEditor, [hex.cursorOnly]);
         }
 
@@ -79,6 +74,6 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
         ];
     } catch (err) {
         console.error('Error during extension initialization: ', err);
-        vscode.window.showErrorMessage('Extension initialization failed!');
+        // vscode.window.showErrorMessage('Extension initialization failed!');
     }
 };

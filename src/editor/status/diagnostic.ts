@@ -1,7 +1,7 @@
 import type * as D from '../../type/type';
 
 import * as vscode from 'vscode';
-import * as hex from '../../numeric/hex';
+import * as hex from '../../numeric/hexadecimal';
 import * as __$ from '../../constant/shared/symbol';
 import * as regex from '../../collection/regex';
 import { createCursorRange } from '../range';
@@ -264,9 +264,11 @@ const context = {
 };
 
 const diagnosticInfo = (decorationState: D.Decoration.Intf.State) => (editor: vscode.TextEditor): void => {
+    
     if (decorationState.eventTrigger[0] === hex.diagnosticChanged) {
         refreshBuffer(updateDiagnostic(editor.document.uri));
     }
+    
     context.line = editor.selection.end.line;
     context.state = stateBuffer;
     diggnosticStateList.forEach(updateDiagnosticState(context));

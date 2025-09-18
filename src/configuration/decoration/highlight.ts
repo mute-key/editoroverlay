@@ -1,7 +1,8 @@
 import type * as D from '../../type/type';
 
 import * as vscode from 'vscode';
-import * as hex from '../../numeric/hex';
+import * as hex from '../../numeric/hexadecimal';
+import * as regex from '../../collection/regex';
 import { BORDER_WIDTH_DEFINITION, CONFIG_KEY_LINKER_SECTION, CONFIG_SECTION, DECORATION_STYLE_PREFIX, NO_CONFIGURATION_DEOCORATION_DEFAULT, NO_CONFIGURATION_GENERAL_DEFAULT } from '../../constant/config/object';
 import { CONFIG_KEY_LINKER } from '../../constant/config/enum';
 import { SELECTION_KIND_LIST } from '../../constant/shared/object';
@@ -74,10 +75,10 @@ const createDecorationType = (config: D.Decoration.Tp.DecorationStyleConfig, dec
     }
 };
 
-const decorationTypeSplit = (config: any, decorationKey: number): string[] | undefined => {
+const decorationTypeSplit = (config: any, decorationKey: D.Numeric.Key.Hex): string[] | undefined => {
     if (Object.hasOwn(BORDER_WIDTH_DEFINITION, decorationKey)) {
         if (Object.hasOwn(BORDER_WIDTH_DEFINITION[decorationKey], String(config.borderPosition))) {
-            return borderPosition(config, BORDER_WIDTH_DEFINITION[decorationKey][config.borderPosition]);
+            return borderPosition(config, BORDER_WIDTH_DEFINITION[decorationKey][config.borderPosition] as number[]);
         }
         return;
     }
@@ -101,11 +102,11 @@ const borderPositionParser = (selectionType: number, borderPosition: string): D.
     let atLineStart = false;
     let selectionOnly = false;
     if (position.length > 1) {
-        isWholeLine = /isWholeLine/s.test(position[1]);
-        beforeCursor = /beforeCursor/s.test(position[1]);
-        afterCursor = /afterCursor/s.test(position[1]);
-        atLineStart = /atLineStart/s.test(position[1]);
-        selectionOnly = /selectionOnly/s.test(position[1]);
+        isWholeLine = regex.isWholeLine.test(position[1]);
+        beforeCursor = regex.beforeCursor.test(position[1]);
+        afterCursor = regex.afterCursor.test(position[1]);
+        atLineStart = regex.atLineStart.test(position[1]);
+        selectionOnly = regex.selectionOnly.test(position[1]);
         if (selectionType === hex.multiLine && position[0] === 'left') { // if multi-line
             isWholeLine = true;
         }

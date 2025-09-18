@@ -1,7 +1,7 @@
 import type * as D from '../../type/type';
 
-import * as hex from '../../numeric/hex';
-import * as bin from '../../numeric/bin';
+import * as hex from '../../numeric/hexadecimal';
+import * as bin from '../../numeric/binary';
 import * as __$ from '../../constant/shared/symbol';
 import * as regex from '../../collection/regex';
 import { CONFIG_SECTION, DECORATION_OPTION_LINKER, DIAGNOSTIC_ALL_PLACEHOLDER_LINKER, DIAGNOSTIC_CONFIG, DIAGNOSTIC_CONTENT_TEXT_LIST, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM, DIAGNOSTIC_DECORATION_STYLE, DIAGNOSTIC_DECORATION_TEXT_KIND, DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER, DIAGNOSTIC_STYLE_LIST, DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER } from '../../constant/config/object';

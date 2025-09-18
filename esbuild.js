@@ -1,4 +1,5 @@
 const esbuild = require("esbuild");
+const punycode = require('punycode/');
 
 const production = process.argv.includes('--production');
 const watch = process.argv.includes('--watch');

@@ -25,7 +25,7 @@
  * 
  */
 
-import * as D from '../type/type'
+import type * as D from '../type/type'
 
 //::==============================================================================
 //:: [ GLOBAL ] 0x00
@@ -110,7 +110,7 @@ export const multiLineAnchorText = HEX_SELECTION_TEXT.MULTI_LINE_ANCHOR_TEXT as 
 export const multiCursorText = HEX_SELECTION_TEXT.MULTI_CURSOR_TEXT as D.Numeric.Key.Hex
 export const multiCursorEdit = HEX_SELECTION_TEXT.MULTI_CURSOR_EDIT as D.Numeric.Key.Hex
 
-export const multiCursorBase = HEX_SELECTION_TEXT.MULTI_CURSOR_TEXT as D.Numeric.Key.Hex
+// export const multiCursorBase = HEX_SELECTION_TEXT.MULTI_CURSOR_TEXT as D.Numeric.Key.Hex
 
 export const enum HEX_MULTILINE_FN {
     LC = 0x0220,            // 544

@@ -25,7 +25,11 @@ export {
     characterOnly,
     nth,
     selectionCount,
-    D
+    isWholeLine,
+    beforeCursor,
+    afterCursor,
+    atLineStart,
+    selectionOnly,
 };
 
 //:==============================================================================
@@ -57,3 +61,12 @@ const isValidHexColor = /^#[A-Fa-f0-9]{6}$/;
 const isValidWidth = /^[0-9]px$|^[0-9]em$/;
 const ifContentTextHasPlaceholder = /(\${[A-z]*})/g;
 const contentTextKeysOnly = /\${([^{}]+)}/s;
+
+const isWholeLine = /isWholeLine/s;
+const beforeCursor = /beforeCursor/s;
+const afterCursor = /afterCursor/s;
+const atLineStart = /atLineStart/s;
+const selectionOnly = /selectionOnly/s;
+
+
+

@@ -1,7 +1,7 @@
 import type * as D from "../type/type.d";
 
 import * as vscode from 'vscode';
-import * as hex from '../numeric/hex';
+import * as hex from '../numeric/hexadecimal';
 import path from 'path';
 import { CONTRAST, CONFIRM, PRESET, PRESET_ORIENTATION, SYSTEM_MESSAGE, SYSTEM_PATH, THEME_KIND } from '../constant/config/enum';
 import { CONFIG_SECTION } from '../constant/config/object';
@@ -41,7 +41,7 @@ const restoreToDefault = (): Thenable<string | undefined> => {
     return overrideConfirm(SYSTEM_MESSAGE.RESTORE_DEFAULT);
 };
 
-const readPreset = async (context: vscode.ExtensionContext, presetFilename): Promise<object | undefined> => {
+const readPreset = async (context: vscode.ExtensionContext, presetFilename: string): Promise<object | undefined> => {
     try {
         const jsonPath = context.asAbsolutePath(path.join(SYSTEM_PATH.PRESET_ROOT, presetFilename));
         const content = await readFile(jsonPath, { encoding: 'utf-8' });
@@ -68,7 +68,7 @@ const checkDuplciateOverride = (packageName: string, json: any): boolean => {
     return false;
 };
 
-const writeSelectedPreset = async (configInfo: any, packageName: string, json: object): Promise<void> => {
+const writeSelectedPreset = async (configInfo: any, packageName: string, json: any): Promise<void> => {
     configInfo.updateCaller = hex.configruationCallerPreset; // block all configuration change event trigger
     vscode.commands.executeCommand("workbench.view.explorer");
     const config = getWorkspaceConfiguration(packageName);

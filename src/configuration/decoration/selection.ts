@@ -1,9 +1,9 @@
 import type * as D from '../../type/type';
 
-import * as hex from '../../numeric/hex';
+import * as hex from '../../numeric/hexadecimal';
 import { CONFIG_SECTION, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_NUMLINK, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE } from '../../constant/config/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
-import { bindStatusContentTextState,  setMultiCursorTextPosition, setMultiCursorEditPosition, SelectionTextRegex, setSelectionTextbuffer, syncRefernceTable, setMultiCursorContentRef, setMultiCursorContext } from '../../editor/selection/selection';
+import { bindStatusContentTextState,  setMultiCursorTextPosition, setMultiCursorEditPosition, SelectionTextRegex, setSelectionTextbuffer, syncRefernceTable, setMultiCursorContentRef, setMultiCursorContext, setContextAccmulator } from '../../editor/selection/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 import { isEntriesEqual } from '../../util/util';
 
@@ -11,12 +11,12 @@ export {
     updateSelectionTextConfig
 };
 
-const convertPositionToDecorationRenderOption = (textPosition, SelectionDecorationStyle): void => {
-    return textPosition.contentText.map((text, idx) => {
+const convertPositionToDecorationRenderOption = (textPosition: any, SelectionDecorationStyle: any): void => {
+    return textPosition.contentText.map((text: symbol | string, idx: number) => {
         const option = typeof text === 'string'
             ? SelectionDecorationStyle.placeholderDecorationOption
             : SelectionDecorationStyle.selectionDecorationOption[textPosition.position[idx]];
-        const contentTextRenderOption = setContentTextOnDecorationRenderOption(option as any, text);
+        const contentTextRenderOption = setContentTextOnDecorationRenderOption(option as any, text as string);
         if (typeof text === 'symbol') {
             textPosition.position[idx] = contentTextRenderOption.after.contentText;
         }
@@ -37,7 +37,7 @@ const buildSelectionTextDecorationRenderOption = (config: D.Status.Intf.Selectio
     });
 };
 
-const createSharedObjectSync = (textOftarget, textOfSource: any) => {
+const createSharedObjectSync = (textOftarget: any, textOfSource: any) => {
 
     const cursorOnly = Object.entries(textOfSource.cursorOnlyText.position);
     cursorOnly.forEach(([pos, placeholder]) => {
@@ -70,7 +70,6 @@ const createSharedObjectSync = (textOftarget, textOfSource: any) => {
         setMultiCursorTextPosition(placeholder as string, parseInt(pos) as unknown as number);
     });
     
-
     const multiCursorEdit = Object.entries(textOfSource.multiCursorEdit.position);
     multiCursorEdit.forEach(([pos, placeholder]) => {
         const referenceObject = textOftarget[hex.multiCursorEdit].contentText[pos].after;
@@ -80,9 +79,10 @@ const createSharedObjectSync = (textOftarget, textOfSource: any) => {
     
     setMultiCursorContentRef(),
     setMultiCursorContext();
+    setContextAccmulator();
 };
 
-const buildStatusTextState = (textOftarget, textOfSource: D.Status.Intf.StatusContentTextBuffer, SelectionDecorationStyle, leftMargin): void => {
+const buildStatusTextState = (textOftarget: any, textOfSource: D.Status.Intf.StatusContentTextBuffer, SelectionDecorationStyle: any, leftMargin: string): void => {
 
     Object.entries(textOfSource).forEach(([key, textPosition], idx) => {
         const contentTextStyled = convertPositionToDecorationRenderOption(textPosition, SelectionDecorationStyle);;
@@ -132,7 +132,7 @@ const updateSelectionTextConfig = (extenionName: string, configuratioChange: boo
     // hm ...
     workspaceProxyConfiguration(SelectionDecorationConfig, extenionName + '.' + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST, bindToBuffer, SelectionTextRegex);
     buildSelectionTextDecorationRenderOption(SelectionDecorationConfig, SelectionDecorationStyle);
-    buildStatusTextState(bindTo.textOf, bindToBuffer.textOf, SelectionDecorationStyle, SelectionDecorationConfig.leftMargin);
+    buildStatusTextState(bindTo.textOf, bindToBuffer.textOf, SelectionDecorationStyle, SelectionDecorationConfig.leftMargin as string);
 
     delete bindTo.functionOf;
     delete bindTo.infoOf;

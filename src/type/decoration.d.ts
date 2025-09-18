@@ -22,7 +22,7 @@ declare namespace Intf {
     interface State {
         appliedHighlight: Numeric.Key.Hex[]
         diagnosticSignature: number[]
-        eventTrigger: number[]
+        eventTrigger: Numeric.Key.Hex[]
         previousLine: number[]
     }
 

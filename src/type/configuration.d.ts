@@ -1,11 +1,11 @@
-import * as vscode from 'vscode';
-import { BORDER_POSITION_VARIATION, DECORATION_GENERAL_STYLE_CONFIG_KEY, DECORATION_SELECTION_STYLE_CONFIG_KEY, DECORATION_STYLE_CONFIG_KEY } from 'src/constant/config/enum';
-import { DECORATION_STYLE_PREFIX } from 'src/constant/config/object';
-
 import type * as Status from './status';
 import type * as Editor from './editor';
 import type * as Decoration from './decoration';
 import type * as Diagnostic from './diagnostic';
+
+import * as vscode from 'vscode';
+import { BORDER_POSITION_VARIATION, DECORATION_GENERAL_STYLE_CONFIG_KEY, DECORATION_SELECTION_STYLE_CONFIG_KEY, DECORATION_STYLE_CONFIG_KEY } from 'src/constant/config/enum';
+import { DECORATION_STYLE_PREFIX } from 'src/constant/config/object';
 
 export type {
     Intf, Tp
@@ -91,6 +91,7 @@ declare namespace Tp {
 declare namespace Intf {
 
     interface GeneralConfigInfoType {
+        [key: string]: number | string | boolean | undefined,
         borderOpacity?: number
         backgroundOpacity?: number
         borderWidth?: string

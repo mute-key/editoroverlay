@@ -1,8 +1,10 @@
-import * as vscode from 'vscode';
-import { SELECTION_CONTENT_TEXT_CONFIG_KEY } from 'src/constant/config/enum';
-
 import type * as Highlight from './decoration';
 import type * as Regex from './regex';
+import type * as Numeric from './numeric';
+
+import * as vscode from 'vscode';
+import * as hex from '../numeric/hexadecimal';
+import { SELECTION_CONTENT_TEXT_CONFIG_KEY } from 'src/constant/config/enum';
 
 export type {
     Intf,
@@ -38,14 +40,14 @@ declare namespace Intf {
 
 
     interface StatusContentTextBuffer {
-        [key: string]: {
+        [key: Numeric.Key.Hex]: {
             contentText: any[]
             position: number[]
         }
     }
 
     interface StatusContentText {
-        [key: number]: ContentTextBody
+        [key: Numeric.Key.Hex]: ContentTextBody | undefined
     }
 
     interface ContentTextBody {
@@ -171,7 +173,7 @@ declare namespace Tp {
 
     type ContentTextFuncNoContextSignature = (editor: vscode.TextEditor) => any
 
-    type ContentTextFunc = Record<string, (number | string | ContentTextFuncSignature)>;
+    type ContentTextFunc = Record<string, (number | string | symbol | ContentTextFuncSignature)>;
 
     type ContentTextStateFuncSignature = (statusContentText: Intf.StatusContentText) => void
 

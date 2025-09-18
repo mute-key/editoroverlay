@@ -1,7 +1,7 @@
 import type * as D from '../../type/type.d';
 
 import * as vscode from 'vscode';
-import * as hex from '../../numeric/hex';
+import * as hex from '../../numeric/hexadecimal';
 import { HIGHLIGHT_BORDER_POSITION_INFO, HIGHLIGHT_STYLE_LIST } from '../../constant/shared/object';
 import { createLineRange, createRangeSPEP, blankRange } from '../range';
 import { applyDecoration } from '../editor';

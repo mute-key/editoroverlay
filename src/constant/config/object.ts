@@ -1,7 +1,7 @@
 import type* as D from '../../type/type';
 
 import * as vscode from 'vscode';
-import * as hex from '../../numeric/hex';
+import * as hex from '../../numeric/hexadecimal';
 import { BORDER_POSITION_MASK, BORDER_POSITION_VARIATION, CONFIG_SECTION_KEY, DECORATION_GENERAL_STYLE_CONFIG_KEY, DECORATION_SELECTION_STYLE_CONFIG_KEY, DECORATION_STYLE_CONFIG_KEY, DECORATION_TYPE_MASK, DIAGNOSTIC_SEVERITY_KEY, DIAGNOSTIC_TEXT_STYLE_KEY, SELECTION_CONTENT_TEXT_CONFIG_KEY } from './enum';
 
 export namespace configuration {
@@ -36,7 +36,7 @@ export const CONFIG_KEY_LINKER_SECTION = {
     diagnosticTextEnabled: ['diagnosticText', 'enabled'],
 };
 
-export const SELECTION_CONTENT_TEXT_NUMLINK = {
+export const SELECTION_CONTENT_TEXT_NUMLINK: Record<string, D.Numeric.Key.Hex> = {
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: hex.cursorOnlyText,
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: hex.singleLineText,
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: hex.multiLineCursorText,

@@ -14,7 +14,7 @@
  * 
  */
 
-import * as D from '../type/type'
+import type * as D from '../type/type'
 
 export const enum HEX_MULTI_CURSOR_INDEX_CONTROL_SIGNATURE {
     STATE_ONLY = 0x0242,                // 578 | 0010 (stt)
@@ -33,15 +33,15 @@ export const baseIndexControl = HEX_MULTI_CURSOR_INDEX_CONTROL_SIGNATURE.BASEIND
 export const overlayControl = HEX_MULTI_CURSOR_INDEX_CONTROL_SIGNATURE.OVERLAY_CONTROL as D.Numeric.Key.Bin
 
 export const enum HEX_MULTI_CURSOR_ACTION {
-    BASE_BIT = 0b10000,                     // 0 => reset to cursor only
-    NEXT_OCCURRENCE_INIT = 2883872,         // 16, 0001 0000
-    NEXT_OCCURRENCE = 2884608,              // 2884896, 0010 0000
-    ALL_OCCURRENCE = 2884896,               // 64, 0100 0000 (auto sort supported)
-    EDIT_BASE_BIT = 0b0001,                 // 1 => reset to cursor only
-    ADD_CURSOR_ASCENDING = 0b00010001,      // 17, 0001 0001
-    ADD_CURSOR_REORDER = 0b00100001,        // 33, 0010 0001 (auto sort supported)
-    CURSOR_ON_END_OF_LINES = 0b01000001,    // 65, 0100 0001 (auto sort supported)
-    MOVEMENT = 0b10000001,                  // 129, 1000 0001
+    BASE_BIT = 0,                           // 0 => reset to cursor only
+    NEXT_OCCURRENCE_INIT = 16,              // 16, 0001 0000
+    NEXT_OCCURRENCE = 32,                   // 32, 0010 0000
+    ALL_OCCURRENCE = 64,                    // 64, 0100 0000 (auto sort supported)
+    EDIT_BASE_BIT = 1,                      // 1 => reset to cursor only
+    ADD_CURSOR_ASCENDING = 17,              // 17, 0001 0001
+    ADD_CURSOR_REORDER = 33,                // 33, 0010 0001 (auto sort supported)
+    CURSOR_ON_END_OF_LINES = 65,            // 65, 0100 0001 (auto sort supported)
+    MOVEMENT = 129,                         // 129, 1000 0001
 }
 
 export const resetToCursorOnly = HEX_MULTI_CURSOR_ACTION.EDIT_BASE_BIT as D.Numeric.Key.Bin

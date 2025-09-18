@@ -1,5 +1,6 @@
+import type * as D from '../type/type';
+
 import * as vscode from 'vscode';
-import * as D from '../type/type';
 import { CONFIG_INFO } from '../constant/config/object';
 import { generateHighlightDecoration } from './decoration/highlight';
 import { updateLegacyConfig } from './collection/patch';

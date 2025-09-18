@@ -1,4 +1,4 @@
-import * as D from '../type/type.d';
+import type * as D from '../type/type.d';
 
 export {
     fnv1aHash,

@@ -1,7 +1,7 @@
 import type * as D from '../type/type.d';
 
 import * as vscode from 'vscode';
-import * as hex from '../numeric/hex';
+import * as hex from '../numeric/hexadecimal';
 import Error from '../util/error';
 import { resetAllDecoration } from '../editor/editor';
 import { renderGroupIs, updateIndentOption } from '../editor/editor';
@@ -88,7 +88,7 @@ const editorOptionChanged = (): vscode.Disposable => {
 
 const selectionChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) => {
-        if (event) {
+        if (event.selections) {
             /**
              * using event.editor cause an issue with tab chagne event. 
              * event.editor in this event references both editor that become on top 
@@ -101,6 +101,8 @@ const selectionChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): 
              * the case for this event to be triggered already guarantees that 'vscode.window.activeTextEditor'
              * to not to be undefined. 
              * 
+             * decorationState.appliedHighlight is for previous highlight that was applied, rendered, 
+             * to overlay that was rendered and reset. 
              * 
              */
             decorationState.eventTrigger[0] = hex.selectionChanged;

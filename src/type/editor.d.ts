@@ -1,7 +1,8 @@
-import * as vscode from 'vscode';
-
 import type Numeric from './numeric';
 import type Common from './common';
+
+import * as vscode from 'vscode';
+import { DECORATION_STATE } from '../constant/shared/object';
 
 declare namespace Intf {
     interface RenderGroup {
@@ -15,6 +16,8 @@ declare namespace Tp {
     type SetDecorationOptions = readonly vscode.Range[] | readonly vscode.DecorationOptions[]
 
     type RenderOverlay = vscode.TextEditor['setDecorations']
+
+    type DecorationState = typeof DECORATION_STATE;
 }
 
 export type {

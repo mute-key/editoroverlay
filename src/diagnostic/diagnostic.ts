@@ -1,6 +1,5 @@
 import type * as D from '../type/type';
 
-/* eslint-disable semi */
 import * as vscode from 'vscode';
 import { DIAGNOSTIC_SEVERITY_TO_KEY } from '../constant/config/object';
 import { DIAGNOSTIC_STATE } from '../constant/shared/object';
@@ -29,7 +28,7 @@ const resetWorkspaceDiagnosticStatistics = (): void => {
     diagnosticState.workspace.error.total = 0;
 };
 
-const parseDiagnostic = (state: D.Diagnostic.Intf.State, severity: D.Diagnostic.Intf.DiagnosticFsBind, fsPath: string, activeEditorfsPath: string | undefined = undefined): void => {
+const parseDiagnostic = (state: D.Diagnostic.Intf.State, severity: D.Diagnostic.Intf.DiagnosticFsBind, fsPath: string, activeEditorfsPath: string): void => {
     Object.keys(severity).forEach((severityType: string) => {
         if (fsPath === activeEditorfsPath) {
             state.editor[severityType].line = [
@@ -92,11 +91,11 @@ const diagnosticSource: D.Diagnostic.Intf.Source = {};
 
 const setOverrideDigit = (digit: number): void => {
     diagnosticState.override = digit;
-}
+};
 
-const updateDiagnostic = (activeEditorUri: vscode.Uri | undefined = undefined): (number | number[])[] => {
+const updateDiagnostic = (activeEditorUri: vscode.Uri): (number | number[])[] => {
 
-    for (let fs in diagnosticSource) {
+    for (const fs in diagnosticSource) {
         delete diagnosticSource[fs];
     }
 
@@ -110,7 +109,7 @@ const updateDiagnostic = (activeEditorUri: vscode.Uri | undefined = undefined): 
     }
     
     for (const [fsPath, severity] of Object.entries(diagnosticSource)) {
-        parseDiagnostic(diagnosticState, severity, fsPath, activeEditorUri?.fsPath);
+        parseDiagnostic(diagnosticState, severity, fsPath, activeEditorUri.fsPath as string);
     };
 
     diagnosticState.severity = maxSeverity(diagnosticState);

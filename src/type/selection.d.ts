@@ -23,7 +23,7 @@ declare namespace Intf {
 
     interface MultiCursorOverlay {
         baseIndexRefBuffer: number[][],
-        indexListRefBuffer: number[],
+        indexListRefBuffer: number[][],
         calibration: number
     }
 
@@ -93,7 +93,7 @@ declare namespace Intf {
     interface MultiCursorContext {
         renderOption: any[] | [Decoration.Intf.RenderOption][],
         statusFnChain: any[],
-        accumulate: Tp.AccumulaterFunc,
+        accumulate?: Tp.AccumulaterFunc,
         lineFn: MultiCursorLineFuncContext,
         positionList: Map<number, any>,
         baseIndex: number[],

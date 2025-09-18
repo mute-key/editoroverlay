@@ -1,12 +1,12 @@
 import type * as D from '../../type/type';
 
-import * as bin from '../../numeric/bin';
+import * as bin from '../../numeric/binary';
 
 export {
     stepFuncSignature,
-    duplicateEntryStep,
+    duplicateOeverlayFunc,
     dispatchFnStep,
-    entryStep,
+    overlayFunc,
 };
 
 declare namespace L {
@@ -22,7 +22,7 @@ declare namespace L {
 
     export interface OverlayFunc {
         sign: D.Numeric.Key.Bin,
-        body: ControlFuncSignColl
+        body: any
     }
 
     export interface StepFuncSign {
@@ -86,7 +86,6 @@ const appendNthIndex: L.OverlayFunc = {
 const prependNthIndex: L.OverlayFunc = {
     sign: bin.indexListControl,
     body: (index: number = 0, indexList: number[]): void => {
-        console.log(indexList);
         indexList.unshift(indexList[0] - 1);
     }
 };
@@ -137,11 +136,12 @@ const equalizeLineState: L.OverlayFunc = {
 const allocateIndexList: L.OverlayFunc = {
     sign: bin.stateContextControl,
     body: (state: D.Selection.Intf.MultiCursorState, context: D.Selection.Intf.MultiCursorContext): void => {
+        console.log('allocateIndexList', state.duplicateOverlayIndex);
         context.indexList = state.overlay.indexListRefBuffer[state.duplicateOverlayIndex as number];
     }
 };
 
-const duplicateEntryStep = {
+const duplicateOeverlayFunc = {
     [/* 05 */ bin.firstToLast]: [appendNthIndex],
     [/* 01 */ bin.firstToLastWithExistingDup]: [pushCursorIndex, pushCursorGroup, appendNthIndex],
     [/* 12 */ bin.baseAndLast]: [pushCursorGroup, appendNthIndex],
@@ -162,7 +162,7 @@ const initBaseIndex: L.OverlayFunc = {
     }
 };
 
-const entryStep: Record<D.Numeric.Key.Bin, any[]> = {
+const overlayFunc: Record<D.Numeric.Key.Bin, any[]> = {
     [/* _0 */ bin.noIndexControl]: [],
     [/* _1 */ bin.increaseIndex]: [increaseCalibration, pushCursorIndex, createBaseIndex, pushCursorGroup, resetCurrentIndex, equalizeLineState],
     [/* _2 */ bin.withDup]: [pushCursorIndex],
@@ -178,7 +178,7 @@ const overlayControlFunc = (fn: (arg0: D.Selection.Intf.MultiCursorOverlay, arg1
 const indexListControlFunc = (fn: (arg0: number, arg1: number | number[]) => any, state: D.Selection.Intf.MultiCursorState, ctx: D.Selection.Intf.MultiCursorContext) => fn(state.cursorIndex, ctx.indexList);
 const baseIndexControlFunc = (fn: (arg0: D.Selection.Intf.MultiCursorOverlay, arg1: number[]) => any, state: D.Selection.Intf.MultiCursorState, ctx: D.Selection.Intf.MultiCursorContext) => fn(state.overlay, ctx.baseIndex);
 
-const stepFuncSignature: L.StepFuncSign = {
+const stepFuncSignature = {
     // state only 
     [/* 578 */ bin.stateOnlyControl]: stateControlFunc,
     // context only 

@@ -95,8 +95,7 @@ const replicateNthRenderOption = (contentText: L.NthRenderOption, state: D.Selec
     context.baseIndex = contentTextBuffer.after.baseIndex;
     context.indexList = contentTextBuffer.after.indexList;
 
-    const indexes = Array.isArray(context.indexList);
-    indexes ? state.overlay.indexListRefBuffer.push(...context.indexList) : state.overlay.indexListRefBuffer.push(context.indexList as unknown as number);
+    state.overlay.indexListRefBuffer.push(context.indexList);
 
     return contentTextBuffer;
 };
@@ -122,7 +121,7 @@ const nthRenderOptionOverride = (contentText: vscode.DecorationInstanceRenderOpt
     setGetterProp(contentText.after, contentTextGetter, nthDescriptor as PropertyDescriptor );
 };
 
-const colRenderOptionOverride = (contentText: vscode.DecorationInstanceRenderOptions & any, columnOfIndex: { (editor: vscode.TextEditor, idx?: number, delta?: number): number | string; (editor: vscode.TextEditor, idx?: number, delta?: number): number | string; }, delta: number = 0, context: D.Selection.Intf.MultiCursorContext): void => {
+const colRenderOptionOverride = (contentText: vscode.DecorationInstanceRenderOptions & any, columnOfIndex: any, delta: number = 0, context: D.Selection.Intf.MultiCursorContext): void => {
     contentText.after.delta = delta;
     contentText.after.columnFunc = columnOfIndex;
     contentText.after.columnList = [];

@@ -1,17 +1,14 @@
-import * as vscode from 'vscode';
-import { DIAGNOSTIC_CONTENT_TEXT_KEY } from 'src/constant/config/enum';
-
 import type * as Status from './status';
 import type * as Decoration from './decoration';
 import type * as Regex from './regex';
+
+import * as vscode from 'vscode';
+import { DIAGNOSTIC_CONTENT_TEXT_KEY } from 'src/constant/config/enum';
 
 export type {
     Intf,
     Tp
 };
-
-
-
 
 declare namespace Intf {
 
@@ -19,6 +16,7 @@ declare namespace Intf {
         override: number,
         severity: number,
         editor: {
+            [key: string]: any
             warning: {
                 line: number[]
                 total: number
@@ -26,9 +24,10 @@ declare namespace Intf {
             error: {
                 line: number[]
                 total: number
-            }
+            },
         },
         workspace: {
+            [key: string]: any
             warning: {
                 source: number,
                 total: number

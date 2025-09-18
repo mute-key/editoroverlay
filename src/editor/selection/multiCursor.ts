@@ -1,10 +1,10 @@
 import type * as D from '../../type/type';
 
 import * as vscode from 'vscode';
-import * as bin from '../../numeric/bin';
+import * as bin from '../../numeric/binary';
 import { normalizeToEmptySelections, sortSelectionsIfNot } from './selectionHelper';
 import { rangeDescriptor, rangeGetter, setGetterProp } from './renderOption';
-import { dispatchFnStep, duplicateEntryStep, entryStep } from './overlayPosition';
+import { dispatchFnStep, duplicateOeverlayFunc, overlayFunc } from './overlayPosition';
 
 export {
     allOccurrence,
@@ -43,6 +43,11 @@ const pushMultiCursorOption = (state: D.Selection.Intf.MultiCursorState, context
 
     if (positionData !== undefined) {
         contentTextBuffer = positionData(contentText, state, context);
+    } else {
+        // if (typeof contentTextBuffer.after.contentText === 'number') {
+        //     contentTextBuffer.after.contentText = contentTextBuffer.after.contentText.toString();
+        // }
+        // console.log(positionData, contentTextBuffer.after.contentText, typeof contentTextBuffer.after.contentText);
     }
 
     const renderOption = {
@@ -51,7 +56,7 @@ const pushMultiCursorOption = (state: D.Selection.Intf.MultiCursorState, context
         renderOptions: contentTextBuffer
     };
 
-    setGetterProp(renderOption, rangeGetter, rangeDescriptor as PropertyDescriptor );
+    setGetterProp(renderOption, rangeGetter, rangeDescriptor as PropertyDescriptor);
     context.renderOption[idx].push(renderOption);
 };
 
@@ -63,16 +68,15 @@ const multiCursorIndexControl = (state: D.Selection.Intf.MultiCursorState, conte
 
     if (state.duplicateOverlayIndex !== undefined) {
         const signature = duplicateLineSignature(state.duplicateOverlayIndex, state.overlay.calibration, state.baseLine, state.currentLine, state.previousLine, state.lineBuffer.size);
-        const fnStep = duplicateEntryStep[signature];
+        const fnStep = duplicateOeverlayFunc[signature];
         fnStep.forEach(dispatcher);
         return true;
     }
 
     const signature = nonDuplicateLineSignature(state.selectionBuffer.length, state.baseLine, state.currentLine, state.overlay.calibration);
-    entryStep[signature].forEach(dispatcher);
+    overlayFunc[signature].forEach(dispatcher);
     return false;
 };
-
 
 const multiCursorTextDecoration = (state: D.Selection.Intf.MultiCursorState, context: any): void => {
     if (multiCursorIndexControl(state, context)) {
@@ -97,11 +101,11 @@ const multiCursorEditDecoration = (state: D.Selection.Intf.MultiCursorState, con
     context.contentText.forEach(pushMultiCursorOption(state, context));
 };
 
-const decoratorBinder = (selection: vscode.Selection, decorator: typeof multiCursorTextDecoration | typeof multiCursorEditDecoration, state: D.Selection.Intf.MultiCursorState, context: D.Selection.Intf.MultiCursorContext) => {
+const decoratorBinder = (selection: vscode.Selection, decorator: typeof multiCursorTextDecoration | typeof multiCursorEditDecoration, state: D.Selection.Intf.MultiCursorState, context: D.Selection.Intf.MultiCursorContext): void  => {
     context.lineFn.idx = state.cursorIndex;
     state.currentLine = selection.end.line;
     state.selectionBuffer.push(selection);
-    context.statusFnChain.forEach(context.accumulate);
+    context.statusFnChain.forEach(context.accumulate as D.Selection.Tp.AccumulaterFunc);
     decorator(state, context);
 };
 
@@ -117,7 +121,7 @@ const cursorMovement = (state: D.Selection.Intf.MultiCursorState, context: D.Sel
     context.lineFn.editor.selections.forEach(decoratorIterator(multiCursorEditDecoration, state, context));
 };
 
-const addCursor = (state: D.Selection.Intf.MultiCursorState, context: D.Selection.Intf.MultiCursorContext) => {
+const addCursor = (state: D.Selection.Intf.MultiCursorState, context: D.Selection.Intf.MultiCursorContext): void  => {
     decoratorBinder(context.lineFn.editor.selections[state.lastCount], multiCursorEditDecoration, state, context);
 };
 
@@ -143,7 +147,6 @@ const finalizeIndexState = (state: D.Selection.Intf.MultiCursorState): void => {
 const ifOnLastSelection = (selectionIndex: number, currentLine: number, lastLine: number): boolean => {
     return selectionIndex > 0 && currentLine === lastLine;
 };
-
 
 const firstSelectionAsBaseLine = (state: D.Selection.Intf.MultiCursorState, context: any): void => {
     state.baseLine = context.lineFn.editor.selection.end.line;

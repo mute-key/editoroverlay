@@ -1,6 +1,7 @@
-import * as vscode from 'vscode';
 import type * as Config from './configuration';
 import type * as Decoration from './decoration';
+
+import * as vscode from 'vscode';
 
 export type {
     Intf,
