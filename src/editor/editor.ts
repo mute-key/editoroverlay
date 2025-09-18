@@ -52,8 +52,8 @@ const clearDecorationState = (decorationState: D.Editor.Tp.DecorationState): voi
 
 const clearAll = (editor: vscode.TextEditor): void => {
     clearEveryHighlight(editor);
-    // clearSelectionTextBuffer(editor); << this cause issues for cross-os; related to SELECTION_KIND_LIST.
     clearDiagnosticText(editor.setDecorations);
+    clearSelectionTextBuffer(editor, SELECTION_KIND_LIST);
 };
 
 const resetAllDecoration = (): void => vscode.window.visibleTextEditors.forEach(clearAll);

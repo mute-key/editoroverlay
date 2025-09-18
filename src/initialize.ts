@@ -50,6 +50,7 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
             updateRangeMetadata(activeEditor);              // set selection range metadata for the editor
             clearDecorationState(loadConfig.decoration as D.Editor.Tp.DecorationState);    // initialize decoration state
             loadConfig.decoration.appliedHighlight[0] = renderGroupIs(activeEditor, [hex.cursorOnly]);
+            loadConfig.decoration.eventTrigger[0] = hex.noEvent;
         }
 
         const commandContext: D.Command.Intf.Context = {    // context for extension commands
@@ -59,7 +60,8 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
 
         const eventContext: D.Event.Intf.Context = {        // context for extension events
             configInfo: configInfo as D.Config.Intf.ConfigReady,
-            decorationState: loadConfig.decoration
+            decorationState: loadConfig.decoration,
+            
         };
 
         checkActiveThemeKind(commandContext);

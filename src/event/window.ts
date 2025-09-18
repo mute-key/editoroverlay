@@ -56,11 +56,12 @@ const activeEditorChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decor
             //     return;
             // }
 
+            // this initially caused another issue with engine update + cross-os support. 
+            
+
             if (Error.check()) {
                 Error.notify(1500);
             }
-
-            resetAllDecoration();
 
             forceDispatchEditorChange(editor);
             updateRangeMetadata(editor);
@@ -72,6 +73,10 @@ const activeEditorChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decor
             }
 
             updateIndentOption(editor);
+
+            if (decorationState.eventTrigger[0] !== hex.noEvent) {
+                resetAllDecoration(); 
+            }
 
             decorationState.appliedHighlight[0] = renderGroupIs(editor, [hex.cursorOnly]);
         }
@@ -114,8 +119,9 @@ const selectionChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): 
 const tabChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
     return vscode.window.tabGroups.onDidChangeTabs((event: vscode.TabChangeEvent) => {
         if (event.changed) {
-            console.log('tabChanged');
-            decorationState.eventTrigger[0] = hex.tabChanged;
+            // console.log('tabChanged');
+            // decorationState.eventTrigger[0] = hex.tabChanged;
+            resetAllDecoration(); 
         }
     });
 };

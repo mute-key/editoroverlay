@@ -13,7 +13,7 @@ export {
 const configurationChanged = (configInfo: any, section: string): void => {
     try {
         Error.configurationUpdated();
-        const sectionChanged = {
+        const sectionChanged: Record<string, any> = {
             [CONFIG_SECTION_KEY.GENERAL]: () => updateGeneralConfig(configInfo),
             [CONFIG_SECTION_KEY.CURSOR_ONLY]: () => updateHighlightStyleConfiguration(configInfo, hex.cursorOnly),
             [CONFIG_SECTION_KEY.SINGLE_LINE]: () => updateHighlightStyleConfiguration(configInfo, hex.singleLine),
