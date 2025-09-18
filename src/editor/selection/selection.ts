@@ -238,7 +238,7 @@ const cursor: Record<string, RegExp> = {
     count: regex.selectionCount,
 };
 
-const SelectionTextRegex: Record<string, Record<string, RegExp>> = {
+const SelectionTextRegex: D.Regex.Tp.RegexObject = {
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: { ...cols, ...line, },
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: { ...line },
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: { ...line, ...lineExtra },

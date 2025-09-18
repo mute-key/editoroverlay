@@ -37,7 +37,7 @@ this is a temporary note & backlog
 
 | version log ===============================================================================================
 
-| 1.6.1 |
+| 1.6.01 |
 
 - [+] engine updated to ^1.104.0.
 
@@ -57,6 +57,12 @@ this is a temporary note & backlog
 - [_] sometimes created decorationTypes does not have ascending decorationTypeID base on sequence, 
       causing malformed statsus block to be displayed. the only fix is to reload the vscode.
       need better method to have correct display order to prevent such an event.
+
+************************************************************************************************************
+
+| 1.6.0 |
+
+- [0] temp update, please read @1.6.01.
 
 ************************************************************************************************************
 

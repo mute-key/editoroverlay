@@ -1,10 +1,11 @@
-import type * as Highlight from './decoration';
+import type * as Decoration from './decoration';
 import type * as Regex from './regex';
 import type * as Numeric from './numeric';
 
 import * as vscode from 'vscode';
 import * as hex from '../numeric/hexadecimal';
 import { SELECTION_CONTENT_TEXT_CONFIG_KEY } from 'src/constant/config/enum';
+import { UnderlyingByteSource } from 'stream/web';
 
 export type {
     Intf,
@@ -14,16 +15,17 @@ export type {
 declare namespace Intf {
     interface SelectionDecorationStyle {
         leftMargin?: string
-        placeholderDecorationOption?: Highlight.Intf.RenderOption,
+        placeholderDecorationOption?: Decoration.Intf.RenderOption,
         selectionDecorationOption: {
-            ln?: Highlight.Intf.RenderOption,
-            col?: Highlight.Intf.RenderOption,
-            zCol?: Highlight.Intf.RenderOption,
-            char?: Highlight.Intf.RenderOption,
-            charOnly?: Highlight.Intf.RenderOption,
-            lc?: Highlight.Intf.RenderOption,
-            nth?: Highlight.Intf.RenderOption,
-            count?: Highlight.Intf.RenderOption
+            [key: string]: Decoration.Intf.RenderOption | undefined
+            ln?: Decoration.Intf.RenderOption,
+            col?: Decoration.Intf.RenderOption,
+            zCol?: Decoration.Intf.RenderOption,
+            char?: Decoration.Intf.RenderOption,
+            charOnly?: Decoration.Intf.RenderOption,
+            lc?: Decoration.Intf.RenderOption,
+            nth?: Decoration.Intf.RenderOption,
+            count?: Decoration.Intf.RenderOption
         }
     }
 
@@ -75,6 +77,7 @@ declare namespace Intf {
     }
 
     interface SelectionDecorationConfig {
+        [key: string]: boolean | string | number | undefined | SelectionDecorationConfig['selectionCountTextStyle']
         enabled?: boolean
         color?: string,
         colorOpacity?: number,
@@ -90,6 +93,7 @@ declare namespace Intf {
         multiCursorText?: string,
         multiCursorEdit?: string,
         selectionCountTextStyle: {
+            [key: string]: string | number | undefined
             ln?: string,
             col?: string,
             zCol?: string,
@@ -135,11 +139,11 @@ declare namespace Intf {
 
     interface StatusInfo {
         indent: IndentInfo
-        statusDecoration?: Highlight.Intf.RenderOption
+        statusDecoration?: Decoration.Intf.RenderOption
     }
 
     interface StatusTextInfo {
-        contentText: Highlight.Intf.RenderOption[]
+        contentText: Decoration.Intf.RenderOption[]
         range: vscode.Range
     }
 

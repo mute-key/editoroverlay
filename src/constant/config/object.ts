@@ -3,6 +3,7 @@ import type* as D from '../../type/type';
 import * as vscode from 'vscode';
 import * as hex from '../../numeric/hexadecimal';
 import { BORDER_POSITION_MASK, BORDER_POSITION_VARIATION, CONFIG_SECTION_KEY, DECORATION_GENERAL_STYLE_CONFIG_KEY, DECORATION_SELECTION_STYLE_CONFIG_KEY, DECORATION_STYLE_CONFIG_KEY, DECORATION_TYPE_MASK, DIAGNOSTIC_SEVERITY_KEY, DIAGNOSTIC_TEXT_STYLE_KEY, SELECTION_CONTENT_TEXT_CONFIG_KEY } from './enum';
+import { BlobOptions } from 'buffer';
 
 export namespace configuration {
     
@@ -306,7 +307,7 @@ export const MULTILINE_BORDER_SELECTION = {
     ] as const,
 } as const;
 
-export const BORDER_WIDTH_DEFINITION = {
+export const BORDER_WIDTH_DEFINITION: Record<D.Numeric.Key.Hex, any> = {
     [hex.cursorOnly]: SINGLE_BORDER_SELECTION,
     [hex.singleLine]: SINGLE_BORDER_SELECTION,
     [hex.multiLine]: MULTILINE_BORDER_SELECTION,
@@ -322,7 +323,7 @@ export const NO_CONFIGURATION_DEOCORATION_DEFAULT = {
     [DECORATION_STYLE_CONFIG_KEY.BACKGROUND_COLOR]: '#ff0000',
 } as const;
 
-export const NO_CONFIGURATION_GENERAL_DEFAULT = {
+export const NO_CONFIGURATION_GENERAL_DEFAULT: Record<string, number | boolean> = {
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.OPACITY]: 1,
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.BACKGROUND_OPACITY]: 0.5,
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.SELECTION_TEXT_ENABLED]: false,

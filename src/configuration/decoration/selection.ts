@@ -3,7 +3,7 @@ import type * as D from '../../type/type';
 import * as hex from '../../numeric/hexadecimal';
 import { CONFIG_SECTION, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_NUMLINK, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE } from '../../constant/config/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
-import { bindStatusContentTextState,  setMultiCursorTextPosition, setMultiCursorEditPosition, SelectionTextRegex, setSelectionTextbuffer, syncRefernceTable, setMultiCursorContentRef, setMultiCursorContext, setContextAccmulator } from '../../editor/selection/selection';
+import { bindStatusContentTextState, setMultiCursorTextPosition, setMultiCursorEditPosition, SelectionTextRegex, setSelectionTextbuffer, syncRefernceTable, setMultiCursorContentRef, setMultiCursorContext, setContextAccmulator } from '../../editor/selection/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 import { isEntriesEqual } from '../../util/util';
 
@@ -21,19 +21,19 @@ const convertPositionToDecorationRenderOption = (textPosition: any, SelectionDec
             textPosition.position[idx] = contentTextRenderOption.after.contentText;
         }
         return contentTextRenderOption;
-    }).filter(decorationOption => decorationOption !== undefined);
+    }).filter((decorationOption: any) => decorationOption !== undefined);
 };
 
 const buildSelectionTextDecorationRenderOption = (config: D.Status.Intf.SelectionDecorationConfig, style: D.Status.Intf.SelectionDecorationStyle) => {
     style.placeholderDecorationOption = convertToDecorationRenderOption(config, true) as any;
-    Object.keys(style.selectionDecorationOption).forEach((key, idx) => {
+    Object.keys(style.selectionDecorationOption).forEach((key: string, idx) => {
         const styleConfig: D.Decoration.Intf.DecorationTextStyleConfig = {
-            color: config.selectionCountTextStyle[key],
+            color: config.selectionCountTextStyle[key] as string,
             colorOpacity: config.selectionCountTextStyle.opacity,
             fontStyle: config.selectionCountTextStyle.fontStyle,
             fontWeight: config.selectionCountTextStyle.fontWeight,
         };
-        style.selectionDecorationOption[key] = convertToDecorationRenderOption(styleConfig, true);
+        style.selectionDecorationOption[key] = convertToDecorationRenderOption(styleConfig, true) as D.Decoration.Intf.RenderOption | undefined;
     });
 };
 
@@ -69,16 +69,16 @@ const createSharedObjectSync = (textOftarget: any, textOfSource: any) => {
         syncRefernceTable(placeholder as string, hex.multiCursorText, referenceObject);
         setMultiCursorTextPosition(placeholder as string, parseInt(pos) as unknown as number);
     });
-    
+
     const multiCursorEdit = Object.entries(textOfSource.multiCursorEdit.position);
     multiCursorEdit.forEach(([pos, placeholder]) => {
         const referenceObject = textOftarget[hex.multiCursorEdit].contentText[pos].after;
         syncRefernceTable(placeholder as string, hex.multiCursorEdit, referenceObject);
         setMultiCursorEditPosition(placeholder as string, parseInt(pos) as unknown as number);
     });
-    
+
     setMultiCursorContentRef(),
-    setMultiCursorContext();
+        setMultiCursorContext();
     setContextAccmulator();
 };
 
@@ -128,7 +128,7 @@ const updateSelectionTextConfig = (extenionName: string, configuratioChange: boo
         functionOf: bindTo.functionOf,
         textOf: {}
     };
-    
+
     // hm ...
     workspaceProxyConfiguration(SelectionDecorationConfig, extenionName + '.' + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST, bindToBuffer, SelectionTextRegex);
     buildSelectionTextDecorationRenderOption(SelectionDecorationConfig, SelectionDecorationStyle);

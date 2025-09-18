@@ -114,7 +114,7 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: D.
         }
     });
 
-    preset.layout[hex.problemPlaceholderContentText].contentText.forEach(decoration => {
+    preset.layout[hex.problemPlaceholderContentText].contentText.forEach((decoration: any) => {
         if (decoration.after.contentText === hex.editorHexKey) {
             const ok = concatinateNotation(preset.editor[hex.okEditorContentText]);
             const warn = concatinateNotation(preset.editor[hex.warningEditorContentText]);
