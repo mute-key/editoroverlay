@@ -27,7 +27,7 @@ export {
 const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vscode.Disposable[] | void> => {
     try {
         
-        await extensionContext.extension.activate();
+        // await extensionContext.extension.activate();
         // when vscode startup, not sure if it is the best method, 
         // as i am not sure even if it needs to wait to be activated.
         // maybe need to revise the method..? 
@@ -44,7 +44,7 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
         const configInfo: D.Status.Intf.ConfigInfo = loadConfig.config;
         const activeEditor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
 
-        prepareRenderGroup(configInfo as D.Config.Intf.ConfigReady);
+        await prepareRenderGroup(configInfo as D.Config.Intf.ConfigReady);
 
         if (activeEditor) {                                 // if user is on editor
             updateRangeMetadata(activeEditor);              // set selection range metadata for the editor
@@ -73,7 +73,7 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
             windowEvent.windowStateChanged(eventContext),
             windowEvent.activeEditorChanged(eventContext),
             windowEvent.selectionChanged(eventContext),
-            windowEvent.editorOptionChanged(),
+            windowEvent.editorOptionChanged(eventContext),
             languagesEvent.diagnosticChanged(eventContext),
             workspaceEvent.configChanged(eventContext),
         ];

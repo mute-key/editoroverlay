@@ -104,15 +104,15 @@ const columnDelta = (editor: vscode.TextEditor, delta = 0): number | string => {
  * index type 
  */
 const columns = {
-    col: (editor: vscode.TextEditor) => columnDelta(editor, 1),
-    zCol: (editor: vscode.TextEditor) => columnDelta(editor)
+    col: ({ editor }: { editor: vscode.TextEditor }) => columnDelta(editor, 1),
+    zCol: ({ editor }: { editor: vscode.TextEditor }) => columnDelta(editor)
 };
 
 /**
  * character count in single line
  */
 const characterCount = {
-    char: (editor: vscode.TextEditor): number => {
+    char: ({ editor }: { editor: vscode.TextEditor }): number => {
         return editor.selection.end.character - editor.selection.start.character;
     }
 };
@@ -121,7 +121,7 @@ const characterCount = {
  * current line number, (.line is zero based)
  */
 const lineNumber = {
-    ln: (editor: vscode.TextEditor): number => {
+    ln: ({ editor }: { editor: vscode.TextEditor }): number => {
         return editor.selection.active.line + 1;
     }
 };
@@ -175,20 +175,20 @@ const multiCursorFn: D.Selection.Intf.MultiCursorFunc = {
     },
 };
 
-const columnsOf: Record<string, number> = {
+const columnsOf = {
     col: dec.columnsOfCol,
     zCol: dec.columnsOfZCol
 };
 
-const lineNumberOf: Record<string, number> = {
+const lineNumberOf = {
     ln: dec.lineNumberOfLn
 };
 
-const characterCountOf: Record<string, number> = {
+const characterCountOf = {
     char: dec.characterCountOfChar
 };
 
-const multiCursorOf: Record<string, number> = {
+const multiCursorOf = {
     col: dec.multiCursorLineCol,
     zCol: dec.multiCursorLineZCol,
     count: dec.multiCursorLineCountFull,
@@ -210,10 +210,10 @@ const multiCursorOf: Record<string, number> = {
  * 
  */
 const selectionOf: D.Status.Tp.ContentTextState = {
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: { ...columnsOf, ...lineNumberOf },
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: { ...lineNumberOf, ...characterCountOf },
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: { ...lineNumberOf, ...multiLineOf },
-    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: { ...lineNumberOf, ...multiLineOf },
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: { ...columns, ...lineNumber },
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: { ...lineNumber, ...characterCount },
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: { ...lineNumber, ...multiLineOf },
+    [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_ANCHOR_TEXT]: { ...lineNumber, ...multiLineOf },
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_TEXT]: multiCursorOf,
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_CURSOR_EDIT]: multiCursorOf,
 };
@@ -256,10 +256,10 @@ const composeRenderOption = (cursorType: D.Numeric.Key.Hex, contentText: any): D
     };
 };
 
-const setDeocorationOption = (cursorType: D.Numeric.Key.Hex, renderOptionHex?: D.Numeric.Key.Hex[]): void => {
+const setDeocorationOption = (cursorType: D.Numeric.Key.Hex, renderOptionHex: D.Numeric.Key.Hex[]): void => {
     selectionTextBuffer[cursorType].forEach((option, idx) => {
         const renderOption: any = [];
-        renderOptionHex?.forEach(hex => {
+        renderOptionHex.forEach(hex => {
             renderOption.push(composeRenderOption(hex, selectionContentText[hex]?.contentText[idx]));
         });
         selectionDecorationOption[cursorType].push(renderOption);
@@ -433,7 +433,7 @@ const setMultiCursorContext = (): void => {
 //:: render-handling focused functions
 //::==============================================================================
 
-const clearBufferOfhexkey = (previousCursor: D.Numeric.Key.Hex[], setDecorations: D.Editor.Tp.RenderOverlay,): void => {
+const clearBufferOfhexkey = (setDecorations: D.Editor.Tp.RenderOverlay, previousCursor: D.Numeric.Key.Hex[]): void => {
     switch (previousCursor[0]) {
         case hex.cursorOnly:
             selectionTextBuffer[hex.cursorOnlyText].forEach(resetDecoration(setDecorations));
@@ -458,11 +458,11 @@ const clearBufferOfhexkey = (previousCursor: D.Numeric.Key.Hex[], setDecorations
  * @param editor 
  * @param previousCursor 
  */
-const cursorOnlySelection = (editor: vscode.TextEditor, previousCursor: D.Numeric.Key.Hex[]): void => {
+const cursorOnlySelection = (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]): void => {
 
-    clearSelectionTextBuffer(editor);
+    hex.cursorOnly !== previousKey[0] && clearSelectionTextBuffer(editor, SELECTION_KIND_LIST);
 
-    selectionStatusFunctionChain[hex.cursorOnlyText].forEach(functionChain(cursorOnlyStatusRef, editor));
+    selectionStatusFunctionChain[hex.cursorOnlyText].forEach(functionChain(cursorOnlyStatusRef, { editor }));
 
     rangePointerTable[hex.cursorOnlyText] = createLineRange(editor.selection.active);
 
@@ -484,11 +484,11 @@ const singleLinetatusRef: Record<string, undefined | vscode.DecorationInstanceRe
  * @param editor 
  * @param previousCursor 
  */
-const singleLineSelection = (editor: vscode.TextEditor, previousCursor: D.Numeric.Key.Hex[]): void => {
+const singleLineSelection = (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]): void => {
 
-    clearBufferOfhexkey(previousCursor, editor.setDecorations);
+    hex.singleLine !== previousKey[0] && clearBufferOfhexkey(editor.setDecorations, previousKey);
 
-    selectionStatusFunctionChain[hex.singleLineText].forEach(functionChain(singleLinetatusRef, editor));
+    selectionStatusFunctionChain[hex.singleLineText].forEach(functionChain(singleLinetatusRef, { editor }));
 
     rangePointerTable[hex.singleLineText] = createLineRange(editor.selection.active);
 
@@ -506,9 +506,9 @@ const multiLinetatusRef: Record<string, undefined | vscode.DecorationInstanceRen
     charOnly: undefined,
 };
 
-const multilineSelection = (editor: vscode.TextEditor, previousCursor: D.Numeric.Key.Hex[]): void => {
+const multilineSelection = (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]): void => {
 
-    hex.multiLine !== previousCursor[0] && clearBufferOfhexkey(previousCursor, editor.setDecorations);
+    hex.multiLine !== previousKey[0] && clearBufferOfhexkey(editor.setDecorations, previousKey);
 
     selectionStatusFunctionChain[hex.multiLineText].forEach(functionChain(multiLinetatusRef, editor));
 
@@ -836,7 +836,7 @@ const callFnChain: D.Selection.Tp.FnChainSignature = (state, context) => (fn: an
  * @param editor 
  * @param previousCursor 
  */
-const multiCursorSelection = async (editor: vscode.TextEditor, previousCursor: D.Numeric.Key.Hex[]): Promise<void> => {
+const multiCursorSelection = async (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]): Promise<void> => {
 
     await cursorMalformationGuard(editor);
 
@@ -862,10 +862,8 @@ const forceDispatchEditorChange = (editor: vscode.TextEditor): void => {
     multiCursorFnContext.editor = editor;
 };
 
-const clearSelectionTextBuffer = (editor: vscode.TextEditor, selectionList: readonly D.Numeric.Key.Hex[] = SELECTION_KIND_LIST): void => {
-    for (const cursorType of selectionList) {
-        clearBufferOfhexkey([cursorType], editor.setDecorations);
-    }
+const clearSelectionTextBuffer = (editor: vscode.TextEditor, selectionList: readonly D.Numeric.Key.Hex[]): void => {
+    selectionList?.forEach(hexKey => clearBufferOfhexkey(editor.setDecorations, [hexKey]));
 };
 
 const clearDisposeBuffer = (setDecorations: vscode.TextEditor["setDecorations"]) => (buffer: vscode.TextEditorDecorationType): void => {

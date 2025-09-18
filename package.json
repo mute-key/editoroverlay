@@ -3,7 +3,7 @@
     "publisher": "mutekey",
     "displayName": "Cursor/Selection Line Highlight",
     "description": "Highly configurable highlights on cursor line and selection lines in editor real-time.",
-    "version": "1.5.9",
+    "version": "1.6.0",
     "icon": "resource/icon.png",
     "license": "LicenseRef-NoCommercial-UseOnly",
     "engines": {
@@ -49,8 +49,7 @@
         "Other"
     ],
     "extensionKind": [
-        "ui",
-        "workspace"
+        "ui", "workspace"
     ],
     "main": "./dist/extension.js",
     "contributes": {
