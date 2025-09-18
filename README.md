@@ -180,6 +180,16 @@ i will try to list the template strucutre briefly.
 ```plain
 ************************************************************************************************************
 
+  [+]: new, added
+  [o]: completed
+  [!]: issues
+  [~]: on going, unfinished or planning
+  [,]: not decided, pause
+  [_]: drop, ideas or features
+  [?]: unknown unknown, maybe fixed
+  
+| sticky_list ===============================================================================================
+
 - [~] current method to creating a store object is to make a copy from const object where it is defined, 
       maybe it is better to just change it all to some state/store object...? um.... i need to think about it
 - [~] maybe applying preset should have some sort of indicator or message popup that configurations are 
@@ -202,26 +212,13 @@ i will try to list the template strucutre briefly.
 
 | version log ===============================================================================================
 
-| 1.6.1 |
+| 1.6.2 |
 
-- [+] engine updated to ^1.104.0.
+- [+] found a bug in multiCursor function in debug mode, which causing async function crashing the runtime.
+      as i understand, it is because the function uses circular referenced object with closure. it had better
+      performance but the execution cycle was somewhat loose and makes some function calls irrelevant.
 
-- [0] fixed cross-os support for both win/nix (inc wsl) which broke before 1.6.0... 
-      last update introduced ext stop working for cross-os, which it was fine before. it was new-old issue.
-      to be exact, it was cross-os while it did work for both win/nix in 1.4.6. so i thought it was an easy 
-      fix but it wasn't. in fact... most of the fixes were not it, causing me ending up updating the vsix 
-      to see what wend wrong until in found how to debug it better. the issue took me half a day to figure 
-      why it did not and resolved, and mostly, it was due to some of the references weren't established on 
-      certain execution points, although they should have had established already in theory; which i think 
-      it would be great if i can learn and distinguish how they work. then, i will have better understanding 
-      of whole memory flow. i still have a lot to learn.
-
-      perhaps, if i were to add more functions in this codebase, better to add a test suite, i think but
-      not sure which functions to add or to add a test suite yet.
-
-- [_] sometimes created decorationTypes does not have ascending decorationTypeID base on sequence, 
-      causing malformed statsus block to be displayed. the only fix is to reload the vscode.
-      need better method to have correct display order to prevent such an event.
+      perhaps mixing pointer/ref + async is harder to implement properly and not as necessary to use both.
 
 
 ************************************************************************************************************
