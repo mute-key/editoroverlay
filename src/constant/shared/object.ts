@@ -16,8 +16,8 @@ export const INDENT_INFO = {
 }
 
 export const DECORATION_STATE = {
-    appliedHighlight: [0] as D.Numeric.Key.Hex[],
     eventTrigger: [0] as D.Numeric.Key.Hex[],
+    appliedHighlight: [0] as D.Numeric.Key.Hex[],
     diagnosticSignature: [0] as D.Numeric.Key.Bin[],
     previousLine: [0] as number[],
 }
