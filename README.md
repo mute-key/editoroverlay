@@ -3,7 +3,7 @@
 Highly customizable cursor/selection overlay extension. 
 This extension displays selection status overlay on real time as you change the cursor/selection position,  which is equivelant of `Editor Selection` in `Status Bar` as well as diagnostic count of editor/workspace in `Problem view`. You can enabled/disabled the features that you only need, if you don't need them all. Here are the examples of this extension with default confuguration as out of the box.
 
-If you want to build this extension from the source code, you should run `vsce package --no-dependencies`, otherwise it will not build properly.
+If you want to build this extension from the source code, please run `vsce package --no-dependencies`.
 
 #### <ins>Preview: Cursor Only Highlight</ins>
 
@@ -180,27 +180,8 @@ i will try to list the template strucutre briefly.
 ```plain
 ************************************************************************************************************
 
-  [+]: new, added
-  [o]: completed
-  [!]: issues
-  [~]: on going, unfinished or planning
-  [,]: not decided, pause
-  [_]: drop, ideas or features
-  [?]: unknown unknown, lost track of the topic
-  
-| sticky_list ===============================================================================================
-
-- [!] continues trigger of 'select next occurrences' will not cause render lag until when it reach 
-      round 300 cursor. they will be rendered with some delay after reaching certain numbers. 
-      one way to solving this would be paging the render obejct but this will require major data
-      structure refactoring. i would like to work on this eventually.
-
-- [?] sometimes created decorationTypes does not have ascending decorationTypeID base on sequence, 
-      causing malformed statsus block to be displayed. the only fix is to reload the vscode.
-      need better method to have correct display order to prevent such an event.
-- [?] direct config update on settings.json leaves selection status text. 
-- [?] backgroundColor configuration or auto appply background color based on border colour. not sure yet.
-
+- [~] current method to creating a store object is to make a copy from const object where it is defined, 
+      maybe it is better to just change it all to some state/store object...? um.... i need to think about it
 - [~] maybe applying preset should have some sort of indicator or message popup that configurations are 
       being updated and will reload. 
 - [~] probably document state indicator could be useful? not sure
@@ -208,45 +189,40 @@ i will try to list the template strucutre briefly.
 - [~] configuration code clean up.
 - [~] implement new status block for tasks in vscode or from terminal.
 - [~] to get back to configuration code at some point and clean up.
-
 - [~] better type definitions
 - [~] refactor some of unpolished configuration files
 
+- [?] direct config update on settings.json leaves selection status text. 
+- [?] backgroundColor configuration or auto appply background color based on border colour. not sure yet.
+
+- [!] continues trigger of 'select next occurrences' will not cause render lag until when it reach 
+      round 300 cursor. they will be rendered with some delay after reaching certain numbers. 
+      one way to solving this would be paging the render obejct but this will require major data
+      structure refactoring. i would like to work on this eventually.
+
 | version log ===============================================================================================
 
-| 1.4.9 |
-- [0] forgot to build with correct package opiton, vsce package --no-dependencies.
-      this is kinda of hotfix. removed vsix packages that were included in last commit.
-- [+] readme update
+| 1.6.1 |
 
-| 1.4.8 |
+- [+] engine updated to ^1.104.0.
 
-- [+] new configuration, multi-cursor overlay position has been added. 
-      the configuration problems -> visibility -> overlayPosition will allow to choose
-      between inital cursor position to last cursor position.
-- [+] multi-cursor empty/non-empty decoration has been split/added
-      + overlay configuration for both empty selection and non empty selections 
-      + new modules has been added | code split from selection.ts to selection/*.ts
-- [+] split numeric.ts to hex.ts, bin.tx
-- [+] added top level namespace in numeric collection.
-- [o] my initial design of multiCursor was incomplete to cover a lot of edge cases. 
-      multiCursor now can handle most of edge cases. 
-      + random edit cursor insert in any position 
-      + un-select inconsistant cursor insert in a sequence
-      + col, zcol position metadata has been added to overlay
-- [o] there was a bug with margin-left spacing with diagnostic render option overlays. 
-      it was hotfixed in 1.4.7.
-- [o] i am not sure if the api have changed or not but the behaviour tab change event is different 
-      than as i remembered. regardless, tab change event no longer need to be subscribed. 
-- [o] mutline highlight/status has high rendering cost. have been constantly optimizing the cost ever 
-      since. this will be onging until no longer spikes even with rapid-fire but maybe it is very 
-      difficult without debounce. the problem with debounce or throttlign will introduce some delays 
-      inbetween of responses. now that i am thinking an map could be an option here but the map object 
-      still will be slower than object literal. the performance of multline is not as bad as before, 
-      so i am going to keep it as is unless i come up with a better idea. 
+- [0] fixed cross-os support for both win/nix (inc wsl) which broke before 1.6.0... 
+      last update introduced ext stop working for cross-os, which it was fine before. it was new-old issue.
+      to be exact, it was cross-os while it did work for both win/nix in 1.4.6. so i thought it was an easy 
+      fix but it wasn't. in fact... most of the fixes were not it, causing me ending up updating the vsix 
+      to see what wend wrong until in found how to debug it better. the issue took me half a day to figure 
+      why it did not and resolved, and mostly, it was due to some of the references weren't established on 
+      certain execution points, although they should have had established already in theory; which i think 
+      it would be great if i can learn and distinguish how they work. then, i will have better understanding 
+      of whole memory flow. i still have a lot to learn.
 
-- [_] implement new diggnostic position (auto-before) just like (auto-inline).
-- [_] throttling or debouncing for multi-line selection and multi-cursor selection
+      perhaps, if i were to add more functions in this codebase, better to add a test suite, i think but
+      not sure which functions to add or to add a test suite yet.
+
+- [_] sometimes created decorationTypes does not have ascending decorationTypeID base on sequence, 
+      causing malformed statsus block to be displayed. the only fix is to reload the vscode.
+      need better method to have correct display order to prevent such an event.
+
 
 ************************************************************************************************************
 ```
