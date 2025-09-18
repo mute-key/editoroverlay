@@ -14,11 +14,6 @@
  * itself, i guess those store will be refactored in the future 
  * but i am just not sure yet.
  * 
- * some of the cold-path code is still messy in a way, 
- * i can refactor them later.
- * 
- * hot-path codes are not too bad.
- * 
  */
 import type * as D from '../../type/type';
 

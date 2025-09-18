@@ -61,19 +61,15 @@ const clearBuffer = (setDecorations: vscode.TextEditor["setDecorations"], resetR
 const clearHighlight = (setDecorations: vscode.TextEditor["setDecorations"], previousKey: D.Numeric.Key.Hex[], resetRange: vscode.Range[]): void => {
     switch (previousKey[0]) {
         case hex.cursorOnly:
-            // clearEveryHighlight(vscode.window.activeTextEditor as vscode.TextEditor);
             highlightStyleList[hex.cursorOnly].forEach(clearBuffer(setDecorations, resetRange));
             break;
         case hex.singleLine:
-            // clearEveryHighlight(vscode.window.activeTextEditor as vscode.TextEditor);
             highlightStyleList[hex.singleLine].forEach(clearBuffer(setDecorations, resetRange));
             break;
         case hex.multiLine:
-            // clearEveryHighlight(vscode.window.activeTextEditor as vscode.TextEditor);
             highlightStyleList[hex.multiLine].forEach(clearBuffer(setDecorations, resetRange));
             break;
         case hex.multiCursor:
-            // clearEveryHighlight(vscode.window.activeTextEditor as vscode.TextEditor);
             highlightStyleList[hex.multiCursor].forEach(clearBuffer(setDecorations, resetRange));
             break;
         default: break;

@@ -1,4 +1,6 @@
-Creative Commons Attribution-NonCommercial 4.0 International Public License
+Creative Commons Attribution-NonCommercial 4.0 International Public License 
+
+(cc by-nc 4.0)
 
 Copyright (C) 2025 mutekey <https://github.com/mute-key>
 
@@ -11,20 +13,24 @@ You are free to:
 The licensor cannot revoke these freedoms as long as you follow the license terms.
 
 Under the following terms:
-- Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+- Attribution — You must give appropriate credit, provide a link to the license, 
+  and indicate if changes were made. You may do so in any reasonable manner, 
+  but not in any way that suggests the licensor endorses you or your use.
 - NonCommercial — You may not use the material for commercial purposes.
-- No additional restrictions — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.
+- No additional restrictions — You may not apply legal terms or technological 
+  measures that legally restrict others from doing anything the license permits.
 
 For more information, visit:
 https://creativecommons.org/licenses/by-nc/4.0/
 
+
+
+
 Please let me explain why the restrictions are in the license as is.
 
 I personally do not believe that this code has any commercial opportunities, 
-, or that I want it to for as of now. It can change later but i hope it stay 
-as is currently. it is still incomplete in its current state, I don't think 
-anyone would or should pay to use this extension. I did not start this to 
-make money but to learn, first off... It has features that I wanted, features 
-that work for me. I would guess that it is not very useful, it is a rather 
-simple overlay, but I hope the extension is useful and an upgrade of QOL 
-using VS Code.
+, or that I want it to for as of now. It can change later but i hope it stays
+as is in the future too. it is still incomplete in its current state and i don't 
+think anyone would or should pay to use this extension. I start this to learn and
+to make features that I think will be useful. Tt is a rather simple overlay; 
+I hope this extenion as an upgrade of QOL of using VS Code.
