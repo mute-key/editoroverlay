@@ -1,3 +1,25 @@
+/**
+ * [ src/selection/selection.ts ]
+ * 
+ * this is the main module for currrent selection overlay functions.
+ * 
+ * only multiCursor has been codesplit due to it's longer codebase,
+ * but perhaps it is also ideal to codesplit other cursor types as 
+ * well in the future. 
+ * 
+ * this module has very heavy use of pointer-like/references, 
+ * and some part of the code is still not complete, yet. 
+ * 
+ * this module is somewhat like module-level singleton pattern code
+ * itself, i guess those store will be refactored in the future 
+ * but i am just not sure yet.
+ * 
+ * some of the cold-path code is still messy in a way, 
+ * i can refactor them later.
+ * 
+ * hot-path codes are not too bad.
+ * 
+ */
 import type * as D from '../../type/type';
 
 import * as vscode from 'vscode';
@@ -175,20 +197,18 @@ const multiCursorFn: D.Selection.Intf.MultiCursorFunc = {
     },
 };
 
-const columnsOf = {
-    col: dec.columnsOfCol,
-    zCol: dec.columnsOfZCol
-};
-
-const lineNumberOf = {
-    ln: dec.lineNumberOfLn
-};
-
-const characterCountOf = {
-    char: dec.characterCountOfChar
-};
-
-const multiCursorOf = {
+/**
+ * @link src/numeric/decimal.ts
+ * 
+ * placeholder objects module to keep the auto regex split with style intacted 
+ * so that indivisual styles can be applied to renderOption objects as in configuration. 
+ * 
+ * old methods were using symbol constants to mark exact position in array of renderOptions 
+ * and set the contentText, which has been refactored into using references 
+ * of the object to assign the contentText in renderOption.after object.
+ * 
+ */
+const multiCursorOf: Record<string, number> = {
     col: dec.multiCursorLineCol,
     zCol: dec.multiCursorLineZCol,
     count: dec.multiCursorLineCountFull,
@@ -199,7 +219,7 @@ const multiCursorOf = {
 };
 
 /**
- * calcultation function stacks for selection status block. 
+ * renderOption dynamic contentText function stacks for selection status block. 
  * 
  * this object will only be used as a function reference hex number only 
  * to indicate if the contentText need to have dynamic values, 
@@ -238,7 +258,7 @@ const cursor: Record<string, RegExp> = {
     count: regex.selectionCount,
 };
 
-const SelectionTextRegex: D.Regex.Tp.RegexObject = {
+const SelectionTextRegex: D.Regex.Tp.SelectionRegexObject = {
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: { ...cols, ...line, },
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: { ...line },
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: { ...line, ...lineExtra },
@@ -306,7 +326,6 @@ const setSelectionTextbuffer = (cursorType: D.Numeric.Key.Hex, length: number, p
     if (selectionDecorationOption[cursorType].length > 0) {
         selectionDecorationOption[cursorType] = [];
     }
-
 
     const selectionStatusDecorationOption = {
         [hex.cursorOnlyText]: {
@@ -506,13 +525,29 @@ const multiLinetatusRef: Record<string, undefined | vscode.DecorationInstanceRen
     charOnly: undefined,
 };
 
+/**
+ * because the multiLine overlay requries two overlay status on both anchor 
+ * and active, the renderOption will be in 2d array using, hex.multiLineAnchorText 
+ * and hex.multiLineCursorText as in setSelectionTextbuffer function. then the 
+ * renderOption will be stored in selectionDecorationOption as a 1D array as 
+ * double data channel with two differernt range with its renderOption object.
+ * 
+ * this effectivley forces the anchor and active overlay configurations to have 
+ * same length of renderOptions of arraies but it is not mandataory as far as i know.
+ * 
+ * and because those renderOptions are in a single 1D array, you only need to 
+ * iterate the renderOption nore more than once while both anchor and active 
+ * renderOption sharing the same decorationType API object. 
+ * 
+ * 
+ * @param editor 
+ * @param previousKey 
+ */
 const multilineSelection = (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]): void => {
 
     hex.multiLine !== previousKey[0] && clearBufferOfhexkey(editor.setDecorations, previousKey);
 
-
-    // 이 커링 미리 바인딩 해두면? 근데 또 클로져인데 음 
-    selectionStatusFunctionChain[hex.multiLineText].forEach(functionChain(multiLinetatusRef, editor)); 
+    selectionStatusFunctionChain[hex.multiLineText].forEach(functionChain(multiLinetatusRef, editor));
 
     rangePointerTable[hex.multiLineAnchorText] = createLineRange(editor.selection.anchor);
     rangePointerTable[hex.multiLineCursorText] = createLineRange(editor.selection.active);
@@ -558,7 +593,6 @@ const multiCursorOeverlay: D.Selection.Intf.MultiCursorOverlay = {
     indexListRefBuffer: [],
     calibration: 0
 };
-
 
 const multiCursorFnContext: D.Selection.Intf.MulticursorLineFuncContext = {
     editor: vscode.window.activeTextEditor as vscode.TextEditor,
@@ -698,26 +732,24 @@ const isEditMode = (strategyKey: number): boolean => {
     return (strategyKey & bin.editBitPosition) === bin.editBitPosition;
 };
 
-const multiCursorStatusAxiom = (isFirstEmpty: boolean, isCurrentEmpty: boolean, currentCount: number, lastCount: number, baseLine: number, previousLine: number, currentLine: number) => {
-
-    /**
-     * Each axiom should have a single comparison, allowing it to represent
-     * a truly atomic state. A certain set of these axioms can then be used 
-     * to represent a very specific state. Constants should be named explicitly 
-     * to provide deterministic information about their purpose and meaning.
-     * 
-     * Bits 0-3 are reserved for metadata. Bits 2 and 3 are intentionally left 
-     * empty for future implementations when the need arises.
-     * 
-     * Bit ranges for each section:
-     * 
-     * 0-3: Metadata
-     * 4-7: Selection malformation
-     * 8-11: Count
-     * 12-15: Predictable new sequence
-     * 16-23: Line position type comparisons
-     */
-
+/**
+ * Each axiom should have a single comparison, allowing it to represent
+ * a truly atomic state. A certain set of these axioms can then be used 
+ * to represent a very specific state. Constants should be named explicitly 
+ * to provide deterministic information about their purpose and meaning.
+ * 
+ * Bits 0-3 are reserved for metadata. Bits 2 and 3 are intentionally left 
+ * empty for future implementations when the need arises.
+ * 
+ * Bit ranges for each section:
+ * 
+ * 0-3: Metadata
+ * 4-7: Selection malformation
+ * 8-11: Count
+ * 12-15: Predictable new sequence
+ * 16-23: Line position type comparisons
+ */
+const multiCursorStatusAxiom = (isFirstEmpty: boolean, isCurrentEmpty: boolean, currentCount: number, lastCount: number, baseLine: number, previousLine: number, currentLine: number): number => {
     const initalizeState: boolean = baseLine === -1;
     const normalizeSelectios: boolean = isFirstEmpty !== isCurrentEmpty;
     const lastCountzero: boolean = lastCount === 0;
@@ -761,49 +793,62 @@ const multiCursorStatusAxiom = (isFirstEmpty: boolean, isCurrentEmpty: boolean, 
         | (basePositionNextPosition ? 1 << 21 : 0)
         ;
 
-    // state route table
-    const stateRoute: Record<number, D.Numeric.Key.Bin> = {
-        [bin.MULTI_CURSOR_STATE.NEXT_OCCURRENCE_INIT]: bin.nextOccurrenceInit,
-        [bin.MULTI_CURSOR_STATE.NEXT_OCCURRENCE_0]: bin.nextOccurrence,
-        [bin.MULTI_CURSOR_STATE.NEXT_OCCURRENCE_1]: bin.nextOccurrence,
-        [bin.MULTI_CURSOR_STATE.NEXT_OCCURRENCE_2]: bin.nextOccurrence,
-        [bin.MULTI_CURSOR_STATE.NEXT_OCCURRENCE_3]: bin.nextOccurrence,
-        [bin.MULTI_CURSOR_STATE.NEXT_OCCURRENCE_4]: bin.nextOccurrence,
-        [bin.MULTI_CURSOR_STATE.NEXT_OCCURRENCE_5]: bin.nextOccurrence,
-        [bin.MULTI_CURSOR_STATE.ALL_OCCURRENCE]: bin.allOccurrence,
-        [bin.MULTI_CURSOR_STATE.CURSOR_ON_END_OF_LINES_0]: bin.cursorOnEndOfLines,
-        [bin.MULTI_CURSOR_STATE.CURSOR_ON_END_OF_LINES_1]: bin.cursorOnEndOfLines,
-        [bin.MULTI_CURSOR_STATE.ADD_CURSOR_SEQUENTIAL]: bin.addCursorSequential,
-        [bin.MULTI_CURSOR_STATE.ADD_CURSOR_REORDER_0]: bin.addCursorReorder,
-        [bin.MULTI_CURSOR_STATE.ADD_CURSOR_REORDER_1]: bin.addCursorReorder,
-        [bin.MULTI_CURSOR_STATE.ADD_CURSOR_REORDER_2]: bin.addCursorReorder,
-        [bin.MULTI_CURSOR_STATE.ADD_CURSOR_REORDER_3]: bin.addCursorReorder,
-        [bin.MULTI_CURSOR_STATE.MOVEMENT_0]: bin.movement,
-        [bin.MULTI_CURSOR_STATE.MOVEMENT_1]: bin.movement,
-        [bin.MULTI_CURSOR_STATE.MOVEMENT_2]: bin.movement,
-        [bin.MULTI_CURSOR_STATE.MOVEMENT_3]: bin.movement,
-        [bin.MULTI_CURSOR_STATE.MOVEMENT_4]: bin.movement,
-        [bin.MULTI_CURSOR_STATE.MOVEMENT_5]: bin.movement,
-        [bin.MULTI_CURSOR_STATE.RESET_TO_CURSOR_ONLY_0]: bin.resetToCursorOnly,
-        [bin.MULTI_CURSOR_STATE.RESET_TO_CURSOR_ONLY_1]: bin.resetToCursorOnly,
-        [bin.MULTI_CURSOR_STATE.RESET_TO_CURSOR_ONLY_2]: bin.resetToCursorOnly,
-        [bin.MULTI_CURSOR_STATE.RESET_TO_CURSOR_ONLY_3]: bin.resetToCursorOnly,
-        [bin.MULTI_CURSOR_STATE.RESET_TO_CURSOR_ONLY_4]: bin.resetToCursorOnly,
-        [bin.MULTI_CURSOR_STATE.RESET_TO_CURSOR_ONLY_5]: bin.resetToCursorOnly,
-    };
+    return stateFunctinRoute[state];
+};
 
-    return stateRoute[state];
+
+/**
+ * state route table, this is the object to re-map the state signature to 
+ * coresponding multi-cursor function signature. this is not very smart way
+ * but this will have at least overhead to re-map the status signature 
+ * into correct function signature.
+ * 
+ * some variable names are hard to identify, maybe i will refactor those 
+ * enum names later, in conjunction with moving multiCursorFuncMap object
+ * to multiCursor.ts
+ * 
+ */
+const stateFunctinRoute: Record<number, D.Numeric.Key.Bin> = {
+    [bin.MULTI_CURSOR_STATE.NEXT_OCCURRENCE_INIT]: bin.nextOccurrenceInit,
+    [bin.MULTI_CURSOR_STATE.NEXT_OCCURRENCE_0]: bin.nextOccurrence,
+    [bin.MULTI_CURSOR_STATE.NEXT_OCCURRENCE_1]: bin.nextOccurrence,
+    [bin.MULTI_CURSOR_STATE.NEXT_OCCURRENCE_2]: bin.nextOccurrence,
+    [bin.MULTI_CURSOR_STATE.NEXT_OCCURRENCE_3]: bin.nextOccurrence,
+    [bin.MULTI_CURSOR_STATE.NEXT_OCCURRENCE_4]: bin.nextOccurrence,
+    [bin.MULTI_CURSOR_STATE.NEXT_OCCURRENCE_5]: bin.nextOccurrence,
+    [bin.MULTI_CURSOR_STATE.ALL_OCCURRENCE]: bin.allOccurrence,
+    [bin.MULTI_CURSOR_STATE.CURSOR_ON_END_OF_LINES_0]: bin.cursorOnEndOfLines,
+    [bin.MULTI_CURSOR_STATE.CURSOR_ON_END_OF_LINES_1]: bin.cursorOnEndOfLines,
+    [bin.MULTI_CURSOR_STATE.ADD_CURSOR_SEQUENTIAL]: bin.addCursorSequential,
+    [bin.MULTI_CURSOR_STATE.ADD_CURSOR_REORDER_0]: bin.addCursorReorder,
+    [bin.MULTI_CURSOR_STATE.ADD_CURSOR_REORDER_1]: bin.addCursorReorder,
+    [bin.MULTI_CURSOR_STATE.ADD_CURSOR_REORDER_2]: bin.addCursorReorder,
+    [bin.MULTI_CURSOR_STATE.ADD_CURSOR_REORDER_3]: bin.addCursorReorder,
+    [bin.MULTI_CURSOR_STATE.MOVEMENT_0]: bin.movement,
+    [bin.MULTI_CURSOR_STATE.MOVEMENT_1]: bin.movement,
+    [bin.MULTI_CURSOR_STATE.MOVEMENT_2]: bin.movement,
+    [bin.MULTI_CURSOR_STATE.MOVEMENT_3]: bin.movement,
+    [bin.MULTI_CURSOR_STATE.MOVEMENT_4]: bin.movement,
+    [bin.MULTI_CURSOR_STATE.MOVEMENT_5]: bin.movement,
+    [bin.MULTI_CURSOR_STATE.RESET_TO_CURSOR_ONLY_0]: bin.resetToCursorOnly,
+    [bin.MULTI_CURSOR_STATE.RESET_TO_CURSOR_ONLY_1]: bin.resetToCursorOnly,
+    [bin.MULTI_CURSOR_STATE.RESET_TO_CURSOR_ONLY_2]: bin.resetToCursorOnly,
+    [bin.MULTI_CURSOR_STATE.RESET_TO_CURSOR_ONLY_3]: bin.resetToCursorOnly,
+    [bin.MULTI_CURSOR_STATE.RESET_TO_CURSOR_ONLY_4]: bin.resetToCursorOnly,
+    [bin.MULTI_CURSOR_STATE.RESET_TO_CURSOR_ONLY_5]: bin.resetToCursorOnly,
 };
 
 /**
- * santizations
+ * this is the function sequence list map object to perform the necessary functions in correct order
+ * perhaps this object can be put in ./multiCursor/multiCursor.ts as well? 
  * 
- * multiCursorResetInfusion
- * sortEditorSelection
- * normalizeEditorSelection
+ * santizations function list
+ * - multiCursorResetInfusion
+ * - sortEditorSelection
+ * - normalizeEditorSelection
  * 
  */
-const multiCursorFuncMap = {
+const multiCursorFuncMap: Record<D.Numeric.Key.Bin, any[]> = {
     [/** 16_ */ bin.nextOccurrenceInit]: [multiCursorResetInfusion, firstSelectionAsBaseLine, nextOccurrenceInit],
     [/** 32_ */ bin.nextOccurrence]: [nextOccurrence],
     [/** 64_ */ bin.allOccurrence]: [multiCursorResetInfusion, firstSelectionAsBaseLine, sortEditorSelection, allOccurrence],
@@ -817,15 +862,18 @@ const multiCursorFuncMap = {
 
 /**
  * this function will prevent selections mixing empty and non-empty selections.
+ * basically, this function will check if new selection is inconsistant from 
+ * initial selection, then it will truncate the last selection from editor.selections.
  * 
- * not perfect, but this will do for now.
+ * not perfect, but this will do for now and won't crash the runtime. i need more 
+ * time to think about how to fix this.
  * 
  * @param editor 
  * @returns 
  */
-const cursorMalformationGuard = async (editor: vscode.TextEditor): Promise<boolean> => {
+const cursorMalformationGuard = (editor: vscode.TextEditor): boolean => {
     if (editor.selection.isEmpty !== editor.selections[editor.selections.length - 1].isEmpty) {
-        editor.selections = await [...editor.selections.slice(0, editor.selections.length - 1)];
+        editor.selections = [...editor.selections.slice(0, editor.selections.length - 1)];
         return true;
     }
     return false;
@@ -834,28 +882,61 @@ const cursorMalformationGuard = async (editor: vscode.TextEditor): Promise<boole
 const callFnChain: D.Selection.Tp.FnChainSignature = (state, context) => (fn: any) => fn(state, context);
 
 /**
+ * [ multiCursorSelection ]
+ * 
+ * this is probably most complicated selection status overlay function in this module...
+ * 
+ * the function will check if inital selection and last selection are same (isEmpty), 
+ * the reason is, selection is always more than 1 when multiCursorSelection is called from
+ * editor.ts.
+ * 
+ * next, the function will check if the state is from initial state by checking strategyKey
+ * and if the state is in intial state, i will clear whatever was rendered previously from
+ * differernt types of cursor types excluding mulitcursor. multiCursor overlays will be 
+ * handled in multiCursorFuncMap object with multiCursorResetInfusion function.
+ * 
+ * then the function will parse the state object, and get state signature in 
+ * multiCursorStatusAxiom function and re-map the state signuature into function 
+ * signautre so it can call correct overlay control function list array; in multiCursorFuncMap. 
+ * 
+ * when .strategyKey has correct function list key, it will check the mode (text/edit overlay)
+ * and set it on local boolean editMode. 
+ * 
+ * editMode will be a boolean to compound the bit opeartion between signatures and 
+ * it will also decide which context object to be set in callFnChain. key-pair array will 
+ * be executed in iteration, (callFnChain), range, renderOptions and other overlay controls 
+ * will be handled by the moduels inside ./multiCursor/*.ts.
+ * 
+ * once all renderOption objects are ready, renderMultiCursorWrapper will be called to 
+ * render overlays to finalize the function. 
+ * 
+ * at last, function will set lastCount in state in order to backward reference 
+ * how many selections were in current function call.
+ * 
  * 
  * @param editor 
  * @param previousCursor 
  */
-const multiCursorSelection = async (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]): Promise<void> => {
+const multiCursorSelection = (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]): void => {
 
-    await cursorMalformationGuard(editor);
+    cursorMalformationGuard(editor);
 
-    multiCursorState.strategyKey === 0 && await clearSelectionTextBuffer(editor, SELECTION_KIND_LIST_EXCLUDE_MULTI_CURSOR);
+    multiCursorState.strategyKey === 0 && clearSelectionTextBuffer(editor, SELECTION_KIND_LIST_EXCLUDE_MULTI_CURSOR);
+
+    const zLength: number = editor.selections.length - 1;
 
     multiCursorState.strategyKey = multiCursorStatusAxiom(
         editor.selection.isEmpty,
-        editor.selections[editor.selections.length - 1].isEmpty,
+        editor.selections[zLength].isEmpty,
         editor.selections.length,
         multiCursorState.lastCount,
         multiCursorState.baseLine,
         multiCursorState.previousLine,
-        editor.selections[editor.selections.length - 1].end.line);
+        editor.selections[zLength].end.line);
 
     const editMode: boolean = isEditMode(multiCursorState.strategyKey);
 
-    multiCursorFuncMap[multiCursorState.strategyKey].forEach(callFnChain(multiCursorState, getContextKind(editMode)));
+    multiCursorFuncMap[multiCursorState.strategyKey as D.Numeric.Key.Bin].forEach(callFnChain(multiCursorState, getContextKind(editMode)));
     renderMultiCursorWrapper(getMultiCursorKind(editMode), editor.setDecorations);
     multiCursorState.lastCount = editor.selections.length;
 };
@@ -864,8 +945,8 @@ const forceDispatchEditorChange = (editor: vscode.TextEditor): void => {
     multiCursorFnContext.editor = editor;
 };
 
-const clearSelectionTextBuffer = (editor: vscode.TextEditor, selectionList: readonly D.Numeric.Key.Hex[]): void => {
-    selectionList?.forEach(hexKey => clearBufferOfhexkey(editor.setDecorations, [hexKey]));
+const clearSelectionTextBuffer = (editor: vscode.TextEditor, selectionList: readonly D.Numeric.Key.Hex[] = SELECTION_KIND_LIST): void => {
+    selectionList.forEach(hexKey => clearBufferOfhexkey(editor.setDecorations, [hexKey]));
 };
 
 const clearDisposeBuffer = (setDecorations: vscode.TextEditor["setDecorations"]) => (buffer: vscode.TextEditorDecorationType): void => {

@@ -37,7 +37,17 @@ this is a temporary note & backlog
 
 | version log ===============================================================================================
 
-| 1.6.01 |
+| 1.6.2 |
+
+- [+] found a bug in multiCursor function in debug mode, which causing async function crashing the runtime.
+      as i understand, it is because the function uses circular referenced object with closure. it had better
+      performance but the execution cycle was somewhat loose and makes some function calls irrelevant.
+
+      perhaps mixing pointer/ref + async is harder to implement properly and not as necessary to use both.
+
+************************************************************************************************************
+
+| 1.6.1 |
 
 - [+] engine updated to ^1.104.0.
 
