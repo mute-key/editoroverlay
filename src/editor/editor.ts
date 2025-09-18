@@ -22,11 +22,21 @@ export {
     resetDecoration
 };
 
+/**
+ * buffer for rendering function call stack
+ */
+const renderFnStack: Record<D.Numeric.Key.Hex, any[]> = {
+    [hex.cursorOnly]: [] as any[],
+    [hex.singleLine]: [] as any[],
+    [hex.multiLine]: [] as any[],
+    [hex.multiCursor]: [] as any[]
+};
+
 const decorationState = { ...DECORATION_STATE } as unknown as D.Decoration.Intf.State;
 
 const createEditorDecorationType = (styleAppliedConfig: any): vscode.TextEditorDecorationType => vscode.window.createTextEditorDecorationType(styleAppliedConfig as vscode.DecorationRenderOptions);;
 
-const applyDecoration = (setDecorations: vscode.TextEditor['setDecorations'], decoraiton: vscode.TextEditorDecorationType, range: vscode.Range[]): void => setDecorations(decoraiton, range);
+const applyDecoration = (setDecorations: D.Editor.Tp.RenderOverlay, decoraiton: vscode.TextEditorDecorationType, range: vscode.Range[]): void => setDecorations(decoraiton, range);
 
 /**
  * [ self-explantory ]
@@ -36,15 +46,21 @@ const applyDecoration = (setDecorations: vscode.TextEditor['setDecorations'], de
  * @param setDecorations 
  * @returns 
  */
-const resetDecoration = (setDecorations: vscode.TextEditor['setDecorations']) => (decoration: vscode.TextEditorDecorationType) => setDecorations(decoration, blankRange);
+const resetDecoration = (setDecorations: D.Editor.Tp.RenderOverlay) => (decoration: vscode.TextEditorDecorationType) => setDecorations(decoration, blankRange);
 
 /**
  * I assuemd using array to store value in object would be faster than mutating the object as it would be a reference.
- * at this point, i am not sure if there is a significan advantage, however this respond smoother in my experience so far. 
+ * at this point, i am not sure if there is a significant advantage, however this respond smoother in my experience so far. 
  * maybe drop the array in future but keeping it as is for now.
  * 
+ * now that i am thinking making those state tracking numeric values as array, 
+ * existing in stack, instead of heap perhaps; making not be targeted by garbage collector
+ * unless it is explicitly uses references of array that hold numeric value ot state.
+ * 
+ * this, in fact could be slower but it will guarantee to stay on the memory.
+ * 
  */
-const clearDecorationState = (decorationState: D.Editor.Tp.DecorationState): void => {
+const clearDecorationState = (decorationState: D.Decoration.Intf.State): void => {
     decorationState.eventTrigger[0] = hex.noEvent;
     decorationState.appliedHighlight[0] = hex.cursorOnly;
     decorationState.diagnosticSignature[0] = bin.allOkOverride;
@@ -59,7 +75,7 @@ const clearAll = (editor: vscode.TextEditor): void => {
 const resetAllDecoration = (): void => vscode.window.visibleTextEditors.forEach(clearAll);
 
 /**
- * perhaps i need to move this function to selection.ts later on.
+ * when a user change indent option of the viewing editor
  * 
  * @param editor 
  */
@@ -72,16 +88,30 @@ const updateIndentOption = (editor: vscode.TextEditor): void => {
         : regex.tabAndEOLRegex;
 };
 
+const setFunctionList = (config: D.Config.Intf.ConfigReady, highlightList: D.Editor.Intf.RenderGroup, selectionList: D.Editor.Intf.RenderGroup) => (numKey: D.Numeric.Key.Hex): void => {
+    const renderFuList: any[] = [];
+
+    renderFuList.push(highlightList[numKey]);
+
+    if (config.generalConfigInfo.selectionTextEnabled) {
+        renderFuList.push(selectionList[numKey]);
+    }
+
+    if (config.generalConfigInfo.diagnosticTextEnabled && (numKey === hex.cursorOnly || numKey === hex.singleLine)) {
+        renderFuList.push(editModeCheck);
+    } else if (config.generalConfigInfo.diagnosticTextEnabled) {
+        renderFuList.push(diagnosticInfo(decorationState));
+    }
+
+    renderFnStack[numKey].push(...renderFuList);
+};
+
 /**
  * build render function list.
  * 
  * @param config 
  */
 const prepareRenderGroup = (config: D.Config.Intf.ConfigReady): void => {
-    renderFnStack[hex.cursorOnly].splice(0);
-    renderFnStack[hex.singleLine].splice(0);
-    renderFnStack[hex.multiLine].splice(0);
-    renderFnStack[hex.multiCursor].splice(0);
 
     const highlightList: D.Editor.Intf.RenderGroup = {
         [hex.cursorOnly]: cursorOnlyHighlightRange,
@@ -97,25 +127,7 @@ const prepareRenderGroup = (config: D.Config.Intf.ConfigReady): void => {
         [hex.multiCursor]: multiCursorSelection
     };
 
-
-    SELECTION_KIND_LIST.forEach(numKey => {
-
-        const callList: any[] = [];
-
-        callList.push(highlightList[numKey]);
-
-        if (config.generalConfigInfo.selectionTextEnabled) {
-            callList.push(selectionList[numKey]);
-        }
-
-        if (config.generalConfigInfo.diagnosticTextEnabled && (numKey === hex.cursorOnly || numKey === hex.singleLine)) {
-            callList.push(editModeCheck);
-        } else if (config.generalConfigInfo.diagnosticTextEnabled) {
-            callList.push(diagnosticInfo(decorationState));
-        }
-
-        renderFnStack[numKey].push(...callList);
-    });
+    SELECTION_KIND_LIST.forEach(setFunctionList(config, highlightList, selectionList));
 };
 
 /**
@@ -138,17 +150,7 @@ const editModeCheck = (editor: vscode.TextEditor): void => {
     decorationState.previousLine[0] = editor.selections[0].start.line;
 };
 
-/**
- * buffer for rendering function call stack
- */
-const renderFnStack: Record<number, any[]> = {
-    [hex.cursorOnly]: [] as any[],
-    [hex.singleLine]: [] as any[],
-    [hex.multiLine]: [] as any[],
-    [hex.multiCursor]: [] as any[]
-};
-
-type LineFn = (arg0: vscode.TextEditor, arg1: number[]) => void
+type LineFn = (arg0: vscode.TextEditor, arg1: D.Numeric.Key.Hex[]) => void
 
 /**
  * function call chain
@@ -157,7 +159,7 @@ type LineFn = (arg0: vscode.TextEditor, arg1: number[]) => void
  * @param numKey previous selection type hexKey in array to unset previous selection decoration
  * @returns 
  */
-const fnList = (editor: vscode.TextEditor, numKey: number[]) => (fn: LineFn) => fn(editor, numKey);
+const fnList = (editor: vscode.TextEditor, numKey: D.Numeric.Key.Hex[]) => (fn: LineFn) => fn(editor, numKey);
 
 /**
  * call function call chain based on user cursor/selelction type
@@ -166,10 +168,10 @@ const fnList = (editor: vscode.TextEditor, numKey: number[]) => (fn: LineFn) => 
  * @param numKey previous selection type hexKey in array to unset previous selection decoration
  * @returns 
  */
-const renderGroupIs = (editor: vscode.TextEditor, numKey: number[]): D.Numeric.Key.Hex => {
+const renderGroupIs = (editor: vscode.TextEditor, numKey: D.Numeric.Key.Hex[]) => {
 
     const fnBind = fnList(editor, numKey);
-    
+
     if (editor.selections.length === 1) {
         if (editor.selections[0].isEmpty) {                 // cursor only
             renderFnStack[hex.cursorOnly].forEach(fnBind);

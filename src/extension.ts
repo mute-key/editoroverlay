@@ -38,11 +38,6 @@ export function activate(context: vscode.ExtensionContext) {
             context.subscriptions.push(...disposableList);
         }
     });
-
-    return context.extension.activate();
-    // when vscode startup, not sure if it is the best method, 
-    // as i am not sure even if it needs to wait to be activated.
-    // maybe need to revise the method..? 
 }
 
 export function deactivate() {

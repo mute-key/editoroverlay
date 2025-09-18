@@ -6,12 +6,12 @@ import { DECORATION_STATE } from '../constant/shared/object';
 
 declare namespace Intf {
     interface RenderGroup {
-        [key: Numeric.Key.Hex]: Tp.RenderGroupFuncSign<Numeric.Key.Hex[]> | Tp.RenderGroupFuncSign<Common.Tp.Unused>
+        [key: Numeric.Key.Hex]: Tp.RenderGroupFuncSign
     }
 }
 
 declare namespace Tp {
-    type RenderGroupFuncSign<T extends Numeric.Key.Hex[] | Common.Tp.Unused> = (editor: vscode.TextEditor, previousCursor: T) => void;
+    type RenderGroupFuncSign = (editor: vscode.TextEditor, previousCursor: Numeric.Key.Hex[]) => void;
 
     type SetDecorationOptions = readonly vscode.Range[] | readonly vscode.DecorationOptions[]
 

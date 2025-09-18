@@ -27,6 +27,11 @@ export {
 const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vscode.Disposable[] | void> => {
     try {
         
+        await extensionContext.extension.activate();
+        // when vscode startup, not sure if it is the best method, 
+        // as i am not sure even if it needs to wait to be activated.
+        // maybe need to revise the method..? 
+
         Error.setPackageName(extensionContext.extension.packageJSON.name);
 
         const loadConfig = await config.loadConfiguration(extensionContext);

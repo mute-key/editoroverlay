@@ -264,7 +264,6 @@ const context = {
 };
 
 const diagnosticInfo = (decorationState: D.Decoration.Intf.State) => (editor: vscode.TextEditor): void => {
-    
     if (decorationState.eventTrigger[0] === hex.diagnosticChanged) {
         refreshBuffer(updateDiagnostic(editor.document.uri));
     }
