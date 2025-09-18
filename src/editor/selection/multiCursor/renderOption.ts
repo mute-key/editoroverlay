@@ -1,4 +1,4 @@
-import type * as D from '../../type/type';
+import type * as D from '../../../type/type';
 
 import * as vscode from 'vscode';
 

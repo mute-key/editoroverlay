@@ -1,6 +1,6 @@
 ### Backlog
 
-this is a temporary note & backlog, until i find something i like
+this is a temporary note & backlog  
 
 ```plain
 | symbols ===================================================================================================
@@ -11,21 +11,12 @@ this is a temporary note & backlog, until i find something i like
   [~]: on going, unfinished or planning
   [,]: not decided, pause
   [_]: drop, ideas or features
-  [?]: unknown unknown, lost track of the topic
+  [?]: unknown unknown, maybe fixed
   
 | sticky_list ===============================================================================================
 
-- [!] continues trigger of 'select next occurrences' will not cause render lag until when it reach 
-      round 300 cursor. they will be rendered with some delay after reaching certain numbers. 
-      one way to solving this would be paging the render obejct but this will require major data
-      structure refactoring. i would like to work on this eventually.
-
-- [?] sometimes created decorationTypes does not have ascending decorationTypeID base on sequence, 
-      causing malformed statsus block to be displayed. the only fix is to reload the vscode.
-      need better method to have correct display order to prevent such an event.
-- [?] direct config update on settings.json leaves selection status text. 
-- [?] backgroundColor configuration or auto appply background color based on border colour. not sure yet.
-
+- [~] current method to creating a store object is to make a copy from const object where it is defined, 
+      maybe it is better to just change it all to some state/store object...? um.... i need to think about it
 - [~] maybe applying preset should have some sort of indicator or message popup that configurations are 
       being updated and will reload. 
 - [~] probably document state indicator could be useful? not sure
@@ -33,22 +24,58 @@ this is a temporary note & backlog, until i find something i like
 - [~] configuration code clean up.
 - [~] implement new status block for tasks in vscode or from terminal.
 - [~] to get back to configuration code at some point and clean up.
-
 - [~] better type definitions
 - [~] refactor some of unpolished configuration files
 
+- [?] direct config update on settings.json leaves selection status text. 
+- [?] backgroundColor configuration or auto appply background color based on border colour. not sure yet.
+
+- [!] continues trigger of 'select next occurrences' will not cause render lag until when it reach 
+      round 300 cursor. they will be rendered with some delay after reaching certain numbers. 
+      one way to solving this would be paging the render obejct but this will require major data
+      structure refactoring. i would like to work on this eventually.
+
 | version log ===============================================================================================
 
+| 1.6.1 |
+
+- [+] engine updated to ^1.104.0.
+
+- [0] fixed cross-os support for both win/nix (inc wsl).
+      last update introduced ext stop working for cross-os, which it was fine before. it was new-old issue.
+      to be exact, it was cross-os while it did work for both win/nix in 1.4.6. so i thought it was an easy 
+      fix but it wasn't. in fact... most of the fixes were not it, causing me ending up updating the vsix 
+      to see what wend wrong until in found how to debug it better. the issue took me half a day to figure 
+      why it did not and resolved, and mostly, it was due to some of the references weren't established on 
+      certain execution points, although they should have had established already in theory; which i think 
+      it would be great if i can learn and distinguish how they work. then, i will have better understanding 
+      of whole memory flow. i still have a lot to learn.
+
+      perhaps, if i were to add more functions in this codebase, better to add a test suite, i think but
+      not sure which functions to add or to add a test suite yet.
+
+- [_] sometimes created decorationTypes does not have ascending decorationTypeID base on sequence, 
+      causing malformed statsus block to be displayed. the only fix is to reload the vscode.
+      need better method to have correct display order to prevent such an event.
+
+************************************************************************************************************
+
 | 1.5.2 |
+
 - [0] there was a type D.Editor.Tp.RenderGroupFuncSign<T>, which i wish did auto arguement type overlading, 
       which works really well on debug but it fails on build. had to remove the type completely. 
       i assume it somewhat useful during the runtime but not on the build time. 
 
+************************************************************************************************************
+
 | 1.4.9 |
+
 - [0] forgot to build with correct package opiton, vsce package --no-dependencies.
       this is kinda of hotfix. removed vsix packages that were included in last commit.
+      
 - [+] readme update
 
+************************************************************************************************************
 
 | 1.4.8 |
 

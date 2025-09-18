@@ -12,7 +12,7 @@ export {
     setOverrideDigit
 };
 
-const diagnosticState = { ...DIAGNOSTIC_STATE } as unknown as D.Diagnostic.Intf.State;
+const diagnosticState = { ...DIAGNOSTIC_STATE } as D.Diagnostic.Intf.State;
 
 const resetEditorDiagnosticStatistics = (): void => {
     diagnosticState.editor.warning.line.splice(0);

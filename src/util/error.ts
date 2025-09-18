@@ -3,7 +3,7 @@ import { SYSTEM_MESSAGE } from '../constant/config/enum';
 
 /**
  * ERROR related classes.
- * should be self-explanatory.
+ * should be self-explanatory, incomplete
  * 
  */
 

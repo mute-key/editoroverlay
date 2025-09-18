@@ -32,41 +32,42 @@ export {
     selectionOnly,
 };
 
+declare namespace L {
+    export type IndentRegexFunc = (indentSize: string | number) => RegExp
+}
+
 //:==============================================================================
 //:  [ REGEX COLLECTION ], self-explanatory
 //:==============================================================================
 
-const prefix = /(\${pre})/s;
-const postfix = /(\${post})/s;
-const source = /(\${src})/s;
-const warning = /(\${wrn})/s;
-const error = /(\${err})/s;
-const editor = /(\${editor})/s;
-const workspace = /(\${workspace})/s;
-const allok = /(\${allok})/s;
-const column = /(\${col})/s;
-const zeroColumn = /(\${zCol})/s;
-const lineCount = /(\${lc})/s;
-const linePosition = /(\${pos})/s;
-const lineNumber = /(\${ln})/s;
-const character = /(\${char})/s;
-const characterOnly = /(\${charOnly})/s;
-const nth = /(\${nth})/s;
-const selectionCount = /(\${count})/s;
+const prefix: RegExp = /(\${pre})/s;
+const postfix: RegExp = /(\${post})/s;
+const source: RegExp = /(\${src})/s;
+const warning: RegExp = /(\${wrn})/s;
+const error: RegExp = /(\${err})/s;
+const editor: RegExp = /(\${editor})/s;
+const workspace: RegExp = /(\${workspace})/s;
+const allok: RegExp = /(\${allok})/s;
+const column: RegExp = /(\${col})/s;
+const zeroColumn: RegExp = /(\${zCol})/s;
+const lineCount: RegExp = /(\${lc})/s;
+const linePosition: RegExp = /(\${pos})/s;
+const lineNumber: RegExp = /(\${ln})/s;
+const character: RegExp = /(\${char})/s;
+const characterOnly: RegExp = /(\${charOnly})/s;
+const nth: RegExp = /(\${nth})/s;
+const selectionCount: RegExp = /(\${count})/s;
 
-const indentAndEOLRegex = (indentSize: string | number) => new RegExp(`^( {${indentSize}}|[\r\n]+)*`, 'gm');
-const ifStringIsResourceScope = /^[%\.].*[%\.]$/s;
-const tabAndEOLRegex = /(\t|[\r\n]+)*$/gm;
-const isValidHexColor = /^#[A-Fa-f0-9]{6}$/;
-const isValidWidth = /^[0-9]px$|^[0-9]em$/;
-const ifContentTextHasPlaceholder = /(\${[A-z]*})/g;
-const contentTextKeysOnly = /\${([^{}]+)}/s;
+const indentAndEOLRegex: L.IndentRegexFunc = (indentSize: string | number): RegExp => new RegExp(`^( {${indentSize}}|[\r\n]+)*`, 'gm');
+const ifStringIsResourceScope: RegExp = /^[%\.].*[%\.]$/s;
+const tabAndEOLRegex: RegExp = /(\t|[\r\n]+)*$/gm;
+const isValidHexColor: RegExp = /^#[A-Fa-f0-9]{6}$/;
+const isValidWidth: RegExp = /^[0-9]px$|^[0-9]em$/;
+const ifContentTextHasPlaceholder: RegExp = /(\${[A-z]*})/g;
+const contentTextKeysOnly: RegExp = /\${([^{}]+)}/s;
 
-const isWholeLine = /isWholeLine/s;
-const beforeCursor = /beforeCursor/s;
-const afterCursor = /afterCursor/s;
-const atLineStart = /atLineStart/s;
-const selectionOnly = /selectionOnly/s;
-
-
-
+const isWholeLine: RegExp = /isWholeLine/s;
+const beforeCursor: RegExp = /beforeCursor/s;
+const afterCursor: RegExp = /afterCursor/s;
+const atLineStart: RegExp = /atLineStart/s;
+const selectionOnly: RegExp = /selectionOnly/s;

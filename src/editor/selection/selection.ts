@@ -10,8 +10,8 @@ import { SELECTION_CONTENT_TEXT_CONFIG_KEY } from '../../constant/config/enum';
 import { DECORATION_OPTION_CONFIG } from '../../constant/config/object';
 import { createLineRange, blankRange } from '../range';
 import { resetDecoration } from '../editor';
-import { addCursor, allOccurrence, cursorMovement, cursorOnEndOfLines, firstSelectionAsBaseLine, nextOccurrence, nextOccurrenceInit, normalizeEditorSelection, sortEditorSelection } from './multiCursor';
-import { replicateColsRenderOption, replicateNthRenderOption, colRenderOptionOverride, nthRenderOptionOverride } from './renderOption';
+import { addCursor, allOccurrence, cursorMovement, cursorOnEndOfLines, firstSelectionAsBaseLine, nextOccurrence, nextOccurrenceInit, normalizeEditorSelection, sortEditorSelection } from './multiCursor/multiCursor';
+import { replicateColsRenderOption, replicateNthRenderOption, colRenderOptionOverride, nthRenderOptionOverride } from './multiCursor/renderOption';
 
 export {
     bindStatusContentTextState,
@@ -510,7 +510,9 @@ const multilineSelection = (editor: vscode.TextEditor, previousKey: D.Numeric.Ke
 
     hex.multiLine !== previousKey[0] && clearBufferOfhexkey(editor.setDecorations, previousKey);
 
-    selectionStatusFunctionChain[hex.multiLineText].forEach(functionChain(multiLinetatusRef, editor));
+
+    // 이 커링 미리 바인딩 해두면? 근데 또 클로져인데 음 
+    selectionStatusFunctionChain[hex.multiLineText].forEach(functionChain(multiLinetatusRef, editor)); 
 
     rangePointerTable[hex.multiLineAnchorText] = createLineRange(editor.selection.anchor);
     rangePointerTable[hex.multiLineCursorText] = createLineRange(editor.selection.active);

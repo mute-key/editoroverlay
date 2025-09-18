@@ -1,4 +1,4 @@
-/* eslint-disable semi */
+/* eslint-disable semi */ 
 
 /**
  * please read @link /src/numeric/hex.ts

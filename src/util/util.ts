@@ -18,10 +18,10 @@ export {
  * @param newProp 
  * @returns 
  */
-const autoArrayPropertyObject = (newProp) => {
+const autoArrayPropertyObject = (newProp: any) => {
     const target = {};
     return new Proxy(target, {
-        get(obj, prop) {
+        get(obj: any, prop) {
             if (!(prop in obj)) {
                 obj[prop] = structuredClone(newProp);
             }
@@ -149,7 +149,7 @@ const hrtimeToMS = (hrtime: [number, number]): number => (process.hrtime(hrtime)
  */
 const compareNumbers = (a: number, b: number): number => (a - b);
 
-const isObjectShallowEqual = (obj1: object, obj2: object): boolean => {
+const isObjectShallowEqual = (obj1: any, obj2: any): boolean => {
     const keys1 = Object.keys(obj1);
     const keys2 = Object.keys(obj2);
     if (keys1.length !== keys2.length) {
@@ -159,7 +159,7 @@ const isObjectShallowEqual = (obj1: object, obj2: object): boolean => {
     return keys1.every(key => obj2.hasOwnProperty(key) && obj1[key] === obj2[key]);
 };
 
-const isEntriesEqual = (a, b) => a.length === b.length && a.every((element, index) => element[0] === b[index][0] && element[1] === b[index][1]);
+const isEntriesEqual = (a: any[], b: any[]) => a.length === b.length && a.every((element, index) => element[0] === b[index][0] && element[1] === b[index][1]);
 
 const toReadonlyProperty = (object: any, propertyName: string[]): void => {
     return propertyName.forEach(property => {

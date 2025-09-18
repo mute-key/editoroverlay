@@ -13,7 +13,6 @@ declare namespace Intf {
         editor?: vscode.TextEditor
         configInfo: Config.Intf.ConfigReady
         decorationState: Decoration.Intf.State
-        initialEditor?: string
     }
 }
 

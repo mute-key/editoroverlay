@@ -1,8 +1,8 @@
-import type * as D from '../../type/type';
+import type * as D from '../../../type/type';
 
 import * as vscode from 'vscode';
-import * as bin from '../../numeric/binary';
-import { normalizeToEmptySelections, sortSelectionsIfNot } from './selectionHelper';
+import * as bin from '../../../numeric/binary';
+import { normalizeToEmptySelections, sortSelectionsIfNot } from '../selectionHelper';
 import { rangeDescriptor, rangeGetter, setGetterProp } from './renderOption';
 import { dispatchFnStep, duplicateOeverlayFunc, overlayFunc } from './overlayPosition';
 
@@ -43,12 +43,7 @@ const pushMultiCursorOption = (state: D.Selection.Intf.MultiCursorState, context
 
     if (positionData !== undefined) {
         contentTextBuffer = positionData(contentText, state, context);
-    } else {
-        // if (typeof contentTextBuffer.after.contentText === 'number') {
-        //     contentTextBuffer.after.contentText = contentTextBuffer.after.contentText.toString();
-        // }
-        // console.log(positionData, contentTextBuffer.after.contentText, typeof contentTextBuffer.after.contentText);
-    }
+    } 
 
     const renderOption = {
         selectionBufferIndex: state.selectionBuffer.length - 1,

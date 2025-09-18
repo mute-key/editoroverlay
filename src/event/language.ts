@@ -14,7 +14,7 @@ const diagnosticChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decorat
         const editor = vscode.window.activeTextEditor;                  // when active editor 
         
         if (editor && event && configInfo.generalConfigInfo.diagnosticTextEnabled) {
-            decorationState.eventTrigger[0] = hex.diagnosticChanged;   // set event caller before render
+            decorationState.eventTrigger[0] = hex.diagnosticChanged;    // set event caller before render
             diagnosticInfo(decorationState)(editor);                    // refresh diagnostic status block
         }
     });

@@ -73,7 +73,7 @@ export const DIAGNOSTIC_STATE = {
             total: 0
         }
     }
-} as const
+}
 
 export const SELECTION_CONTENT_TEXT: D.Status.Intf.StatusContentText = {
     [hex.cursorOnlyText]: undefined,
