@@ -46,7 +46,7 @@ const getConfigValue: D.Config.Tp.DecorationConfigGetFunction = <T extends D.Con
     }
 };
 
-const workspaceProxyConfiguration = (config: any, workspaceConfigSectionName: string, ifContentTextArray?: string[], bindTo?: any, regexObject?) => {
+const workspaceProxyConfiguration = (config: any, workspaceConfigSectionName: string, ifContentTextArray?: string[], bindTo?: any, regexObject?: D.Regex.Tp.ConfigurationRegexObject) => {
     Object.entries(config).forEach(([sectionKey, section]) => {
         if (typeof section !== 'object') {
             const configValue = getConfigValue(getWorkspaceConfiguration(workspaceConfigSectionName), sectionKey, 'not found', workspaceConfigSectionName);

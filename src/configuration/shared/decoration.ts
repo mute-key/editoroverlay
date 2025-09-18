@@ -18,7 +18,7 @@ export {
 
 const leftMarginToMarginString = (leftMargin: string | undefined) => `0 0 0 ${leftMargin}`;
 
-const castToFuncSignature = (result: D.Config.Tp.RegexSplit | undefined): D.Status.Intf.SplitFunc | undefined => {
+const castToFuncSignature = (result: D.Config.Intf.RegexSplit | undefined): D.Status.Intf.SplitFunc | undefined => {
     if (result) {
         return {
             ...result,
@@ -63,7 +63,7 @@ const searchPlaceholderPosition = (textOf: D.Diagnostic.Intf.ContentTextWithPosi
     }
 };
 
-const parseContentText = (contentText: string, sectionKey: string, bindTo: any, regexObject, sectionName: string): void => {
+const parseContentText = (contentText: string, sectionKey: string, bindTo: any, regexObject: D.Regex.Tp.ConfigurationRegexObject, sectionName: string): void => {
     const match = contentText.match(regex.ifContentTextHasPlaceholder);
     if (match !== null && Object.hasOwn(regexObject, sectionKey)) {
         if (match.length > Object.keys(regexObject[sectionKey]).length) {

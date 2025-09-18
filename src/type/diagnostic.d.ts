@@ -101,7 +101,7 @@ declare namespace Intf {
 
     interface ContentTextWithPosition {
         contentText?: (string | symbol | number | Status.Tp.ContentTextFuncSignature)[],
-        position: {}
+        position: Record<number, any>
     }
 
     interface RegexDiagnosticContentTextType {
