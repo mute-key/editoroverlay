@@ -34,20 +34,16 @@ const singelLineHighlightRange = (editor: vscode.TextEditor, previousKey: D.Nume
     applyDecoration(editor.setDecorations, highlightStyleList[hex.singleLine][0], [createRangeSPEP(editor.selection.start, editor.selection.end)]);
 };
 
-const multiLineRangeCH = [
-    [Object.create(null)] as any | vscode.Range[],
-    [Object.create(null)],
-    [Object.create(null)],
-];
+const multiLineRangeCache = [] as any | vscode.Range[];
 
-const renderMultiLineHighlight = (setDecorations: D.Editor.Tp.RenderOverlay, range: vscode.Range[]) => (highlight: vscode.TextEditorDecorationType, idx: number) => setDecorations(highlight, range[idx] as unknown as readonly vscode.Range[] | readonly vscode.DecorationOptions[]);
+const renderMultiLineHighlight = (setDecorations: D.Editor.Tp.RenderOverlay, range: vscode.Range[]) => (highlight: vscode.TextEditorDecorationType, idx: number) => setDecorations(highlight, range as unknown as readonly vscode.Range[] | readonly vscode.DecorationOptions[]);
 
 const multiLineHighlightRange = (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]) => {
     hex.multiLine !== previousKey[0] && clearHighlight(editor.setDecorations, previousKey, blankRange);
-    multiLineRangeCH[0][0] = editor.document.lineAt(editor.selection.start).range; // createLineRange();
-    multiLineRangeCH[1][0] = editor.document.lineAt(editor.selection.end).range; // createLineRange();
-    multiLineRangeCH[2][0] = editor.selection;
-    highlightStyleList[hex.multiLine].forEach(renderMultiLineHighlight(editor.setDecorations, multiLineRangeCH));
+    multiLineRangeCache[0] = createLineRange(editor.selection.start); // editor.document.lineAt(editor.selection.start).range; // createLineRange();
+    multiLineRangeCache[1] = createLineRange(editor.selection.end); // editor.document.lineAt(editor.selection.end).range; // createLineRange();
+    multiLineRangeCache[2] = editor.selection;
+    highlightStyleList[hex.multiLine].forEach(renderMultiLineHighlight(editor.setDecorations, multiLineRangeCache));
 };
 
 const multiCursorHighlightRange = (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]): void => {
