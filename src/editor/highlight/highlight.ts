@@ -34,17 +34,22 @@ const singelLineHighlightRange = (editor: vscode.TextEditor, previousKey: D.Nume
     applyDecoration(editor.setDecorations, highlightStyleList[hex.singleLine][0], [createRangeSPEP(editor.selection.start, editor.selection.end)]);
 };
 
-const multiLineRangeCache = [] as any | vscode.Range[];
+const multiLineRangeCache = [
+    [] as any | vscode.Range[],
+    [],
+    [],
+];
 
-const renderMultiLineHighlight = (setDecorations: D.Editor.Tp.RenderOverlay, range: vscode.Range[]) => (highlight: vscode.TextEditorDecorationType, idx: number) => setDecorations(highlight, range as unknown as readonly vscode.Range[] | readonly vscode.DecorationOptions[]);
+const renderMultiLineHighlight = (setDecorations: D.Editor.Tp.RenderOverlay, range: vscode.Range[]) => (highlight: vscode.TextEditorDecorationType, idx: number) => setDecorations(highlight, range[idx] as unknown as readonly vscode.Range[] | readonly vscode.DecorationOptions[]);
 
 const multiLineHighlightRange = (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]) => {
     hex.multiLine !== previousKey[0] && clearHighlight(editor.setDecorations, previousKey, blankRange);
-    multiLineRangeCache[0] = createLineRange(editor.selection.start); // editor.document.lineAt(editor.selection.start).range; // createLineRange();
-    multiLineRangeCache[1] = createLineRange(editor.selection.end); // editor.document.lineAt(editor.selection.end).range; // createLineRange();
-    multiLineRangeCache[2] = editor.selection;
+    multiLineRangeCache[0][0] = createLineRange(editor.selection.start); // editor.document.lineAt(editor.selection.start).range; 
+    multiLineRangeCache[1][0] = createLineRange(editor.selection.end); // editor.document.lineAt(editor.selection.end).range; 
+    multiLineRangeCache[2][0] = editor.selection;
     highlightStyleList[hex.multiLine].forEach(renderMultiLineHighlight(editor.setDecorations, multiLineRangeCache));
 };
+
 
 const multiCursorHighlightRange = (editor: vscode.TextEditor, previousKey: D.Numeric.Key.Hex[]): void => {
     clearHighlight(editor.setDecorations, previousKey, blankRange);
