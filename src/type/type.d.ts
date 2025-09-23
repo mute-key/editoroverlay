@@ -33,7 +33,6 @@ import type * as Selection from './selection';
 import type * as Status from './status';
 import type * as Numeric from './numeric';
 import type * as Workspace from './workspace';
-import type * as Scm from './scm';
 
 export type {
     Config,
@@ -47,6 +46,5 @@ export type {
     Selection,
     Status,
     Numeric,
-    Workspace,
-    Scm
+    Workspace
 };
