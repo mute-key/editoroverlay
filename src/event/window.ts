@@ -1,13 +1,13 @@
-import type * as D from '../type/type.d';
+import type * as D from '../type/type';
 
 import * as vscode from 'vscode';
-import * as hex from '../numeric/hexadecimal';
-import Error from '../util/error';
-import { resetAllDecoration } from '../editor/editor';
-import { renderGroupIs, updateIndentOption } from '../editor/editor';
-import { resetEditorDiagnosticStatistics, resetWorkspaceDiagnosticStatistics } from '../diagnostic/diagnostic';
+import * as hex from '../constant/numeric/hexadecimal';
+
+import { resetEditorDiagnosticStatistics, resetWorkspaceDiagnosticStatistics } from '../workspace/problem/diagnostic';
 import { updateRangeMetadata } from '../editor/range';
 import { forceDispatchEditorChange } from '../editor/selection/selection';
+import { renderGroupIs, resetAllDecoration, updateIndentOption } from '../editor/editor';
+// import { scmOverlay, initScm, setWorkspaceSystem } from '../editor/scm/scm';
 
 export {
     windowStateChanged,
@@ -19,14 +19,17 @@ export {
     // documentModifified
 };
 
+
 const windowStateChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
-    const onDidChangeWindowState = vscode.window.onDidChangeWindowState((event: vscode.WindowState): void => {
+    return vscode.window.onDidChangeWindowState((event: vscode.WindowState): void => {
         if (event.focused) {
+            
+            // setWorkspaceSystem();
+
             if (vscode.window.activeTextEditor) {
                 updateIndentOption(vscode.window.activeTextEditor);
-                decorationState.appliedHighlight[0] = renderGroupIs(vscode.window.activeTextEditor, [hex.cursorOnly]);
+                decorationState.appliedHighlight[0] = renderGroupIs(vscode.window.activeTextEditor, [hex.cursorOnly]);    
             }
-
         } else {
             resetAllDecoration();
         }
@@ -36,13 +39,11 @@ const windowStateChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState })
             console.log('idling');
         }
     });
-    return onDidChangeWindowState;
 };
 
 const activeEditorChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decorationState }): vscode.Disposable => {
-    return vscode.window.onDidChangeActiveTextEditor((editor: vscode.TextEditor | undefined) => {
+    return vscode.window.onDidChangeActiveTextEditor(async (editor: vscode.TextEditor | undefined) => {
         if (editor) {
-
             /**
              * recent build of vscode have change the behavior of tab change event
              * 
@@ -56,9 +57,9 @@ const activeEditorChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decor
             //     return;
             // }
 
-            if (Error.check()) {
-                Error.notify(1500);
-            }
+            // if (Error.check()) {
+            //     Error.notify(1500);
+            // }
 
             forceDispatchEditorChange(editor);
             updateRangeMetadata(editor);
@@ -75,10 +76,16 @@ const activeEditorChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decor
             // here seems is the correct place write place to reset all decorations when 
             // active editor changes, i think.
             if (decorationState.eventTrigger[0] !== hex.noEvent) {
-                resetAllDecoration(); 
+                resetAllDecoration();
             }
 
+            // initScm(editor.document.uri);
+
             decorationState.appliedHighlight[0] = renderGroupIs(editor, [hex.cursorOnly]);
+
+            // await scmOverlay(editor);
+
+            
         }
     });
 };
@@ -92,7 +99,7 @@ const editorOptionChanged: D.Event.Tp.DecorationEventFunc = (context: D.Event.In
     });
 };
 
-const selectionChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
+const selectionChanged: D.Event.Tp.DecorationEventFunc = (context /** { decorationState } */): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) => {
         /**
          * i initially thought maybe dispose this event and re-bind the event if 
@@ -115,39 +122,17 @@ const selectionChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): 
          * maybe it is a good idea to use those features in future update...? i think
          * 
          */
-        decorationState.eventTrigger[0] = hex.selectionChanged;
-        decorationState.appliedHighlight[0] = renderGroupIs(vscode.window.activeTextEditor as vscode.TextEditor, decorationState.appliedHighlight);
+        context.decorationState.eventTrigger[0] = hex.selectionChanged;
+        context.decorationState.appliedHighlight[0] = renderGroupIs(vscode.window.activeTextEditor as vscode.TextEditor, context.decorationState.appliedHighlight);
+        // scmOverlay(event.textEditor);
     });
 };
 
 const tabChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
     return vscode.window.tabGroups.onDidChangeTabs((event: vscode.TabChangeEvent) => {
         if (event.changed) {
-            // console.log('tabChanged');
             // decorationState.eventTrigger[0] = hex.tabChanged;
-            resetAllDecoration(); 
+            // resetAllDecoration();
         }
     });
 };
-
-// const taskStarted = () => {
-//     return vscode.tasks.onDidStartTaskProcess((e: vscode.TaskProcessStartEvent) => {
-//         console.log(e.processId);
-//         vscode.tasks.fetchTasks();
-//     });
-// };
-
-// const visibleRangeChanged = (): vscode.Disposable => {
-//     return vscode.window.onDidChangeTextEditorVisibleRanges((event: vscode.TextEditorVisibleRangesChangeEvent): void => {
-//         if (event) { }
-//     });
-// };
-
-// const documentModifified = (context): vscode.Disposable => {
-//     return vscode.workspace.onDidChangeTextDocument((event: vscode.TextDocumentChangeEvent) => {
-//         if (event) {
-//             console.log('document changed');
-//             context.eventTrigger = hex.documentChanged;
-//         }
-//     });
-// };

@@ -18,11 +18,11 @@
 import type * as D from '../../type/type';
 
 import * as vscode from 'vscode';
-import * as hex from '../../numeric/hexadecimal';
-import * as bin from '../../numeric/binary';
-import * as dec from '../../numeric/decimal';
+import * as hex from '../../constant/numeric/hexadecimal';
+import * as bin from '../../constant/numeric/binary';
+import * as dec from '../../constant/numeric/decimal';
 import * as regex from '../../collection/regex';
-import { INDENT_INFO, SELECTION_CONTENT_TEXT, SELECTION_KIND_LIST, SELECTION_KIND_LIST_EXCLUDE_MULTI_CURSOR } from '../../constant/shared/object';
+import { INDENT_INFO, SELECTION_CONTENT_TEXT, SELECTION_KIND_LIST, SELECTION_KIND_LIST_EXCLUDE_MULTI_CURSOR } from '../../store/state';
 import { SELECTION_CONTENT_TEXT_CONFIG_KEY } from '../../constant/config/enum';
 import { DECORATION_OPTION_CONFIG } from '../../constant/config/object';
 import { createLineRange, blankRange } from '../range';
@@ -54,13 +54,9 @@ export {
  * memory for decorationRenderOption objects
  * 
  */
-const selectionContentText = {
-    ...SELECTION_CONTENT_TEXT
-} as D.Status.Intf.StatusContentText;
+const selectionContentText = SELECTION_CONTENT_TEXT as D.Status.Intf.StatusContentText;
 
-const indentInfo = {
-    ...INDENT_INFO
-} as D.Status.Intf.IndentInfo;
+const indentInfo = INDENT_INFO as D.Status.Intf.IndentInfo;
 
 /**
  * buffer that will store styled decroationType objects in fixed width array.
@@ -573,7 +569,7 @@ const multiCursorEditRef: D.Selection.Intf.MultiCursorEditRef = {
 
 const functionChainAccumulater: D.Selection.Tp.FunctionChainAccumulater = (context, Accumulated, statusRef) => ([fnName, fnChain]) => {
     switch (fnName) {
-        case 'char':
+        case "char":
             Accumulated[fnName] += fnChain(context);
             statusRef[fnName].contentText = Accumulated[fnName].toString();
             break;
@@ -643,12 +639,11 @@ const multiCursorState: D.Selection.Intf.MultiCursorState = {
     overlay: multiCursorOeverlay,
 };
 
-
 const textContext: D.Selection.Intf.MultiCursorContext = {
     renderOption: selectionDecorationOption[hex.multiCursorText],
     statusFnChain: selectionStatusFunctionChain[hex.multiCursorText],
-    accumulate: undefined,
     lineFn: multiCursorFnContext,
+    accumulate: undefined,
     positionList: new Map(),
     baseIndex: [] as number[],
     indexList: [] as number[],
@@ -658,8 +653,8 @@ const textContext: D.Selection.Intf.MultiCursorContext = {
 const editContext: D.Selection.Intf.MultiCursorContext = {
     renderOption: selectionDecorationOption[hex.multiCursorEdit],
     statusFnChain: selectionStatusFunctionChain[hex.multiCursorEdit],
-    accumulate: undefined,
     lineFn: multiCursorFnContext,
+    accumulate: undefined,
     positionList: new Map(),
     baseIndex: [] as number[],
     indexList: [] as number[],

@@ -1,7 +1,7 @@
-import type * as Decoration from './decoration.d';
-import type * as Selection from './selection.d';
-import type * as Status from './status.d';
-import type * as Numeric from './numeric.d';
+import type * as Decoration from './decoration';
+import type * as Selection from './selection';
+import type * as Status from './status';
+import type * as Numeric from './numeric';
 
 import * as vscode from 'vscode';
 

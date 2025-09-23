@@ -1,6 +1,7 @@
 import type * as Status from './status';
 import type * as Decoration from './decoration';
 import type * as Regex from './regex';
+import type * as Numeric from './numeric';
 
 import * as vscode from 'vscode';
 import { DIAGNOSTIC_CONTENT_TEXT_KEY } from 'src/constant/config/enum';
@@ -40,11 +41,11 @@ declare namespace Intf {
     }
 
     interface DiagnosticContentText {
-        [key: number]: any[]
+        [key: Numeric.Key.Bin]: any[]
     }
 
     interface LineGlyph {
-        [key: number]: any[]
+        [key: Numeric.Key.Hex]: any[] | undefined
     }
 
     interface DiagnosticVisibility {

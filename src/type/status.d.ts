@@ -3,7 +3,7 @@ import type * as Regex from './regex';
 import type * as Numeric from './numeric';
 
 import * as vscode from 'vscode';
-import * as hex from '../numeric/hexadecimal';
+import * as hex from '../constant/numeric/hexadecimal';
 import { SELECTION_CONTENT_TEXT_CONFIG_KEY } from 'src/constant/config/enum';
 import { UnderlyingByteSource } from 'stream/web';
 
@@ -49,7 +49,7 @@ declare namespace Intf {
     }
 
     interface StatusContentText {
-        [key: Numeric.Key.Hex]: ContentTextBody | undefined
+        [key: Numeric.Key.Hex]: ContentTextBody
     }
 
     interface ContentTextBody {

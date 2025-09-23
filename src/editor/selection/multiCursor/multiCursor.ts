@@ -1,7 +1,7 @@
 import type * as D from '../../../type/type';
 
 import * as vscode from 'vscode';
-import * as bin from '../../../numeric/binary';
+import * as bin from '../../../constant/numeric/binary';
 import { normalizeToEmptySelections, sortSelectionsIfNot } from '../selectionHelper';
 import { rangeDescriptor, rangeGetter, setGetterProp } from './renderOption';
 import { dispatchFnStep, duplicateOeverlayFunc, overlayFunc } from './overlayPosition';

@@ -1,9 +1,9 @@
 {
-    "name": "cursorlinehighlight",
+    "name": "editoroverlay",
     "publisher": "mutekey",
-    "displayName": "Cursor/Selection Line Highlight",
-    "description": "Highly configurable highlights on cursor line and selection lines in editor real-time.",
-    "version": "1.6.2",
+    "displayName": "Editor Overlay",
+    "description": "Highly configurable overlay tool on editor line and workspace status in real-time.",
+    "version": "1.6.3",
     "icon": "resource/icon.png",
     "license": "cc by-nc 4.0",
     "engines": {
@@ -14,11 +14,11 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/mute-key/cursorlinehighlight"
+        "url": "https://github.com/mute-key/editoroverlay"
     },
     "content": {
-        "baseContentUrl": "https://github.com/mute-key/cursorlinehighlight/blob/master/",
-        "baseImagesUrl": "https://github.com/mute-key/cursorlinehighlight/raw/master/"
+        "baseContentUrl": "https://github.com/mute-key/editoroverlay/blob/master/",
+        "baseImagesUrl": "https://github.com/mute-key/editoroverlay/raw/master/"
     },
     "keywords": [
         "cursorline",
@@ -49,44 +49,45 @@
         "Other"
     ],
     "extensionKind": [
-        "ui", "workspace"
+        "ui",
+        "workspace"
     ],
     "main": "./dist/extension.js",
     "contributes": {
         "commands": [
             {
-                "command": "cursorlinehighlight.applyPreset",
+                "command": "editoroverlay.applyPreset",
                 "title": "Apply Preset Configuration",
                 "category": "CursorLine Highlight",
-                "shortTitle": "A",
+                "shortTitle": "applyPreset",
                 "order": 0
             },
             {
-                "command": "cursorlinehighlight.setColor",
+                "command": "editoroverlay.setColor",
                 "title": "Set Color Configuration",
                 "category": "CursorLine Highlight",
-                "shortTitle": "B",
+                "shortTitle": "setColor",
                 "order": 1
             },
             {
-                "command": "cursorlinehighlight.setContrast",
+                "command": "editoroverlay.setContrast",
                 "title": "Set Contrast Configuration",
                 "category": "CursorLine Highlight",
-                "shortTitle": "C",
+                "shortTitle": "setContrast",
                 "order": 2
             },
             {
-                "command": "cursorlinehighlight.setOrientation",
+                "command": "editoroverlay.setOrientation",
                 "title": "Set Orientation Configuration",
                 "category": "CursorLine Highlight",
-                "shortTitle": "D",
+                "shortTitle": "setOrientation",
                 "order": 3
             },
             {
-                "command": "cursorlinehighlight.restoreToDefaultConfiguration",
+                "command": "editoroverlay.restoreToDefaultConfiguration",
                 "title": "Reset User Configuration",
                 "category": "CursorLine Highlight",
-                "shortTitle": "E",
+                "shortTitle": "restoreToDefaultConfiguration",
                 "order": 4
             }
         ],
@@ -94,7 +95,7 @@
             {
                 "title": "%title.general%",
                 "properties": {
-                    "cursorlinehighlight.general.borderOpacity": {
+                    "editoroverlay.general.borderOpacity": {
                         "type": "number",
                         "default": 0.5,
                         "minimum": 0,
@@ -102,7 +103,7 @@
                         "markdownDescription": "%description.general.borderOpacity%",
                         "order": 1
                     },
-                    "cursorlinehighlight.general.backgroundOpacity": {
+                    "editoroverlay.general.backgroundOpacity": {
                         "type": "number",
                         "default": 0.18,
                         "minimum": 0,
@@ -115,7 +116,7 @@
             {
                 "title": "%title.cursorOnly%",
                 "properties": {
-                    "cursorlinehighlight.cursorOnly.borderColor": {
+                    "editoroverlay.cursorOnly.borderColor": {
                         "type": "string",
                         "default": "%color.highlight.border.default%",
                         "pattern": "%regex.color.pattern%",
@@ -123,7 +124,7 @@
                         "markdownDescription": "%description.cursorOnly.borderColor%",
                         "order": 1
                     },
-                    "cursorlinehighlight.cursorOnly.backgroundColor": {
+                    "editoroverlay.cursorOnly.backgroundColor": {
                         "type": "string",
                         "default": "%color.highlight.background.default%",
                         "pattern": "%regex.color.pattern%",
@@ -131,7 +132,7 @@
                         "markdownDescription": "%description.cursorOnly.backgroundColor%",
                         "order": 2
                     },
-                    "cursorlinehighlight.cursorOnly.borderPosition": {
+                    "editoroverlay.cursorOnly.borderPosition": {
                         "type": "string",
                         "enum": [
                             "bottom | is Whole Line",
@@ -142,13 +143,13 @@
                         "description": "%description.cursorOnly.borderPosition%",
                         "order": 3
                     },
-                    "cursorlinehighlight.cursorOnly.borderWidth": {
+                    "editoroverlay.cursorOnly.borderWidth": {
                         "type": "string",
                         "default": "2px",
                         "markdownDescription": "%description.cursorOnly.borderWidth%",
                         "order": 4
                     },
-                    "cursorlinehighlight.cursorOnly.borderStyle": {
+                    "editoroverlay.cursorOnly.borderStyle": {
                         "type": [
                             "string"
                         ],
@@ -166,7 +167,7 @@
             {
                 "title": "%title.singleLine%",
                 "properties": {
-                    "cursorlinehighlight.singleLine.borderColor": {
+                    "editoroverlay.singleLine.borderColor": {
                         "type": "string",
                         "default": "%color.highlight.border.default%",
                         "pattern": "%regex.color.pattern%",
@@ -174,7 +175,7 @@
                         "markdownDescription": "%description.singleLine.borderColor%",
                         "order": 1
                     },
-                    "cursorlinehighlight.singleLine.backgroundColor": {
+                    "editoroverlay.singleLine.backgroundColor": {
                         "type": "string",
                         "default": "%color.highlight.background.default%",
                         "pattern": "%regex.color.pattern%",
@@ -182,7 +183,7 @@
                         "markdownDescription": "%description.singleLine.backgroundColor%",
                         "order": 2
                     },
-                    "cursorlinehighlight.singleLine.": {
+                    "editoroverlay.singleLine.": {
                         "type": "string",
                         "enum": [
                             "bottom | selection Only",
@@ -193,13 +194,13 @@
                         "description": "%description.singleLine.borderPosition%",
                         "order": 3
                     },
-                    "cursorlinehighlight.singleLine.borderWidth": {
+                    "editoroverlay.singleLine.borderWidth": {
                         "type": "string",
                         "default": "2px",
                         "markdownDescription": "%description.singleLine.borderWidth%",
                         "order": 4
                     },
-                    "cursorlinehighlight.singleLine.borderStyle": {
+                    "editoroverlay.singleLine.borderStyle": {
                         "type": "string",
                         "enum": [
                             "solid",
@@ -215,7 +216,7 @@
             {
                 "title": "%title.multiLine%",
                 "properties": {
-                    "cursorlinehighlight.multiLine.borderColor": {
+                    "editoroverlay.multiLine.borderColor": {
                         "type": "string",
                         "default": "%color.highlight.border.default%",
                         "pattern": "%regex.color.pattern%",
@@ -223,7 +224,7 @@
                         "markdownDescription": "%description.multiLine.borderColor%",
                         "order": 1
                     },
-                    "cursorlinehighlight.multiLine.backgroundColor": {
+                    "editoroverlay.multiLine.backgroundColor": {
                         "type": "string",
                         "default": "%color.highlight.background.default%",
                         "pattern": "%regex.color.pattern%",
@@ -231,7 +232,7 @@
                         "markdownDescription": "%description.multiLine.backgroundColor%",
                         "order": 2
                     },
-                    "cursorlinehighlight.multiLine.borderPosition": {
+                    "editoroverlay.multiLine.borderPosition": {
                         "type": "string",
                         "enum": [
                             "top-bottom | is Whole Line",
@@ -241,13 +242,13 @@
                         "description": "%description.multiLine.borderPosition%",
                         "order": 3
                     },
-                    "cursorlinehighlight.multiLine.borderWidth": {
+                    "editoroverlay.multiLine.borderWidth": {
                         "type": "string",
                         "default": "2px",
                         "markdownDescription": "%description.multiLine.borderWidth%",
                         "order": 4
                     },
-                    "cursorlinehighlight.multiLine.borderStyle": {
+                    "editoroverlay.multiLine.borderStyle": {
                         "type": "string",
                         "enum": [
                             "solid",
@@ -263,7 +264,7 @@
             {
                 "title": "%title.multiCursor%",
                 "properties": {
-                    "cursorlinehighlight.multiCursor.borderColor": {
+                    "editoroverlay.multiCursor.borderColor": {
                         "type": "string",
                         "default": "%color.highlight.border.default%",
                         "pattern": "%regex.color.pattern%",
@@ -271,7 +272,7 @@
                         "markdownDescription": "%description.multiCursor.borderColor%",
                         "order": 1
                     },
-                    "cursorlinehighlight.multiCursor.backgroundColor": {
+                    "editoroverlay.multiCursor.backgroundColor": {
                         "type": "string",
                         "default": "%color.highlight.background.default%",
                         "pattern": "%regex.color.pattern%",
@@ -279,7 +280,7 @@
                         "markdownDescription": "%description.multiCursor.backgroundColor%",
                         "order": 2
                     },
-                    "cursorlinehighlight.multiCursor.borderPosition": {
+                    "editoroverlay.multiCursor.borderPosition": {
                         "type": "string",
                         "enum": [
                             "top-right-bottom-left"
@@ -288,13 +289,13 @@
                         "description": "%description.multiCursor.borderPosition%",
                         "order": 3
                     },
-                    "cursorlinehighlight.multiCursor.borderWidth": {
+                    "editoroverlay.multiCursor.borderWidth": {
                         "type": "string",
                         "default": "2px",
                         "markdownDescription": "%description.multiCursor.borderWidth%",
                         "order": 4
                     },
-                    "cursorlinehighlight.multiCursor.borderStyle": {
+                    "editoroverlay.multiCursor.borderStyle": {
                         "type": "string",
                         "enum": [
                             "solid",
@@ -310,19 +311,19 @@
             {
                 "title": "%title.selection%",
                 "properties": {
-                    "cursorlinehighlight.selectionText.enabled": {
+                    "editoroverlay.selectionText.enabled": {
                         "type": "boolean",
                         "default": true,
                         "description": "%description.selectionText.enabled%",
                         "order": 1
                     },
-                    "cursorlinehighlight.selectionText.leftMargin": {
+                    "editoroverlay.selectionText.leftMargin": {
                         "type": "string",
                         "default": "10px",
                         "markdownDescription": "%placeholder%",
                         "order": 2
                     },
-                    "cursorlinehighlight.selectionText.color": {
+                    "editoroverlay.selectionText.color": {
                         "type": "string",
                         "default": "%color.highlight.border.default%",
                         "pattern": "%regex.color.pattern%",
@@ -330,7 +331,7 @@
                         "markdownDescription": "%description.selectionText.color%",
                         "order": 3
                     },
-                    "cursorlinehighlight.selectionText.colorOpacity": {
+                    "editoroverlay.selectionText.colorOpacity": {
                         "type": "number",
                         "default": 0.5,
                         "minimum": 0,
@@ -338,13 +339,13 @@
                         "markdownDescription": "%description.selectionText.opacity%",
                         "order": 4
                     },
-                    "cursorlinehighlight.selectionText.backgroundColor": {
+                    "editoroverlay.selectionText.backgroundColor": {
                         "type": "string",
                         "default": null,
                         "markdownDescription": "%description.selectionText.backgroundColor%",
                         "order": 5
                     },
-                    "cursorlinehighlight.selectionText.backgroundOpacity": {
+                    "editoroverlay.selectionText.backgroundOpacity": {
                         "type": "number",
                         "default": 0.5,
                         "minimum": 0,
@@ -352,7 +353,7 @@
                         "markdownDescription": "%description.selectionText.opacity%",
                         "order": 6
                     },
-                    "cursorlinehighlight.selectionText.fontStyle": {
+                    "editoroverlay.selectionText.fontStyle": {
                         "type": "string",
                         "enum": [
                             "italic",
@@ -362,7 +363,7 @@
                         "description": "%description.selectionText.fontStyle%",
                         "order": 7
                     },
-                    "cursorlinehighlight.selectionText.fontWeight": {
+                    "editoroverlay.selectionText.fontWeight": {
                         "type": "string",
                         "enum": [
                             "lighter",
@@ -374,7 +375,7 @@
                         "description": "%description.selectionText.fontWeight%",
                         "order": 8
                     },
-                    "cursorlinehighlight.selectionText.cursorOnlyText": {
+                    "editoroverlay.selectionText.cursorOnlyText": {
                         "type": "string",
                         "default": "%placeholder.selectionText.cursorOnlyText.default%",
                         "pattern": "%regex.column.pattern%",
@@ -383,7 +384,7 @@
                         "editPresentation": "singlelineText",
                         "order": 9
                     },
-                    "cursorlinehighlight.selectionText.singleLineText": {
+                    "editoroverlay.selectionText.singleLineText": {
                         "type": "string",
                         "default": "%placeholder.selectionText.singleLineText.default%",
                         "pattern": "(\t|[\r\n]+)*$",
@@ -392,7 +393,7 @@
                         "editPresentation": "singlelineText",
                         "order": 10
                     },
-                    "cursorlinehighlight.selectionText.multiLineCursorText": {
+                    "editoroverlay.selectionText.multiLineCursorText": {
                         "type": "string",
                         "default": "%placeholder.selectionText.multiLineCursorText.default%",
                         "pattern": "(\t|[\r\n]+)*$",
@@ -401,7 +402,7 @@
                         "editPresentation": "singlelineText",
                         "order": 11
                     },
-                    "cursorlinehighlight.selectionText.multiLineAnchorText": {
+                    "editoroverlay.selectionText.multiLineAnchorText": {
                         "type": "string",
                         "default": "%placeholder.selectionText.multiLineAnchorText.default%",
                         "pattern": "(\t|[\r\n]+)*$",
@@ -410,7 +411,7 @@
                         "editPresentation": "singlelineText",
                         "order": 12
                     },
-                    "cursorlinehighlight.selectionText.multiCursorText": {
+                    "editoroverlay.selectionText.multiCursorText": {
                         "type": "string",
                         "default": "%placeholder.selectionText.multiCursorSelectText.default%",
                         "pattern": "(\t|[\r\n]+)*$",
@@ -419,7 +420,7 @@
                         "editPresentation": "singlelineText",
                         "order": 13
                     },
-                    "cursorlinehighlight.selectionText.multiCursorEdit": {
+                    "editoroverlay.selectionText.multiCursorEdit": {
                         "type": "string",
                         "default": "%placeholder.selectionText.multiCursorEditText.default%",
                         "pattern": "%regex.column.pattern%",
@@ -428,7 +429,7 @@
                         "editPresentation": "singlelineText",
                         "order": 14
                     },
-                    "cursorlinehighlight.selectionText.selectionCountTextStyle": {
+                    "editoroverlay.selectionText.selectionCountTextStyle": {
                         "order": 15,
                         "type": "object",
                         "scope": "resource",
@@ -514,19 +515,19 @@
             {
                 "title": "%title.diagnostic%",
                 "properties": {
-                    "cursorlinehighlight.diagnosticText.enabled": {
+                    "editoroverlay.diagnosticText.enabled": {
                         "type": "boolean",
                         "default": true,
                         "markdownDescription": "%description.diagnosticText.enabled%",
                         "order": 1
                     },
-                    "cursorlinehighlight.diagnosticText.leftMargin": {
+                    "editoroverlay.diagnosticText.leftMargin": {
                         "type": "string",
                         "default": "20px",
                         "markdownDescription": "%description.diagnosticText.leftMargin%",
                         "order": 2
                     },
-                    "cursorlinehighlight.diagnosticText.visibility": {
+                    "editoroverlay.diagnosticText.visibility": {
                         "order": 3,
                         "type": "object",
                         "scope": "resource",
@@ -585,7 +586,7 @@
                             }
                         }
                     },
-                    "cursorlinehighlight.diagnosticText.glyphList": {
+                    "editoroverlay.diagnosticText.glyphList": {
                         "order": 4,
                         "type": "object",
                         "scope": "resource",
@@ -621,7 +622,7 @@
                             }
                         }
                     },
-                    "cursorlinehighlight.diagnosticText.allOkPlaceholderContentText": {
+                    "editoroverlay.diagnosticText.allOkPlaceholderContentText": {
                         "order": 5,
                         "type": "string",
                         "default": "%placeholder.diagnostic.allOk.placeholder.default%",
@@ -630,7 +631,7 @@
                         "markdownDescription": "%description.diagnosticText.allOkPlaceholderContentText%",
                         "editPresentation": "singlelineText"
                     },
-                    "cursorlinehighlight.diagnosticText.allOkContentText": {
+                    "editoroverlay.diagnosticText.allOkContentText": {
                         "order": 6,
                         "type": "string",
                         "default": "%placeholder.diagnostic.ok.all.default%",
@@ -639,7 +640,7 @@
                         "markdownDescription": "%description.diagnosticText.allOkContentText%",
                         "editPresentation": "singlelineText"
                     },
-                    "cursorlinehighlight.diagnosticText.problemPlaceholderContentText": {
+                    "editoroverlay.diagnosticText.problemPlaceholderContentText": {
                         "order": 7,
                         "type": "string",
                         "default": "%placeholder.diagnostic.problem.placeholder.default%",
@@ -648,7 +649,7 @@
                         "markdownDescription": "%description.diagnosticText.problemPlaceholderContentText%",
                         "editPresentation": "singlelineText"
                     },
-                    "cursorlinehighlight.diagnosticText.diagnosticPlaceholderTextStyle": {
+                    "editoroverlay.diagnosticText.diagnosticPlaceholderTextStyle": {
                         "order": 8,
                         "type": "object",
                         "scope": "resource",
@@ -723,7 +724,7 @@
                             }
                         }
                     },
-                    "cursorlinehighlight.diagnosticText.okWorkspaceContentText": {
+                    "editoroverlay.diagnosticText.okWorkspaceContentText": {
                         "order": 9,
                         "type": "string",
                         "default": "%placeholder.diagnostic.ok.workspace.default%",
@@ -732,7 +733,7 @@
                         "markdownDescription": "%description.diagnosticText.okWorkspaceContentText%",
                         "editPresentation": "singlelineText"
                     },
-                    "cursorlinehighlight.diagnosticText.okEditorContentText": {
+                    "editoroverlay.diagnosticText.okEditorContentText": {
                         "order": 10,
                         "type": "string",
                         "default": "%placeholder.diagnostic.ok.editor.default%",
@@ -741,7 +742,7 @@
                         "markdownDescription": "%description.diagnosticText.okEditorContentText%",
                         "editPresentation": "singlelineText"
                     },
-                    "cursorlinehighlight.diagnosticText.okNotationTextStyle": {
+                    "editoroverlay.diagnosticText.okNotationTextStyle": {
                         "order": 11,
                         "type": "object",
                         "scope": "resource",
@@ -830,7 +831,7 @@
                             }
                         }
                     },
-                    "cursorlinehighlight.diagnosticText.okTextStyle": {
+                    "editoroverlay.diagnosticText.okTextStyle": {
                         "order": 12,
                         "type": "object",
                         "scope": "resource",
@@ -890,7 +891,7 @@
                             }
                         }
                     },
-                    "cursorlinehighlight.diagnosticText.warningWorkspaceContentText": {
+                    "editoroverlay.diagnosticText.warningWorkspaceContentText": {
                         "order": 13,
                         "type": "string",
                         "default": "%placeholder.diagnostic.warning.workspace.default%",
@@ -899,7 +900,7 @@
                         "markdownDescription": "%description.diagnosticText.warningWorkspaceContentText%",
                         "editPresentation": "singlelineText"
                     },
-                    "cursorlinehighlight.diagnosticText.warningEditorContentText": {
+                    "editoroverlay.diagnosticText.warningEditorContentText": {
                         "order": 14,
                         "type": "string",
                         "default": "%placeholder.diagnostic.warning.editor.default%",
@@ -908,7 +909,7 @@
                         "markdownDescription": "%description.diagnosticText.warningEditorContentText%",
                         "editPresentation": "singlelineText"
                     },
-                    "cursorlinehighlight.diagnosticText.warningNotationTextStyle": {
+                    "editoroverlay.diagnosticText.warningNotationTextStyle": {
                         "order": 15,
                         "type": "object",
                         "scope": "resource",
@@ -987,7 +988,7 @@
                             }
                         }
                     },
-                    "cursorlinehighlight.diagnosticText.warningTextStyle": {
+                    "editoroverlay.diagnosticText.warningTextStyle": {
                         "order": 16,
                         "type": "object",
                         "scope": "resource",
@@ -1046,7 +1047,7 @@
                             }
                         }
                     },
-                    "cursorlinehighlight.diagnosticText.errorWorkspaceContentText": {
+                    "editoroverlay.diagnosticText.errorWorkspaceContentText": {
                         "order": 17,
                         "type": "string",
                         "default": "%placeholder.diagnostic.error.workspace.default%",
@@ -1055,7 +1056,7 @@
                         "markdownDescription": "%description.diagnosticText.errorWorkspaceContentText%",
                         "editPresentation": "singlelineText"
                     },
-                    "cursorlinehighlight.diagnosticText.errorEditorContentText": {
+                    "editoroverlay.diagnosticText.errorEditorContentText": {
                         "order": 18,
                         "type": "string",
                         "default": "%placeholder.diagnostic.error.editor.default%",
@@ -1064,7 +1065,7 @@
                         "markdownDescription": "%description.diagnosticText.errorEditorContentText%",
                         "editPresentation": "singlelineText"
                     },
-                    "cursorlinehighlight.diagnosticText.errorNotationTextStyle": {
+                    "editoroverlay.diagnosticText.errorNotationTextStyle": {
                         "order": 19,
                         "type": "object",
                         "scope": "resource",
@@ -1143,7 +1144,7 @@
                             }
                         }
                     },
-                    "cursorlinehighlight.diagnosticText.errorTextStyle": {
+                    "editoroverlay.diagnosticText.errorTextStyle": {
                         "order": 20,
                         "type": "object",
                         "scope": "resource",
@@ -1230,6 +1231,7 @@
         "@vscode/test-electron": "^2.5.2",
         "esbuild": "^0.24.2",
         "eslint": "^9.35.0",
+        "node-powershell": "^4.0.0",
         "npm-run-all": "^4.1.5",
         "typescript": "^5.9.2"
     },

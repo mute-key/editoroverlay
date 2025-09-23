@@ -1,4 +1,4 @@
-import type * as D from "../type/type.d";
+import type * as D from "../type/type";
 
 import * as vscode from 'vscode';
 import { clearConfiguration, quickPickPresetList, quickPickOientationList, quickPickColorList, restoreToDefault, quickPickContrastList } from './preset';
@@ -12,21 +12,21 @@ export {
 };
 
 const setPreset = (context: D.Command.Intf.Context): vscode.Disposable => {
-    return vscode.commands.registerCommand("cursorlinehighlight.applyPreset", () => quickPickPresetList(context));
+    return vscode.commands.registerCommand("editorOverlay.applyPreset", () => quickPickPresetList(context));
 };
 
 const setColor = (context: D.Command.Intf.Context): vscode.Disposable => {
-    return vscode.commands.registerCommand("cursorlinehighlight.setColor", () => quickPickColorList(context));
+    return vscode.commands.registerCommand("editorOverlay.setColor", () => quickPickColorList(context));
 };
 
 const setContrast = (context: D.Command.Intf.Context): vscode.Disposable => {
-    return vscode.commands.registerCommand("cursorlinehighlight.setContrast", () => quickPickContrastList(context));
+    return vscode.commands.registerCommand("editorOverlay.setContrast", () => quickPickContrastList(context));
 };
 
 const setOrientation = (context: D.Command.Intf.Context): vscode.Disposable => {
-    return vscode.commands.registerCommand("cursorlinehighlight.setOrientation", () => quickPickOientationList(context));
+    return vscode.commands.registerCommand("editorOverlay.setOrientation", () => quickPickOientationList(context));
 };
 
 const resetConfiguration = (context: D.Command.Intf.Context): vscode.Disposable => {
-    return vscode.commands.registerCommand("cursorlinehighlight.restoreToDefaultConfiguration", () => restoreToDefault().then(clearConfiguration(context)));
+    return vscode.commands.registerCommand("editorOverlay.restoreToDefaultConfiguration", () => restoreToDefault().then(clearConfiguration(context)));
 };

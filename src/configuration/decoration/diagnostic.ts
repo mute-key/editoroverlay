@@ -1,18 +1,19 @@
+// @ts-nocheck
+
 import type * as D from '../../type/type';
 
-import * as hex from '../../numeric/hexadecimal';
-import * as bin from '../../numeric/binary';
-import * as __$ from '../../constant/shared/symbol';
+import * as hex from '../../constant/numeric/hexadecimal';
+import * as bin from '../../constant/numeric/binary';
 import * as regex from '../../collection/regex';
-import { CONFIG_SECTION, DECORATION_OPTION_LINKER, DIAGNOSTIC_ALL_PLACEHOLDER_LINKER, DIAGNOSTIC_CONFIG, DIAGNOSTIC_CONTENT_TEXT_LIST, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM, DIAGNOSTIC_DECORATION_STYLE, DIAGNOSTIC_DECORATION_TEXT_KIND, DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER, DIAGNOSTIC_STYLE_LIST, DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER } from '../../constant/config/object';
+import { CONFIG_SECTION, DECORATION_OPTION_LINKER_CONFIG, DIAGNOSTIC_ALL_PLACEHOLDER_LINKER_CONFIG, DIAGNOSTIC_CONFIG, DIAGNOSTIC_CONTENT_TEXT_LIST_CONFIG, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM_CONFIG, DIAGNOSTIC_DECORATION_STYLE_CONFIG, DIAGNOSTIC_DECORATION_TEXT_KIND_CONFIG, DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER_CONFIG, DIAGNOSTIC_STYLE_LIST_CONFIG, DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER_CONFIG } from '../../constant/config/object';
 import { DIAGNOSTIC_BIOME, DIAGNOSTIC_KIND, DIAGNOSTIC_TEXT_STYLE_KEY, LINE_POSITION } from '../../constant/config/enum';
-import { DIAGNOSTIC_PROBLEM_LIST } from '../../constant/shared/object';
+import { DIAGNOSTIC_PROBLEM_LIST_CONFIG } from '../../constant/config/object';
 import { convertToDecorationRenderOption, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { sanitizeConfigValue } from '../shared/validation';
 import { createCursorRange, createCursorRangeLastLine, createCursorRangeLine, createCursorRangeLineAuto, createCursorRangeLineLastAuto, setAutoInlineDatumPoint } from '../../editor/range';
-import { bindDiagnosticContentTextState, clearDiagnosticTextState, composeRenderOption, diagnosticTextRegex, initializeStateBuffer, setDiagonosticTextbuffer } from '../../editor/status/diagnostic';
-import { setOverrideDigit } from '../../diagnostic/diagnostic';
+import { bindDiagnosticContentTextState, clearDiagnosticTextState, composeRenderOption, diagnosticTextRegex, initializeStateBuffer, setDiagonosticTextbuffer } from '../../workspace/problem/status';
+import { setOverrideDigit } from '../../workspace/problem/diagnostic';
 import { hexToRgbaStringLiteral, readBits } from '../../util/util';
 
 export {
@@ -79,7 +80,7 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: D.
     };
 
     Object.entries(textOfSource).forEach(([contentTextName, textPosition]) => {
-        const linker = DECORATION_OPTION_LINKER[contentTextName];
+        const linker = DECORATION_OPTION_LINKER_CONFIG[contentTextName];
         const context = {
             textPosition: textPosition,
             primaryStyle: style.diagnosticDecorationOption[linker[0]],
@@ -88,16 +89,16 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: D.
             leftMargin: leftMargin
         };
         ['workspace', 'editor', 'all', 'layout'].forEach(biome => {
-            convertPositionWrapper(context, preset, biome, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM[contentTextName]);
+            convertPositionWrapper(context, preset, biome, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM_CONFIG[contentTextName]);
         });
     });
 
     const concatinateNotation = (text) => {
         return text.contentText.map(decoration => {
-            if (decoration.after.contentText === __$.prefixSymbol) {
+            if (decoration.after.contentText === hex.prefixHex) {
                 decoration.after.contentText = text.notation.prefix ? text.notation.prefix : undefined;
             }
-            if (decoration.after.contentText === __$.postfixSymbol) {
+            if (decoration.after.contentText === hex.postfixHex) {
                 decoration.after.contentText = text.notation.postfix ? text.notation.postfix : undefined;
             }
             return decoration;
@@ -148,7 +149,7 @@ const buildDiagnosticTextPreset = (preset, textOftarget, textOfSource, style: D.
             return;
         }
 
-        DIAGNOSTIC_PROBLEM_LIST.forEach(hexKey => {
+        DIAGNOSTIC_PROBLEM_LIST_CONFIG.forEach(hexKey => {
             composeRenderOption(hexKey, [{ ...decoration }]);
         });
     });
@@ -163,10 +164,10 @@ const ifNoationNotNull = (property: string, str: string) => {
     return {};
 };
 
-const createNotation = (biome: symbol, prefix: string, postfix: string) => {
+const createNotation = (biome: number, prefix: string, postfix: string) => {
     return {
         [biome]: {
-            ...DIAGNOSTIC_DECORATION_TEXT_KIND,
+            ...DIAGNOSTIC_DECORATION_TEXT_KIND_CONFIG,
             notation: {
                 ...ifNoationNotNull('prefix', prefix),
                 ...ifNoationNotNull('postfix', postfix),
@@ -201,6 +202,7 @@ const overrideStyle = (config, overrideBiome) => {
             target: [problemOverrideColor],
         }
     };
+
     Object.entries(overrideStyleDescription).forEach(([biome, override]) => {
         if (overrideBiome & Number(biome) && config[override.styleName]) {
             override.target.forEach(color => {
@@ -210,6 +212,7 @@ const overrideStyle = (config, overrideBiome) => {
             });
         }
     });
+
     return {
         [hex.problemPlaceholderContentText]: {
             override: Object.keys(problemOverrideColor).length > 0 ? problemOverrideColor : undefined,
@@ -246,15 +249,15 @@ const buildDiagnosticStyle = (config: D.Diagnostic.Intf.DiagnosticConfig, style:
         style.diagnosticDecorationOption[styleName] = convertToDecorationRenderOption(styleConfig, true);
         result.workspace = {
             ...result.workspace,
-            ...ifNoation(config, styleName, "workspace", DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER)
+            ...ifNoation(config, styleName, "workspace", DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER_CONFIG)
         };
         result.editor = {
             ...result.editor,
-            ...ifNoation(config, styleName, "editor", DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER)
+            ...ifNoation(config, styleName, "editor", DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER_CONFIG)
         };
         result.all = {
             ...result.all,
-            ...ifNoation(config, styleName, "all", DIAGNOSTIC_ALL_PLACEHOLDER_LINKER)
+            ...ifNoation(config, styleName, "all", DIAGNOSTIC_ALL_PLACEHOLDER_LINKER_CONFIG)
         };
     });
     const overrideBiome = diagnosticBiome.workspace | diagnosticBiome.editor;
@@ -300,7 +303,7 @@ const diagnosticVisibilityBiome = (visibility: D.Diagnostic.Intf.DiagnosticVisib
 };
 
 const reversedStyleList = (() => {
-    const styleList = [...DIAGNOSTIC_STYLE_LIST];
+    const styleList = [...DIAGNOSTIC_STYLE_LIST_CONFIG];
     styleList.reverse().push(["0", "0"]);
     return styleList;
 })();
@@ -357,7 +360,7 @@ const setCursorLine = (bindTo, visibility): void => {
 
 const updateDiagnosticTextConfig = async (extenionName: string, configuratioChange: boolean = false) => {
     const diagnosticConfig = { ...DIAGNOSTIC_CONFIG } as typeof DIAGNOSTIC_CONFIG;
-    const diagnosticDecorationStyle = { ...DIAGNOSTIC_DECORATION_STYLE } as unknown as D.Diagnostic.Intf.DiagonosticDecorationStyle;
+    const diagnosticDecorationStyle = { ...DIAGNOSTIC_DECORATION_STYLE_CONFIG } as unknown as D.Diagnostic.Intf.DiagonosticDecorationStyle;
 
     const dignosticContentTextPreset = {
         layout: {},
@@ -377,7 +380,7 @@ const updateDiagnosticTextConfig = async (extenionName: string, configuratioChan
         clearDiagnosticTextState();
     }
 
-    workspaceProxyConfiguration(diagnosticConfig, extenionName + '.' + CONFIG_SECTION.diagnosticText, DIAGNOSTIC_CONTENT_TEXT_LIST, bindToBuffer, diagnosticTextRegex);
+    workspaceProxyConfiguration(diagnosticConfig, extenionName + '.' + CONFIG_SECTION.diagnosticText, DIAGNOSTIC_CONTENT_TEXT_LIST_CONFIG, bindToBuffer, diagnosticTextRegex);
     const placeholderDigit = diagnosticConfig.visibility.overrideAllOk ? bin.allOkOverride : bin.allOkNoOverride;
     const diagnosticBiome = diagnosticVisibilityBiome(diagnosticConfig.visibility);
     const decorationStyleList = decorationStyleFromBiome(diagnosticBiome.workspace | diagnosticBiome.editor);

@@ -1,7 +1,7 @@
 import type Numeric from './numeric';
 
 import * as vscode from 'vscode';
-import { DECORATION_STATE } from '../constant/shared/object';
+import { DECORATION_STATE } from '../store/state';
 
 declare namespace Intf {
     interface RenderGroup {

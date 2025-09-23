@@ -5,7 +5,7 @@ import type * as Diagnostic from './diagnostic';
 
 import * as vscode from 'vscode';
 import { BORDER_POSITION_VARIATION, DECORATION_GENERAL_STYLE_CONFIG_KEY, DECORATION_SELECTION_STYLE_CONFIG_KEY, DECORATION_STYLE_CONFIG_KEY } from 'src/constant/config/enum';
-import { DECORATION_STYLE_PREFIX } from 'src/constant/config/object';
+import { DECORATION_STYLE_PREFIX_CONFIG } from 'src/constant/config/object';
 
 export type {
     Intf, Tp
@@ -41,7 +41,7 @@ declare namespace Tp {
         [key: string]: NoConfigurationDeocorationProp | any
     }
 
-    type DecorationStyleConfigPrefix = typeof DECORATION_STYLE_PREFIX[keyof typeof DECORATION_STYLE_PREFIX] | "";
+    type DecorationStyleConfigPrefix = typeof DECORATION_STYLE_PREFIX_CONFIG[keyof typeof DECORATION_STYLE_PREFIX_CONFIG] | "";
 
     type DecorationStyleConfigName = `${DECORATION_STYLE_CONFIG_KEY}`
 

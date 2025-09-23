@@ -1,4 +1,4 @@
-import type * as D from '../type/type.d';
+import type * as D from '../type/type';
 
 export {
     fnv1aHash,
@@ -30,7 +30,6 @@ const autoArrayPropertyObject = (newProp: any) => {
     });
 };
 
-
 /**
  * create new array based on 4 bit number which will parse a bit into true or false arguement supplied.
  * 
@@ -54,8 +53,11 @@ const readBits = (value: number, trueValue: any | any[], falseValue: any, bitLen
 };
 
 /**
+ * this function is no longer needed since i learnt i could use configuration change event. 
+ * 
  * FNV-1a hash.
- * this function is no longer needed. but just keeping it in case if i need fast short hash with collision.
+ * just keeping it in case if i need fast short hash with collision.
+ * 
  * 
  * @param str
  * @param size

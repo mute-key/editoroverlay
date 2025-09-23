@@ -7,7 +7,7 @@ import { DECORATION_OPTION_AFTER_CONFIG, DECORATION_OPTION_CONFIG } from '../../
 import { sanitizeContentText } from './validation';
 import { hexToRgbaStringLiteral, splitAndPosition } from '../../util/util';
 
-export {    
+export {
     leftMarginToMarginString,
     castToFuncSignature,
     setContentTextOnDecorationRenderOption,
@@ -28,8 +28,8 @@ const castToFuncSignature = (result: D.Config.Intf.RegexSplit | undefined): D.St
 };
 
 const setContentTextOnDecorationRenderOption = (source: D.Decoration.Intf.RenderInstanceOptionReady, contentText: string): D.Decoration.Intf.RenderInstanceOptionReady => {
-    const target = {... source };
-    target.after = {... source.after};
+    const target = { ...source };
+    target.after = { ...source.after };
     target.after.contentText = contentText;
     return target;
 };
@@ -50,7 +50,7 @@ const searchPlaceholderPosition = (textOf: D.Diagnostic.Intf.ContentTextWithPosi
                 search.nextSearchString = split.array[1];
                 search.lastPosition = search.lastPosition + split.position + 1;
             } else if (split.position === 1 && split.array.length === 2) { // placeholder is at last index in search string
-                
+
                 textOf.position[search.lastPosition + split.position] = functionKey;
                 textOf.contentText?.push(...split.array);
             } else if (split.position === 1 && split.array.length === 3) {
@@ -67,7 +67,7 @@ const parseContentText = (contentText: string, sectionKey: string, bindTo: any, 
     const match = contentText.match(regex.ifContentTextHasPlaceholder);
     if (match !== null && Object.hasOwn(regexObject, sectionKey)) {
         if (match.length > Object.keys(regexObject[sectionKey]).length) {
-            Error.register(sectionName + '.' +  sectionKey, "numbers of placeholder exceed availability");
+            Error.register(sectionName + '.' + sectionKey, "numbers of placeholder exceed availability");
         }
         let searchObject: D.Status.Intf.SearchObject | undefined = {
             nextSearchString: contentText,
@@ -80,9 +80,9 @@ const parseContentText = (contentText: string, sectionKey: string, bindTo: any, 
                 if (Object.hasOwn(regexObject[sectionKey], regexKey[1] as string)) {
                     searchPlaceholderPosition(bindTo.textOf[sectionKey], bindTo.functionOf[sectionKey], regexKey[1], regexObject[sectionKey][regexKey[1]], searchObject, index === match.length - 1);
                 } else {
-                    Error.register(sectionName + '.' +  sectionKey, `Invalid placeholder '${regexKey[1]}' is set in user configration. Load default value instead for now. Please revise the value entered.`);
+                    Error.register(sectionName + '.' + sectionKey, `Invalid placeholder '${regexKey[1]}' is set in user configration. Load default value instead for now. Please revise the value entered.`);
                 }
-            } 
+            }
         });
         bindTo.textOf[sectionKey].contentText = sanitizeContentText(bindTo.textOf[sectionKey].contentText);
     } else {
@@ -117,7 +117,7 @@ const convertToDecorationRenderOption = (config: D.Decoration.Intf.DecorationTex
         decorationOption.after.fontStyle = config.fontStyle;
     } else {
         delete decorationOption.after.fontStyle;
-    }    
+    }
     delete decorationOption.after.margin;
     delete decorationOption.after.textDecoration;
     return decorationOption;

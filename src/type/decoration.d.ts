@@ -1,9 +1,9 @@
-import type * as Numeric from './numeric.d';
+import type * as Numeric from './numeric';
 
 import * as vscode from 'vscode';
 
 
-import { DECORATION_STYLE_PREFIX } from '../constant/config/object';
+import { DECORATION_STYLE_PREFIX_CONFIG } from '../constant/config/object';
 import { DECORATION_STYLE_CONFIG_KEY, DECORATION_TYPE_MASK, SELECTION_TYPE } from 'src/constant/config/enum';
 
 export type {
@@ -164,7 +164,7 @@ declare namespace Tp {
     }
 
     type DecorationTypeSplit = {
-        [K in keyof typeof DECORATION_STYLE_PREFIX]: string[]
+        [K in keyof typeof DECORATION_STYLE_PREFIX_CONFIG]: string[]
     }
 
     type RenderGroupSet = {
@@ -186,7 +186,7 @@ declare namespace Tp {
         [key: string]: ContentTextPositionType
     }
 
-    type DecorationStyleKeyOnly = keyof typeof DECORATION_STYLE_PREFIX
+    type DecorationStyleKeyOnly = keyof typeof DECORATION_STYLE_PREFIX_CONFIG
 
     type HighlightStyleList = Record<Numeric.Key.Hex, vscode.TextEditorDecorationType[]>;
 

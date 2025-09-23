@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import Error from '../../util/error';
 import { convertNullStringToNull } from './validation';
 import { hexToRgbaStringLiteral, } from '../../util/util';
-import { parseContentText } from '../shared/decoration';
+import { parseContentText } from './decoration';
 
 export {
     getConfigValue,

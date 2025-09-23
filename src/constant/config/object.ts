@@ -1,13 +1,9 @@
-import type* as D from '../../type/type';
+import type * as D from '../../type/type';
 
 import * as vscode from 'vscode';
-import * as hex from '../../numeric/hexadecimal';
+import * as hex from '../numeric/hexadecimal';
+import * as bin from '../numeric/binary';
 import { BORDER_POSITION_MASK, BORDER_POSITION_VARIATION, CONFIG_SECTION_KEY, DECORATION_GENERAL_STYLE_CONFIG_KEY, DECORATION_SELECTION_STYLE_CONFIG_KEY, DECORATION_STYLE_CONFIG_KEY, DECORATION_TYPE_MASK, DIAGNOSTIC_SEVERITY_KEY, DIAGNOSTIC_TEXT_STYLE_KEY, SELECTION_CONTENT_TEXT_CONFIG_KEY } from './enum';
-import { BlobOptions } from 'buffer';
-
-export namespace configuration {
-    
-}
 
 export const CONFIG_SECTION = {
     [CONFIG_SECTION_KEY.GENERAL]: CONFIG_SECTION_KEY.GENERAL,
@@ -32,12 +28,12 @@ export const CONFIG_INFO = {
     configError: undefined
 } as const;
 
-export const CONFIG_KEY_LINKER_SECTION = {
+export const CONFIG_KEY_LINKER_SECTION_CONFIG = {
     selectionTextEnabled: ['selectionText', 'enabled'],
     diagnosticTextEnabled: ['diagnosticText', 'enabled'],
 };
 
-export const SELECTION_CONTENT_TEXT_NUMLINK: Record<string, D.Numeric.Key.Hex> = {
+export const SELECTION_CONTENT_TEXT_NUMLINK_CONFIG: Record<string, D.Numeric.Key.Hex> = {
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.CURSOR_ONLY_TEXT]: hex.cursorOnlyText,
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.SINGLE_LINE_TEXT]: hex.singleLineText,
     [SELECTION_CONTENT_TEXT_CONFIG_KEY.MULTI_LINE_CURSOR_TEXT]: hex.multiLineCursorText,
@@ -76,14 +72,14 @@ export const SELECTION_DECORAITON_CONFIG = {
     }
 } as const;
 
-export const DECORATION_STYLE_PREFIX = {
+export const DECORATION_STYLE_PREFIX_CONFIG = {
     [hex.cursorOnly]: 'cursorOnly',
     [hex.singleLine]: 'singleLine',
     [hex.multiLine]: 'multiLine',
     [hex.multiCursor]: 'multiCursor'
 } as const;
 
-export const SELECTION_CONTENT_TEXT_LIST: D.Common.Tp.TextList = [
+export const SELECTION_CONTENT_TEXT_LIST_CONFIG: D.Common.Tp.TextList = [
     "cursorOnlyText",
     "singleLineText",
     "multiLineCursorText",
@@ -92,7 +88,7 @@ export const SELECTION_CONTENT_TEXT_LIST: D.Common.Tp.TextList = [
     "multiCursorEdit",
 ] as const;
 
-export const SELECTION_DECORATION_STYLE = {
+export const SELECTION_DECORATION_STYLE_CONFIG = {
     leftMargin: undefined,
     placeholderDecorationOption: {},
     selectionDecorationOption: {
@@ -123,7 +119,7 @@ export const DECORATION_OPTION_AFTER_CONFIG = {
     margin: undefined,
 } as const;
 
-export const SELECTION_KIND: D.Decoration.Tp.DecorationInfo = {
+export const SELECTION_KIND_CONFIG: D.Decoration.Tp.DecorationInfo = {
     [hex.reset]: {
         KEY: hex.reset,
         MASK: DECORATION_TYPE_MASK.RESET
@@ -155,7 +151,7 @@ export const DIAGNOSTIC_VISIBILITY_CONFIG = {
     autoInlineDatumPoint: undefined
 } as const;
 
-export const DIAGNOSTIC_GLYPH = {
+export const DIAGNOSTIC_GLYPH_CONFIG = {
     openningBracket: undefined,
     closingBracket: undefined,
     lineEqual: undefined,
@@ -163,11 +159,24 @@ export const DIAGNOSTIC_GLYPH = {
     lineDown: undefined,
 } as const;
 
+export const DIAGNOSTIC_PROBLEM_LIST_CONFIG = [
+    bin.allOkNoOverride,
+    bin.editorOkWorkspaceWarn,
+    bin.editorOkWorkspaceErr,
+    bin.editorOkWorkspaceWarnErr,
+    bin.editorWarnWorkspaceWarn,
+    bin.editorWarnWorkspaceErr,
+    bin.editorWarnWorkspaceWarnErr,
+    bin.editorErrWorkspaceErr,
+    bin.editorErrWorkspaceWarnErr,
+    bin.editorWarnErrWorkspaceWarnErr,
+];
+
 export const DIAGNOSTIC_CONFIG = {
     enabled: undefined,
     leftMargin: undefined,
     visibility: DIAGNOSTIC_VISIBILITY_CONFIG,
-    glyphList: DIAGNOSTIC_GLYPH,
+    glyphList: DIAGNOSTIC_GLYPH_CONFIG,
     problemPlaceholderContentText: undefined,
     allOkPlaceholderContentText: undefined,
     allOkContentText: undefined,
@@ -186,28 +195,28 @@ export const DIAGNOSTIC_CONFIG = {
     errorEditorContentText: undefined
 } as const;
 
-export const DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER = {
+export const DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER_CONFIG = {
     [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: hex.okEditorContentText,
     [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: hex.warningEditorContentText,
     [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: hex.errorEditorContentText,
 } as const;
 
-export const DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER = {
+export const DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER_CONFIG = {
     [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: hex.okWorkspaceContentText,
     [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE]: hex.warningWorkspaceContentText,
     [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE]: hex.errorWorkspaceContentText,
 } as const;
 
-export const DIAGNOSTIC_ALL_PLACEHOLDER_LINKER = {
+export const DIAGNOSTIC_ALL_PLACEHOLDER_LINKER_CONFIG = {
     [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE]: hex.allOkContentText,
 } as const;
 
-export const DIAGNOSTIC_DECORATION_TEXT_KIND = {
+export const DIAGNOSTIC_DECORATION_TEXT_KIND_CONFIG = {
     contentText: undefined,
     notation: undefined
 };
 
-export const DECORATION_OPTION_LINKER = {
+export const DECORATION_OPTION_LINKER_CONFIG = {
     allOkPlaceholderContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE, undefined],
     allOkContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.OK_TEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE],
     problemPlaceholderContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE, undefined],
@@ -219,7 +228,7 @@ export const DECORATION_OPTION_LINKER = {
     errorWorkspaceContentText: [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_TEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE],
 } as const;
 
-export const DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM = {
+export const DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM_CONFIG = {
     problemPlaceholderContentText: hex.problemPlaceholderContentText,
     allOkPlaceholderContentText: hex.allOkPlaceholderContentText,
     allOkContentText: hex.allOkContentText,
@@ -231,13 +240,13 @@ export const DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM = {
     errorWorkspaceContentText: hex.errorWorkspaceContentText,
 } as const;
 
-export const DIAGNOSTIC_STYLE_LIST: D.Common.Tp.TextList[] = [
+export const DIAGNOSTIC_STYLE_LIST_CONFIG: D.Common.Tp.TextList[] = [
     [DIAGNOSTIC_TEXT_STYLE_KEY.OK_NOTATION_TEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.OK_TEXT_STYLE],
     [DIAGNOSTIC_TEXT_STYLE_KEY.WARNING_NOTATION_TEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.WARNINGTEXT_STYLE],
     [DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_NOTATION_TEXT_STYLE, DIAGNOSTIC_TEXT_STYLE_KEY.ERROR_TEXT_STYLE],
 ] as const;
 
-export const DIAGNOSTIC_CONTENT_TEXT_LIST: D.Common.Tp.TextList = [
+export const DIAGNOSTIC_CONTENT_TEXT_LIST_CONFIG: D.Common.Tp.TextList = [
     "problemPlaceholderContentText",
     "allOkPlaceholderContentText",
     "okWorkspaceContentText",
@@ -249,14 +258,14 @@ export const DIAGNOSTIC_CONTENT_TEXT_LIST: D.Common.Tp.TextList = [
     "errorEditorContentText"
 ] as const; // change to enum later
 
-export const DIAGNOSTIC_SEVERITY_TO_KEY = {
+export const DIAGNOSTIC_SEVERITY_TO_KEY_CONFIG = {
     [vscode.DiagnosticSeverity.Warning]: DIAGNOSTIC_SEVERITY_KEY.WARNING,
     [vscode.DiagnosticSeverity.Error]: DIAGNOSTIC_SEVERITY_KEY.ERROR,
     [vscode.DiagnosticSeverity.Information]: undefined,
     [vscode.DiagnosticSeverity.Hint]: undefined
 } as const;
 
-export const DIAGNOSTIC_DECORATION_STYLE = {
+export const DIAGNOSTIC_DECORATION_STYLE_CONFIG = {
     leftMargin: undefined,
     diagnosticDecorationOption: {
         [DIAGNOSTIC_TEXT_STYLE_KEY.DIAGNOSTIC_PLACEHOLDER_TEXT_STYLE]: undefined,
@@ -269,7 +278,7 @@ export const DIAGNOSTIC_DECORATION_STYLE = {
     },
 } as const;
 
-export const SINGLE_BORDER_SELECTION = {
+export const SINGLE_BORDER_SELECTION_CONFIG = {
     [BORDER_POSITION_VARIATION.NONE]: [
         BORDER_POSITION_MASK.NONE
     ] as const,
@@ -289,7 +298,7 @@ export const SINGLE_BORDER_SELECTION = {
     ] as const,
 } as const;
 
-export const MULTILINE_BORDER_SELECTION = {
+export const MULTILINE_BORDER_SELECTION_CONFIG = {
     [BORDER_POSITION_VARIATION.NONE]: [
         BORDER_POSITION_MASK.NONE,
         BORDER_POSITION_MASK.NONE,
@@ -307,14 +316,14 @@ export const MULTILINE_BORDER_SELECTION = {
     ] as const,
 } as const;
 
-export const BORDER_WIDTH_DEFINITION: Record<D.Numeric.Key.Hex, any> = {
-    [hex.cursorOnly]: SINGLE_BORDER_SELECTION,
-    [hex.singleLine]: SINGLE_BORDER_SELECTION,
-    [hex.multiLine]: MULTILINE_BORDER_SELECTION,
-    [hex.multiCursor]: SINGLE_BORDER_SELECTION,
+export const BORDER_WIDTH_DEFINITION_CONFIG: Record<D.Numeric.Key.Hex, any> = {
+    [hex.cursorOnly]: SINGLE_BORDER_SELECTION_CONFIG,
+    [hex.singleLine]: SINGLE_BORDER_SELECTION_CONFIG,
+    [hex.multiLine]: MULTILINE_BORDER_SELECTION_CONFIG,
+    [hex.multiCursor]: SINGLE_BORDER_SELECTION_CONFIG,
 } as const;
 
-export const NO_CONFIGURATION_DEOCORATION_DEFAULT = {
+export const NO_CONFIGURATION_DEOCORATION_DEFAULT_CONFIG = {
     [DECORATION_STYLE_CONFIG_KEY.IS_WHOLE_LINE]: false,
     [DECORATION_STYLE_CONFIG_KEY.BORDER_WIDTH]: '2px',
     [DECORATION_STYLE_CONFIG_KEY.BORDER_STYLE]: 'dotted',
@@ -323,13 +332,13 @@ export const NO_CONFIGURATION_DEOCORATION_DEFAULT = {
     [DECORATION_STYLE_CONFIG_KEY.BACKGROUND_COLOR]: '#ff0000',
 } as const;
 
-export const NO_CONFIGURATION_GENERAL_DEFAULT: Record<string, number | boolean> = {
+export const NO_CONFIGURATION_GENERAL_DEFAULT_CONFIG: Record<string, number | boolean> = {
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.OPACITY]: 1,
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.BACKGROUND_OPACITY]: 0.5,
     [DECORATION_GENERAL_STYLE_CONFIG_KEY.SELECTION_TEXT_ENABLED]: false,
 } as const;
 
-export const SELECTION_DEFAULT = {
+export const SELECTION_DEFAULT_CONFIG = {
     [DECORATION_SELECTION_STYLE_CONFIG_KEY.SELECTION_TEXT_COLOR]: '#FF0000',
     [DECORATION_SELECTION_STYLE_CONFIG_KEY.SELECTION_TEXT_OPACITY]: 1,
     [DECORATION_SELECTION_STYLE_CONFIG_KEY.SELECTION_TEXT_BACKGROUND_COLOR]: null,

@@ -12,7 +12,7 @@ export {
     replicateNthRenderOption,
     replicateColsRenderOption,
     nthRenderOptionOverride,
-    colRenderOptionOverride
+    colRenderOptionOverride,
 };
 
 declare namespace L {
@@ -94,7 +94,6 @@ const replicateNthRenderOption = (contentText: L.NthRenderOption, state: D.Selec
     // array object for the post process
     context.baseIndex = contentTextBuffer.after.baseIndex;
     context.indexList = contentTextBuffer.after.indexList;
-
     state.overlay.indexListRefBuffer.push(context.indexList);
 
     return contentTextBuffer;

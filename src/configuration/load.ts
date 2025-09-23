@@ -9,11 +9,11 @@ import { updateDiagnosticTextConfig } from './decoration/diagnostic';
 import { writeEditorConfiguration } from './shared/editor';
 import { bindEditorDecoration } from '../editor/editor';
 
-export { 
-    loadConfiguration 
+export {
+    loadConfiguration
 };
 
-const configInfo = { 
+const configInfo = {
     ...CONFIG_INFO
 } as unknown as D.Config.Intf.ConfigReady;
 
@@ -50,7 +50,7 @@ const loadConfiguration = (context?: vscode.ExtensionContext): D.Config.Intf.Ini
         if (configReady.generalConfigInfo.diagnosticTextEnabled) {
             updateDiagnosticTextConfig(configReady.name);
         }
-        
+
         return {
             config: configReady,
             decoration: decorationState

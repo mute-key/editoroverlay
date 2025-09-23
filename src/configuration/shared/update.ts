@@ -1,4 +1,4 @@
-import * as hex from '../../numeric/hexadecimal';
+import * as hex from '../../constant/numeric/hexadecimal';
 import Error from '../../util/error';
 import { CONFIG_SECTION_KEY } from '../../constant/config/enum';
 import { resetAllDecoration, prepareRenderGroup } from '../../editor/editor';

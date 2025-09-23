@@ -1,11 +1,11 @@
-import type * as D from '../type/type.d';
+import type * as D from '../type/type';
 
 import * as vscode from 'vscode';
-import * as hex from '../numeric/hexadecimal';
-import * as bin from '../numeric/binary';
+import * as hex from '../constant/numeric/hexadecimal';
+import * as bin from '../constant/numeric/binary';
 import * as regex from '../collection/regex';
-import { DECORATION_STATE, SELECTION_KIND_LIST } from '../constant/shared/object';
-import { clearDiagnosticText, diagnosticInfo } from './status/diagnostic';
+import { DECORATION_STATE, SELECTION_KIND_LIST } from '../store/state';
+import { clearDiagnosticText, diagnosticInfo } from '../workspace/problem/status';
 import { cursorOnlyHighlightRange, singelLineHighlightRange, multiLineHighlightRange, multiCursorHighlightRange, clearEveryHighlight } from './highlight/highlight';
 import { cursorOnlySelection, singleLineSelection, multilineSelection, multiCursorSelection, bindStatusContentTextState, clearSelectionTextBuffer } from './selection/selection';
 import { blankRange, updateRangeMetadata } from './range';
@@ -22,7 +22,7 @@ export {
     resetDecoration
 };
 
-const decorationState = { ...DECORATION_STATE } as D.Decoration.Intf.State;
+const decorationState = DECORATION_STATE as D.Decoration.Intf.State;
 
 const createEditorDecorationType = (styleAppliedConfig: any): vscode.TextEditorDecorationType => vscode.window.createTextEditorDecorationType(styleAppliedConfig as vscode.DecorationRenderOptions);;
 
@@ -181,6 +181,7 @@ const renderGroupIs = (editor: vscode.TextEditor, numKey: D.Numeric.Key.Hex[]) =
             renderFnStack[hex.cursorOnly].forEach(fnBind);
             return hex.cursorOnly;
         }
+
         if (!editor.selections[0].isSingleLine) {           // multi-line, wanted to reduce the execution step
             renderFnStack[hex.multiLine].forEach(fnBind);
             return hex.multiLine;
