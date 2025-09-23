@@ -1,11 +1,11 @@
 import type * as D from '../../type/type';
 
 import * as vscode from 'vscode';
-import * as hex from '../../numeric/hexadecimal';
+import * as hex from '../../constant/numeric/hexadecimal';
 import * as regex from '../../collection/regex';
-import { BORDER_WIDTH_DEFINITION, CONFIG_KEY_LINKER_SECTION, CONFIG_SECTION, DECORATION_STYLE_PREFIX, NO_CONFIGURATION_DEOCORATION_DEFAULT, NO_CONFIGURATION_GENERAL_DEFAULT } from '../../constant/config/object';
+import { SELECTION_KIND_LIST } from '../../store/state';
+import { BORDER_WIDTH_DEFINITION_CONFIG, CONFIG_KEY_LINKER_SECTION_CONFIG, CONFIG_SECTION, DECORATION_STYLE_PREFIX_CONFIG, NO_CONFIGURATION_DEOCORATION_DEFAULT_CONFIG, NO_CONFIGURATION_GENERAL_DEFAULT_CONFIG } from '../../constant/config/object';
 import { CONFIG_KEY_LINKER } from '../../constant/config/enum';
-import { SELECTION_KIND_LIST } from '../../constant/shared/object';
 import { bindHighlightStyleState } from '../../editor/highlight/highlight';
 import { colorConfigTransform, getConfigValue, getWorkspaceConfiguration } from '../shared/configuration';
 import { createEditorDecorationType } from '../../editor/editor';
@@ -22,8 +22,8 @@ const checkConfigKeyAndCast = <T extends D.Config.Tp.DecorationStyleConfigName |
 };
 
 const getConfigSet = (configReady: D.Config.Intf.ConfigReady, decorationKey: number): D.Decoration.Tp.DecorationStyleConfig => {
-    const configSectionName = DECORATION_STYLE_PREFIX[decorationKey];
-    const defaultConfigDefinition = NO_CONFIGURATION_DEOCORATION_DEFAULT;
+    const configSectionName = DECORATION_STYLE_PREFIX_CONFIG[decorationKey];
+    const defaultConfigDefinition = NO_CONFIGURATION_DEOCORATION_DEFAULT_CONFIG;
     const configSection = getWorkspaceConfiguration(configReady.name + '.' + configSectionName);
     return Object.entries(defaultConfigDefinition).reduce((config, [configName, defaultValue]) => {
         const configValue: string | boolean | number | null = getConfigValue(configSection, checkConfigKeyAndCast(configName), defaultValue as D.Config.Tp.DecorationStyleConfigValue, configReady.name + '.' + configSectionName);
@@ -76,9 +76,9 @@ const createDecorationType = (config: D.Decoration.Tp.DecorationStyleConfig, dec
 };
 
 const decorationTypeSplit = (config: any, decorationKey: D.Numeric.Key.Hex): string[] | undefined => {
-    if (Object.hasOwn(BORDER_WIDTH_DEFINITION, decorationKey)) {
-        if (Object.hasOwn(BORDER_WIDTH_DEFINITION[decorationKey], String(config.borderPosition))) {
-            return borderPosition(config, BORDER_WIDTH_DEFINITION[decorationKey][config.borderPosition] as number[]);
+    if (Object.hasOwn(BORDER_WIDTH_DEFINITION_CONFIG, decorationKey)) {
+        if (Object.hasOwn(BORDER_WIDTH_DEFINITION_CONFIG[decorationKey], String(config.borderPosition))) {
+            return borderPosition(config, BORDER_WIDTH_DEFINITION_CONFIG[decorationKey][config.borderPosition] as number[]);
         }
         return;
     }
@@ -124,13 +124,13 @@ const borderPositionParser = (selectionType: number, borderPosition: string): D.
 const updateGeneralConfig = (configReady: D.Config.Intf.ConfigReady) => {
     for (const key in configReady.generalConfigInfo) {
         if (key === CONFIG_KEY_LINKER.DIAGNOSTIC_TEXT_ENABLED || key === CONFIG_KEY_LINKER.SELECTION_TEXT_ENABLED) {
-            const sectionLinker = CONFIG_KEY_LINKER_SECTION[key];
+            const sectionLinker = CONFIG_KEY_LINKER_SECTION_CONFIG[key];
             const configSection = getWorkspaceConfiguration(configReady.name + '.' + sectionLinker[0]);
-            const configValue = getConfigValue(configSection, sectionLinker[1], NO_CONFIGURATION_GENERAL_DEFAULT[key], configReady.name + '.' + sectionLinker[0]);
+            const configValue = getConfigValue(configSection, sectionLinker[1], NO_CONFIGURATION_GENERAL_DEFAULT_CONFIG[key], configReady.name + '.' + sectionLinker[0]);
             configReady.generalConfigInfo[key] = configValue;
         } else {
             const configSection = getWorkspaceConfiguration(configReady.name + '.' + CONFIG_SECTION.general);
-            configReady.generalConfigInfo[key] = getConfigValue(configSection, key, NO_CONFIGURATION_GENERAL_DEFAULT[key], configReady.name + '.' + CONFIG_SECTION.general);
+            configReady.generalConfigInfo[key] = getConfigValue(configSection, key, NO_CONFIGURATION_GENERAL_DEFAULT_CONFIG[key], configReady.name + '.' + CONFIG_SECTION.general);
         }
     }
 };

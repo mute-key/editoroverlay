@@ -1,10 +1,10 @@
-import type * as D from "../type/type.d";
+import type * as D from "../type/type";
 
-import * as vscode from 'vscode';
-import * as hex from '../numeric/hexadecimal';
 import path from 'path';
-import { CONTRAST, CONFIRM, PRESET, PRESET_ORIENTATION, SYSTEM_MESSAGE, SYSTEM_PATH, THEME_KIND } from '../constant/config/enum';
+import * as vscode from 'vscode';
+import * as hex from '../constant/numeric/hexadecimal';
 import { CONFIG_SECTION } from '../constant/config/object';
+import { CONTRAST, CONFIRM, PRESET, PRESET_ORIENTATION, SYSTEM_MESSAGE, SYSTEM_PATH, THEME_KIND } from '../constant/config/enum';
 import { getWorkspaceConfiguration } from '../configuration/shared/configuration';
 import { prepareRenderGroup, resetAllDecoration } from '../editor/editor';
 import { updateSelectionTextConfig } from '../configuration/decoration/selection';

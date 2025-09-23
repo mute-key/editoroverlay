@@ -3,15 +3,14 @@ import type * as D from './type/type';
 import * as vscode from 'vscode';
 import * as config from './configuration/load';
 import * as commands from './command/register';
-import * as windowEvent from './event/window';
-import * as workspaceEvent from './event/workspace';
-import * as languagesEvent from './event/language';
-import * as hex from './numeric/hexadecimal';
+import * as events from './event/event';
+import * as hex from './constant/numeric/hexadecimal';
 import Error from './util/error';
 import { clearDecorationState } from './editor/editor';
 import { prepareRenderGroup, renderGroupIs } from './editor/editor';
 import { checkActiveThemeKind } from './command/preset';
 import { updateRangeMetadata } from './editor/range';
+// import { onScmUpdate, scmOverlay, setWorkspaceSystem } from './editor/scm/scm';
 
 export {
     initialize
@@ -24,9 +23,8 @@ export {
  * @param extensionContext 
  * @returns 
  */
-const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vscode.Disposable[] | void> => {
+const initialize = async (extensionContext: vscode.ExtensionContext): Promise<(vscode.Disposable | vscode.Event<void>)[] | void> => {
     try {
-        
         // await extensionContext.extension.activate();
         // when vscode startup, not sure if it is the best method, 
         // as i am not sure even if it needs to wait to be activated.
@@ -41,6 +39,8 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
             return;
         }
 
+        // setWorkspaceSystem();
+
         const configInfo: D.Status.Intf.ConfigInfo = loadConfig.config;
         const activeEditor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
 
@@ -51,6 +51,8 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
             clearDecorationState(loadConfig.decoration as D.Editor.Tp.DecorationState);    // initialize decoration state
             loadConfig.decoration.appliedHighlight[0] = renderGroupIs(activeEditor, [hex.cursorOnly]);
             loadConfig.decoration.eventTrigger[0] = hex.noEvent;
+            // setWorkspaceSystem();
+            // scmOverlay(activeEditor);
         }
 
         const commandContext: D.Command.Intf.Context = {    // context for extension commands
@@ -60,24 +62,24 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<vs
 
         const eventContext: D.Event.Intf.Context = {        // context for extension events
             configInfo: configInfo as D.Config.Intf.ConfigReady,
-            decorationState: loadConfig.decoration,
-            
+            decorationState: loadConfig.decoration,  
         };
 
         checkActiveThemeKind(commandContext);
-
+        
         return [                                            // extension subscription list, commands | events.
             commands.setPreset(commandContext),
             commands.setColor(commandContext),
             commands.setContrast(commandContext),
             commands.setOrientation(commandContext),
             commands.resetConfiguration(commandContext),
-            windowEvent.windowStateChanged(eventContext),
-            windowEvent.activeEditorChanged(eventContext),
-            windowEvent.selectionChanged(eventContext),
-            windowEvent.editorOptionChanged(eventContext),
-            languagesEvent.diagnosticChanged(eventContext),
-            workspaceEvent.configChanged(eventContext),
+            events.window.activeEditorChanged(eventContext),
+            events.window.editorOptionChanged(eventContext),
+            events.window.selectionChanged(eventContext),
+            events.window.windowStateChanged(eventContext),
+            events.workspace.configChanged(eventContext),
+            events.workspace.changeWorkspaceFolders(eventContext),
+            events.language.diagnosticChanged(eventContext),
         ];
     } catch (err) {
         console.error('Error during extension initialization: ', err);

@@ -1,8 +1,8 @@
-import type * as D from '../type/type.d';
+import type * as D from '../type/type';
 
 import * as vscode from 'vscode';
-import * as hex from '../numeric/hexadecimal';
-import { diagnosticInfo } from '../editor/status/diagnostic';
+import * as hex from '../constant/numeric/hexadecimal';
+import { diagnosticInfo } from '../workspace/problem/status';
 
 export {
     diagnosticChanged

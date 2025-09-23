@@ -33,13 +33,12 @@ import { initialize } from './initialize';
  * @param context 
  */
 export function activate(context: vscode.ExtensionContext) {
-    initialize(context).then((disposableList: void | vscode.Disposable[]) => {
+    initialize(context).then((disposableList: void | (vscode.Disposable | any)[]) => {
         if (disposableList) {
             context.subscriptions.push(...disposableList);
+            // disposableList.forEach(disposable => context.subscriptions.push(...disposableList))
         }
     });
-
-    
 }
 
 export function deactivate() {

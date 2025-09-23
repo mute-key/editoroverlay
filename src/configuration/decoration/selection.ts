@@ -1,7 +1,7 @@
 import type * as D from '../../type/type';
 
-import * as hex from '../../numeric/hexadecimal';
-import { CONFIG_SECTION, SELECTION_CONTENT_TEXT_LIST, SELECTION_CONTENT_TEXT_NUMLINK, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE } from '../../constant/config/object';
+import * as hex from '../../constant/numeric/hexadecimal';
+import { CONFIG_SECTION, SELECTION_CONTENT_TEXT_LIST_CONFIG, SELECTION_CONTENT_TEXT_NUMLINK_CONFIG, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE_CONFIG } from '../../constant/config/object';
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { bindStatusContentTextState, setMultiCursorTextPosition, setMultiCursorEditPosition, SelectionTextRegex, setSelectionTextbuffer, syncRefernceTable, setMultiCursorContentRef, setMultiCursorContext, setContextAccmulator } from '../../editor/selection/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
@@ -17,7 +17,8 @@ const convertPositionToDecorationRenderOption = (textPosition: any, SelectionDec
             ? SelectionDecorationStyle.placeholderDecorationOption
             : SelectionDecorationStyle.selectionDecorationOption[textPosition.position[idx]];
         const contentTextRenderOption = setContentTextOnDecorationRenderOption(option as any, text as string);
-        if (typeof text === 'symbol') {
+        // prefix, postfix refactored to hex from symbols
+        if (Number(text) === hex.prefixHex || Number(text) === hex.postfixHex) { 
             textPosition.position[idx] = contentTextRenderOption.after.contentText;
         }
         return contentTextRenderOption;
@@ -86,7 +87,7 @@ const buildStatusTextState = (textOftarget: any, textOfSource: D.Status.Intf.Sta
 
     Object.entries(textOfSource).forEach(([key, textPosition], idx) => {
         const contentTextStyled = convertPositionToDecorationRenderOption(textPosition, SelectionDecorationStyle);;
-        const hexKey = SELECTION_CONTENT_TEXT_NUMLINK[key];
+        const hexKey = SELECTION_CONTENT_TEXT_NUMLINK_CONFIG[key];
         textOftarget[hexKey] = {
             contentText: contentTextStyled,
             position: Object.entries(textPosition.position)
@@ -120,7 +121,7 @@ const buildStatusTextState = (textOftarget: any, textOfSource: D.Status.Intf.Sta
 
 const updateSelectionTextConfig = (extenionName: string, configuratioChange: boolean = false): boolean => {
     const SelectionDecorationConfig = { ...SELECTION_DECORAITON_CONFIG } as D.Status.Intf.SelectionDecorationConfig;
-    const SelectionDecorationStyle = { ...SELECTION_DECORATION_STYLE } as D.Status.Intf.SelectionDecorationStyle;
+    const SelectionDecorationStyle = { ...SELECTION_DECORATION_STYLE_CONFIG } as D.Status.Intf.SelectionDecorationStyle;
 
     const bindTo: any = bindStatusContentTextState();
 
@@ -130,7 +131,7 @@ const updateSelectionTextConfig = (extenionName: string, configuratioChange: boo
     };
 
     // hm ...
-    workspaceProxyConfiguration(SelectionDecorationConfig, extenionName + '.' + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST, bindToBuffer, SelectionTextRegex);
+    workspaceProxyConfiguration(SelectionDecorationConfig, extenionName + '.' + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST_CONFIG, bindToBuffer, SelectionTextRegex);
     buildSelectionTextDecorationRenderOption(SelectionDecorationConfig, SelectionDecorationStyle);
     buildStatusTextState(bindTo.textOf, bindToBuffer.textOf, SelectionDecorationStyle, SelectionDecorationConfig.leftMargin as string);
 

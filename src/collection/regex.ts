@@ -1,4 +1,4 @@
-import type * as D from '../type/type.d';
+import type * as D from '../type/type';
 
 export {
     indentAndEOLRegex,
@@ -30,6 +30,10 @@ export {
     afterCursor,
     atLineStart,
     selectionOnly,
+    fsWinSplit,
+    fsLinuxSplit,
+    CRLF,
+    LF,
 };
 
 declare namespace L {
@@ -71,3 +75,9 @@ const beforeCursor: RegExp = /beforeCursor/s;
 const afterCursor: RegExp = /afterCursor/s;
 const atLineStart: RegExp = /atLineStart/s;
 const selectionOnly: RegExp = /selectionOnly/s;
+
+const fsWinSplit: RegExp = /\\/g;
+const fsLinuxSplit: RegExp = /\//g;
+
+const CRLF: RegExp = /\r\n/g;
+const LF: RegExp = /\n/g;

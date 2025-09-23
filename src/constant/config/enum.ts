@@ -208,11 +208,11 @@ export const enum DIAGNOSTIC_KIND {
     EDITOR_ONLY = "editor Only",
 }
 
-export const enum NULL_COLLECTION { 
+export const enum NULL_COLLECTION {
     STRING = ""
 }
 
-export const enum LINE_POSITION{
+export const enum LINE_POSITION {
     INITIAL_CURSOR = "initial cursor",
     LAST_CURSOR = "last cursor",
     PREVIOUS_LINE = "previousLine",
@@ -221,3 +221,9 @@ export const enum LINE_POSITION{
     NEXTLINE_AUTO_INLINE = "nextLine (auto-inline)",
 }
 
+export const enum WORKSPACE_OS {
+    WIN = "win32",
+    LINUX = "linux",
+    MAC = "darwin",
+    POSIX = "posix",
+}
