@@ -1,7 +1,7 @@
 import type * as D from '../type/type';
 
 import * as vscode from 'vscode';
-import { DIAGNOSTIC_SEVERITY_TO_KEY } from '../constant/config/object';
+import { DIAGNOSTIC_SEVERITY_TO_KEY_CONFIG } from '../constant/config/object';
 import { DIAGNOSTIC_STATE } from '../constant/shared/object';
 import { DIAGNOSTIC_BIOME } from '../constant/config/enum';
 
@@ -54,7 +54,7 @@ const buildDiagnostic = (source: D.Diagnostic.Intf.Source, diagnosticList: vscod
             if (typeof source[uri.fsPath] !== 'object') {
                 source[uri.fsPath] = {};
             }
-            const sevKey = DIAGNOSTIC_SEVERITY_TO_KEY[diagnostic.severity] as string;
+            const sevKey = DIAGNOSTIC_SEVERITY_TO_KEY_CONFIG[diagnostic.severity] as string;
             if (!Array.isArray(source[uri.fsPath][sevKey])) {
                 source[uri.fsPath][sevKey] = [];
             }

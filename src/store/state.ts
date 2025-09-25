@@ -135,13 +135,19 @@ export const DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET = {
 
 export const WORKSPACE_STATE = {
     os: undefined,
+    isActiveEditorParsed: false,
+    uriPathProp: undefined,
     crossOSWorkspace: false,
+    repository: new Map,
+    workspacePath: [],
+    excludeRepoSearch: [],
+};
+
+export const WORKSPACE_ENV_UTIL = {
     dirDivider: undefined,
     lineBreak: undefined,
     pathSplit: undefined,
-    workspacePath: undefined,
-    repository: new Map,
-    excludeRepoSearch: [],
+    directoryFunc: undefined
 };
 
 export const CURRENT_REPOSITORY = {

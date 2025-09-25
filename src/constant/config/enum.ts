@@ -222,7 +222,8 @@ export const enum LINE_POSITION {
 }
 
 export const enum WORKSPACE_OS {
-    WIN = "win32",
+    WIN32 = "win32",
+    WSL = "WSL",
     LINUX = "linux",
     MAC = "darwin",
     POSIX = "posix",

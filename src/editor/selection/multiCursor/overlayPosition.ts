@@ -136,7 +136,6 @@ const equalizeLineState: L.OverlayFunc = {
 const allocateIndexList: L.OverlayFunc = {
     sign: bin.stateContextControl,
     body: (state: D.Selection.Intf.MultiCursorState, context: D.Selection.Intf.MultiCursorContext): void => {
-        console.log('allocateIndexList', state.duplicateOverlayIndex);
         context.indexList = state.overlay.indexListRefBuffer[state.duplicateOverlayIndex as number];
     }
 };

@@ -7,7 +7,7 @@ import { resetEditorDiagnosticStatistics, resetWorkspaceDiagnosticStatistics } f
 import { updateRangeMetadata } from '../editor/range';
 import { forceDispatchEditorChange } from '../editor/selection/selection';
 import { renderGroupIs, resetAllDecoration, updateIndentOption } from '../editor/editor';
-// import { scmOverlay, initScm, setWorkspaceSystem } from '../editor/scm/scm';
+import { initializeScm, setScmBranch } from '../editor/scm/scm';
 
 export {
     windowStateChanged,
@@ -79,13 +79,10 @@ const activeEditorChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decor
                 resetAllDecoration();
             }
 
-            // initScm(editor.document.uri);
+            initializeScm();
+            setScmBranch(editor);
 
-            decorationState.appliedHighlight[0] = renderGroupIs(editor, [hex.cursorOnly]);
-
-            // await scmOverlay(editor);
-
-            
+            decorationState.appliedHighlight[0] = renderGroupIs(editor, [hex.cursorOnly]);            
         }
     });
 };
@@ -124,7 +121,6 @@ const selectionChanged: D.Event.Tp.DecorationEventFunc = (context /** { decorati
          */
         context.decorationState.eventTrigger[0] = hex.selectionChanged;
         context.decorationState.appliedHighlight[0] = renderGroupIs(vscode.window.activeTextEditor as vscode.TextEditor, context.decorationState.appliedHighlight);
-        // scmOverlay(event.textEditor);
     });
 };
 

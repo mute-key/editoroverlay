@@ -9,6 +9,7 @@ import { clearDiagnosticText, diagnosticInfo } from '../workspace/problem/status
 import { cursorOnlyHighlightRange, singelLineHighlightRange, multiLineHighlightRange, multiCursorHighlightRange, clearEveryHighlight } from './highlight/highlight';
 import { cursorOnlySelection, singleLineSelection, multilineSelection, multiCursorSelection, bindStatusContentTextState, clearSelectionTextBuffer } from './selection/selection';
 import { blankRange, updateRangeMetadata } from './range';
+import { renderScmOverlay } from './scm/scm';
 
 export {
     updateIndentOption,
@@ -94,6 +95,8 @@ const setFunctionList = (config: D.Config.Intf.ConfigReady, fnStack: typeof rend
         renderFuncBuffer.push(diagnosticInfo(decorationState));
     }
 
+    renderFuncBuffer.push(renderScmOverlay);
+    
     // this method will also refresh whole rendering function stack 
     // if configuration is changed and whole features needs to be
     //  reloaded just in case. 

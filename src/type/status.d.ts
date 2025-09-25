@@ -49,7 +49,7 @@ declare namespace Intf {
     }
 
     interface StatusContentText {
-        [key: Numeric.Key.Hex]: ContentTextBody
+        [key: Numeric.Key.Hex]: undefined | ContentTextBody
     }
 
     interface ContentTextBody {

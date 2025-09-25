@@ -10,7 +10,7 @@ import { clearDecorationState } from './editor/editor';
 import { prepareRenderGroup, renderGroupIs } from './editor/editor';
 import { checkActiveThemeKind } from './command/preset';
 import { updateRangeMetadata } from './editor/range';
-// import { onScmUpdate, scmOverlay, setWorkspaceSystem } from './editor/scm/scm';
+import { initializeScm, setScmBranch } from './editor/scm/scm';
 
 export {
     initialize
@@ -47,12 +47,12 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<(v
         await prepareRenderGroup(configInfo as D.Config.Intf.ConfigReady);
 
         if (activeEditor) {                                 // if user is on editor
+            initializeScm();
+            setScmBranch(activeEditor);
             updateRangeMetadata(activeEditor);              // set selection range metadata for the editor
             clearDecorationState(loadConfig.decoration as D.Editor.Tp.DecorationState);    // initialize decoration state
             loadConfig.decoration.appliedHighlight[0] = renderGroupIs(activeEditor, [hex.cursorOnly]);
             loadConfig.decoration.eventTrigger[0] = hex.noEvent;
-            // setWorkspaceSystem();
-            // scmOverlay(activeEditor);
         }
 
         const commandContext: D.Command.Intf.Context = {    // context for extension commands
@@ -62,11 +62,11 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<(v
 
         const eventContext: D.Event.Intf.Context = {        // context for extension events
             configInfo: configInfo as D.Config.Intf.ConfigReady,
-            decorationState: loadConfig.decoration,  
+            decorationState: loadConfig.decoration,
         };
 
         checkActiveThemeKind(commandContext);
-        
+
         return [                                            // extension subscription list, commands | events.
             commands.setPreset(commandContext),
             commands.setColor(commandContext),
