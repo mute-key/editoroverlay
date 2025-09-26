@@ -1,26 +1,29 @@
 import type * as D from '../../type/type';
 
 import * as vscode from 'vscode';
-import { DECORATION_OPTION_AFTER_CONFIG, DECORATION_OPTION_CONFIG } from '../../constant/config/object';
-import { CURRENT_REPOSITORY, WORKSPACE_ENV_UTIL, WORKSPACE_STATE } from '../../store/state';
-import { DIRECTORY_DELIMITER, SCM_COMMAND_SET, URI_PATH_TYPE } from '../../constant/shared/enum';
-import { WORKSPACE_OS } from '../../constant/config/enum';
+import { DECORATION_OPTION_AFTER_CONFIG, DECORATION_OPTION_CONFIG, SCM_CONFIG } from '../../constant/config/object';
+import { CURRENT_REPOSITORY, SCM_OVERLAY_REFERENCE, WORKSPACE_ENV_UTIL, WORKSPACE_STATE } from '../../store/state';
+import { DIRECTORY_DELIMITER, ICON_TYPE, SCM_RESOURCE_PATH, URI_PATH_TYPE } from '../../constant/shared/enum';
+import { WORKSPACE_OS } from '../../constant/shared/enum';
 import { fsLinuxSplit, fsWinSplit, LF, CRLF } from '../../collection/regex';
-import { contentTextGetter, setGetterProp } from '../selection/multiCursor/renderOption';
-import { createCursorRangeLastLine } from '../range';
+import { createCursorRangeLineOfDelta } from '../range';
+import { contentIconGetter, contentTextGetter, setGetterProp } from '../selection/multiCursor/renderOption';
+import { brnachStatusCommand, currentBranchCommand, directoryList, gitStatus, isDirectoryCommand, scmbaseStyleObject, scmSVGStyleObject, scmGlyphStyleObject } from './misc';
 import { spawnSync } from 'child_process';
 
 export {
     initializeScm,
     renderScmOverlay,
     setScmBranch,
-    initalRender
+    initalRender,
+    filterDirectory,
+    isDirectoryWsl
 };
 
 declare namespace L {
-
     interface WorkspaceState {
         os?: string,
+        isSourceControlled: boolean,
         crossOSWorkspace: boolean,
         repository: Map<string, RepositoryState>,
         workspacePath: string[],
@@ -28,19 +31,13 @@ declare namespace L {
     }
 
     interface WorkspaceEnvUtil {
+        extRoot?: string,
         uriPathProp?: string,
         dirDivider?: string,
+        iconRoot?: string,
         lineBreak?: RegExp,
         pathSplit?: RegExp,
         directoryFunc: any
-    }
-
-    interface StyleObject {
-        contentText: string
-        fontWeight: string
-        color: string
-        backgroundColor: string
-        textDecoration: string
     }
 
     interface RepositoryState {
@@ -54,16 +51,13 @@ declare namespace L {
         stashList: string
     }
 
-    /**
-     * 0. os
-     * 1. pathSplit
-     * 2. lineBreak
-     * 3. dirDivider
-     * 4. uriPathProp
-     * 5. crossOSWorkspace
-     */
-    type StateObjectArray = [string, RegExp, RegExp, string, string, boolean, any];
+    interface OverlayReference {
+        svgIcon?: vscode.Uri,
+        range?: vscode.Range
+    }
 }
+
+const configuration = SCM_CONFIG;
 
 const state = WORKSPACE_STATE as L.WorkspaceState;
 
@@ -71,70 +65,66 @@ const envUtil = WORKSPACE_ENV_UTIL as L.WorkspaceEnvUtil;
 
 const currentRepository = CURRENT_REPOSITORY as L.RepositoryState;
 
-const transparency: string = "C7";
+const svgIocns = [] as vscode.Uri[];
 
-const scmIconStyleObject: L.StyleObject = {
-    contentText: "⌥",
-    fontWeight: "bolder",
-    color: "#FFFFFF" + transparency,
-    backgroundColor: "#F05133" + transparency,
-    textDecoration: ";margin-left:6px;font-size:12px;margin-top:2px;border-top-left-radius:1px;border-bottom-left-radius:1px;",
-};
+const scmIcon = { ...DECORATION_OPTION_CONFIG } as D.Decoration.Intf.RenderInstanceOption;
 
-const scmbaseStyleObject: L.StyleObject = {
-    contentText: 'Not Found',
-    fontWeight: "bolder",
-    color: "#777777" + transparency,
-    backgroundColor: "#2A2A2A" + transparency,
-    textDecoration: ";font-size:12px;margin-top:2px;border-top-right-radius:1px;border-bottom-right-radius:1px;padding-left:6px;padding-right:6px;",
-};
-
-const scmIcon = (): D.Decoration.Intf.RenderInstanceOption => {
-    const renderOptionScmIcon = { ...DECORATION_OPTION_CONFIG } as D.Decoration.Intf.RenderInstanceOption;
-    renderOptionScmIcon.after = { ...DECORATION_OPTION_AFTER_CONFIG } as D.Decoration.Intf.DecorationRenderOptionAfter;
-    renderOptionScmIcon.after.contentText = scmIconStyleObject.contentText;
-    renderOptionScmIcon.after.color = scmIconStyleObject.color;
-    renderOptionScmIcon.after.fontWeight = scmIconStyleObject.fontWeight;
-    renderOptionScmIcon.after.backgroundColor = scmIconStyleObject.backgroundColor;
-    renderOptionScmIcon.after.textDecoration = scmIconStyleObject.textDecoration;
-    return renderOptionScmIcon;
-};
-
-const scmBase = (): D.Decoration.Intf.RenderInstanceOption => {
-    const renderOptionScmBase = { ...DECORATION_OPTION_CONFIG } as D.Decoration.Intf.RenderInstanceOption;
-    renderOptionScmBase.after = { ...DECORATION_OPTION_AFTER_CONFIG } as D.Decoration.Intf.DecorationRenderOptionAfter;
-    renderOptionScmBase.after.contentText = scmbaseStyleObject.contentText;
-    renderOptionScmBase.after.color = scmbaseStyleObject.color;
-    renderOptionScmBase.after.fontWeight = scmbaseStyleObject.fontWeight;
-    renderOptionScmBase.after.backgroundColor = scmbaseStyleObject.backgroundColor;
-    renderOptionScmBase.after.textDecoration = scmbaseStyleObject.textDecoration;
-    setGetterProp(renderOptionScmBase.after, contentTextGetter, CurrentBranchDescriptor as PropertyDescriptor);
-    return renderOptionScmBase;
-};
-
-const currentBranchCommand: Record<string, (path: string) => string> = {
-    [WORKSPACE_OS.WIN32]: (path: string): string => `cd ${path} && ${SCM_COMMAND_SET.branchCurrent}`,
-    [WORKSPACE_OS.POSIX]: (path: string): string => `cd ${path} && ${SCM_COMMAND_SET.branchCurrent}`,
-    [WORKSPACE_OS.WSL]: (path: string): string => `wsl bash -c "cd ${path} && ${SCM_COMMAND_SET.branchCurrent}"`
-};
-
-const isDirectoryCommand: Record<string, (path: string) => string> = {
-    // [WORKSPACE_OS.WIN32]:
-    // [WORKSPACE_OS.POSIX]:
-    [WORKSPACE_OS.WSL]: (path: string) => `wsl bash -c "[ -d ${path} ] && echo 1 || echo 0"`
-};
-
-const directoryList: Record<string, (path: string) => string> = {
-    [WORKSPACE_OS.WSL]: (path: string) => `wsl bash -c "cd ${path} &&  ls -d */ .*/"`
-};
+const scmBase = { ...DECORATION_OPTION_CONFIG } as D.Decoration.Intf.RenderInstanceOption;
 
 const bindDecorationType = (setDecorations: vscode.TextEditor['setDecorations'], renderOption: D.Decoration.Intf.RenderOption[][]) => (decorationType: vscode.TextEditorDecorationType, idx: number): void => setDecorations(decorationType, renderOption[idx]);
 
 const concatinateDivider = (path: string, idx: number): string => idx === 0 ? path : envUtil.dirDivider + path;
 
-const setCurrentBranchState = (path: string): string | undefined => currentRepository.currentBranch = execCmd(currentBranchCommand[state.os as string](path));
+const setCurrentBranchState = (path: string): string | undefined => currentRepository.currentBranch = ':' + execCmd(currentBranchCommand[state.os as string](path))?.trim() + branchStatus(path);
+
+const convertFolderToSysPath = (folder: vscode.WorkspaceFolder): string => convertUriToSysPath(folder.uri);
+
+// @ts-expect-error, or it cause type-error although this works.
+const convertUriToSysPath = (uri: vscode.Uri): string => uri[envUtil.uriPathProp];
+
+const styleScmIconSVG = (): D.Decoration.Intf.RenderInstanceOption => {
+    scmIcon.after = { ...DECORATION_OPTION_AFTER_CONFIG } as D.Decoration.Intf.DecorationRenderOptionAfter;
+    scmIcon.after.textDecoration = scmSVGStyleObject.textDecoration;
+    scmIcon.after.contentIconPath = scmReferenceObject.svgIcon;
+    setGetterProp(scmIcon.after, contentIconGetter, scmDescriptor as PropertyDescriptor);
+    return scmIcon;
+};
+
+const styleScmIconGlpyph = (): D.Decoration.Intf.RenderInstanceOption => {
+    scmIcon.after = { ...DECORATION_OPTION_AFTER_CONFIG } as D.Decoration.Intf.DecorationRenderOptionAfter;
+    scmIcon.after.contentText = scmGlyphStyleObject.contentText;
+    scmIcon.after.color = scmGlyphStyleObject.color;
+    scmIcon.after.fontWeight = scmGlyphStyleObject.fontWeight;
+    scmIcon.after.backgroundColor = scmGlyphStyleObject.backgroundColor;
+    scmIcon.after.textDecoration = scmGlyphStyleObject.textDecoration;
+    return scmIcon;
+};
+
+const styleScmBase = (): D.Decoration.Intf.RenderInstanceOption => {
+    scmBase.after = { ...DECORATION_OPTION_AFTER_CONFIG } as D.Decoration.Intf.DecorationRenderOptionAfter;
+    scmBase.after.contentText = scmbaseStyleObject.contentText;
+    scmBase.after.color = scmbaseStyleObject.color;
+    scmBase.after.fontWeight = scmbaseStyleObject.fontWeight;
+    scmBase.after.backgroundColor = scmbaseStyleObject.backgroundColor;
+    scmBase.after.textDecoration = scmbaseStyleObject.textDecoration;
+    setGetterProp(scmBase.after, contentTextGetter, CurrentBranchDescriptor as PropertyDescriptor);
+    return scmBase;
+};
+
+const branchStatus = (path: string): string => {
+    const output = execCmd(brnachStatusCommand[state.os as string](path));
+    if (output) {
+        if (output.trim().length > 0) {
+            return gitStatus(output, envUtil.lineBreak as RegExp);
+        } else {
+            return ' (up-to-date)';
+        }
+    }
+    return ' (up-to-date)';
+};
 
 const setRepository = (path: string, uri: undefined | vscode.Uri) => {
+    state.isSourceControlled = true;
     state.repository.set(path, {
         uri: uri,
         currentBranch: setCurrentBranchState(path)
@@ -145,6 +135,7 @@ const isRepository = (path: string, uri: vscode.Uri) => (entry: [string, vscode.
     if (entry[0] === '.git') {
         setRepository(path, uri);
         initalRender();
+        
     }
 };
 
@@ -181,25 +172,21 @@ const accumulateDirStack = (pathArray: string[], path: string, idx: number): str
     return pathArray;
 };
 
-const setRepositoryOfUri = async (uri: vscode.Uri | string) => {
+const setRepositoryOfUri = (uri: vscode.Uri | string) => {
     const path = typeof uri === 'string' ? uri : uri.fsPath;
-    return await path.split(envUtil.pathSplit as RegExp)
+    return path.split(envUtil.pathSplit as RegExp)
         .map(concatinateDivider)
         .reduce(accumulateDirStack, [] as string[])
         .filter(isWorkspacePath)
-        .filter(envUtil.directoryFunc);
+        .filter(envUtil.directoryFunc /** filterDirectory | isDirectoryWsl */);
 };
 
-const scmRenderOptions = [] as D.Decoration.Intf.RenderOption[][];
-
-const scmDecorationTypes = [] as vscode.TextEditorDecorationType[];
-
-const scmRenderOptionRangeRef = [] as vscode.Range[];
+const scmReferenceObject = SCM_OVERLAY_REFERENCE as L.OverlayReference;
 
 const composeRenderOption = (contentText: any): D.Decoration.Intf.RenderOption => {
     return {
         get range() {
-            return scmRenderOptionRangeRef[0];
+            return scmReferenceObject.range;
         },
         renderOptions: contentText
     };
@@ -211,7 +198,19 @@ const renderCurrentBranch = {
     }
 };
 
+const renderSVGIcon = {
+    get contentIconPath(): vscode.Uri {
+        return scmReferenceObject.svgIcon as unknown as vscode.Uri;
+    }
+};
+
+const scmRenderOptions = [] as D.Decoration.Intf.RenderOption[][];
+
+const scmDecorationTypes = [] as vscode.TextEditorDecorationType[];
+
 const CurrentBranchDescriptor = Object.getOwnPropertyDescriptor(renderCurrentBranch, contentTextGetter);
+
+const scmDescriptor = Object.getOwnPropertyDescriptor(renderSVGIcon, contentIconGetter);
 
 const prepareOverlayObjects = () => {
     if (scmDecorationTypes.length > 1) {
@@ -223,8 +222,8 @@ const prepareOverlayObjects = () => {
     scmDecorationTypes.push(vscode.window.createTextEditorDecorationType({}));
 
     scmRenderOptions.length = 0;
-    scmRenderOptions.push([composeRenderOption(scmIcon())]);
-    scmRenderOptions.push([composeRenderOption(scmBase())]);
+    scmRenderOptions.push([composeRenderOption(configuration.iconType === ICON_TYPE.SVG ? styleScmIconSVG() : styleScmIconGlpyph())]);
+    scmRenderOptions.push([composeRenderOption(styleScmBase())]);
 };
 
 const execCmd = (cmd: string, args: string[] = []): (string | undefined) => {
@@ -242,62 +241,59 @@ const initalRender = (): void => {
 };
 
 const renderScmOverlay = (editor: vscode.TextEditor): void => {
-    scmRenderOptionRangeRef[0] = createCursorRangeLastLine(1)(editor); //editor.selection;
+    scmReferenceObject.range = createCursorRangeLineOfDelta(1)(editor); //editor.selection;
     scmDecorationTypes.forEach(bindDecorationType(editor.setDecorations, scmRenderOptions));
 };
 
-// const ifPathIsWorkspace = (uriPath: string) => (path: string): boolean => {
-//     //@ts-ignore
-//     return path.indexOf(uriPath) !== -1;
-// };
-
-
-/** win32 */
-const win32OnlyState: L.StateObjectArray = [
-    WORKSPACE_OS.WIN32,
-    fsWinSplit,
-    CRLF,
-    DIRECTORY_DELIMITER.WIN,
-    URI_PATH_TYPE.WINDOW,
-    false,
-    filterDirectory
-];
-
-/** win32 -> wsl */
-const win32wslState: L.StateObjectArray = [
-    WORKSPACE_OS.WSL,
-    fsLinuxSplit,
-    LF,
-    DIRECTORY_DELIMITER.POSIX,
-    URI_PATH_TYPE.WIN_TO_WSL,
-    true,
-    isDirectoryWsl
-];
-
-/** posix, linux, mac */
-const posixOnlyState: L.StateObjectArray = [
-    WORKSPACE_OS.POSIX,
-    fsLinuxSplit,
-    LF,
-    DIRECTORY_DELIMITER.POSIX,
-    URI_PATH_TYPE.POSIX,
-    false,
-    filterDirectory
-];
-
-
-const setStateObject = (array: L.StateObjectArray): void => {
-    state.os = array[0];               // string
-    envUtil.pathSplit = array[1];        // RegExp
-    envUtil.lineBreak = array[2];        // RegExp
-    envUtil.dirDivider = array[3];       // string
-    envUtil.uriPathProp = array[4];      // string
-    state.crossOSWorkspace = array[5]; // boolean
-    envUtil.directoryFunc = array[6];
+const setStateObject = (description: D.Scm.Intf.StateDescription): void => {
+    state.os = description.os;
+    state.crossOSWorkspace = description.crossOSWorkspace;
+    envUtil.pathSplit = description.pathSplit;
+    envUtil.lineBreak = description.lineBreak;
+    envUtil.dirDivider = description.dirDivider;
+    envUtil.uriPathProp = description.uriPathProp;
+    envUtil.directoryFunc = description.directoryFunc;
+    envUtil.iconRoot = description.iconRoot;
 };
 
-const getWorkspaceObject = (): undefined | L.StateObjectArray => {
+/** win32 */
+const win32OnlyState: D.Scm.Intf.StateDescription = {
+    os: WORKSPACE_OS.WIN32,
+    dirDivider: DIRECTORY_DELIMITER.WIN,
+    uriPathProp: URI_PATH_TYPE.WINDOW,
+    iconRoot: SCM_RESOURCE_PATH.WIN_ICON_ROOT,
+    pathSplit: fsWinSplit,
+    lineBreak: CRLF,
+    crossOSWorkspace: false,
+    directoryFunc: filterDirectory
 
+};
+
+/** win32 -> wsl */
+const win32wslState: D.Scm.Intf.StateDescription = {
+    os: WORKSPACE_OS.WSL,
+    dirDivider: DIRECTORY_DELIMITER.POSIX,
+    uriPathProp: URI_PATH_TYPE.WIN_TO_WSL,
+    iconRoot: SCM_RESOURCE_PATH.WSL_ICON_ROOT,
+    pathSplit: fsLinuxSplit,
+    lineBreak: LF,
+    crossOSWorkspace: true,
+    directoryFunc: isDirectoryWsl
+};
+
+/** posix, linux, mac */
+const posixOnlyState: D.Scm.Intf.StateDescription = {
+    os: WORKSPACE_OS.POSIX,
+    dirDivider: DIRECTORY_DELIMITER.POSIX,
+    uriPathProp: URI_PATH_TYPE.POSIX,
+    iconRoot: SCM_RESOURCE_PATH.POSIX_ICON_ROOT,
+    pathSplit: fsLinuxSplit,
+    lineBreak: LF,
+    crossOSWorkspace: false,
+    directoryFunc: filterDirectory
+};
+
+const getWorkspaceObject = (): undefined | D.Scm.Intf.StateDescription => {
     if (process.platform === WORKSPACE_OS.WIN32 && vscode.env.remoteName === undefined) {
         return win32OnlyState;
     }
@@ -311,25 +307,27 @@ const getWorkspaceObject = (): undefined | L.StateObjectArray => {
     }
 };
 
-const setWorkspacePath = (): void => {
-    // @ts-expect-error, or it cause type-error although this works.
-    state.workspacePath = vscode.workspace.workspaceFolders.map(uri => uri.uri[envUtil.uriPathProp]);
-};
-
-const initializeScm = () => {
-
-    // osDescription will never be undefined, 
-    const osDescription: undefined | L.StateObjectArray = getWorkspaceObject();
+const initializeScm = (context: vscode.ExtensionContext) => {
+    
+    const osDescription: undefined | D.Scm.Intf.StateDescription = getWorkspaceObject();
 
     if (!osDescription || !vscode.workspace.workspaceFolders) {
         return;
     }
-
     setStateObject(osDescription);
     prepareOverlayObjects();
-    setWorkspacePath();
-};
 
+    state.workspacePath = vscode.workspace.workspaceFolders.map(convertFolderToSysPath);
+
+    envUtil.extRoot = convertUriToSysPath(context.extensionUri);
+
+    if (configuration.iconType === ICON_TYPE.SVG) {
+        const inactivPath = [envUtil.extRoot, envUtil.iconRoot, SCM_RESOURCE_PATH.SVG_INACTIVE].join(envUtil.dirDivider);
+        const activPath = [envUtil.extRoot, envUtil.iconRoot, SCM_RESOURCE_PATH.SVG_ACTIVE].join(envUtil.dirDivider);
+        svgIocns[0] = vscode.Uri.file(inactivPath);
+        svgIocns[1] = vscode.Uri.file(activPath);
+    }
+};
 
 /**
  * this function should be called just once when active editor is changed
@@ -338,18 +336,19 @@ const initializeScm = () => {
  */
 const setScmBranch = (editor: vscode.TextEditor) => {
 
+    state.isSourceControlled = false;
+
     if (!state.workspacePath) {
         return;
     }
-    // @ts-ignore
-    const editorPath = editor.document.uri[envUtil.uriPathProp];
 
-    // @ts-ignore
-    // state.workspacePath.filter(ifPathIsWorkspace());
+    const editorPath = convertUriToSysPath(editor.document.uri);
 
     if (state.workspacePath && state.workspacePath[0] !== undefined) {
         setRepositoryOfUri(editorPath);
     }
+    
+    scmReferenceObject.svgIcon = svgIocns[state.isSourceControlled ? 1 : 0];
 };
 
 

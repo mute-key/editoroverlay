@@ -8,6 +8,7 @@ export {
     colDescriptor,
     rangeDescriptor,
     contentTextGetter,
+    contentIconGetter,
     rangeGetter,
     replicateNthRenderOption,
     replicateColsRenderOption,
@@ -41,6 +42,8 @@ const addBaseIndex = (baseIndex: number[]) => (i: number): number => {
 };
 
 const contentTextGetter: string = 'contentText';
+
+const contentIconGetter: string = 'contentIconPath';
 
 const rangeGetter: string = 'range';
 

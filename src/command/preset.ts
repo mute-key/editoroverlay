@@ -4,13 +4,13 @@ import path from 'path';
 import * as vscode from 'vscode';
 import * as hex from '../constant/numeric/hexadecimal';
 import { CONFIG_SECTION } from '../constant/config/object';
-import { CONTRAST, CONFIRM, PRESET, PRESET_ORIENTATION, SYSTEM_MESSAGE, SYSTEM_PATH, THEME_KIND } from '../constant/config/enum';
+import { CONTRAST, CONFIRM, PRESET, PRESET_ORIENTATION, SYSTEM_MESSAGE, PRESET_PATH, THEME_KIND } from '../constant/config/enum';
 import { getWorkspaceConfiguration } from '../configuration/shared/configuration';
 import { prepareRenderGroup, resetAllDecoration } from '../editor/editor';
-import { updateSelectionTextConfig } from '../configuration/decoration/selection';
-import { updateDiagnosticTextConfig } from '../configuration/decoration/diagnostic';
+import { updateSelectionTextConfig } from '../configuration/overlay/selection';
+import { updateDiagnosticTextConfig } from '../configuration/overlay/diagnostic';
 import { readFile } from 'node:fs/promises';
-import { updateGeneralConfig, updateHighlightStyleConfiguration } from '../configuration/decoration/highlight';
+import { updateGeneralConfig, updateHighlightStyleConfiguration } from '../configuration/overlay/highlight';
 
 export {
     readPreset,
@@ -43,7 +43,7 @@ const restoreToDefault = (): Thenable<string | undefined> => {
 
 const readPreset = async (context: vscode.ExtensionContext, presetFilename: string): Promise<object | undefined> => {
     try {
-        const jsonPath = context.asAbsolutePath(path.join(SYSTEM_PATH.PRESET_ROOT, presetFilename));
+        const jsonPath = context.asAbsolutePath(path.join(PRESET_PATH.PRESET_ROOT, presetFilename));
         const content = await readFile(jsonPath, { encoding: 'utf-8' });
         return JSON.parse(content);
     } catch (error) {
@@ -126,12 +126,12 @@ const quickPickWrapper = async (context: D.Command.Intf.Context, { presetList, f
 const presetList: PresetSet = {
     presetList: [PRESET.DETAILED, PRESET.SIMPLE, PRESET.NO_GLYPH_D, PRESET.NO_GLYPH_S, PRESET.EMOJI_D, PRESET.EMOJI_S],
     fileList: {
-        [PRESET.DETAILED]: SYSTEM_PATH.PRESET_DETAILED,
-        [PRESET.SIMPLE]: SYSTEM_PATH.PRESET_SIMPLE,
-        [PRESET.NO_GLYPH_D]: SYSTEM_PATH.PRESET_NO_GLYPH_D,
-        [PRESET.NO_GLYPH_S]: SYSTEM_PATH.PRESET_NO_GLYPH_S,
-        [PRESET.EMOJI_D]: SYSTEM_PATH.PRESET_EMOJI_D,
-        [PRESET.EMOJI_S]: SYSTEM_PATH.PRESET_EMOJI_S
+        [PRESET.DETAILED]: PRESET_PATH.PRESET_DETAILED,
+        [PRESET.SIMPLE]: PRESET_PATH.PRESET_SIMPLE,
+        [PRESET.NO_GLYPH_D]: PRESET_PATH.PRESET_NO_GLYPH_D,
+        [PRESET.NO_GLYPH_S]: PRESET_PATH.PRESET_NO_GLYPH_S,
+        [PRESET.EMOJI_D]: PRESET_PATH.PRESET_EMOJI_D,
+        [PRESET.EMOJI_S]: PRESET_PATH.PRESET_EMOJI_S
     },
     placeHolder: SYSTEM_MESSAGE.PRESET_SELCT,
 };
@@ -139,8 +139,8 @@ const presetList: PresetSet = {
 const presetOridentation: PresetSet = {
     presetList: [PRESET_ORIENTATION.HORIZONTAL, PRESET_ORIENTATION.VERTICAL],
     fileList: {
-        [PRESET_ORIENTATION.HORIZONTAL]: SYSTEM_PATH.PRESET_ORIENTATION_HORIZONTAL,
-        [PRESET_ORIENTATION.VERTICAL]: SYSTEM_PATH.PRESET_ORIENTATION_VERTICAL,
+        [PRESET_ORIENTATION.HORIZONTAL]: PRESET_PATH.PRESET_ORIENTATION_HORIZONTAL,
+        [PRESET_ORIENTATION.VERTICAL]: PRESET_PATH.PRESET_ORIENTATION_VERTICAL,
     },
     placeHolder: SYSTEM_MESSAGE.PRESET_SELCT_ORIENTATION
 };
@@ -148,8 +148,8 @@ const presetOridentation: PresetSet = {
 const presetColor: PresetSet = {
     presetList: [THEME_KIND.LIGHT, THEME_KIND.DARK],
     fileList: {
-        [THEME_KIND.LIGHT]: SYSTEM_PATH.THEME_LIGHT,
-        [THEME_KIND.DARK]: SYSTEM_PATH.THEME_DARK,
+        [THEME_KIND.LIGHT]: PRESET_PATH.THEME_LIGHT,
+        [THEME_KIND.DARK]: PRESET_PATH.THEME_DARK,
     },
     placeHolder: SYSTEM_MESSAGE.PRESET_SELCT_COLOR_CONTRAST,
 };
@@ -157,8 +157,8 @@ const presetColor: PresetSet = {
 const presetContrast: PresetSet = {
     presetList: [CONTRAST.DIM, CONTRAST.BRIGHT],
     fileList: {
-        [CONTRAST.DIM]: SYSTEM_PATH.CONTRAST_DIM,
-        [CONTRAST.BRIGHT]: SYSTEM_PATH.CONTRAST_BRIGHT,
+        [CONTRAST.DIM]: PRESET_PATH.CONTRAST_DIM,
+        [CONTRAST.BRIGHT]: PRESET_PATH.CONTRAST_BRIGHT,
     },
     placeHolder: SYSTEM_MESSAGE.PRESET_SELCT_COLOR,
 };
@@ -174,7 +174,7 @@ const quickPickContrastList = (context: D.Command.Intf.Context) => quickPickWrap
 const checkActiveThemeKind = async (context: D.Command.Intf.Context): Promise<void> => {
     if (vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Light) {
         const packageName = context.package.extension.packageJSON.name;
-        const json = await readPreset(context.package, SYSTEM_PATH.THEME_LIGHT);
+        const json = await readPreset(context.package, PRESET_PATH.THEME_LIGHT);
         if (json && !checkDuplciateOverride(context.package.extension.packageJSON.name, json)) {
             await writeSelectedPreset(context.configInfo, packageName, json);
         }

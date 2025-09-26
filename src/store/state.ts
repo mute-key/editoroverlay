@@ -135,7 +135,7 @@ export const DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET = {
 
 export const WORKSPACE_STATE = {
     os: undefined,
-    isActiveEditorParsed: false,
+    isSourceControlled: false,
     uriPathProp: undefined,
     crossOSWorkspace: false,
     repository: new Map,
@@ -144,7 +144,9 @@ export const WORKSPACE_STATE = {
 };
 
 export const WORKSPACE_ENV_UTIL = {
+    extRoot: undefined,
     dirDivider: undefined,
+    iconRoot: undefined,
     lineBreak: undefined,
     pathSplit: undefined,
     directoryFunc: undefined
@@ -153,4 +155,9 @@ export const WORKSPACE_ENV_UTIL = {
 export const CURRENT_REPOSITORY = {
     uri: undefined,
     currentBranch: undefined,
+};
+
+export const SCM_OVERLAY_REFERENCE = {
+    svgIcon: undefined,
+    range: undefined
 };

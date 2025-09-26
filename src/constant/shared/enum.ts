@@ -18,3 +18,24 @@ export const enum SCM_COMMAND_SET {
 export const enum SCM_IS_DERECTORY {
     wsl = ""
 }
+
+export const enum SCM_RESOURCE_PATH {
+    WIN_ICON_ROOT = "resource\\scm\\icon",
+    WSL_ICON_ROOT = "resource\\scm\\icon",
+    POSIX_ICON_ROOT = "resource/scm/icon",
+    SVG_INACTIVE = "Git-Icon-inactive.svg",
+    SVG_ACTIVE = "Git-Icon-active.svg",
+}
+
+export const enum WORKSPACE_OS {
+    WIN32 = "win32",
+    WSL = "WSL",
+    LINUX = "linux",
+    MAC = "darwin",
+    POSIX = "posix",
+}
+
+export const enum ICON_TYPE {
+    SVG = "svg",
+    GLYPH = "glyph",
+}

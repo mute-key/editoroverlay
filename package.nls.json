@@ -6,6 +6,7 @@
     "title.multiCursor": "Multi Cursor",
     "title.selection": "Selection Status",
     "title.diagnostic": "Diagnostic Status",
+    "title.scm": "Scm/Git Status",
     "placeholder.selectionText.cursorOnlyText.default": "< Edit ... At (col ${zCol}, zero-based)",
     "placeholder.selectionText.singleLineText.default": "< Selection ... Of (${char} Characters)",
     "placeholder.selectionText.multiLineCursorText.default": "< Selection Cursor ... Of (${lc} Lines, ${char} Characters, Indent/EOL Ignored)",
@@ -123,5 +124,8 @@
     "description.diagnosticText.errorEditorContentText": "📌: Format of if __'Errors'__ are visible in current editor.\n\n| Placeholder | Description |\n| --------------- | ------- |\n| __```${pre}```__ | Static prefix that can be styled diffrerently from placeholder body.|\n|| This placeholder refers to __' -> Error Noation Text Style -> editorPrefix'__| \n| __```${post}```__ | Static post that can be styled diffrerently from placeholder body.|\n|| This placeholder refers to __' -> Error Noation Text Style -> editorPostfix'__| \n| __```...others```__ | Template Fixture |\n",
     "description.diagnosticText.errorNotationTextStyle": "📌: Collection of Confuguration for static text and style for __`${pre}`__, __`${post}`__ and __`...fixtures`__ for when __ERROR__ contentText.",
     "description.diagnosticText.errorTextStyle": "📌: Collection of Confuguration for static text and style for text `body` of when __ERROR__ contentText.",
+    "description.scmText.enabled": "📌: Enable inline scm/git status overlay",
+    "description.scmText.iconType": "📌: Primary iocon type for scm/git overlay",
+    "description.scmText.linePosition": "📌: Select Overlay Line Position",
     "placeholder": "placeholder"
 }

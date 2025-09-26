@@ -118,7 +118,6 @@ const buildStatusTextState = (textOftarget: any, textOfSource: D.Status.Intf.Sta
     createSharedObjectSync(textOftarget, textOfSource);
 };
 
-
 const updateSelectionTextConfig = (extenionName: string, configuratioChange: boolean = false): boolean => {
     const SelectionDecorationConfig = { ...SELECTION_DECORAITON_CONFIG } as D.Status.Intf.SelectionDecorationConfig;
     const SelectionDecorationStyle = { ...SELECTION_DECORATION_STYLE_CONFIG } as D.Status.Intf.SelectionDecorationStyle;

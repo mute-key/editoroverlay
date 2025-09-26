@@ -30,6 +30,9 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<(v
         // as i am not sure even if it needs to wait to be activated.
         // maybe need to revise the method..? 
 
+        // extensionContext.
+        // extensionContext.asAbsolutePath
+
         Error.setPackageName(extensionContext.extension.packageJSON.name);
 
         const loadConfig = await config.loadConfiguration(extensionContext);
@@ -39,7 +42,9 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<(v
             return;
         }
 
-        // setWorkspaceSystem();
+        if (loadConfig.config.generalConfigInfo.scmTextEnabled) {
+            initializeScm(extensionContext);
+        }
 
         const configInfo: D.Status.Intf.ConfigInfo = loadConfig.config;
         const activeEditor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
@@ -47,7 +52,6 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<(v
         await prepareRenderGroup(configInfo as D.Config.Intf.ConfigReady);
 
         if (activeEditor) {                                 // if user is on editor
-            initializeScm();
             setScmBranch(activeEditor);
             updateRangeMetadata(activeEditor);              // set selection range metadata for the editor
             clearDecorationState(loadConfig.decoration as D.Editor.Tp.DecorationState);    // initialize decoration state
@@ -64,7 +68,7 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<(v
             configInfo: configInfo as D.Config.Intf.ConfigReady,
             decorationState: loadConfig.decoration,
         };
-
+;
         checkActiveThemeKind(commandContext);
 
         return [                                            // extension subscription list, commands | events.

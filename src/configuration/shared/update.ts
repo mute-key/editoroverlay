@@ -2,9 +2,10 @@ import * as hex from '../../constant/numeric/hexadecimal';
 import Error from '../../util/error';
 import { CONFIG_SECTION_KEY } from '../../constant/config/enum';
 import { resetAllDecoration, prepareRenderGroup } from '../../editor/editor';
-import { updateGeneralConfig, updateHighlightStyleConfiguration } from '../decoration/highlight';
-import { updateDiagnosticTextConfig } from '../decoration/diagnostic';
-import { updateSelectionTextConfig } from '../decoration/selection';
+import { updateGeneralConfig, updateHighlightStyleConfiguration } from '../overlay/highlight';
+import { updateDiagnosticTextConfig } from '../overlay/diagnostic';
+import { updateSelectionTextConfig } from '../overlay/selection';
+import { updateScmTextConfig } from '../overlay/scm';
 
 export {
     configurationChanged
@@ -27,6 +28,11 @@ const configurationChanged = (configInfo: any, section: string): void => {
             [CONFIG_SECTION_KEY.DIAGNOSTIC_TEXT]: () => {
                 if (configInfo.generalConfigInfo.diagnosticTextEnabled) {
                     updateDiagnosticTextConfig(configInfo.name, true);
+                }
+            },
+            [CONFIG_SECTION_KEY.SCM_TEXT]: () => {
+                if (configInfo.generalConfigInfo.scmTextEnabled) {
+                    updateScmTextConfig(configInfo.name, true);
                 }
             }
         };

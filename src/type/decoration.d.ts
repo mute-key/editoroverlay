@@ -116,6 +116,7 @@ declare namespace Intf {
     }
 
     interface DecorationRenderOptionAfter {
+        contentIconPath?: vscode.Uri
         contentText?: string | any,
         color?: string,
         backgroundColor?: string,

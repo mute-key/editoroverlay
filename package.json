@@ -1204,6 +1204,39 @@
                         }
                     }
                 }
+            },
+            {
+                "title": "%title.scm%",
+                "properties": {
+                    "editoroverlay.scmText.enabled": {
+                        "type": "boolean",
+                        "default": true,
+                        "markdownDescription": "%description.scmText.enabled%",
+                        "order": 0
+                    },
+                    
+                    "editoroverlay.scmText.iconType": {
+                        "type": "string",
+                        "enum": [
+                            "svg",
+                            "glyph"
+                        ],
+                        "default": "svg",
+                        "description": "%description.scmText.iconType%",
+                        "order": 1
+                    },
+                    "editoroverlay.scmText.overlayLinePosition": {
+                        "type": "string",
+                        "enum": [
+                            "inline",
+                            "nextLine",
+                            "beforeLine"
+                        ],
+                        "default": "inline",
+                        "description": "%description.scmText.linePosition%",
+                        "order": 2
+                    }
+                }
             }
         ]
     },

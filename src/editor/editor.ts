@@ -95,7 +95,9 @@ const setFunctionList = (config: D.Config.Intf.ConfigReady, fnStack: typeof rend
         renderFuncBuffer.push(diagnosticInfo(decorationState));
     }
 
-    renderFuncBuffer.push(renderScmOverlay);
+    if (config.generalConfigInfo.scmTextEnabled) {
+        renderFuncBuffer.push(renderScmOverlay);
+    }
     
     // this method will also refresh whole rendering function stack 
     // if configuration is changed and whole features needs to be

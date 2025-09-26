@@ -38,7 +38,7 @@ export const enum SYSTEM_MESSAGE {
     OVERRIDE_CONFIRM = "Configuration will be overwritten. Proceed?"
 }
 
-export const enum SYSTEM_PATH {
+export const enum PRESET_PATH {
     PRESET_ROOT = "resource/preset/",
     PRESET_DETAILED = "detailed.json",
     PRESET_SIMPLE = "simple.json",
@@ -141,6 +141,7 @@ export const enum DECORATION_SELECTION_STYLE_CONFIG_KEY {
 export const enum CONFIG_KEY_LINKER {
     SELECTION_TEXT_ENABLED = "selectionTextEnabled",
     DIAGNOSTIC_TEXT_ENABLED = "diagnosticTextEnabled",
+    SCM_TEXT_ENABLED = "scmTextEnabled",
 }
 
 export const enum CONFIG_SECTION_KEY {
@@ -150,7 +151,8 @@ export const enum CONFIG_SECTION_KEY {
     MULTI_LINE = "multiLine",
     MULTI_CURSOR = "multiCursor",
     SELECTION_TEXT = "selectionText",
-    DIAGNOSTIC_TEXT = "diagnosticText"
+    DIAGNOSTIC_TEXT = "diagnosticText",
+    SCM_TEXT = "scmText"
 }
 
 export const enum SELECTION_CONTENT_TEXT_CONFIG_KEY {
@@ -219,12 +221,4 @@ export const enum LINE_POSITION {
     PREVIOUS_LINE_AUTO_INLINE = "previousLine (auto-inline)",
     NEXTLINE = "nextLine",
     NEXTLINE_AUTO_INLINE = "nextLine (auto-inline)",
-}
-
-export const enum WORKSPACE_OS {
-    WIN32 = "win32",
-    WSL = "WSL",
-    LINUX = "linux",
-    MAC = "darwin",
-    POSIX = "posix",
 }

@@ -2,12 +2,13 @@ import type * as D from '../type/type';
 
 import * as vscode from 'vscode';
 import { CONFIG_INFO } from '../constant/config/object';
-import { generateHighlightDecoration } from './decoration/highlight';
+import { generateHighlightDecoration } from './overlay/highlight';
 import { updateLegacyConfig } from './collection/patch';
-import { updateSelectionTextConfig } from './decoration/selection';
-import { updateDiagnosticTextConfig } from './decoration/diagnostic';
+import { updateSelectionTextConfig } from './overlay/selection';
+import { updateDiagnosticTextConfig } from './overlay/diagnostic';
 import { writeEditorConfiguration } from './shared/editor';
 import { bindEditorDecoration } from '../editor/editor';
+import { updateScmTextConfig } from './overlay/scm';
 
 export {
     loadConfiguration
@@ -49,6 +50,10 @@ const loadConfiguration = (context?: vscode.ExtensionContext): D.Config.Intf.Ini
 
         if (configReady.generalConfigInfo.diagnosticTextEnabled) {
             updateDiagnosticTextConfig(configReady.name);
+        }
+
+        if (configReady.generalConfigInfo.scmTextEnabled) {
+            updateScmTextConfig(configReady.name);
         }
 
         return {

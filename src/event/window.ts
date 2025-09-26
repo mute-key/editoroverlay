@@ -79,7 +79,7 @@ const activeEditorChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decor
                 resetAllDecoration();
             }
 
-            initializeScm();
+
             setScmBranch(editor);
 
             decorationState.appliedHighlight[0] = renderGroupIs(editor, [hex.cursorOnly]);            

@@ -99,6 +99,7 @@ declare namespace Intf {
         backgroundColor?: string
         selectionTextEnabled: boolean
         diagnosticTextEnabled: boolean
+        scmTextEnabled: boolean
     }
 
     interface ConfigReady extends Status.Intf.ConfigInfo {

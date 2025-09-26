@@ -123,7 +123,7 @@ const borderPositionParser = (selectionType: number, borderPosition: string): D.
 
 const updateGeneralConfig = (configReady: D.Config.Intf.ConfigReady) => {
     for (const key in configReady.generalConfigInfo) {
-        if (key === CONFIG_KEY_LINKER.DIAGNOSTIC_TEXT_ENABLED || key === CONFIG_KEY_LINKER.SELECTION_TEXT_ENABLED) {
+        if (key === CONFIG_KEY_LINKER.DIAGNOSTIC_TEXT_ENABLED || key === CONFIG_KEY_LINKER.SELECTION_TEXT_ENABLED || key === CONFIG_KEY_LINKER.SCM_TEXT_ENABLED) {
             const sectionLinker = CONFIG_KEY_LINKER_SECTION_CONFIG[key];
             const configSection = getWorkspaceConfiguration(configReady.name + '.' + sectionLinker[0]);
             const configValue = getConfigValue(configSection, sectionLinker[1], NO_CONFIGURATION_GENERAL_DEFAULT_CONFIG[key], configReady.name + '.' + sectionLinker[0]);

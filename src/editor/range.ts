@@ -7,6 +7,7 @@ export {
     createCursorRange,
     createLineRange,
     createCursorRangeLine,
+    createCursorRangeLineOfDelta,
     createCursorRangeLineAuto,
     createCursorRangeLastLine,
     createCursorRangeLineLastAuto,
@@ -73,6 +74,10 @@ const createRangeNNEP = (line: number, startChar: number, end: vscode.Position):
 const createCursorRange = (editor: vscode.TextEditor): vscode.Range => {
     const position = new vscode.Position(editor.selection.end.line, editor.selection.end.character);
     return new vscode.Range(position, position);
+};
+
+const createCursorRangeLineOfDelta = (lineDelta: number) => (editor: vscode.TextEditor): vscode.Range => {
+    return editor.document.lineAt(editor.selection.end.line + (checkEndOfDocDelta(editor, lineDelta) ? 0 : lineDelta)).range;
 };
 
 const createCursorRangeLine = (lineDelta: number) => (editor: vscode.TextEditor): vscode.Range => {
