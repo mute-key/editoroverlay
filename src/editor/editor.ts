@@ -9,7 +9,7 @@ import { clearDiagnosticText, diagnosticInfo } from '../workspace/problem/status
 import { cursorOnlyHighlightRange, singelLineHighlightRange, multiLineHighlightRange, multiCursorHighlightRange, clearEveryHighlight } from './highlight/highlight';
 import { cursorOnlySelection, singleLineSelection, multilineSelection, multiCursorSelection, bindStatusContentTextState, clearSelectionTextBuffer } from './selection/selection';
 import { blankRange, updateRangeMetadata } from './range';
-import { renderScmOverlay } from './scm/scm';
+import { clearScmOverlay, renderScmOverlay } from './scm/scm';
 
 export {
     updateIndentOption,
@@ -61,6 +61,7 @@ const clearAll = (editor: vscode.TextEditor): void => {
     clearEveryHighlight(editor);
     clearDiagnosticText(editor.setDecorations);
     clearSelectionTextBuffer(editor, SELECTION_KIND_LIST);
+    clearScmOverlay(editor);
 };
 
 const resetAllDecoration = (): void => vscode.window.visibleTextEditors.forEach(clearAll);
@@ -186,7 +187,6 @@ const renderGroupIs = (editor: vscode.TextEditor, numKey: D.Numeric.Key.Hex[]) =
             renderFnStack[hex.cursorOnly].forEach(fnBind);
             return hex.cursorOnly;
         }
-
         if (!editor.selections[0].isSingleLine) {           // multi-line, wanted to reduce the execution step
             renderFnStack[hex.multiLine].forEach(fnBind);
             return hex.multiLine;

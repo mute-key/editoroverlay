@@ -1,7 +1,8 @@
 import type * as D from '../../type/type';
 
 import * as vscode from 'vscode';
-import { WORKSPACE_OS } from "../../constant/shared/enum";
+import { LINE_END, WORKSPACE_OS } from "../../constant/shared/enum";
+import { safePathRegex, LF, CRLF } from '../../collection/regex';
 import { SCM_COMMAND_SET } from "../../constant/shared/enum";
 
 export {
@@ -9,48 +10,113 @@ export {
     scmGlyphStyleObject,
     scmbaseStyleObject,
     currentBranchCommand,
-    brnachStatusCommand,
+    branchStatusCommand,
     isDirectoryCommand,
     directoryList,
-    gitStatus
+    checkLineEndings,
+    spawnOptions,
+    gitIgnore,
+    pathSanitized,
 };
 
-const currentBranchCommand: Record<string, (path: string) => string> = {
-    [WORKSPACE_OS.WIN32]: (path: string): string => `cd ${path} && ${SCM_COMMAND_SET.branchCurrent}`,
-    [WORKSPACE_OS.POSIX]: (path: string): string => `cd ${path} && ${SCM_COMMAND_SET.branchCurrent}`,
-    [WORKSPACE_OS.WSL]: (path: string): string => `wsl bash -c "cd ${path} && ${SCM_COMMAND_SET.branchCurrent}"`
+// check if path string is safe to mount on shell
+const pathSanitized = (path: string): boolean => safePathRegex.test(path);
+    
+const spawnOptions: Record<string, (path?: string) => D.Scm.Intf.SpawnSyncOption> = {
+    [WORKSPACE_OS.WIN32]: (path?: string) => {
+        return { cwd: path, encoding: 'utf8', shell: process.env.ComSpec };
+    },
+    [WORKSPACE_OS.WSL]: () => {
+        return { encoding: 'utf8', shell: process.env.ComSpec };
+    },
+    [WORKSPACE_OS.POSIX]: () => {
+        return { encoding: 'utf8', shell: true };
+    },
 };
 
-const brnachStatusCommand: Record<string, (path: string) => string> = {
-    [WORKSPACE_OS.WIN32]: (path: string): string => `cd ${path} && ${SCM_COMMAND_SET.branchStatus}`,
-    [WORKSPACE_OS.POSIX]: (path: string): string => `cd ${path} && ${SCM_COMMAND_SET.branchStatus}`,
-    [WORKSPACE_OS.WSL]: (path: string): string => `wsl bash -c "cd ${path} && ${SCM_COMMAND_SET.branchStatus}"`
+const currentBranchCommand: Record<string, D.Scm.Intf.ScmCommandObject> = {
+    [WORKSPACE_OS.WIN32]: {
+        cmd: "git",
+        args: ['branch', '--show-current']
+    },
+    [WORKSPACE_OS.WSL]: {
+        cmd: "wsl",
+        args: ['bash', '-c', `"cd {{PATH}} && ${SCM_COMMAND_SET.branchCurrent}"`]
+    },
+    [WORKSPACE_OS.POSIX]: {
+        cmd: "cd",
+        args: ['{{PATH}} &&', SCM_COMMAND_SET.branchCurrent]
+    },
 };
 
-const isDirectoryCommand: Record<string, (path: string) => string> = {
-    // [WORKSPACE_OS.WIN32]:
-    // [WORKSPACE_OS.POSIX]:
-    [WORKSPACE_OS.WSL]: (path: string) => `wsl bash -c "[ -d ${path} ] && echo 1 || echo 0"`
+const branchStatusCommand: Record<string, D.Scm.Intf.ScmCommandObject> = {
+    [WORKSPACE_OS.WIN32]: {
+        cmd: "git",
+        args: ['status', '-s']
+    },
+    [WORKSPACE_OS.WSL]: {
+        cmd: "wsl",
+        args: ['bash', '-c', `"cd {{PATH}} && ${SCM_COMMAND_SET.branchStatus}"`]
+    },
+    [WORKSPACE_OS.POSIX]: {
+        cmd: "cd",
+        args: ['{{PATH}} &&', SCM_COMMAND_SET.branchStatus]
+    },
 };
 
-const directoryList: Record<string, (path: string) => string> = {
-    [WORKSPACE_OS.WSL]: (path: string) => `wsl bash -c "cd ${path} &&  ls -d */ .*/"`
+const isDirectoryCommand: Record<string, D.Scm.Intf.ScmCommandObject> = {
+    [WORKSPACE_OS.WIN32]: {
+        cmd: "if",
+        args: ['exist {{PATH}} echo 1']
+    },
+    [WORKSPACE_OS.WSL]: {
+        cmd: 'wsl',
+        args: ['bash', '-c', '"[ -d {{PATH}} ] && echo 1 || echo 0"']
+    },
+    [WORKSPACE_OS.POSIX]: {
+        cmd: "",
+        args: ['[ -d {{PATH}} ]', '&&', 'echo 1 || echo 0']
+    },
 };
 
-const gitStatus = (output: string, lineBreak: RegExp): string => `* (${output.trim().split(lineBreak).length})`;
+const directoryList: Record<string, D.Scm.Intf.ScmCommandObject> = {
+    [WORKSPACE_OS.WIN32]: {
+        cmd: "dir",
+        args: ['/b', '/a-d']
+    },
+    [WORKSPACE_OS.WSL]: {
+        cmd: "wsl",
+        args: ['bash', '-c', '"cd {{PATH}} && ls -aF | grep /"']
+    },
+    [WORKSPACE_OS.POSIX]: {
+        cmd: "cd",
+        args: ['{{PATH}} && ls -aF | grep /']
+    },
+};
+
+const gitIgnore: Record<string, D.Scm.Intf.ScmCommandObject> = {
+    [WORKSPACE_OS.WIN32]: {
+        cmd: "type",
+        args: ['.gitignore']
+    },
+    [WORKSPACE_OS.WSL]: {
+        cmd: "wsl",
+        args: ['bash', '-c', '"cd {{PATH}} && cat .gitignore"']
+    },
+    [WORKSPACE_OS.POSIX]: {
+        cmd: "cat",
+        args: ['{{PATH}} && cat .gitignore']
+    },
+} as const;
 
 const transparency: string = "C7";
 
-// ⌥, ⎇, ⍻
-const svg = vscode.Uri.file('C:\\workbench\\editoroverlay\\resource\\Git-Icon-1788C.svg');
-
-const scmSVGStyleObject: D.Scm.Intf.StyleObject = { //: D.Scm.Intf.StyleObject
-    // contentIconPath: "",
+const scmSVGStyleObject: D.Scm.Intf.StyleObject = {
     textDecoration: ";vertical-align:text-top;line-height:1.15;display:inline-block;margin-left:4px;font-size:12px;margin-top:2px;border-top-left-radius:2px;border-bottom-left-radius:2px;",
 };
 
-const scmGlyphStyleObject: D.Scm.Intf.StyleObject = { //: D.Scm.Intf.StyleObject
-    contentText: "⌥",
+const scmGlyphStyleObject: D.Scm.Intf.StyleObject = {
+    contentText: "⌥", // ⌥, ⎇, ⍻
     fontWeight: "bolder",
     color: "#FFFFFF" + transparency,
     backgroundColor: "#F05133" + transparency,
@@ -63,4 +129,30 @@ const scmbaseStyleObject: D.Scm.Intf.StyleObject = {
     color: "#777777" + transparency,
     // backgroundColor: "#323232" + transparency,
     textDecoration: ";font-size:12px;margin-top:2px;border-top-right-radius:2px;border-bottom-right-radius:2px;padding-left:2px;padding-right:2px;",
+};
+
+/**
+ * need to refactor the return null/undefined
+ * 
+ * perhaps need generic error handling module/class 
+ * 
+ * @param output 
+ * @returns 
+ */
+const checkLineEndings = (output: string): null | undefined | RegExp | string => {
+    // check for crlf
+    if (output.includes(LINE_END.CRLF)) {
+        // check if both crlf and lf are present. this indicates mixed line endings.
+        if (output.includes(LINE_END.LF) && !output.includes(LINE_END.CRLF)) {
+            return undefined;
+        }
+        return CRLF;
+    }
+
+    // check for lf
+    if (output.includes(LINE_END.LF)) {
+        return LF;
+    }
+
+    return null;
 };

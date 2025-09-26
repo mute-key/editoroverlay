@@ -136,11 +136,11 @@ export const DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET = {
 export const WORKSPACE_STATE = {
     os: undefined,
     isSourceControlled: false,
+    currentWorkspaceRoot: undefined,
     uriPathProp: undefined,
     crossOSWorkspace: false,
     repository: new Map,
-    workspacePath: [],
-    excludeRepoSearch: [],
+    workspacePath: [],    
 };
 
 export const WORKSPACE_ENV_UTIL = {
@@ -152,9 +152,20 @@ export const WORKSPACE_ENV_UTIL = {
     directoryFunc: undefined
 };
 
-export const CURRENT_REPOSITORY = {
-    uri: undefined,
+export const REPOSITORY_INFO = {
+    isModified: false,
+    relativePath: undefined,
     currentBranch: undefined,
+    ignored: [],
+    parsed: [],
+};
+
+export const CURRENT_EDITOR_SCM_STATE = {
+    uri: undefined,
+    isActive: false,
+    branchName: undefined,
+    branchStatus: undefined,
+    additionalInfo: undefined
 };
 
 export const SCM_OVERLAY_REFERENCE = {

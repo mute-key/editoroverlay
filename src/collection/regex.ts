@@ -34,6 +34,7 @@ export {
     fsLinuxSplit,
     CRLF,
     LF,
+    safePathRegex
 };
 
 declare namespace L {
@@ -81,3 +82,5 @@ const fsLinuxSplit: RegExp = /\//g;
 
 const CRLF: RegExp = /\r\n/g;
 const LF: RegExp = /\n/g;
+
+const safePathRegex = /[\r\n;'"`&|><$(){}\[\]!*]/g;

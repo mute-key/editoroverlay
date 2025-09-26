@@ -39,3 +39,14 @@ export const enum ICON_TYPE {
     SVG = "svg",
     GLYPH = "glyph",
 }
+
+export const enum BRANCH_ADDITIONAL_INFO {
+    IGNORED = " #ignored-path",
+    ACTIVE = " #up-to-date",
+    INACTIVE = " #ignored-path|up-to-date",
+}
+
+export const enum LINE_END {
+    CRLF = "\r\n",
+    LF = "\n",
+}

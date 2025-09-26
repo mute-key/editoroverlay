@@ -23,12 +23,12 @@ export {
 const windowStateChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
     return vscode.window.onDidChangeWindowState((event: vscode.WindowState): void => {
         if (event.focused) {
-            
+
             // setWorkspaceSystem();
 
             if (vscode.window.activeTextEditor) {
                 updateIndentOption(vscode.window.activeTextEditor);
-                decorationState.appliedHighlight[0] = renderGroupIs(vscode.window.activeTextEditor, [hex.cursorOnly]);    
+                decorationState.appliedHighlight[0] = renderGroupIs(vscode.window.activeTextEditor, [hex.cursorOnly]);
             }
         } else {
             resetAllDecoration();
@@ -72,6 +72,7 @@ const activeEditorChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decor
 
             updateIndentOption(editor);
 
+
             // this initially caused another issue with engine update + cross-os support. 
             // here seems is the correct place write place to reset all decorations when 
             // active editor changes, i think.
@@ -79,10 +80,9 @@ const activeEditorChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decor
                 resetAllDecoration();
             }
 
-
             setScmBranch(editor);
 
-            decorationState.appliedHighlight[0] = renderGroupIs(editor, [hex.cursorOnly]);            
+            decorationState.appliedHighlight[0] = renderGroupIs(editor, [hex.cursorOnly]);
         }
     });
 };

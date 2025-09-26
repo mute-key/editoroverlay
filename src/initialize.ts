@@ -32,7 +32,6 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<(v
 
         // extensionContext.
         // extensionContext.asAbsolutePath
-
         Error.setPackageName(extensionContext.extension.packageJSON.name);
 
         const loadConfig = await config.loadConfiguration(extensionContext);
