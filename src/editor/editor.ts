@@ -5,11 +5,12 @@ import * as hex from '../constant/numeric/hexadecimal';
 import * as bin from '../constant/numeric/binary';
 import * as regex from '../collection/regex';
 import { DECORATION_STATE, SELECTION_KIND_LIST } from '../store/state';
-import { clearDiagnosticText, diagnosticInfo } from '../workspace/problem/status';
+import { clearDiagnosticText, diagnosticInfo } from '../editor/status/diagnostic';
 import { cursorOnlyHighlightRange, singelLineHighlightRange, multiLineHighlightRange, multiCursorHighlightRange, clearEveryHighlight } from './highlight/highlight';
 import { cursorOnlySelection, singleLineSelection, multilineSelection, multiCursorSelection, bindStatusContentTextState, clearSelectionTextBuffer } from './selection/selection';
 import { blankRange, updateRangeMetadata } from './range';
 import { clearScmOverlay, renderScmOverlay } from './scm/scm';
+import { DECORATION_OPTION_CONFIG } from '../constant/config/object';
 
 export {
     updateIndentOption,
@@ -20,7 +21,9 @@ export {
     prepareRenderGroup,
     renderGroupIs,
     bindEditorDecoration,
-    resetDecoration
+    resetDecoration,
+    setCreateDecorationTypeQueue,
+    createEditorDecorationTypeOfQueue
 };
 
 const decorationState = DECORATION_STATE as D.Decoration.Intf.State;
@@ -28,6 +31,53 @@ const decorationState = DECORATION_STATE as D.Decoration.Intf.State;
 const createEditorDecorationType = (styleAppliedConfig: any): vscode.TextEditorDecorationType => vscode.window.createTextEditorDecorationType(styleAppliedConfig as vscode.DecorationRenderOptions);;
 
 const applyDecoration = (setDecorations: D.Editor.Tp.RenderOverlay, decoraiton: vscode.TextEditorDecorationType, range: vscode.Range[]): void => setDecorations(decoraiton, range);
+
+interface decorationTypeQueue {
+    name: string
+    count: number
+    defaultOption?: D.Decoration.Intf.RenderInstanceOption
+    reference: vscode.TextEditorDecorationType[] // backward reference object to set the decorationType
+    followUpFunc?: () => void
+}
+
+/**
+ * length should be 4,
+ * 0. highlight
+ * 1. selection
+ * 2. diagnostic
+ * 3. scm
+ * 4. etc
+ * 
+ * 그리고 저 객체들 참조링크 걸어보자
+ * 
+ */
+const CreateDecorationTypeQueue = [] as (decorationTypeQueue)[];
+
+// const decorationOptionBuffer = { ...DECORATION_OPTION_CONFIG } as D.Decoration.Intf.RenderInstanceOption;
+
+const setCreateDecorationTypeQueue = (queue: decorationTypeQueue) => CreateDecorationTypeQueue.push(queue);;
+
+const createEditorDecorationTypeOfQueue = () => {
+    // console.log('CreateDecorationTypeQueue', CreateDecorationTypeQueue);
+
+    // decorationOptionBuffer.isWholeLine = true;
+    // decorationOptionBuffer.rangeBehavior = vscode.DecorationRangeBehavior.ClosedClosed;
+
+    for (const queue of CreateDecorationTypeQueue) {
+        const decorationType: vscode.TextEditorDecorationType[] = [];
+        let l = queue.count;
+        while (l--) {
+            decorationType.push(vscode.window.createTextEditorDecorationType(queue.defaultOption ? queue.defaultOption : {}));
+        }
+        queue.reference.length = 0;
+        queue.reference.push(...decorationType);
+
+        if (queue.followUpFunc) {
+            queue.followUpFunc();
+        }
+
+    }
+};
 
 /**
  * [ self-explantory ]
@@ -99,7 +149,7 @@ const setFunctionList = (config: D.Config.Intf.ConfigReady, fnStack: typeof rend
     if (config.generalConfigInfo.scmTextEnabled) {
         renderFuncBuffer.push(renderScmOverlay);
     }
-    
+
     // this method will also refresh whole rendering function stack 
     // if configuration is changed and whole features needs to be
     //  reloaded just in case. 

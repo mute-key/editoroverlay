@@ -351,11 +351,43 @@ export const DIAGNOSTIC_DECORATION_STYLE_CONFIG = {
     },
 } as const;
 
-export const SCM_CONFIG = {
-    enabled: undefined,
-    iconType: undefined,
-    overlayLinePosition: undefined,
+export const SCM_TEXT_STYLE_CONFIG: Record<string, any> = {
+    color: undefined,
+    colorOpacity: undefined,
+    backgroundColor: undefined,
+    backgroundOpacity: undefined,
+    fontStyle: undefined,
+    fontWeight: undefined
 };
+
+export const SCM_CONFIG: Record<string, any> = {
+    enabled: undefined,
+    enabledWin32ToWsl: undefined,
+    WSLRemoteDirectoryAccessMethod: undefined,
+    iconType: undefined,
+    overlayLinePosition: 0,
+    activeTextStyle: {
+        ...SCM_TEXT_STYLE_CONFIG,
+        
+    },
+    inactiveTextStyle: {
+        ...SCM_TEXT_STYLE_CONFIG,
+        defaultText: undefined,
+    },
+    notRepositoryTextStyle: {
+        ...SCM_TEXT_STYLE_CONFIG,
+        defaultText: undefined,
+    },
+    SVGIconDecoration: undefined,
+    TextOverlayDecoration: undefined,
+};
+
+export const SCM_OVERLAY_DECORATION_LIST_CONFIG: [D.Numeric.Key.Hex, string][] = [
+    [hex.scmIcon, "activeTextStyle"],
+    [hex.scmBase, "activeTextStyle"],
+    [hex.scmParsing, "inactiveTextStyle"],
+    [hex.scmExternal, "notRepositoryTextStyle"],
+];
 
 export const SCM_CONFIGURATION_LIST_CONFIG: D.Common.Tp.TextList = [
     "enabled",

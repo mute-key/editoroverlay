@@ -138,18 +138,20 @@ export const WORKSPACE_STATE = {
     isSourceControlled: false,
     currentWorkspaceRoot: undefined,
     uriPathProp: undefined,
-    crossOSWorkspace: false,
+    crossOSWorkspace: undefined,
     repository: new Map,
-    workspacePath: [],    
+    workspacePath: [],
 };
 
 export const WORKSPACE_ENV_UTIL = {
+    shell: undefined,
     extRoot: undefined,
     dirDivider: undefined,
     iconRoot: undefined,
     lineBreak: undefined,
     pathSplit: undefined,
-    directoryFunc: undefined
+    directoryToUri: undefined,
+    execFunc: undefined
 };
 
 export const REPOSITORY_INFO = {
@@ -161,6 +163,7 @@ export const REPOSITORY_INFO = {
 };
 
 export const CURRENT_EDITOR_SCM_STATE = {
+    parsed: false,
     uri: undefined,
     isActive: false,
     branchName: undefined,
@@ -169,6 +172,6 @@ export const CURRENT_EDITOR_SCM_STATE = {
 };
 
 export const SCM_OVERLAY_REFERENCE = {
-    svgIcon: undefined,
-    range: undefined
+    svgIcon: {},
+    range: {}
 };

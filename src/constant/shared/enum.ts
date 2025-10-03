@@ -1,19 +1,14 @@
 export const enum URI_PATH_TYPE {
     WINDOW = 'fsPath',
     POSIX = 'fsPath',
-    WIN_TO_WSL = 'path',
+    WSL = 'fsPath',
+    REMOTE = "path"
 }
 
 export const enum DIRECTORY_DELIMITER {
     WIN = '\\',
     POSIX = '/',
 }
-
-export const enum SCM_COMMAND_SET {
-    branchCurrent = "git branch --show-current",
-    branchStatus = "git status -s",
-    stashList = "git stash list"
-};
 
 export const enum SCM_IS_DERECTORY {
     wsl = ""
@@ -25,6 +20,8 @@ export const enum SCM_RESOURCE_PATH {
     POSIX_ICON_ROOT = "resource/scm/icon",
     SVG_INACTIVE = "Git-Icon-inactive.svg",
     SVG_ACTIVE = "Git-Icon-active.svg",
+    SVG_NOT_REPOSITORY = "Git-Icon-not-repository.svg",
+    EXTERNAL = "workspace-external.svg",
 }
 
 export const enum WORKSPACE_OS {
@@ -33,6 +30,7 @@ export const enum WORKSPACE_OS {
     LINUX = "linux",
     MAC = "darwin",
     POSIX = "posix",
+    REMOTE = "remote"
 }
 
 export const enum ICON_TYPE {

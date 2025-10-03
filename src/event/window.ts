@@ -3,11 +3,12 @@ import type * as D from '../type/type';
 import * as vscode from 'vscode';
 import * as hex from '../constant/numeric/hexadecimal';
 
-import { resetEditorDiagnosticStatistics, resetWorkspaceDiagnosticStatistics } from '../workspace/problem/diagnostic';
+import { resetEditorDiagnosticStatistics, resetWorkspaceDiagnosticStatistics } from '../diagnostic/diagnostic';
 import { updateRangeMetadata } from '../editor/range';
 import { forceDispatchEditorChange } from '../editor/selection/selection';
 import { renderGroupIs, resetAllDecoration, updateIndentOption } from '../editor/editor';
-import { initializeScm, setScmBranch } from '../editor/scm/scm';
+import { resetEditorParsed, activeEditorScm } from '../editor/scm/scm';
+import ErrorHandler from '../util/error';
 
 export {
     windowStateChanged,
@@ -57,8 +58,8 @@ const activeEditorChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decor
             //     return;
             // }
 
-            // if (Error.check()) {
-            //     Error.notify(1500);
+            // if (ErrorHandler.check()) {
+            //     ErrorHandler.notify(1500);
             // }
 
             forceDispatchEditorChange(editor);
@@ -72,7 +73,6 @@ const activeEditorChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decor
 
             updateIndentOption(editor);
 
-
             // this initially caused another issue with engine update + cross-os support. 
             // here seems is the correct place write place to reset all decorations when 
             // active editor changes, i think.
@@ -80,9 +80,9 @@ const activeEditorChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decor
                 resetAllDecoration();
             }
 
-            setScmBranch(editor);
+            resetEditorParsed();
 
-            decorationState.appliedHighlight[0] = renderGroupIs(editor, [hex.cursorOnly]);
+            decorationState.appliedHighlight[0] = renderGroupIs(vscode.window.activeTextEditor as vscode.TextEditor, [hex.cursorOnly]);
         }
     });
 };
@@ -98,6 +98,9 @@ const editorOptionChanged: D.Event.Tp.DecorationEventFunc = (context: D.Event.In
 
 const selectionChanged: D.Event.Tp.DecorationEventFunc = (context /** { decorationState } */): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) => {
+
+
+        // event.kind === vscode.TextEditorSelectionChangeKind.Keyboard
         /**
          * i initially thought maybe dispose this event and re-bind the event if 
          * tab change event occurs but that would be the wrong approach to solve the issue. 
@@ -123,6 +126,8 @@ const selectionChanged: D.Event.Tp.DecorationEventFunc = (context /** { decorati
         context.decorationState.appliedHighlight[0] = renderGroupIs(vscode.window.activeTextEditor as vscode.TextEditor, context.decorationState.appliedHighlight);
     });
 };
+
+
 
 const tabChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
     return vscode.window.tabGroups.onDidChangeTabs((event: vscode.TabChangeEvent) => {

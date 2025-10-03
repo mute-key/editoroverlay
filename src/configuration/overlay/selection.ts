@@ -18,7 +18,7 @@ const convertPositionToDecorationRenderOption = (textPosition: any, SelectionDec
             : SelectionDecorationStyle.selectionDecorationOption[textPosition.position[idx]];
         const contentTextRenderOption = setContentTextOnDecorationRenderOption(option as any, text as string);
         // prefix, postfix refactored to hex from symbols
-        if (Number(text) === hex.prefixHex || Number(text) === hex.postfixHex) { 
+        if (Number(text) === hex.prefixHex || Number(text) === hex.postfixHex) {
             textPosition.position[idx] = contentTextRenderOption.after.contentText;
         }
         return contentTextRenderOption;
@@ -78,8 +78,8 @@ const createSharedObjectSync = (textOftarget: any, textOfSource: any) => {
         setMultiCursorEditPosition(placeholder as string, parseInt(pos) as unknown as number);
     });
 
-    setMultiCursorContentRef(),
-        setMultiCursorContext();
+    setMultiCursorContentRef();
+    setMultiCursorContext();
     setContextAccmulator();
 };
 

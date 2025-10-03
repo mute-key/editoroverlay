@@ -1,3 +1,27 @@
+
+this configuration is to choose how vscode connect to remote directory of wsl. 
+wsl is effectively a virtual machine that runs on hyper-v on windows, making it to 
+communicate over the local network within the host enviroment, therefore wsl 
+enviroment is a server that runs on local network. This means that you can also 
+mount the wsl ext4 partition as a network drive so you can use UNC path to access
+directories in wsl partition. meaning, node spawn() can have cwd option. 
+
+next method is using a shell to create child process of process already running. 
+the problem is that because host system, windows can't open 
+it uses wsl executable to excute the commands within wsl enviroment, which will 
+be a cross-os bridged operations. the drawback of this method would be the security 
+measures due to directory path should be dynamically put in as a string literal 
+to the remote comamnd to be executed in wsl enviroment. 
+
+this is all becuase, node spawn cwd would not work 
+
+there are multiple method 
+has been implemented to validate the full directory path is a valid path as a
+truthful drectories as well as checking with regex test, but you will have be 
+extra careful with directory names in every directory paths.
+
+
+
 ### Backlog
 
 this is a temporary note & backlog  
@@ -36,6 +60,35 @@ this is a temporary note & backlog
       structure refactoring. i would like to work on this eventually.
 
 | version log ===============================================================================================
+
+
+| 1.6.3 |
+
+
+- [+] added git branch + status information overlay.
+      if the current file on editor is ignored, the overlay will display greyed out icon with tag message
+      if the current file is indexed by git, the overlay will display active svg, with total numbers of
+      changes in current branch include mod, add, del and etc.
+- [+] added git overlay configruations in setting. 
+
+- [0] bug fix on warning source not displaying on overlay.
+
+- [_] initially, cross-os-workspace was going to use posix uri path, but it would be not very secure, 
+      although i can be safe but the problem is that it would need change the directory within the 
+      shell, meaning it would need change directory with string literal has been parsed on userland. 
+      more i think of, no method would make it as secure as unc path with cwd option to nodejs spanw(),
+      setting option: editoroverlay.scmText.WSLRemoteDirectoryAccessMethod
+      -> "uri | over the network remote address like path", "e.g, protocol://path/to/resource"
+      is removed and will enforce to use unc path.
+      althoguh, this can be re-implemented for ssh-remote workspace. now that im thinking, there can be 
+      couple of optiopns to make the feature secure, one method would be an remote-installed extenion 
+      that will serve the functions and stream back the data to the extension on host-enviroment. or 
+      function that will add path to openned shell process, but i will need to learn and research a lot more. 
+      then again, this would take a weeks to make it so im not rushing to implement it yet and no plan 
+      for now as well.
+
+
+************************************************************************************************************
 
 | 1.6.2 |
 

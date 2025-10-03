@@ -5,12 +5,12 @@ import * as config from './configuration/load';
 import * as commands from './command/register';
 import * as events from './event/event';
 import * as hex from './constant/numeric/hexadecimal';
-import Error from './util/error';
-import { clearDecorationState } from './editor/editor';
+import ErrorHandler from './util/error';
+import { clearDecorationState, createEditorDecorationTypeOfQueue } from './editor/editor';
 import { prepareRenderGroup, renderGroupIs } from './editor/editor';
 import { checkActiveThemeKind } from './command/preset';
 import { updateRangeMetadata } from './editor/range';
-import { initializeScm, setScmBranch } from './editor/scm/scm';
+import { initializeScm, activeEditorScm } from './editor/scm/scm';
 
 export {
     initialize
@@ -32,7 +32,7 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<(v
 
         // extensionContext.
         // extensionContext.asAbsolutePath
-        Error.setPackageName(extensionContext.extension.packageJSON.name);
+        ErrorHandler.setPackageName(extensionContext.extension.packageJSON.name);
 
         const loadConfig = await config.loadConfiguration(extensionContext);
 
@@ -49,9 +49,11 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<(v
         const activeEditor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
 
         await prepareRenderGroup(configInfo as D.Config.Intf.ConfigReady);
+        
+        await createEditorDecorationTypeOfQueue();
 
         if (activeEditor) {                                 // if user is on editor
-            setScmBranch(activeEditor);
+            activeEditorScm(activeEditor.document.uri);
             updateRangeMetadata(activeEditor);              // set selection range metadata for the editor
             clearDecorationState(loadConfig.decoration as D.Editor.Tp.DecorationState);    // initialize decoration state
             loadConfig.decoration.appliedHighlight[0] = renderGroupIs(activeEditor, [hex.cursorOnly]);
@@ -80,6 +82,7 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<(v
             events.window.editorOptionChanged(eventContext),
             events.window.selectionChanged(eventContext),
             events.window.windowStateChanged(eventContext),
+            events.workspace.newEditorSaved(),
             events.workspace.configChanged(eventContext),
             events.workspace.changeWorkspaceFolders(eventContext),
             events.language.diagnosticChanged(eventContext),

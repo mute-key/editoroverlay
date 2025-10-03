@@ -60,35 +60,35 @@
                 "title": "Apply Preset Configuration",
                 "category": "CursorLine Highlight",
                 "shortTitle": "applyPreset",
-                "order": 0
+                "order": 1
             },
             {
                 "command": "editoroverlay.setColor",
                 "title": "Set Color Configuration",
                 "category": "CursorLine Highlight",
                 "shortTitle": "setColor",
-                "order": 1
+                "order": 2
             },
             {
                 "command": "editoroverlay.setContrast",
                 "title": "Set Contrast Configuration",
                 "category": "CursorLine Highlight",
                 "shortTitle": "setContrast",
-                "order": 2
+                "order": 3
             },
             {
                 "command": "editoroverlay.setOrientation",
                 "title": "Set Orientation Configuration",
                 "category": "CursorLine Highlight",
                 "shortTitle": "setOrientation",
-                "order": 3
+                "order": 4
             },
             {
                 "command": "editoroverlay.restoreToDefaultConfiguration",
                 "title": "Reset User Configuration",
                 "category": "CursorLine Highlight",
                 "shortTitle": "restoreToDefaultConfiguration",
-                "order": 4
+                "order": 5
             }
         ],
         "configuration": [
@@ -1209,32 +1209,263 @@
                 "title": "%title.scm%",
                 "properties": {
                     "editoroverlay.scmText.enabled": {
+                        "order": 1,
                         "type": "boolean",
                         "default": true,
-                        "markdownDescription": "%description.scmText.enabled%",
-                        "order": 0
+                        "markdownDescription": "%description.scmText.enabled%"
                     },
-                    
+                    "editoroverlay.scmText.enabledWin32ToWsl": {
+                        "order": 2,
+                        "type": "boolean",
+                        "default": true,
+                        "markdownDescription": "%description.scmText.enabledWin32ToWsl%"
+                    },
+                    "editoroverlay.scmText.WSLRemoteDirectoryAccessMethod": {
+                        "order": 3,
+                        "type": "string",
+                        "enum": [
+                            "unc"
+                        ],
+                        "enumItemLabels": [
+                            "unc | local network drive like path (recommended)"
+                        ],
+                        "enumDescriptions": [
+                            "e.g, \\\\server\\share"
+                        ],
+                        "default": "unc",
+                        "markdownDescription": "%description.scmText.WSLRemoteDirectoryAccessMethod%",
+                        "additionalProperties": false
+                    },
                     "editoroverlay.scmText.iconType": {
+                        "order": 4,
                         "type": "string",
                         "enum": [
                             "svg",
                             "glyph"
                         ],
                         "default": "svg",
-                        "description": "%description.scmText.iconType%",
-                        "order": 1
+                        "markdownDescription": "%description.scmText.iconType%"
                     },
                     "editoroverlay.scmText.overlayLinePosition": {
-                        "type": "string",
+                        "order": 5,
+                        "type": "number",
                         "enum": [
+                            0,
+                            1,
+                            -1
+                        ],
+                        "enumItemLabels": [
                             "inline",
                             "nextLine",
                             "beforeLine"
                         ],
-                        "default": "inline",
-                        "description": "%description.scmText.linePosition%",
-                        "order": 2
+                        "default": 0,
+                        "markdownDescription": "%description.scmText.linePosition%",
+                        "additionalProperties": false
+                    },
+                    "editoroverlay.scmText.activeTextStyle": {
+                        "order": 6,
+                        "type": "object",
+                        "scope": "resource",
+                        "default": {
+                            "color": "%color.scmText.active.text.default%",
+                            "colorOpacity": 0.77,
+                            "backgroundColor": "%color.scmText.active.background.default%",
+                            "backgroundOpacity": 1,
+                            "fontStyle": "normal",
+                            "fontWeight": "bolder"
+                        },
+                        "markdownDescription": "%description.scmText.activeTextStyle%",
+                        "additionalProperties": false,
+                        "properties": {
+                            "color": {
+                                "type": "string",
+                                "default": "%color.scmText.active.text.default%",
+                                "pattern": "%regex.color.pattern%",
+                                "patternErrorMessage": "Invalid Format"
+                            },
+                            "colorOpacity": {
+                                "type": "number",
+                                "default": 1,
+                                "minimum": 0,
+                                "maximum": 1
+                            },
+                            "backgroundColor": {
+                                "type": "string",
+                                "default": "%color.scmText.active.background.default%",
+                                "pattern": "%regex.color.pattern%",
+                                "patternErrorMessage": "Invalid Format"
+                            },
+                            "backgroundOpacity": {
+                                "type": "number",
+                                "default": 1,
+                                "minimum": 0,
+                                "maximum": 1
+                            },
+                            "fontStyle": {
+                                "type": "string",
+                                "enum": [
+                                    "italic",
+                                    "normal"
+                                ],
+                                "default": "italic"
+                            },
+                            "fontWeight": {
+                                "type": "string",
+                                "enum": [
+                                    "lighter",
+                                    "light",
+                                    "normal",
+                                    "bold",
+                                    "bolder"
+                                ],
+                                "default": "bolder"
+                            }
+                        }
+                    },
+                    "editoroverlay.scmText.inactiveTextStyle": {
+                        "order": 7,
+                        "type": "object",
+                        "scope": "resource",
+                        "default": {
+                            "defaultText": "%text.scmText.inactiveTextStyle.default%",
+                            "color": "%color.scmText.inactive.text.default%",
+                            "colorOpacity": 0.77,
+                            "backgroundColor": "%color.scmText.inactive.background.default%",
+                            "backgroundOpacity": 1,
+                            "fontStyle": "normal",
+                            "fontWeight": "bolder"
+                        },
+                        "markdownDescription": "%description.scmText.inactiveTextStyle%",
+                        "additionalProperties": false,
+                        "properties": {
+                            "defaultText": {
+                                "type": "string",
+                                "default": "%text.scmText.inactiveTextStyle.default%",
+                                "patternErrorMessage": "Invalid Format"
+                            },
+                            "color": {
+                                "type": "string",
+                                "default": "%color.scmText.inactive.text.default%",
+                                "pattern": "%regex.color.pattern%",
+                                "patternErrorMessage": "Invalid Format"
+                            },
+                            "colorOpacity": {
+                                "type": "number",
+                                "default": 1,
+                                "minimum": 0,
+                                "maximum": 1
+                            },
+                            "backgroundColor": {
+                                "type": "string",
+                                "default": "%color.scmText.inactive.background.default%",
+                                "pattern": "%regex.color.pattern%",
+                                "patternErrorMessage": "Invalid Format"
+                            },
+                            "backgroundOpacity": {
+                                "type": "number",
+                                "default": 1,
+                                "minimum": 0,
+                                "maximum": 1
+                            },
+                            "fontStyle": {
+                                "type": "string",
+                                "enum": [
+                                    "italic",
+                                    "normal"
+                                ],
+                                "default": "italic"
+                            },
+                            "fontWeight": {
+                                "type": "string",
+                                "enum": [
+                                    "lighter",
+                                    "light",
+                                    "normal",
+                                    "bold",
+                                    "bolder"
+                                ],
+                                "default": "bolder"
+                            }
+                        }
+                    },
+                    "editoroverlay.scmText.notRepositoryTextStyle": {
+                        "order": 8,
+                        "type": "object",
+                        "scope": "resource",
+                        "default": {
+                            "defaultText": "%text.scmText.notRepositoryTextStyle.default%",
+                            "color": "%color.scmText.notRepository.text.default%",
+                            "colorOpacity": 0.77,
+                            "backgroundColor": "%color.scmText.notRepository.background.default%",
+                            "backgroundOpacity": 1,
+                            "fontStyle": "normal",
+                            "fontWeight": "bolder"
+                        },
+                        "markdownDescription": "%description.scmText.notRepositoryTextStyle%",
+                        "additionalProperties": false,
+                        "properties": {
+                            "defaultText": {
+                                "type": "string",
+                                "default": "%text.scmText.notRepositoryTextStyle.default%",
+                                "patternErrorMessage": "Invalid Format"
+                            },
+                            "color": {
+                                "type": "string",
+                                "default": "%color.scmText.notRepository.text.default%",
+                                "pattern": "%regex.color.pattern%",
+                                "patternErrorMessage": "Invalid Format"
+                            },
+                            "colorOpacity": {
+                                "type": "number",
+                                "default": 1,
+                                "minimum": 0,
+                                "maximum": 1
+                            },
+                            "backgroundColor": {
+                                "type": "string",
+                                "default": "%color.scmText.notRepository.background.default%",
+                                "pattern": "%regex.color.pattern%",
+                                "patternErrorMessage": "Invalid Format"
+                            },
+                            "backgroundOpacity": {
+                                "type": "number",
+                                "default": 1,
+                                "minimum": 0,
+                                "maximum": 1
+                            },
+                            "fontStyle": {
+                                "type": "string",
+                                "enum": [
+                                    "italic",
+                                    "normal"
+                                ],
+                                "default": "italic"
+                            },
+                            "fontWeight": {
+                                "type": "string",
+                                "enum": [
+                                    "lighter",
+                                    "light",
+                                    "normal",
+                                    "bold",
+                                    "bolder"
+                                ],
+                                "default": "bolder"
+                            }
+                        }
+                    },
+                    "editoroverlay.scmText.SVGIconDecoration": {
+                        "order": 9,
+                        "type": "string",
+                        "default": ";vertical-align:text-top;line-height:1.15;display:inline-block;margin-left:4px;font-size:12px;margin-top:2px;border-top-left-radius:2px;border-bottom-left-radius:2px;",
+                        "markdownDescription": "%description.scmText.baseTextStyle%"
+                    },
+                    "editoroverlay.scmText.TextOverlayDecoration": {
+                        "order": 10,
+                        "type": "string",
+                        "default": ";font-size:12px;margin-top:2px;border-top-right-radius:2px;border-bottom-right-radius:2px;padding-left:2px;padding-right:2px;",
+                        "markdownDescription": "%description.scmText.baseTextStyle%"
                     }
                 }
             }

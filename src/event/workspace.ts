@@ -3,9 +3,11 @@ import type * as D from '../type/type';
 import * as vscode from 'vscode';
 import { CONFIG_SECTION } from '../constant/config/object';
 import { configurationChanged } from '../configuration/shared/update';
+import { activeEditorScm, resetEditorParsed } from '../editor/scm/scm';
 
 export {
     configChanged,
+    newEditorSaved,
     changeWorkspaceFolders
 };
 
@@ -18,6 +20,15 @@ const configChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decorationS
                 });
                 section && configurationChanged(configInfo, section);                   // only changed section update
             }
+        }
+    });
+};
+
+const newEditorSaved = (): vscode.Disposable => {
+    return vscode.workspace.onDidSaveTextDocument((event: vscode.TextDocument) => {
+        if (!event.isDirty) {
+            resetEditorParsed();
+            activeEditorScm(event.uri);
         }
     });
 };

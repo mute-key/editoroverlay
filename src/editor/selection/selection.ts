@@ -26,7 +26,7 @@ import { INDENT_INFO, SELECTION_CONTENT_TEXT, SELECTION_KIND_LIST, SELECTION_KIN
 import { SELECTION_CONTENT_TEXT_CONFIG_KEY } from '../../constant/config/enum';
 import { DECORATION_OPTION_CONFIG } from '../../constant/config/object';
 import { createLineRange, blankRange } from '../range';
-import { resetDecoration } from '../editor';
+import { resetDecoration, setCreateDecorationTypeQueue } from '../editor';
 import { addCursor, allOccurrence, cursorMovement, cursorOnEndOfLines, firstSelectionAsBaseLine, nextOccurrence, nextOccurrenceInit, normalizeEditorSelection, sortEditorSelection } from './multiCursor/multiCursor';
 import { replicateColsRenderOption, replicateNthRenderOption, colRenderOptionOverride, nthRenderOptionOverride } from './multiCursor/renderOption';
 
@@ -305,14 +305,14 @@ const buildFunctionChain = (cursorType: D.Numeric.Key.Hex, placeholder: any[], s
  */
 const setSelectionTextbuffer = (cursorType: D.Numeric.Key.Hex, length: number, placeholder: any[]): void => {
 
-    decorationOptionBuffer.isWholeLine = true;
-    decorationOptionBuffer.rangeBehavior = vscode.DecorationRangeBehavior.ClosedClosed;
-
     let lengthBuffer = length;
-    while (lengthBuffer--) {
-        const decorationType = vscode.window.createTextEditorDecorationType(decorationOptionBuffer);
-        selectionTextBuffer[cursorType].push(decorationType);
-    }
+    decorationOptionBuffer.isWholeLine = true;
+    decorationOptionBuffer.rangeBehavior = vscode.DecorationRangeBehavior.ClosedOpen;
+
+    // while (lengthBuffer--) {
+    //     const decorationType = vscode.window.createTextEditorDecorationType(decorationOptionBuffer);
+    //     selectionTextBuffer[cursorType].push(decorationType);
+    // }
 
     if (selectionDecorationOption[cursorType].length > 0) {
         selectionDecorationOption[cursorType] = [];
@@ -344,6 +344,22 @@ const setSelectionTextbuffer = (cursorType: D.Numeric.Key.Hex, length: number, p
     const option = selectionStatusDecorationOption[cursorType];
     setDeocorationOption(cursorType, option.renderOptionHex);
     buildFunctionChain(cursorType, placeholder, option.fnObject);
+
+    // console.log(cursorType, selectionContentText[cursorType]?.contentText);
+    
+
+    setCreateDecorationTypeQueue({
+        name: 'selection' + cursorType,
+        count: lengthBuffer,
+        defaultOption: { ...decorationOptionBuffer },
+        reference: selectionTextBuffer[cursorType],
+        followUpFunc: () => {
+            // this works but not the best method. going to refactor. 
+            const option = selectionStatusDecorationOption[cursorType];
+            setDeocorationOption(cursorType, option.renderOptionHex);
+            buildFunctionChain(cursorType, placeholder, option.fnObject);
+        }
+    });
 };
 
 /**

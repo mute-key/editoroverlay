@@ -4,3 +4,4 @@ dist
 *.vsix
 dist/extension.js
 dist/extension.js.map
+setting.json

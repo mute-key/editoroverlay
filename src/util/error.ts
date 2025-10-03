@@ -43,8 +43,9 @@ class ErrorHelper {
     };
 
     protected static pushErrorMessage() {
+        // SYSTEM_MESSAGE.CONFIGURATION_ERROR
         return vscode.window.showErrorMessage(
-            SYSTEM_MESSAGE.CONFIGURATION_ERROR, ...['Fix Configuration', 'Ignore']
+            this.errorList[0].get().message, ...['Fix Configuration', 'Ignore']
         );
     };
 
@@ -71,7 +72,7 @@ class ErrorHelper {
     }
 }
 
-export default abstract class Error extends ErrorHelper {
+export default abstract class ErrorHandler extends ErrorHelper {
     public static configurationUpdated() {
         this.notified = false;
         this.ignored = false;

@@ -32,8 +32,9 @@ export {
     selectionOnly,
     fsWinSplit,
     fsLinuxSplit,
-    CRLF,
-    LF,
+    crlfRegex,
+    lfRegex,
+    pathRegex,
     safePathRegex
 };
 
@@ -80,7 +81,9 @@ const selectionOnly: RegExp = /selectionOnly/s;
 const fsWinSplit: RegExp = /\\/g;
 const fsLinuxSplit: RegExp = /\//g;
 
-const CRLF: RegExp = /\r\n/g;
-const LF: RegExp = /\n/g;
+const crlfRegex: RegExp = /\r\n/g;
+const lfRegex: RegExp = /\n/g;
 
-const safePathRegex = /[\r\n;'"`&|><$(){}\[\]!*]/g;
+const pathRegex: RegExp = /\{\{PATH\}\}/g;
+
+const safePathRegex = /^\/\/?([a-zA-Z0-9._-]+\/\/?)*[a-zA-Z0-9._-]+\/\/?$/;

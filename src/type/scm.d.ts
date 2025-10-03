@@ -14,29 +14,34 @@ declare namespace Intf {
 
     interface ScmCommandObject {
         cmd: string
-        args: (null | string)[]
+        args: string[]
     }
 
     interface WorkspaceState {
         os?: string
         isSourceControlled: boolean
         currentWorkspaceRoot?: string
-        crossOSWorkspace: boolean
+        crossOS?: CrossOsWorkspaceInfo 
         repository: Map<string, RepositoryInfo>
         workspacePath: string[]
     }
+    interface CrossOsWorkspaceInfo {
+        uncPath: string
+    }
 
     interface WorkspaceEnvUtil {
+        shell: any
         extRoot?: string
         uriPathProp?: string
         dirDivider?: string
         iconRoot?: string
         lineBreak?: RegExp
         pathSplit?: RegExp
-        directoryFunc: any
+        directoryToUri: any
     }
 
     interface EditorState {
+        parsed: boolean,
         uri?: vscode.Uri
         isActive: boolean
         branchName?: string
@@ -63,22 +68,26 @@ declare namespace Intf {
         range?: vscode.Range
     }
 
-    interface StyleObject {
+    interface Decoration {
         contentIconPath?: vscode.Uri
         contentText?: string
         fontWeight?: string
         color?: string
         backgroundColor?: string
-        textDecoration: string
+        textDecoration?: string
     }
 
     /**
-     * 0. os
-     * 1. pathSplit
-     * 2. lineBreak
-     * 3. dirDivider
-     * 4. uriPathProp
-     * 5. crossOSWorkspace
+     * * os
+     * * pathSplit
+     * * lineBreak
+     * * iconRoot
+     * * dirDivider
+     * * uriPathProp
+     * * crossOSWorkspace
+     * * directoryFunc
+     * * uncPath
+     * 
      */
     interface StateDescription {
         os: string
@@ -87,7 +96,9 @@ declare namespace Intf {
         iconRoot: string
         dirDivider: string
         uriPathProp: string
-        crossOSWorkspace: boolean
-        directoryFunc: any
+        crossOS?: CrossOsWorkspaceInfo
+        directoryToUri: any
+        remote?: string
+        
     }
 }

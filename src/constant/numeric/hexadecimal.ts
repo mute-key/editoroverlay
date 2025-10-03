@@ -188,7 +188,7 @@ export const okWorkspaceContentText = HEX_DIAGNOSTIC_STATUS_TEXT_SPLIT.WORKSPACE
 export const warningWorkspaceContentText = HEX_DIAGNOSTIC_STATUS_TEXT_SPLIT.WORKSPACE_WARNING as D.Numeric.Key.Hex
 export const errorWorkspaceContentText = HEX_DIAGNOSTIC_STATUS_TEXT_SPLIT.WORKSPACE_ERROR as D.Numeric.Key.Hex
 
-export const enum DIAGNOSTIC_STATE {
+export const enum DIAGNOSTIC_STATE_KEY {
     SEVERITY = 0x0311,  // 785
     WARNING = 0x0312,   // 786
     TOTAL = 0x0313,     // 787
@@ -196,11 +196,11 @@ export const enum DIAGNOSTIC_STATE {
     SOURCE = 0x0315     // 789
 }
 
-export const severity = DIAGNOSTIC_STATE.SEVERITY as D.Numeric.Key.Hex
-export const warning = DIAGNOSTIC_STATE.WARNING as D.Numeric.Key.Hex
-export const total = DIAGNOSTIC_STATE.TOTAL as D.Numeric.Key.Hex
-export const error = DIAGNOSTIC_STATE.ERROR as D.Numeric.Key.Hex
-export const source = DIAGNOSTIC_STATE.SOURCE as D.Numeric.Key.Hex
+export const severity = DIAGNOSTIC_STATE_KEY.SEVERITY as D.Numeric.Key.Hex
+export const warning = DIAGNOSTIC_STATE_KEY.WARNING as D.Numeric.Key.Hex
+export const total = DIAGNOSTIC_STATE_KEY.TOTAL as D.Numeric.Key.Hex
+export const error = DIAGNOSTIC_STATE_KEY.ERROR as D.Numeric.Key.Hex
+export const source = DIAGNOSTIC_STATE_KEY.SOURCE as D.Numeric.Key.Hex
 
 export const enum DIAGNOSTIC_PLACEHOLDER {
     ALL_OK = 0x0316,        // 790
@@ -230,12 +230,42 @@ export const lineEqual = DIAGNOSTIC_PROBLEM_LINE_GLYPH.LINE_EQUAL as D.Numeric.K
 export const lineUp = DIAGNOSTIC_PROBLEM_LINE_GLYPH.LINE_UP as D.Numeric.Key.Hex
 export const lineDown = DIAGNOSTIC_PROBLEM_LINE_GLYPH.LINE_DOWN as D.Numeric.Key.Hex
 
-export const editorWarningTotal = HEX_DIAGNOSTIC_STATUS_TEXT_KIND.EDITOR + DIAGNOSTIC_STATE.WARNING as D.Numeric.Key.Hex
-export const editorErrorTotal = HEX_DIAGNOSTIC_STATUS_TEXT_KIND.EDITOR + DIAGNOSTIC_STATE.ERROR as D.Numeric.Key.Hex
-export const workspaceWarningSource = HEX_DIAGNOSTIC_STATUS_TEXT_KIND.WORKSPACE + DIAGNOSTIC_STATE.WARNING + DIAGNOSTIC_STATE.SOURCE as D.Numeric.Key.Hex
-export const workspaceWarningTotal = HEX_DIAGNOSTIC_STATUS_TEXT_KIND.WORKSPACE + DIAGNOSTIC_STATE.WARNING + DIAGNOSTIC_STATE.TOTAL as D.Numeric.Key.Hex
-export const workspaceErrorSource = HEX_DIAGNOSTIC_STATUS_TEXT_KIND.WORKSPACE + DIAGNOSTIC_STATE.ERROR + DIAGNOSTIC_STATE.SOURCE as D.Numeric.Key.Hex
-export const workspaceErrorTotal = HEX_DIAGNOSTIC_STATUS_TEXT_KIND.WORKSPACE + DIAGNOSTIC_STATE.ERROR + DIAGNOSTIC_STATE.TOTAL as D.Numeric.Key.Hex
+// calibration needed make the it unqiue
+export const editorWarningTotal = HEX_DIAGNOSTIC_STATUS_TEXT_KIND.EDITOR + DIAGNOSTIC_STATE_KEY.WARNING as D.Numeric.Key.Hex
+export const editorErrorTotal = HEX_DIAGNOSTIC_STATUS_TEXT_KIND.EDITOR + DIAGNOSTIC_STATE_KEY.ERROR as D.Numeric.Key.Hex
+export const workspaceWarningSource = HEX_DIAGNOSTIC_STATUS_TEXT_KIND.WORKSPACE + DIAGNOSTIC_STATE_KEY.WARNING + DIAGNOSTIC_STATE_KEY.SOURCE as D.Numeric.Key.Hex   // 2350
+export const workspaceWarningTotal = HEX_DIAGNOSTIC_STATUS_TEXT_KIND.WORKSPACE + DIAGNOSTIC_STATE_KEY.WARNING + DIAGNOSTIC_STATE_KEY.TOTAL + 1 as D.Numeric.Key.Hex // 2350 + 1
+export const workspaceErrorSource = HEX_DIAGNOSTIC_STATUS_TEXT_KIND.WORKSPACE + DIAGNOSTIC_STATE_KEY.ERROR + DIAGNOSTIC_STATE_KEY.SOURCE as D.Numeric.Key.Hex       // 2352
+export const workspaceErrorTotal = HEX_DIAGNOSTIC_STATUS_TEXT_KIND.WORKSPACE + DIAGNOSTIC_STATE_KEY.ERROR + DIAGNOSTIC_STATE_KEY.TOTAL + 3 as D.Numeric.Key.Hex     // 2350 + 3
+
+
+//::==============================================================================
+//::[ SCM/GIT STATUS ] 0x0400, 00 is reserved.
+//::==============================================================================
+
+export const enum SCM_RENDER_OPTION_KEY {
+    SCM_ICON = 0x0401,
+    SCM_BASE = 0x0402,
+    SCM_PARSING = 0x0403,
+    SCM_EXTERNAL = 0x0404,
+}
+
+export const scmIcon = SCM_RENDER_OPTION_KEY.SCM_ICON as D.Numeric.Key.Hex
+export const scmBase = SCM_RENDER_OPTION_KEY.SCM_BASE as D.Numeric.Key.Hex
+export const scmParsing = SCM_RENDER_OPTION_KEY.SCM_PARSING as D.Numeric.Key.Hex
+export const scmExternal = SCM_RENDER_OPTION_KEY.SCM_EXTERNAL as D.Numeric.Key.Hex
+
+export const enum SCM_SVG_ICON_TYPE_KEY {
+    SCM_ACTIVE = 0x0405,
+    SCM_INACTIVE = 0x0406,
+    SCM_NOT_REPOSITORY = 0x0407,
+    SCM_UNKOWN = 0x0407,
+}
+
+export const scmSVGActive = SCM_SVG_ICON_TYPE_KEY.SCM_ACTIVE as D.Numeric.Key.Hex
+export const scmSVGInactive = SCM_SVG_ICON_TYPE_KEY.SCM_INACTIVE as D.Numeric.Key.Hex
+export const scmSVGNotRepository = SCM_SVG_ICON_TYPE_KEY.SCM_NOT_REPOSITORY as D.Numeric.Key.Hex
+export const scmSVGUnknown = SCM_SVG_ICON_TYPE_KEY.SCM_UNKOWN as D.Numeric.Key.Hex
 
 //::==============================================================================
 //::[ MISC ] 0x1000, 00 is reserved.

@@ -1,5 +1,5 @@
 import * as hex from '../../constant/numeric/hexadecimal';
-import Error from '../../util/error';
+import ErrorHandler from '../../util/error';
 import { CONFIG_SECTION_KEY } from '../../constant/config/enum';
 import { resetAllDecoration, prepareRenderGroup } from '../../editor/editor';
 import { updateGeneralConfig, updateHighlightStyleConfiguration } from '../overlay/highlight';
@@ -13,7 +13,7 @@ export {
 
 const configurationChanged = (configInfo: any, section: string): void => {
     try {
-        Error.configurationUpdated();
+        ErrorHandler.configurationUpdated();
         const sectionChanged: Record<string, any> = {
             [CONFIG_SECTION_KEY.GENERAL]: () => updateGeneralConfig(configInfo),
             [CONFIG_SECTION_KEY.CURSOR_ONLY]: () => updateHighlightStyleConfiguration(configInfo, hex.cursorOnly),

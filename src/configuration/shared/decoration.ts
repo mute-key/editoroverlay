@@ -2,7 +2,7 @@ import type * as D from '../../type/type';
 
 import * as vscode from 'vscode';
 import * as regex from '../../collection/regex';
-import Error from '../../util/error';
+import ErrorHandler from '../../util/error';
 import { DECORATION_OPTION_AFTER_CONFIG, DECORATION_OPTION_CONFIG } from '../../constant/config/object';
 import { sanitizeContentText } from './validation';
 import { hexToRgbaStringLiteral, splitAndPosition } from '../../util/util';
@@ -31,6 +31,7 @@ const setContentTextOnDecorationRenderOption = (source: D.Decoration.Intf.Render
     const target = { ...source };
     target.after = { ...source.after };
     target.after.contentText = contentText;
+    // target.after.textDecoration = ';font-family:Consolas, "Courier New", monospace;';
     return target;
 };
 
@@ -67,7 +68,7 @@ const parseContentText = (contentText: string, sectionKey: string, bindTo: any, 
     const match = contentText.match(regex.ifContentTextHasPlaceholder);
     if (match !== null && Object.hasOwn(regexObject, sectionKey)) {
         if (match.length > Object.keys(regexObject[sectionKey]).length) {
-            Error.register(sectionName + '.' + sectionKey, "numbers of placeholder exceed availability");
+            ErrorHandler.register(sectionName + '.' + sectionKey, "numbers of placeholder exceed availability");
         }
         let searchObject: D.Status.Intf.SearchObject | undefined = {
             nextSearchString: contentText,
@@ -80,7 +81,7 @@ const parseContentText = (contentText: string, sectionKey: string, bindTo: any, 
                 if (Object.hasOwn(regexObject[sectionKey], regexKey[1] as string)) {
                     searchPlaceholderPosition(bindTo.textOf[sectionKey], bindTo.functionOf[sectionKey], regexKey[1], regexObject[sectionKey][regexKey[1]], searchObject, index === match.length - 1);
                 } else {
-                    Error.register(sectionName + '.' + sectionKey, `Invalid placeholder '${regexKey[1]}' is set in user configration. Load default value instead for now. Please revise the value entered.`);
+                    ErrorHandler.register(sectionName + '.' + sectionKey, `Invalid placeholder '${regexKey[1]}' is set in user configration. Load default value instead for now. Please revise the value entered.`);
                 }
             }
         });

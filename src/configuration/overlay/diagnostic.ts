@@ -12,8 +12,8 @@ import { convertToDecorationRenderOption, setContentTextOnDecorationRenderOption
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { sanitizeConfigValue } from '../shared/validation';
 import { createCursorRange, createCursorRangeLastLine, createCursorRangeLine, createCursorRangeLineAuto, createCursorRangeLineLastAuto, setAutoInlineDatumPoint } from '../../editor/range';
-import { bindDiagnosticContentTextState, clearDiagnosticTextState, composeRenderOption, diagnosticTextRegex, initializeStateBuffer, setDiagonosticTextbuffer } from '../../workspace/problem/status';
-import { setOverrideDigit } from '../../workspace/problem/diagnostic';
+import { bindDiagnosticContentTextState, clearDiagnosticTextState, composeRenderOption, diagnosticTextRegex, initializeStateBuffer, setDiagonosticTextbuffer } from '../../editor/status/diagnostic';
+import { setOverrideDigit } from '../../diagnostic/diagnostic';
 import { hexToRgbaStringLiteral, readBits } from '../../util/util';
 
 export {

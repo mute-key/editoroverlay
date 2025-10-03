@@ -2,8 +2,8 @@
 import type * as D from '../../type/type.d';
 
 import * as vscode from 'vscode';
-import * as hex from '../../numeric/hexadecimal'
-import * as bin from '../../numeric/binary'
+import * as hex from '../numeric/hexadecimal'
+import * as bin from '../numeric/binary'
 
 // ==============================================================================
 // [ RUNTIME READONLY CONSTANT/ENUM ]

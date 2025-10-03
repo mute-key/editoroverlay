@@ -10,8 +10,20 @@ export {
     compareNumbers,
     isObjectShallowEqual,
     isEntriesEqual,
-    toReadonlyProperty
+    toReadonlyProperty,
+    trimString,
+    isString
+    // stringSearchOnStart,
+    // stringSearch
 };
+
+const isString = (str: string): boolean => (str !== undefined && str !== null) && str.trim().length > 0;
+
+const trimString = (str: string) => str.trim();
+
+// const stringSearchOnStart = (target: string, source:string): boolean => target.indexOf(source) === 0;
+
+// const stringSearch = (target: string, source:string): boolean => target.indexOf(source) !== -1;
 
 /**
  * 

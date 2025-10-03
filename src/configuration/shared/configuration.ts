@@ -1,7 +1,7 @@
 import type * as D from '../../type/type';
 
 import * as vscode from 'vscode';
-import Error from '../../util/error';
+import ErrorHandler from '../../util/error';
 import { convertNullStringToNull } from './validation';
 import { hexToRgbaStringLiteral, } from '../../util/util';
 import { parseContentText } from './decoration';
@@ -10,10 +10,25 @@ export {
     getConfigValue,
     colorConfigTransform,
     workspaceProxyConfiguration,
-    getWorkspaceConfiguration
+    getWorkspaceConfiguration,
+    getUserSettingValue
 };
 
 const getWorkspaceConfiguration = (section: string): vscode.WorkspaceConfiguration => vscode.workspace.getConfiguration(section);
+
+const getUserSettingValue = <T>(section: string, key: string, defaultValue: T): T => {
+    const config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(section);
+
+    const inspection = config.inspect<T>(key);
+
+    if (!inspection) {
+        return defaultValue;
+    }
+
+    const userValue = inspection.globalValue;
+
+    return userValue !== undefined ? userValue : defaultValue;
+};
 
 const colorConfigTransform: Record<string, D.Decoration.Intf.ColourConfigTransform> = {
     borderColor: {
@@ -39,7 +54,7 @@ const getConfigValue: D.Config.Tp.DecorationConfigGetFunction = <T extends D.Con
         return value;
     } catch (err) {
         if (configSectionName) {
-            Error.register(configSectionName + '.' + configName, `Failed to get config value for ${configSectionName + '.' + configName}:`);
+            ErrorHandler.register(configSectionName + '.' + configName, `Failed to get config value for ${configSectionName + '.' + configName}:`);
         }
         console.error(`Failed to get config value for ${configSection + '.' + configName}:`, err);
         return configSection.inspect(configName)?.defaultValue as T;

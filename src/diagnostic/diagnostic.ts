@@ -2,8 +2,8 @@ import type * as D from '../type/type';
 
 import * as vscode from 'vscode';
 import { DIAGNOSTIC_SEVERITY_TO_KEY_CONFIG } from '../constant/config/object';
-import { DIAGNOSTIC_STATE } from '../constant/shared/object';
 import { DIAGNOSTIC_BIOME } from '../constant/config/enum';
+import { DIAGNOSTIC_STATE } from '../store/state';
 
 export {
     updateDiagnostic,
@@ -107,7 +107,7 @@ const updateDiagnostic = (activeEditorUri: vscode.Uri): (number | number[])[] =>
     for (const [uri, diagnosticList] of diagnostics) {
         buildDiagnostic(diagnosticSource, diagnosticList, uri);
     }
-    
+
     for (const [fsPath, severity] of Object.entries(diagnosticSource)) {
         parseDiagnostic(diagnosticState, severity, fsPath, activeEditorUri.fsPath as string);
     };

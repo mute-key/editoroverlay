@@ -1,7 +1,7 @@
 import type * as D from '../../type/type';
 
 import * as vscode from 'vscode';
-import * as hex from '../../numeric/hexadecimal';
+import * as hex from '../../constant/numeric/hexadecimal';
 import * as __$ from '../../constant/shared/symbol';
 import * as regex from '../../collection/regex';
 import { createCursorRange } from '../range';
@@ -9,7 +9,7 @@ import { DIAGNOSTIC_CONTENT_TEXT, DIAGNOSTIC_ENTRY_LIST, DIAGNOSTIC_GLYPH } from
 import { DECORATION_OPTION_CONFIG, DIAGNOSTIC_VISIBILITY_CONFIG } from '../../constant/config/object';
 import { DIAGNOSTIC_CONTENT_TEXT_KEY } from '../../constant/config/enum';
 import { updateDiagnostic } from '../../diagnostic/diagnostic';
-import { resetDecoration } from '../editor';
+import { resetDecoration, setCreateDecorationTypeQueue } from '../editor';
 
 export {
     bindDiagnosticContentTextState,
@@ -32,7 +32,7 @@ const lineGlyph = {
 
 const diagnosticStatusBuffer = [] as (any | vscode.TextEditorDecorationType)[];
 
-const composeRenderOption = (renderSignature: number, renderOptions: any[]) => {
+const composeRenderOption = (renderSignature: D.Numeric.Key.Bin, renderOptions: any[]) => {
     renderOptions.forEach(option => {
         if (typeof option.after.contentText === 'number' && Object.hasOwn(diagnosticReferenceTable, option.after.contentText)) {
             diagnosticReferenceTable[option.after.contentText] = option.after;
@@ -71,18 +71,27 @@ const setDiagonosticTextbuffer = (): void => {
     const max = Math.max(...lengthList.map((list: number[]) => list[1]));
     let idx = max;
 
-    diagnosticStatusBuffer?.forEach(decorationType => decorationType.dispose());
-    diagnosticStatusBuffer?.splice(0);
-    while (idx--) {
-        diagnosticStatusBuffer.push(vscode.window.createTextEditorDecorationType(decorationOptionBuffer));
-    }
-
     lengthList.forEach((length: number[]) => {
         let deltaIdx = max - length[1];
         while (deltaIdx--) {
-            diagnosticContentText[length[0]].push([]);
+            diagnosticContentText[length[0] as D.Numeric.Key.Bin].push([]);
         }
     });
+
+    diagnosticStatusBuffer.forEach(decorationType => decorationType.dispose());
+    diagnosticStatusBuffer.splice(0);
+    // while (idx--) {
+    //     diagnosticStatusBuffer.push(vscode.window.createTextEditorDecorationType(decorationOptionBuffer));
+    // }
+
+
+    setCreateDecorationTypeQueue({
+        name: 'diagnostic',
+        count: idx,
+        reference: diagnosticStatusBuffer
+    });
+
+
 };
 
 const clearDiagnosticTextState = (): void => {
@@ -133,8 +142,8 @@ const problemOf = {
 };
 
 const notationOf = {
-    pre: __$.prefixSymbol,
-    post: __$.postfixSymbol
+    pre: hex.prefixHex,
+    post: hex.postfixHex
 };
 
 const diagnosticOf = {
@@ -163,7 +172,6 @@ const diagnosticOf = {
         wrn: hex.workspaceWarningTotal,
     },
 };
-
 
 const okRegex = {
     allok: regex.allok,
@@ -217,7 +225,6 @@ const diagnosticTextRegex: Record<string, D.Regex.Tp.DiagnosticContentTextUnion>
     }
 };
 
-
 const decorationOptionBuffer: D.Diagnostic.Intf.RenderOption = { ...DECORATION_OPTION_CONFIG };
 
 const stateBuffer: (number | number[])[] = [0, 0, [], 0, [], 0, 0, 0, 0, 0];
@@ -226,10 +233,10 @@ const initializeStateBuffer = (digit: number): void => {
     stateBuffer[0] = digit;
 };
 
-const diagnosticRenderSignature = (state: typeof stateBuffer): number => {
+const diagnosticRenderSignature = (state: typeof stateBuffer): D.Numeric.Key.Bin => {
     const emask = (state[3] ? 1 << 1 : 0) | (state[5] ? 1 << 2 : 0);
     const wmask = (state[7] ? 1 << 1 : 0) | (state[9] ? 1 << 2 : 0);
-    return (emask === 0 && wmask === 0) ? state[0] as number : ((emask ? emask << 5 : 1 << 5) | (wmask ? wmask << 2 : 1 << 2) | 0b10);
+    return (emask === 0 && wmask === 0) ? state[0] as D.Numeric.Key.Bin : ((emask ? emask << 5 : 1 << 5) | (wmask ? wmask << 2 : 1 << 2) | 0b10) as D.Numeric.Key.Bin;
 };
 
 const refreshBuffer = (state: (number | number[])[]): void => {
@@ -267,7 +274,7 @@ const diagnosticInfo = (decorationState: D.Decoration.Intf.State) => (editor: vs
     if (decorationState.eventTrigger[0] === hex.diagnosticChanged) {
         refreshBuffer(updateDiagnostic(editor.document.uri));
     }
-    
+
     context.line = editor.selection.end.line;
     context.state = stateBuffer;
     diggnosticStateList.forEach(updateDiagnosticState(context));
