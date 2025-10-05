@@ -18,12 +18,12 @@ export {
     branchStatusCommand,
     gitIgnoreCommand,
     /** */
-    scmSVGDecoration,
-    scmGlyphDecoration,
-    scmStateDecoration,
-    scmParsingDecoration,
-    scmExternalDecoration,
-    scmOverlayTextDecoration,
+    // scmSVGDecoration,
+    // scmGlyphDecoration,
+    // scmStateDecoration,
+    // scmParsingDecoration,
+    // scmExternalDecoration,
+    // scmOverlayTextDecoration,
     /** */
     checkLineEndings,
     spawnOptions,
@@ -105,7 +105,7 @@ const convertUriToSysPath = (os: string, uri: vscode.Uri): string => {
 
 const spawnOptions: Record<string, (path?: string) => D.Scm.Intf.SpawnSyncOption> = {
     [WORKSPACE_OS.WIN32]: (path?: string) => {
-        return { cwd: path, encoding: 'utf8', shell: process.env.ComSpec }; // 이거 false 로 내일 바꿔보자
+        return { cwd: path, encoding: 'utf8', shell: false }; // 이거 false 로 내일 바꿔보자
     },
     [WORKSPACE_OS.WSL]: (path?: string) => {
         return { cwd: path, encoding: 'utf8', shell: false };
@@ -199,42 +199,42 @@ const setDeocrationRenderOption = (target: any, decorationDescription: any): D.D
 };
 
 
-const transparency: string = "C7";
+// const transparency: string = "C7";
 
-const scmSVGDecoration: D.Scm.Intf.Decoration = {
-    textDecoration: ";vertical-align:text-top;line-height:1.15;display:inline-block;margin-left:4px;font-size:12px;margin-top:2px;border-top-left-radius:2px;border-bottom-left-radius:2px;",
-};
+// const scmSVGDecoration: D.Scm.Intf.Decoration = {
+//     textDecoration: ";vertical-align:text-top;line-height:1.15;display:inline-block;margin-left:4px;font-size:12px;margin-top:2px;border-top-left-radius:2px;border-bottom-left-radius:2px;",
+// };
 
-const scmGlyphDecoration: D.Scm.Intf.Decoration = {
-    contentText: "⌥", // ⌥, ⎇, ⍻
-    fontWeight: "bolder",
-    color: "#FFFFFF" + transparency,
-    backgroundColor: "#F05133" + transparency,
-    textDecoration: ';font-family:Consolas, "Courier New", monospace;margin-left:0px;font-size:12px;margin-top:2px;border-top-left-radius:2px;border-bottom-left-radius:2px;',
-};
+// const scmGlyphDecoration: D.Scm.Intf.Decoration = {
+//     contentText: "⌥", // ⌥, ⎇, ⍻
+//     fontWeight: "bolder",
+//     color: "#FFFFFF" + transparency,
+//     backgroundColor: "#F05133" + transparency,
+//     textDecoration: ';font-family:Consolas, "Courier New", monospace;margin-left:0px;font-size:12px;margin-top:2px;border-top-left-radius:2px;border-bottom-left-radius:2px;',
+// };
 
-const scmOverlayTextDecoration = {
-    textDecoration: ';font-family:Consolas, "Courier New", monospace;font-size:12px;margin-top:2px;border-top-right-radius:2px;border-bottom-right-radius:2px;padding-left:2px;padding-right:2px;',
-};
+// const scmOverlayTextDecoration = {
+//     textDecoration: ';font-family:Consolas, "Courier New", monospace;font-size:12px;margin-top:2px;border-top-right-radius:2px;border-bottom-right-radius:2px;padding-left:2px;padding-right:2px;',
+// };
 
-const scmStateDecoration: D.Scm.Intf.Decoration = {
-    contentText: 'Not Found',
-    fontWeight: "bolder",
-    color: "#777777" + transparency,
-};
+// const scmStateDecoration: D.Scm.Intf.Decoration = {
+//     contentText: 'Not Found',
+//     fontWeight: "bolder",
+//     color: "#777777" + transparency,
+// };
 
-const scmParsingDecoration: D.Scm.Intf.Decoration = {
-    contentText: ':...parsing',
-    fontWeight: 'bolder',
-    color: "#777777" + transparency,
-};
+// const scmParsingDecoration: D.Scm.Intf.Decoration = {
+//     contentText: ':...parsing',
+//     fontWeight: 'bolder',
+//     color: "#777777" + transparency,
+// };
 
-const scmExternalDecoration: D.Scm.Intf.Decoration = {
-    contentText: ':new/external file (not-workspace)',
-    fontWeight: 'bolder',
-    color: "#777777" + transparency,
-    // text-decoration: #ec1000ec wavy underline;
-};
+// const scmExternalDecoration: D.Scm.Intf.Decoration = {
+//     contentText: ':new/external file (not-workspace)',
+//     fontWeight: 'bolder',
+//     color: "#777777" + transparency,
+//     // text-decoration: #ec1000ec wavy underline;
+// };
 
 ((objectArray) => {
     objectArray.forEach(Object.freeze);
@@ -243,11 +243,11 @@ const scmExternalDecoration: D.Scm.Intf.Decoration = {
     currentBranchCommand,
     branchStatusCommand,
     gitIgnoreCommand,
-    scmGlyphDecoration,
-    scmStateDecoration,
-    scmParsingDecoration,
-    scmOverlayTextDecoration,
-    scmExternalDecoration
+    // scmGlyphDecoration,
+    // scmStateDecoration,
+    // scmParsingDecoration,
+    // scmOverlayTextDecoration,
+    // scmExternalDecoration
 ]);
 
 /**

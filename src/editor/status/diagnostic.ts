@@ -90,8 +90,6 @@ const setDiagonosticTextbuffer = (): void => {
         count: idx,
         reference: diagnosticStatusBuffer
     });
-
-
 };
 
 const clearDiagnosticTextState = (): void => {

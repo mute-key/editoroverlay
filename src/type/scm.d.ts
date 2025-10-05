@@ -1,4 +1,5 @@
 
+import { FSWatcher } from 'node:fs';
 import * as vscode from 'vscode';
 
 export type {
@@ -21,7 +22,7 @@ declare namespace Intf {
         os?: string
         isSourceControlled: boolean
         currentWorkspaceRoot?: string
-        crossOS?: CrossOsWorkspaceInfo 
+        crossOS?: CrossOsWorkspaceInfo
         repository: Map<string, RepositoryInfo>
         workspacePath: string[]
     }
@@ -55,6 +56,7 @@ declare namespace Intf {
         currentBranch?: string,
         ignored: string[]
         parsed?: string[]
+        watcher?: FSWatcher
     }
 
     interface CommandSet {
@@ -64,8 +66,17 @@ declare namespace Intf {
     }
 
     interface OverlayReference {
+        [key: string]: any
         svgIcon?: vscode.Uri
         range?: vscode.Range
+        branchName: {
+            contentText: string[],
+            position: Record<string, number>
+        }
+        branchStatus: {
+            contentText: string[],
+            position: Record<string, number>
+        }
     }
 
     interface Decoration {
@@ -99,6 +110,6 @@ declare namespace Intf {
         crossOS?: CrossOsWorkspaceInfo
         directoryToUri: any
         remote?: string
-        
+
     }
 }

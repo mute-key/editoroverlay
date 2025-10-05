@@ -104,8 +104,8 @@ declare namespace Intf {
 
     interface ConfigReady extends Status.Intf.ConfigInfo {
         name: string
-        renderLimiter: number | any,
-        updateCaller?: number,
+        // renderLimiter: number | any,
+        // updateCaller?: number,
         generalConfigInfo: GeneralConfigInfoType
         configError: string[]
     }

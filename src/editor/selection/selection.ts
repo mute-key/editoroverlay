@@ -212,7 +212,7 @@ const multiCursorOf: Record<string, number> = {
 /**
  * renderOption dynamic contentText function stacks for selection status block. 
  * 
- * this object will only be used as a function reference hex number only 
+ * this object will only be used as a function referenced hex number only 
  * to indicate if the contentText need to have dynamic values, 
  * in all fairness, it is not necesary as position is worked out by regex
  * and the function will be called by references, not by anonymous function anymore.
@@ -344,10 +344,7 @@ const setSelectionTextbuffer = (cursorType: D.Numeric.Key.Hex, length: number, p
     const option = selectionStatusDecorationOption[cursorType];
     setDeocorationOption(cursorType, option.renderOptionHex);
     buildFunctionChain(cursorType, placeholder, option.fnObject);
-
-    // console.log(cursorType, selectionContentText[cursorType]?.contentText);
     
-
     setCreateDecorationTypeQueue({
         name: 'selection' + cursorType,
         count: lengthBuffer,

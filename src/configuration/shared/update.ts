@@ -1,3 +1,4 @@
+import * as vscode from 'vscode';
 import * as hex from '../../constant/numeric/hexadecimal';
 import ErrorHandler from '../../util/error';
 import { CONFIG_SECTION_KEY } from '../../constant/config/enum';
@@ -39,8 +40,9 @@ const configurationChanged = (configInfo: any, section: string): void => {
         resetAllDecoration();
         sectionChanged[CONFIG_SECTION_KEY.GENERAL]();
         sectionChanged[section]();
+        vscode.window.showInformationMessage("Configuration has been updated successfully");
     } catch (e) {
-        console.log('confugration update failed. Will notify user.', e);
+        console.log('confugration update failed.', e);
     } finally {
         prepareRenderGroup(configInfo);
     }

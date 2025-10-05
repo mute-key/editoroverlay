@@ -7,15 +7,15 @@ import { resetEditorDiagnosticStatistics, resetWorkspaceDiagnosticStatistics } f
 import { updateRangeMetadata } from '../editor/range';
 import { forceDispatchEditorChange } from '../editor/selection/selection';
 import { renderGroupIs, resetAllDecoration, updateIndentOption } from '../editor/editor';
-import { resetEditorParsed, activeEditorScm } from '../editor/scm/scm';
-import ErrorHandler from '../util/error';
+import { scmParsed } from '../editor/scm/scm';
 
 export {
     windowStateChanged,
     activeEditorChanged,
     editorOptionChanged,
     selectionChanged,
-    tabChanged
+    // activeTerminalChanged,
+    // tabChanged,
     // visibleRangeChanged
     // documentModifified
 };
@@ -24,14 +24,12 @@ export {
 const windowStateChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
     return vscode.window.onDidChangeWindowState((event: vscode.WindowState): void => {
         if (event.focused) {
-
-            // setWorkspaceSystem();
-
             if (vscode.window.activeTextEditor) {
                 updateIndentOption(vscode.window.activeTextEditor);
                 decorationState.appliedHighlight[0] = renderGroupIs(vscode.window.activeTextEditor, [hex.cursorOnly]);
             }
         } else {
+            scmParsed(false);
             resetAllDecoration();
         }
 
@@ -43,7 +41,7 @@ const windowStateChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState })
 };
 
 const activeEditorChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decorationState }): vscode.Disposable => {
-    return vscode.window.onDidChangeActiveTextEditor(async (editor: vscode.TextEditor | undefined) => {
+    return vscode.window.onDidChangeActiveTextEditor((editor: vscode.TextEditor | undefined) => {
         if (editor) {
             /**
              * recent build of vscode have change the behavior of tab change event
@@ -80,7 +78,7 @@ const activeEditorChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decor
                 resetAllDecoration();
             }
 
-            resetEditorParsed();
+            scmParsed(false);
 
             decorationState.appliedHighlight[0] = renderGroupIs(vscode.window.activeTextEditor as vscode.TextEditor, [hex.cursorOnly]);
         }
@@ -98,8 +96,6 @@ const editorOptionChanged: D.Event.Tp.DecorationEventFunc = (context: D.Event.In
 
 const selectionChanged: D.Event.Tp.DecorationEventFunc = (context /** { decorationState } */): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorSelection((event: vscode.TextEditorSelectionChangeEvent) => {
-
-
         // event.kind === vscode.TextEditorSelectionChangeKind.Keyboard
         /**
          * i initially thought maybe dispose this event and re-bind the event if 
@@ -122,18 +118,51 @@ const selectionChanged: D.Event.Tp.DecorationEventFunc = (context /** { decorati
          * maybe it is a good idea to use those features in future update...? i think
          * 
          */
+
         context.decorationState.eventTrigger[0] = hex.selectionChanged;
         context.decorationState.appliedHighlight[0] = renderGroupIs(vscode.window.activeTextEditor as vscode.TextEditor, context.decorationState.appliedHighlight);
     });
 };
 
+// const activeTerminalChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
+
+//     return vscode.window.onDidChangeTerminalState((terminal: vscode.Terminal | undefined) => {
+//         console.log(terminal);
+//         if (terminal) {
+//             // terminal.state.isInteractedWith = false;
+//         }
+//     });
+
+//     // vscode.workspace.
+//     // const fsw = vscode.workspace.createFileSystemWatcher('.git/refs/**');
+//     // return fsw.onDidChange((event : vscode.Uri) => {
+//     //     console.log(event);
+//     // });
+
+//     // vscode.workspace.registerFileSystemProvider()
+//     // onDidChangeFile: Event<FileChangeEvent[]>
+
+//     // vscode.GlobPattern
+
+//     // 
+//     // vscode.workspace.
+
+//     return vscode.window.onDidChangeTextEditorViewColumn((event: vscode.TextEditorViewColumnChangeEvent) => {
+//         console.log(event);
+//     });
+//     // return vscode.window
+//     return vscode.window.onDidChangeTerminalState((event: vscode.Terminal) => {
+//         console.log(event);
+//     });
+// };
 
 
-const tabChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
-    return vscode.window.tabGroups.onDidChangeTabs((event: vscode.TabChangeEvent) => {
-        if (event.changed) {
-            // decorationState.eventTrigger[0] = hex.tabChanged;
-            // resetAllDecoration();
-        }
-    });
-};
+
+// const tabChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
+//     return vscode.window.tabGroups.onDidChangeTabs((event: vscode.TabChangeEvent) => {
+//         if (event.changed) {
+//             // decorationState.eventTrigger[0] = hex.tabChanged;
+//             // resetAllDecoration();
+//         }
+//     });
+// };

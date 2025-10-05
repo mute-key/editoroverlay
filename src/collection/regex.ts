@@ -8,6 +8,7 @@ export {
     isValidWidth,
     ifContentTextHasPlaceholder,
     contentTextKeysOnly,
+    contentTextAllKeys,
     prefix,
     postfix,
     source,
@@ -35,7 +36,9 @@ export {
     crlfRegex,
     lfRegex,
     pathRegex,
-    safePathRegex
+    safePathRegex,
+    branchName,
+    changeCount
 };
 
 declare namespace L {
@@ -64,6 +67,9 @@ const characterOnly: RegExp = /(\${charOnly})/s;
 const nth: RegExp = /(\${nth})/s;
 const selectionCount: RegExp = /(\${count})/s;
 
+const branchName: RegExp = /(\${bname})/s;
+const changeCount: RegExp = /(\${ccount})/s;
+
 const indentAndEOLRegex: L.IndentRegexFunc = (indentSize: string | number): RegExp => new RegExp(`^( {${indentSize}}|[\r\n]+)*`, 'gm');
 const ifStringIsResourceScope: RegExp = /^[%\.].*[%\.]$/s;
 const tabAndEOLRegex: RegExp = /(\t|[\r\n]+)*$/gm;
@@ -71,6 +77,8 @@ const isValidHexColor: RegExp = /^#[A-Fa-f0-9]{6}$/;
 const isValidWidth: RegExp = /^[0-9]px$|^[0-9]em$/;
 const ifContentTextHasPlaceholder: RegExp = /(\${[A-z]*})/g;
 const contentTextKeysOnly: RegExp = /\${([^{}]+)}/s;
+const contentTextAllKeys: RegExp = /\${([^{}]+)}/sg;
+
 
 const isWholeLine: RegExp = /isWholeLine/s;
 const beforeCursor: RegExp = /beforeCursor/s;

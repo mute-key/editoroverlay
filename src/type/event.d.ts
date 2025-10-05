@@ -18,6 +18,7 @@ declare namespace Intf {
 
 declare namespace Tp {
     type DecorationEventFunc = (context: Intf.Context) => vscode.Disposable
+    type DecorationEventWithExtContextFunc = (context: Intf.Context, extensionContext: vscode.ExtensionContext) => vscode.Disposable
 }
 
 

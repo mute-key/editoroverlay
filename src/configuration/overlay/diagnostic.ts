@@ -362,6 +362,10 @@ const updateDiagnosticTextConfig = async (extenionName: string, configuratioChan
     const diagnosticConfig = { ...DIAGNOSTIC_CONFIG } as typeof DIAGNOSTIC_CONFIG;
     const diagnosticDecorationStyle = { ...DIAGNOSTIC_DECORATION_STYLE_CONFIG } as unknown as D.Diagnostic.Intf.DiagonosticDecorationStyle;
 
+    if (configuratioChange) {
+        clearDiagnosticTextState();
+    }
+
     const dignosticContentTextPreset = {
         layout: {},
         editor: {},
@@ -375,10 +379,6 @@ const updateDiagnosticTextConfig = async (extenionName: string, configuratioChan
         functionOf: bindTo.functionOf,
         textOf: {}
     };
-
-    if (configuratioChange) {
-        clearDiagnosticTextState();
-    }
 
     workspaceProxyConfiguration(diagnosticConfig, extenionName + '.' + CONFIG_SECTION.diagnosticText, DIAGNOSTIC_CONTENT_TEXT_LIST_CONFIG, bindToBuffer, diagnosticTextRegex);
     const placeholderDigit = diagnosticConfig.visibility.overrideAllOk ? bin.allOkOverride : bin.allOkNoOverride;

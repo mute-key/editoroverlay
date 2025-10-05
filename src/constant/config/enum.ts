@@ -175,6 +175,11 @@ export const enum DIAGNOSTIC_CONTENT_TEXT_KIND {
     ERROR_CONTENT_TEXT = "errorContentText",
 }
 
+export const enum SCM_CONTENT_TEXT_KIND {
+    BRANCH_NAME_CONTENT_TEXT = "branchNameContentText",
+    BRANCH_STATUS_WORKING_CONTENT_TEXT = "branchStatusWorkingContentText",
+}
+
 export const enum DIAGNOSTIC_CONTENT_TEXT_KEY {
     PLACEHOLDER_PROBLEM_CONTENT_TEXT = "problemPlaceholderContentText",
     PLACEHOLDER_ALL_OK_CONTENT_TEXT = "allOkPlaceholderContentText",

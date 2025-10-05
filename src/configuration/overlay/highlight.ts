@@ -126,11 +126,11 @@ const updateGeneralConfig = (configReady: D.Config.Intf.ConfigReady) => {
         if (key === CONFIG_KEY_LINKER.DIAGNOSTIC_TEXT_ENABLED || key === CONFIG_KEY_LINKER.SELECTION_TEXT_ENABLED || key === CONFIG_KEY_LINKER.SCM_TEXT_ENABLED) {
             const sectionLinker = CONFIG_KEY_LINKER_SECTION_CONFIG[key];
             const configSection = getWorkspaceConfiguration(configReady.name + '.' + sectionLinker[0]);
-            const configValue = getConfigValue(configSection, sectionLinker[1], NO_CONFIGURATION_GENERAL_DEFAULT_CONFIG[key], configReady.name + '.' + sectionLinker[0]);
+            const configValue = getConfigValue(configSection, sectionLinker[1], NO_CONFIGURATION_GENERAL_DEFAULT_CONFIG[key], configReady.name + '.' + sectionLinker[0]) as any;
             configReady.generalConfigInfo[key] = configValue;
         } else {
             const configSection = getWorkspaceConfiguration(configReady.name + '.' + CONFIG_SECTION.general);
-            configReady.generalConfigInfo[key] = getConfigValue(configSection, key, NO_CONFIGURATION_GENERAL_DEFAULT_CONFIG[key], configReady.name + '.' + CONFIG_SECTION.general);
+            configReady.generalConfigInfo[key] = getConfigValue(configSection, key, NO_CONFIGURATION_GENERAL_DEFAULT_CONFIG[key], configReady.name + '.' + CONFIG_SECTION.general) as any;
         }
     }
 };
@@ -138,14 +138,14 @@ const updateGeneralConfig = (configReady: D.Config.Intf.ConfigReady) => {
 const updateHighlightStyleConfiguration = (configReady: D.Config.Intf.ConfigReady, selectionType: number) => {
     let bindTo: any = bindHighlightStyleState();
     if (bindTo.styleOf[selectionType]) {
-        bindTo.styleOf[selectionType].forEach(decoration => decoration.dispose());
+        bindTo.styleOf[selectionType].forEach((decoration: vscode.TextEditorDecorationType) => decoration.dispose());
     }
     const configSet: D.Decoration.Tp.DecorationStyleConfig = getConfigSet(configReady, selectionType);
     const parsed = borderPositionParser(selectionType, String(configSet.borderPosition));
     bindTo.infoOf[selectionType] = parsed;
     configSet.borderPosition = parsed.borderPosition;
     configSet.isWholeLine = parsed.isWholeLine;
-    const decorationTypeList = createDecorationType(configSet, selectionType, decorationTypeSplit);
+    const decorationTypeList = createDecorationType(configSet, selectionType, decorationTypeSplit as any);
     if (!decorationTypeList) {
         return false;
     }

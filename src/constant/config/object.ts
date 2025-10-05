@@ -18,8 +18,8 @@ export const CONFIG_SECTION = {
 
 export const CONFIG_INFO = {
     name: undefined,
-    renderLimiter: undefined,
-    updateCaller: undefined,
+    // renderLimiter: undefined,
+    // updateCaller: undefined,
     generalConfigInfo: {
         borderOpacity: undefined,
         backgroundOpacity: undefined,
@@ -366,9 +366,11 @@ export const SCM_CONFIG: Record<string, any> = {
     WSLRemoteDirectoryAccessMethod: undefined,
     iconType: undefined,
     overlayLinePosition: 0,
+    branchNameContentText: undefined,
+    branchStatusWorkingContentText: undefined,
+    branchStatusUpToDateContentText: undefined,
     activeTextStyle: {
         ...SCM_TEXT_STYLE_CONFIG,
-        
     },
     inactiveTextStyle: {
         ...SCM_TEXT_STYLE_CONFIG,
@@ -378,8 +380,15 @@ export const SCM_CONFIG: Record<string, any> = {
         ...SCM_TEXT_STYLE_CONFIG,
         defaultText: undefined,
     },
-    SVGIconDecoration: undefined,
-    TextOverlayDecoration: undefined,
+    textOverlayFixture: {
+        activeText: undefined,
+        inactiveText: undefined,
+        ignoredText: undefined,
+    },
+    additionalDecoration: {
+        SVGIconDecoration: undefined,
+        textOverlayDecoration: undefined,
+    }
 };
 
 export const SCM_OVERLAY_DECORATION_LIST_CONFIG: [D.Numeric.Key.Hex, string][] = [
@@ -389,8 +398,7 @@ export const SCM_OVERLAY_DECORATION_LIST_CONFIG: [D.Numeric.Key.Hex, string][] =
     [hex.scmExternal, "notRepositoryTextStyle"],
 ];
 
-export const SCM_CONFIGURATION_LIST_CONFIG: D.Common.Tp.TextList = [
-    "enabled",
-    "iconType",
-    "overlayLinePosition",
+export const SCM_CONTENT_TEXT_LIST_CONFIG: D.Common.Tp.TextList = [
+    "branchNameContentText",
+    "branchStatusWorkingContentText",
 ] as const;

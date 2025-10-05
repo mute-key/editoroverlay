@@ -12,10 +12,12 @@ export {
     isEntriesEqual,
     toReadonlyProperty,
     trimString,
-    isString
+    isString,
+    objectSwapKeyValue
     // stringSearchOnStart,
     // stringSearch
 };
+const objectSwapKeyValue = (obj: any) => Object.fromEntries(Object.entries(obj).map(([a, b]) => [b, a]));
 
 const isString = (str: string): boolean => (str !== undefined && str !== null) && str.trim().length > 0;
 
@@ -109,13 +111,13 @@ const splitAndPosition = (str: string, regex: RegExp): D.Config.Intf.RegexSplit 
         } else if (split[2].length === 0) {
             delete split[2];
             return {
-                position: 1,
-                array: [...split]
+                array: [...split],
+                position: 1
             };
         } else {
             return {
-                position: 1,
-                array: split
+                array: split,
+                position: 1
             };
         }
     }

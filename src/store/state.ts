@@ -85,13 +85,18 @@ export const CONTENT_TEXT = {
     position: []
 };
 
+export const CONTENT_TEXT_POSITION_KEY = {
+    contentText: [] as string[],
+    position: {} 
+};
+
 export const SELECTION_CONTENT_TEXT: D.Status.Intf.StatusContentText = {
-    [hex.cursorOnlyText]: CONTENT_TEXT,
-    [hex.singleLineText]: CONTENT_TEXT,
-    [hex.multiLineCursorText]: CONTENT_TEXT,
-    [hex.multiLineAnchorText]: CONTENT_TEXT,
-    [hex.multiCursorText]: CONTENT_TEXT,
-    [hex.multiCursorEdit]: CONTENT_TEXT,
+    [hex.cursorOnlyText]: { ...CONTENT_TEXT },
+    [hex.singleLineText]: { ...CONTENT_TEXT },
+    [hex.multiLineCursorText]: { ...CONTENT_TEXT },
+    [hex.multiLineAnchorText]: { ...CONTENT_TEXT },
+    [hex.multiCursorText]: { ...CONTENT_TEXT },
+    [hex.multiCursorEdit]: { ...CONTENT_TEXT },
 };
 
 export const DIAGNOSTIC_CONTENT_TEXT = {
@@ -173,5 +178,7 @@ export const CURRENT_EDITOR_SCM_STATE = {
 
 export const SCM_OVERLAY_REFERENCE = {
     svgIcon: {},
-    range: {}
+    range: {},
+    branchName: { ...CONTENT_TEXT_POSITION_KEY },
+    branchStatus: { ...CONTENT_TEXT_POSITION_KEY },
 };

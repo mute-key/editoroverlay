@@ -1263,8 +1263,35 @@
                         "markdownDescription": "%description.scmText.linePosition%",
                         "additionalProperties": false
                     },
-                    "editoroverlay.scmText.activeTextStyle": {
+                    "editoroverlay.scmText.branchNameContentText": {
                         "order": 6,
+                        "type": "string",
+                        "default": "%placeholder.scm.branch.name.default%",
+                        "pattern": "(\t|[\r\n]+)*$",
+                        "patternErrorMessage": "Must be a single line text",
+                        "markdownDescription": "%description.scmText.branchName.contentTextPlaceholder%",
+                        "editPresentation": "singlelineText"
+                    },
+                    "editoroverlay.scmText.branchStatusWorkingContentText": {
+                        "order": 7,
+                        "type": "string",
+                        "default": "%placeholder.scm.branch.status.working.default%",
+                        "pattern": "(\t|[\r\n]+)*$",
+                        "patternErrorMessage": "Must be a single line text",
+                        "markdownDescription": "%description.scmText.branchStatus.working.default%",
+                        "editPresentation": "singlelineText"
+                    },
+                    "editoroverlay.scmText.branchStatusUpToDateContentText": {
+                        "order": 8,
+                        "type": "string",
+                        "default": "%placeholder.scm.branch.status.upToDate.default%",
+                        "pattern": "(\t|[\r\n]+)*$",
+                        "patternErrorMessage": "Must be a single line text",
+                        "markdownDescription": "%description.scmText.branchStatus.upToDate.default%",
+                        "editPresentation": "singlelineText"
+                    },
+                    "editoroverlay.scmText.activeTextStyle": {
+                        "order": 9,
                         "type": "object",
                         "scope": "resource",
                         "default": {
@@ -1324,7 +1351,7 @@
                         }
                     },
                     "editoroverlay.scmText.inactiveTextStyle": {
-                        "order": 7,
+                        "order": 10,
                         "type": "object",
                         "scope": "resource",
                         "default": {
@@ -1390,7 +1417,7 @@
                         }
                     },
                     "editoroverlay.scmText.notRepositoryTextStyle": {
-                        "order": 8,
+                        "order": 11,
                         "type": "object",
                         "scope": "resource",
                         "default": {
@@ -1455,17 +1482,52 @@
                             }
                         }
                     },
-                    "editoroverlay.scmText.SVGIconDecoration": {
-                        "order": 9,
-                        "type": "string",
-                        "default": ";vertical-align:text-top;line-height:1.15;display:inline-block;margin-left:4px;font-size:12px;margin-top:2px;border-top-left-radius:2px;border-bottom-left-radius:2px;",
-                        "markdownDescription": "%description.scmText.baseTextStyle%"
+                    "editoroverlay.scmText.textOverlayFixture": {
+                        "order": 12,
+                        "type": "object",
+                        "scope": "resource",
+                        "default": {
+                            "activeText": "%placeholder.scm.activeText.statusFixture.default%",
+                            "inactiveText": "%placeholder.scm.inactiveText.statusFixture.default%",
+                            "ignoredText": "%placeholder.scm.ignoredText.statusFixture.default%"
+                        },
+                        "properties": {
+                            "activeText": {
+                                "type": "string",
+                                "default": "%placeholder.scm.activeText.statusFixture.default%"
+                            },
+                            "inactiveText": {
+                                "type": "string",
+                                "default": "%placeholder.scm.inactiveText.statusFixture.default%"
+                            },
+                            "ignoredText": {
+                                "type": "string",
+                                "default": "%placeholder.scm.ignoredText.statusFixture.default%"
+                            }
+                        },
+                        "markdownDescription": "%description.scmText.textOverlayFixture%",
+                        "additionalProperties": false
                     },
-                    "editoroverlay.scmText.TextOverlayDecoration": {
-                        "order": 10,
-                        "type": "string",
-                        "default": ";font-size:12px;margin-top:2px;border-top-right-radius:2px;border-bottom-right-radius:2px;padding-left:2px;padding-right:2px;",
-                        "markdownDescription": "%description.scmText.baseTextStyle%"
+                    "editoroverlay.scmText.additionalDecoration": {
+                        "order": 13,
+                        "type": "object",
+                        "scope": "resource",
+                        "default": {
+                            "SVGIconDecoration": ";vertical-align:text-top;line-height:1.15;display:inline-block;margin-left:4px;font-size:12px;margin-top:2px;border-top-left-radius:2px;border-bottom-left-radius:2px;",
+                            "textOverlayDecoration": ";font-size:12px;margin-top:2px;border-top-right-radius:2px;border-bottom-right-radius:2px;padding-left:2px;padding-right:2px;"
+                        },
+                        "properties": {
+                            "SVGIconDecoration": {
+                                "type": "string",
+                                "default": ";vertical-align:text-top;line-height:1.15;display:inline-block;margin-left:4px;font-size:12px;margin-top:2px;border-top-left-radius:2px;border-bottom-left-radius:2px;"
+                            },
+                            "textOverlayDecoration": {
+                                "type": "string",
+                                "default": ";font-size:12px;margin-top:2px;border-top-right-radius:2px;border-bottom-right-radius:2px;padding-left:2px;padding-right:2px;"
+                            }
+                        },
+                        "markdownDescription": "%description.scmText.additionalDecoration%",
+                        "additionalProperties": false
                     }
                 }
             }

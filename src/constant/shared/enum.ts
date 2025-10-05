@@ -38,11 +38,11 @@ export const enum ICON_TYPE {
     GLYPH = "glyph",
 }
 
-export const enum BRANCH_ADDITIONAL_INFO {
-    IGNORED = " #ignored-path",
-    ACTIVE = " #up-to-date",
-    INACTIVE = " #ignored-path|up-to-date",
-}
+// export const enum BRANCH_ADDITIONAL_INFO {
+//     ACTIVE = " #up-to-date",
+//     INACTIVE = " #ignored-path|up-to-date",
+//     IGNORED = " #ignored-path",
+// }
 
 export const enum LINE_END {
     CRLF = "\r\n",

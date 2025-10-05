@@ -68,7 +68,7 @@ const workspaceProxyConfiguration = (
     bindTo?: any,
     regexObject?: D.Regex.Tp.ConfigurationRegexObject
 ) => {
-    Object.entries(config).forEach(([sectionKey, section]) => {
+    config && Object.entries(config).forEach(([sectionKey, section]) => {
         if (typeof section !== 'object') {
             const configValue = getConfigValue(getWorkspaceConfiguration(workspaceConfigSectionName), sectionKey, 'not found', workspaceConfigSectionName);
             if (configValue && regexObject && bindTo && ifContentTextArray && ifContentTextArray.includes(sectionKey)) {

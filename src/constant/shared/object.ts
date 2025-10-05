@@ -135,3 +135,9 @@ export const DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET = {
     [hex.warningContentText]: hex.warningWorkspaceContentText,
     [hex.errorContentText]: hex.errorWorkspaceContentText
 } as const
+
+export const BRANCH_ADDITIONAL_INFO = {
+    active: undefined,
+    inactive: undefined,
+    ignored: undefined,
+}
