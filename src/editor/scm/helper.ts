@@ -8,8 +8,6 @@ import type * as D from '../../type/type';
 import * as vscode from 'vscode';
 import { DIRECTORY_DELIMITER, LINE_END, SCM_RESOURCE_PATH, URI_PATH_TYPE, WORKSPACE_OS } from "../../constant/shared/enum";
 import { lfRegex, crlfRegex, fsWinSplit, fsLinuxSplit } from '../../collection/regex';
-import { DECORATION_OPTION_AFTER_CONFIG } from '../../constant/config/object';
-
 import { pathOverrideWsl } from './scm';
 
 export {
@@ -18,17 +16,9 @@ export {
     branchStatusCommand,
     gitIgnoreCommand,
     /** */
-    // scmSVGDecoration,
-    // scmGlyphDecoration,
-    // scmStateDecoration,
-    // scmParsingDecoration,
-    // scmExternalDecoration,
-    // scmOverlayTextDecoration,
-    /** */
     checkLineEndings,
     spawnOptions,
     convertUriToSysPath,
-    setDeocrationRenderOption,
     setTextDecoration,
     setGetterOfRenederOption,
     /** */
@@ -189,53 +179,6 @@ const setGetterOfRenederOption = (target: any, getterName: string, propertyDescr
     (getterName && propertyDescriptor) && setGetterProp(target.after, getterName, propertyDescriptor);
 };
 
-const setDeocrationRenderOption = (target: any, decorationDescription: any): D.Decoration.Intf.RenderInstanceOption => {
-    target.after = { ...DECORATION_OPTION_AFTER_CONFIG } as D.Decoration.Intf.DecorationRenderOptionAfter;
-    target.after.contentText = decorationDescription.contentText;
-    target.after.color = decorationDescription.color;
-    target.after.fontWeight = decorationDescription.fontWeight;
-    target.after.backgroundColor = decorationDescription.backgroundColor;
-    return target;
-};
-
-
-// const transparency: string = "C7";
-
-// const scmSVGDecoration: D.Scm.Intf.Decoration = {
-//     textDecoration: ";vertical-align:text-top;line-height:1.15;display:inline-block;margin-left:4px;font-size:12px;margin-top:2px;border-top-left-radius:2px;border-bottom-left-radius:2px;",
-// };
-
-// const scmGlyphDecoration: D.Scm.Intf.Decoration = {
-//     contentText: "⌥", // ⌥, ⎇, ⍻
-//     fontWeight: "bolder",
-//     color: "#FFFFFF" + transparency,
-//     backgroundColor: "#F05133" + transparency,
-//     textDecoration: ';font-family:Consolas, "Courier New", monospace;margin-left:0px;font-size:12px;margin-top:2px;border-top-left-radius:2px;border-bottom-left-radius:2px;',
-// };
-
-// const scmOverlayTextDecoration = {
-//     textDecoration: ';font-family:Consolas, "Courier New", monospace;font-size:12px;margin-top:2px;border-top-right-radius:2px;border-bottom-right-radius:2px;padding-left:2px;padding-right:2px;',
-// };
-
-// const scmStateDecoration: D.Scm.Intf.Decoration = {
-//     contentText: 'Not Found',
-//     fontWeight: "bolder",
-//     color: "#777777" + transparency,
-// };
-
-// const scmParsingDecoration: D.Scm.Intf.Decoration = {
-//     contentText: ':...parsing',
-//     fontWeight: 'bolder',
-//     color: "#777777" + transparency,
-// };
-
-// const scmExternalDecoration: D.Scm.Intf.Decoration = {
-//     contentText: ':new/external file (not-workspace)',
-//     fontWeight: 'bolder',
-//     color: "#777777" + transparency,
-//     // text-decoration: #ec1000ec wavy underline;
-// };
-
 ((objectArray) => {
     objectArray.forEach(Object.freeze);
 })([
@@ -243,11 +186,6 @@ const setDeocrationRenderOption = (target: any, decorationDescription: any): D.D
     currentBranchCommand,
     branchStatusCommand,
     gitIgnoreCommand,
-    // scmGlyphDecoration,
-    // scmStateDecoration,
-    // scmParsingDecoration,
-    // scmOverlayTextDecoration,
-    // scmExternalDecoration
 ]);
 
 /**

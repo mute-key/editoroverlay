@@ -427,6 +427,18 @@ const bindDecorationType = (
 ): void => setDecorations(decorationType, renderOption[idx]);
 
 /**
+ * this function will be the part of renderStack in editor.ts.
+ * whenever the extension trying to render the overlay sets, so this function 
+ * can be called too and it is how all other overlay rendering functions are 
+ * controlled as well. activeEditorScm() can be called outside of this funciton, 
+ * but it would means, calling renderGroupIs() will should call activeEditorScm() 
+ * previously, everytime. the extension codebase will have multiple places that
+ * calls renderGroupIs(), and if activeEditorScm() were to be called seperately, 
+ * activeEditorScm() needs to be called same times as to call renderGroupIs(). 
+ * this way, the codebase do not need to be concerned scm going desync with 
+ * overlay itself because they will always run in sync on single function call.
+ * also check @link scmParsed()
+ *
  * render parsing overlay, becuase it would take time to process the fsPath with existance
  * of repository, and check if the active editor is parsed, if not, call activeEditorScm
  * to parse to build metadata. with this method, activeEditorScm does not need to be 
@@ -639,7 +651,11 @@ const scmOverlayDeocrator = (path: string): boolean | void => {
 };
 
 /**
- * 
+ * this function sets if the last active editor, or editor to be active will 
+ * need to run scm parsing again. if the current editor was parsed git repo 
+ * but if it need to reload metadata of repository, calling this function with
+ * false will do that, when overlays are rendered by renderGroupIs(). 
+ * please read @link renderScmOverlay() annotations for more explantions.
  * 
  * @param parsed 
  * @returns 

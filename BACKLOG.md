@@ -1,27 +1,3 @@
-
-this configuration is to choose how vscode connect to remote directory of wsl. 
-wsl is effectively a virtual machine that runs on hyper-v on windows, making it to 
-communicate over the local network within the host enviroment, therefore wsl 
-enviroment is a server that runs on local network. This means that you can also 
-mount the wsl ext4 partition as a network drive so you can use UNC path to access
-directories in wsl partition. meaning, node spawn() can have cwd option. 
-
-next method is using a shell to create child process of process already running. 
-the problem is that because host system, windows can't open 
-it uses wsl executable to excute the commands within wsl enviroment, which will 
-be a cross-os bridged operations. the drawback of this method would be the security 
-measures due to directory path should be dynamically put in as a string literal 
-to the remote comamnd to be executed in wsl enviroment. 
-
-this is all becuase, node spawn cwd would not work 
-
-there are multiple method 
-has been implemented to validate the full directory path is a valid path as a
-truthful drectories as well as checking with regex test, but you will have be 
-extra careful with directory names in every directory paths.
-
-
-
 ### Backlog
 
 this is a temporary note & backlog  
@@ -61,10 +37,21 @@ this is a temporary note & backlog
 
 | version log ===============================================================================================
 
+| 1.6.4 - planned |
 
-| 1.6.3 |
+- [+] font-family configurations for all text overlays
+- [+] font-decoration configurations for all text overlays
+- [+] queue strategies for textEditorDecorationTypes across all overlays so that every overlay 
+      can have ascending sequence.
+- [+] an ability to change the overlay positions in sequence.
 
+************************************************************************************************************
 
+| 1.6.3 - current |
+
+- [+] unc path handling added for cross-os-workspace for git overlay, no arbitary string will be put in
+      spawn, and all spawn execution path will be directed by cwd option for all 
+      win32, wsl (cross-os-workspace), and posix.
 - [+] added git branch + status information overlay.
       if the current file on editor is ignored, the overlay will display greyed out icon with tag message
       if the current file is indexed by git, the overlay will display active svg, with total numbers of
