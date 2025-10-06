@@ -1,5 +1,5 @@
 
-import { FSWatcher } from 'node:fs';
+import { FSWatcher, StatWatcher } from 'node:fs';
 import * as vscode from 'vscode';
 
 export type {
@@ -56,7 +56,7 @@ declare namespace Intf {
         currentBranch?: string,
         ignored: string[]
         parsed?: string[]
-        watcher?: FSWatcher
+        watcher?: FSWatcher | StatWatcher 
     }
 
     interface CommandSet {

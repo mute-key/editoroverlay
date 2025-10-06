@@ -16,7 +16,7 @@ import { setCreateDecorationTypeQueue } from '../editor';
 import { createCursorRangeLineOfDelta } from '../range';
 import { getUserSettingValue } from '../../configuration/shared/configuration';
 import { isString } from '../../util/util';
-import { watch } from 'node:fs';
+import { unwatchFile, watch, watchFile } from 'node:fs';
 
 export {
     initializeScm,
@@ -199,16 +199,49 @@ const setRepositoryAsync = async (path: string): Promise<void> => {
     await forceRender();
 };
 
+/**
+ * personally, didn not want to bypass any of default configuration or
+ * security settings of win/wsl or even permission stuff but wanted to 
+ * solve the issue with which can possiblly be safe to run. 
+ * 
+ * fs:watch only works reliably on win32 or posix, non-cross-os workspace
+ * for cross-os workspace, fs:watch does not work due to the complexity 
+ * of the permission or security layers in placed, which i did not want
+ * myself to fiddle with them but instead wanted to make a feature that 
+ * comply and can cover cross-os workspace. 
+ * 
+ * therefore, had to split the function for native workspace and 
+ * cross-os workspace. 
+ * 
+ * i could refactor this function to be more strucutured, just not now.
+ * this works, but will need better event-end-handling mechanism.
+ * 
+ * @param path 
+ * @param repoInfo 
+ */
 const repositoryWatcher = async (path: string, repoInfo: D.Scm.Intf.RepositoryInfo) => {
-    const repoDir = [path, '.git'].join(envUtil.dirDivider);
-    repoInfo.watcher = watch(repoDir, { recursive: false });
-    repoInfo.watcher.on('change', (eventType, filename) => {
-        if (eventType === 'change') {
-            repoInfo.watcher?.close();
-            repoInfo.watcher = watch(repoDir, { recursive: false });
+    if (state.os === WORKSPACE_OS.WSL) {
+        const wslRepo = [pathOverrideWsl(path), '.git', 'index'].join(envUtil.dirDivider);
+        const wslWatchEventListner = (sate: any) => {
+            unwatchFile(wslRepo);
+            repoInfo.watcher?.removeAllListeners();
+            repoInfo.watcher?.unref();
+            repoInfo.watcher = watchFile(wslRepo, wslWatchEventListner);
             forceRender(false);
-        }
-    });
+        };
+        repoInfo.watcher = watchFile(wslRepo, wslWatchEventListner);
+    } else {
+        const repoDir = [path, '.git'].join(envUtil.dirDivider);
+        repoInfo.watcher = watch(repoDir, { recursive: false });
+        repoInfo.watcher.on('change', (eventType, filename) => {
+            if (eventType === 'change') {
+                // @ts-ignore
+                repoInfo.watcher?.close();
+                repoInfo.watcher = watch(repoDir, { recursive: false });
+                forceRender(false);
+            }
+        });
+    }
 };
 
 const isRepositoryAsync = (path: string) => async (entry: [string, vscode.FileType]): Promise<void> => {

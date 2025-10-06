@@ -61,7 +61,6 @@ const buildTextFixture = (overlayTextFixture: any, configuration: any): void => 
 };
 
 const buildRenderInstanceOption = (buffer: any, renderOption: any, getter: any): void => {
-    console.log('buildRenderInstanceOption', buffer);
     Object.keys(buffer).forEach(hexKey => {
         const withRangeGetter = renderOptionWrapper(buffer[hexKey]);
         setGetterOfRenederOption(withRangeGetter, getter.rangeAndContentText.name, getter.rangeAndContentText.descriptor as PropertyDescriptor);
@@ -94,7 +93,6 @@ const setDeocrationRenderOption = (bufferObject: L.RenderOptionBuffer, hexKey: D
     bufferObject[hexKey].isWholeLine = true;
     bufferObject[hexKey].rangeBehavior = vscode.DecorationRangeBehavior.ClosedOpen;
 
-    console.log('setDeocrationRenderOption', configuration);
     if (Object.hasOwn(configuration, 'defaultText')) {
         bufferObject[hexKey].after.contentText = configuration.defaultText;
     }

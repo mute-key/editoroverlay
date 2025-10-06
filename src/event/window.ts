@@ -124,39 +124,13 @@ const selectionChanged: D.Event.Tp.DecorationEventFunc = (context /** { decorati
     });
 };
 
-// const activeTerminalChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
-
-//     return vscode.window.onDidChangeTerminalState((terminal: vscode.Terminal | undefined) => {
-//         console.log(terminal);
-//         if (terminal) {
-//             // terminal.state.isInteractedWith = false;
-//         }
-//     });
-
-//     // vscode.workspace.
-//     // const fsw = vscode.workspace.createFileSystemWatcher('.git/refs/**');
-//     // return fsw.onDidChange((event : vscode.Uri) => {
-//     //     console.log(event);
-//     // });
-
-//     // vscode.workspace.registerFileSystemProvider()
-//     // onDidChangeFile: Event<FileChangeEvent[]>
-
-//     // vscode.GlobPattern
-
-//     // 
-//     // vscode.workspace.
-
-//     return vscode.window.onDidChangeTextEditorViewColumn((event: vscode.TextEditorViewColumnChangeEvent) => {
-//         console.log(event);
-//     });
-//     // return vscode.window
-//     return vscode.window.onDidChangeTerminalState((event: vscode.Terminal) => {
-//         console.log(event);
-//     });
-// };
-
-
+const activeTerminalChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
+    return vscode.window.onDidChangeTerminalState((terminal: vscode.Terminal | undefined) => {
+        if (terminal) {
+            // terminal.state.isInteractedWith = false;
+        }
+    });
+};
 
 // const tabChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
 //     return vscode.window.tabGroups.onDidChangeTabs((event: vscode.TabChangeEvent) => {

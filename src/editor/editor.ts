@@ -48,7 +48,6 @@ interface decorationTypeQueue {
  * 3. scm
  * 4. etc
  * 
- * 그리고 저 객체들 참조링크 걸어보자
  * 
  */
 const CreateDecorationTypeQueue = [] as (decorationTypeQueue)[];
@@ -58,11 +57,6 @@ const CreateDecorationTypeQueue = [] as (decorationTypeQueue)[];
 const setCreateDecorationTypeQueue = (queue: decorationTypeQueue) => CreateDecorationTypeQueue.push(queue);;
 
 const createEditorDecorationTypeOfQueue = () => {
-    // console.log('CreateDecorationTypeQueue', CreateDecorationTypeQueue);
-
-    // decorationOptionBuffer.isWholeLine = true;
-    // decorationOptionBuffer.rangeBehavior = vscode.DecorationRangeBehavior.ClosedClosed;
-
     for (const queue of CreateDecorationTypeQueue) {
         const decorationType: vscode.TextEditorDecorationType[] = [];
         let l = queue.count;
