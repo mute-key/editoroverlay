@@ -15,6 +15,7 @@ export {
     currentBranchCommand,
     branchStatusCommand,
     gitIgnoreCommand,
+    errorCode,
     /** */
     checkLineEndings,
     spawnOptions,
@@ -25,6 +26,7 @@ export {
     win32OnlyState,
     win32wslState,
     posixOnlyState,
+
 };
 
 const localUri = async (path: string): Promise<vscode.Uri> => {
@@ -151,7 +153,6 @@ const gitIgnoreCommand: Record<string, D.Scm.Intf.ScmCommandObject> = {
         cmd: 'cmd.exe',
         args: ['/c', 'type', '.gitignore']
     },
-
     [WORKSPACE_OS.WSL]: {
         cmd: 'powershell.exe',
         args: ['wsl', 'bash', '-c', '"cat .gitignore"']
@@ -170,7 +171,7 @@ const setTextDecoration = (target: any, decorationDescription: any): void => {
     target.after.textDecoration = decorationDescription.textDecoration;
 };
 
-const setGetterProp = (target: object , getterName: string, getterDescriptor: PropertyDescriptor ) => {
+const setGetterProp = (target: object, getterName: string, getterDescriptor: PropertyDescriptor) => {
     Object.defineProperty(target, getterName, getterDescriptor);
 };
 
@@ -187,6 +188,10 @@ const setGetterOfRenederOption = (target: any, getterName: string, propertyDescr
     branchStatusCommand,
     gitIgnoreCommand,
 ]);
+
+const errorCode = {
+    gitIgnore: "NOT_FOUND"
+};
 
 /**
  * need to refactor the return null/undefined

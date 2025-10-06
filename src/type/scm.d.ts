@@ -54,7 +54,7 @@ declare namespace Intf {
         isModified: boolean
         relativePath?: string
         currentBranch?: string,
-        ignored: string[]
+        ignored?: string[]
         parsed?: string[]
         watcher?: FSWatcher | StatWatcher 
     }

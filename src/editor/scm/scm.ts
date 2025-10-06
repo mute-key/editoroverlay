@@ -9,13 +9,13 @@ import { DIRECTORY_DELIMITER, ICON_TYPE, SCM_RESOURCE_PATH } from '../../constan
 import { BRANCH_ADDITIONAL_INFO } from '../../constant/shared/object';
 import { WORKSPACE_OS } from '../../constant/shared/enum';
 import { SCM_CONFIG } from '../../constant/config/object';
-import { branchStatusCommand, currentBranchCommand, gitIgnoreCommand, checkLineEndings, spawnOptions, convertUriToSysPath, posixOnlyState, win32OnlyState, win32wslState } from './helper';
+import { branchStatusCommand, currentBranchCommand, gitIgnoreCommand, checkLineEndings, spawnOptions, convertUriToSysPath, posixOnlyState, win32OnlyState, win32wslState, errorCode } from './helper';
 import { contentIconGetter, contentTextGetter, rangeGetter } from '../selection/multiCursor/renderOption';
 import { spawn, SpawnSyncOptionsWithStringEncoding } from 'child_process';
 import { setCreateDecorationTypeQueue } from '../editor';
 import { createCursorRangeLineOfDelta } from '../range';
 import { getUserSettingValue } from '../../configuration/shared/configuration';
-import { isString } from '../../util/util';
+import { ifFileInDirectory, isString } from '../../util/util';
 import { unwatchFile, watch, watchFile } from 'node:fs';
 
 export {
@@ -91,7 +91,7 @@ const pathOverrideWsl = (path: string): string => [state.crossOS?.uncPath, path]
  * @param commandInfo 
  * @returns 
  */
-const execShell = (path: string, commandInfo: D.Scm.Intf.ScmCommandObject): Promise<string> => {
+const execShell = (path: string, commandInfo: D.Scm.Intf.ScmCommandObject, errorCode: string = ""): Promise<string> => {
     return new Promise((resolve, reject) => {
 
         const pathOverride = state.crossOS ? pathOverrideWsl(path) : path;
@@ -114,7 +114,7 @@ const execShell = (path: string, commandInfo: D.Scm.Intf.ScmCommandObject): Prom
                 resolve(stdoutData.trim());
             } else {
                 const errorOutput = stderrData || `Command failed with exit code ${code}.`;
-                reject(new Error(errorOutput.trim()));
+                reject(errorCode);
             }
         });
 
@@ -136,10 +136,13 @@ const branchStatusAsync = async (path: string, repositoryInfo: D.Scm.Intf.Reposi
 };
 
 const gitIgnoredPathArrayAsync = async (path: string): Promise<string[]> => {
-    const output = await execShell(path, gitIgnoreCommand[state.os as string]);
-    if (isString(output)) {
-        const res = output.trim().split(checkLineEndings(output.trim()) as RegExp).map(ignorePath => [path, ignorePath].join(envUtil.dirDivider).trim());
-        return res;
+    const ignoreExist = await ifFileInDirectory(state.os === WORKSPACE_OS.WSL ? pathOverrideWsl(path) : path, '.gitignore');
+    if (ignoreExist) {
+        const output = await execShell(path, gitIgnoreCommand[state.os as string], errorCode.gitIgnore).catch(() => errorCode.gitIgnore);
+        if (isString(output) && output !== errorCode.gitIgnore) {
+            const res = output.trim().split(checkLineEndings(output.trim()) as RegExp).map(ignorePath => [path, ignorePath].join(envUtil.dirDivider).trim());
+            return res;
+        }
     }
     return [];
 };
@@ -163,7 +166,7 @@ const branchStatus = (ccount: string): void => {
 };
 
 const additionalInfo = (repositoryInfo: D.Scm.Intf.RepositoryInfo): void => {
-    currentEditor.isActive = repositoryInfo.ignored.filter(ignorePath => vscode.window.activeTextEditor?.document.uri.fsPath.indexOf(ignorePath) === 0).length === 0;
+    currentEditor.isActive = repositoryInfo.ignored?.filter(ignorePath => vscode.window.activeTextEditor?.document.uri.fsPath.indexOf(ignorePath) === 0).length === 0;
     scmReferenceObject.svgIcon = svgIcons[currentEditor.isActive ? hex.scmSVGActive : hex.scmSVGInactive];
     !currentEditor.isActive && (currentEditor.additionalStatus = statusFixture.ignored);
     !repositoryInfo.isModified && (currentEditor.additionalStatus = currentEditor.isActive ? statusFixture.active : statusFixture.inactive);
@@ -182,7 +185,7 @@ const setRepositoryAsync = async (path: string): Promise<void> => {
     const repositoryInfo: D.Scm.Intf.RepositoryInfo = {
         isModified: false,
         relativePath: path,
-        ignored: await gitIgnoredPathArrayAsync(path),
+        ignored: await gitIgnoredPathArrayAsync(path).catch((rej) => rej),
         currentBranch: currentEditor.branchName
     };
 
@@ -221,15 +224,26 @@ const setRepositoryAsync = async (path: string): Promise<void> => {
  */
 const repositoryWatcher = async (path: string, repoInfo: D.Scm.Intf.RepositoryInfo) => {
     if (state.os === WORKSPACE_OS.WSL) {
-        const wslRepo = [pathOverrideWsl(path), '.git', 'index'].join(envUtil.dirDivider);
-        const wslWatchEventListner = (sate: any) => {
-            unwatchFile(wslRepo);
-            repoInfo.watcher?.removeAllListeners();
-            repoInfo.watcher?.unref();
-            repoInfo.watcher = watchFile(wslRepo, wslWatchEventListner);
-            forceRender(false);
-        };
-        repoInfo.watcher = watchFile(wslRepo, wslWatchEventListner);
+        const gitDir = [pathOverrideWsl(path), '.git'].join(envUtil.dirDivider);
+        const isIndex = await ifFileInDirectory(gitDir, 'index');
+        if (isIndex) {
+            const repoIndex = [pathOverrideWsl(path), '.git', 'index'].join(envUtil.dirDivider); // 
+            const wslWatchEventListner = (stat: any) => {
+                if (stat) {
+                    unwatchFile(repoIndex);
+                    repoInfo.watcher?.unref();
+                    repoInfo.watcher?.removeAllListeners();
+                    repoInfo.watcher = watchFile(repoIndex, wslWatchEventListner);
+                    forceRender(false);
+                    vscode.window.showInformationMessage('Repository have been updated. please wait for overlay to reload metadata.');
+                }
+            };
+            repoInfo.watcher = await watchFile(repoIndex, wslWatchEventListner);
+            repoInfo.watcher.removeAllListeners();
+            repoInfo.watcher.addListener('change', wslWatchEventListner);
+        } else {
+            vscode.window.showInformationMessage('Repository have no index. Add files to repository when ready.');
+        }
     } else {
         const repoDir = [path, '.git'].join(envUtil.dirDivider);
         repoInfo.watcher = watch(repoDir, { recursive: false });
@@ -289,6 +303,7 @@ const isDirectoryAsync = async (path: string): Promise<void> => {
         }
 
         const dir: [string, vscode.FileType][] = await vscode.workspace.fs.readDirectory(pathUri);
+        const ignoreExist = dir.filter(([name, type]) => name === '.gitignore' && type === 1).length === 1;
         dir.forEach(await isRepositoryAsync(path));
     }
 };

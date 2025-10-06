@@ -20,7 +20,6 @@ export {
     // documentModifified
 };
 
-
 const windowStateChanged: D.Event.Tp.DecorationEventFunc = ({ decorationState }): vscode.Disposable => {
     return vscode.window.onDidChangeWindowState((event: vscode.WindowState): void => {
         if (event.focused) {

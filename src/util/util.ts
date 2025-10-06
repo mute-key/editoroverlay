@@ -1,4 +1,7 @@
+
 import type * as D from '../type/type';
+
+import * as vscode from 'vscode';
 
 export {
     fnv1aHash,
@@ -13,7 +16,8 @@ export {
     toReadonlyProperty,
     trimString,
     isString,
-    objectSwapKeyValue
+    objectSwapKeyValue,
+    ifFileInDirectory
     // stringSearchOnStart,
     // stringSearch
 };
@@ -22,6 +26,12 @@ const objectSwapKeyValue = (obj: any) => Object.fromEntries(Object.entries(obj).
 const isString = (str: string): boolean => (str !== undefined && str !== null) && str.trim().length > 0;
 
 const trimString = (str: string) => str.trim();
+
+const ifFileInDirectory = async (gitDir: string, file: string) => {
+    const uri = await vscode.Uri.file(gitDir);
+    const fs = await vscode.workspace.fs.readDirectory(uri);
+    return await fs.filter(([name, type]) => name === file).length === 1; // to check if the index exist, meaning not empty repo.
+};
 
 // const stringSearchOnStart = (target: string, source:string): boolean => target.indexOf(source) === 0;
 
