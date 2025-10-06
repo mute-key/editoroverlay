@@ -39,6 +39,7 @@ this is a temporary note & backlog
 
 | 1.6.4 - planned |
 
+- [+] git add/ignore collision indiciator 
 - [+] font-family configurations for all text overlays
 - [+] font-decoration configurations for all text overlays
 - [+] queue strategies for textEditorDecorationTypes across all overlays so that every overlay 

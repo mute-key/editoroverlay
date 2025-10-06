@@ -120,8 +120,8 @@ const currentBranchCommand: Record<string, D.Scm.Intf.ScmCommandObject> = {
         args: ['wsl', 'bash', '-c', '"git branch --show-current"']
     },
     [WORKSPACE_OS.POSIX]: {
-        cmd: "git",
-        args: [`branch --show-current`]
+        cmd: 'git',
+        args: ['branch', '--show-current']
     },
     // [WORKSPACE_OS.REMOTE]: {
     //     cmd: 'wsl',
@@ -139,8 +139,8 @@ const branchStatusCommand: Record<string, D.Scm.Intf.ScmCommandObject> = {
         args: ['wsl', 'bash', '-c', '"git status -s"']
     },
     [WORKSPACE_OS.POSIX]: {
-        cmd: "git",
-        args: ['status -s']
+        cmd: 'git',
+        args: ['status', '-s']
     },
     // [WORKSPACE_OS.REMOTE]: {
     //     cmd: 'wsl',
@@ -158,7 +158,7 @@ const gitIgnoreCommand: Record<string, D.Scm.Intf.ScmCommandObject> = {
         args: ['wsl', 'bash', '-c', '"cat .gitignore"']
     },
     [WORKSPACE_OS.POSIX]: {
-        cmd: "cat",
+        cmd: 'cat',
         args: ['.gitignore']
     },
     // [WORKSPACE_OS.REMOTE]: {

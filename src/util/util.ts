@@ -30,7 +30,7 @@ const trimString = (str: string) => str.trim();
 const ifFileInDirectory = async (gitDir: string, file: string) => {
     const uri = await vscode.Uri.file(gitDir);
     const fs = await vscode.workspace.fs.readDirectory(uri);
-    return await fs.filter(([name, type]) => name === file).length === 1; // to check if the index exist, meaning not empty repo.
+    return fs.filter(([name, type]) => name === file).length === 1; // to check if the index exist, meaning not empty repo.
 };
 
 // const stringSearchOnStart = (target: string, source:string): boolean => target.indexOf(source) === 0;

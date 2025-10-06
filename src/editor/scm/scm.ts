@@ -114,7 +114,7 @@ const execShell = (path: string, commandInfo: D.Scm.Intf.ScmCommandObject, error
                 resolve(stdoutData.trim());
             } else {
                 const errorOutput = stderrData || `Command failed with exit code ${code}.`;
-                reject(errorCode);
+                reject(errorOutput);
             }
         });
 
@@ -124,15 +124,15 @@ const execShell = (path: string, commandInfo: D.Scm.Intf.ScmCommandObject, error
     });
 };
 
-const gitStatus = (output: string, lineBreak: RegExp): string => `${output.trim().split(lineBreak).length}`;
+const gitStatus = (output: string, lineBreak: RegExp): string[] => output.trim().split(lineBreak);
 
-const branchStatusAsync = async (path: string, repositoryInfo: D.Scm.Intf.RepositoryInfo): Promise<string> => {
-    const output = await execShell(path, branchStatusCommand[state.os as string]);
+const branchStatusAsync = async (path: string, repositoryInfo: D.Scm.Intf.RepositoryInfo): Promise<string[]> => {
+    const output = await execShell(path, branchStatusCommand[state.os as string]).catch((err) => err);
     if (isString(output)) {
         repositoryInfo.isModified = true;
-        return gitStatus(output, checkLineEndings(output.trim()) as RegExp);
+        return gitStatus(output, checkLineEndings(output.trim()) as RegExp).map(index => index.split(" ").slice(1).join(" "));
     }
-    return '';
+    return [];
 };
 
 const gitIgnoredPathArrayAsync = async (path: string): Promise<string[]> => {
@@ -148,7 +148,7 @@ const gitIgnoredPathArrayAsync = async (path: string): Promise<string[]> => {
 };
 
 const currentBranchAsync = async (path: string): Promise<string> => {
-    return await execShell(path, currentBranchCommand[state.os as string]);
+    return await execShell(path, currentBranchCommand[state.os as string]).catch((err) => err);
 };
 
 const branchName = (branchName: string): void => {
@@ -172,6 +172,11 @@ const additionalInfo = (repositoryInfo: D.Scm.Intf.RepositoryInfo): void => {
     !repositoryInfo.isModified && (currentEditor.additionalStatus = currentEditor.isActive ? statusFixture.active : statusFixture.inactive);
 };
 
+// const collisionCheck = (status: string[], ignored: string[]) => {
+//     console.log(status);
+//     console.log(ignored);
+// };
+
 /**
  * 
  * reference object currentEditor, 
@@ -185,17 +190,19 @@ const setRepositoryAsync = async (path: string): Promise<void> => {
     const repositoryInfo: D.Scm.Intf.RepositoryInfo = {
         isModified: false,
         relativePath: path,
-        ignored: await gitIgnoredPathArrayAsync(path).catch((rej) => rej),
+        ignored: await gitIgnoredPathArrayAsync(path),
         currentBranch: currentEditor.branchName
     };
 
-    const [bname, ccount] = await Promise.all([
+    const [bname, status] = await Promise.all([
         currentBranchAsync(path),
         branchStatusAsync(path, repositoryInfo)
     ]);
 
+    // collisionCheck(status, repositoryInfo.ignored as string[]);
+
     branchName(bname);
-    branchStatus(ccount);
+    branchStatus(status.length.toString());
     additionalInfo(repositoryInfo);
     repositoryWatcher(path, repositoryInfo);
     state.repository.set(path, repositoryInfo);
@@ -238,9 +245,7 @@ const repositoryWatcher = async (path: string, repoInfo: D.Scm.Intf.RepositoryIn
                     vscode.window.showInformationMessage('Repository have been updated. please wait for overlay to reload metadata.');
                 }
             };
-            repoInfo.watcher = await watchFile(repoIndex, wslWatchEventListner);
-            repoInfo.watcher.removeAllListeners();
-            repoInfo.watcher.addListener('change', wslWatchEventListner);
+            repoInfo.watcher = watchFile(repoIndex, wslWatchEventListner);
         } else {
             vscode.window.showInformationMessage('Repository have no index. Add files to repository when ready.');
         }
@@ -303,7 +308,7 @@ const isDirectoryAsync = async (path: string): Promise<void> => {
         }
 
         const dir: [string, vscode.FileType][] = await vscode.workspace.fs.readDirectory(pathUri);
-        const ignoreExist = dir.filter(([name, type]) => name === '.gitignore' && type === 1).length === 1;
+        // const ignoreExist = dir.filter(([name, type]) => name === '.gitignore' && type === 1).length === 1;
         dir.forEach(await isRepositoryAsync(path));
     }
 };
