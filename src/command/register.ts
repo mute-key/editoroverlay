@@ -12,21 +12,21 @@ export {
 };
 
 const setPreset = (context: D.Command.Intf.Context): vscode.Disposable => {
-    return vscode.commands.registerCommand("editorOverlay.applyPreset", () => quickPickPresetList(context));
+    return vscode.commands.registerCommand("editoroverlay.applyPreset", () => quickPickPresetList(context));
 };
 
 const setColor = (context: D.Command.Intf.Context): vscode.Disposable => {
-    return vscode.commands.registerCommand("editorOverlay.setColor", () => quickPickColorList(context));
+    return vscode.commands.registerCommand("editoroverlay.setColor", () => quickPickColorList(context));
 };
 
 const setContrast = (context: D.Command.Intf.Context): vscode.Disposable => {
-    return vscode.commands.registerCommand("editorOverlay.setContrast", () => quickPickContrastList(context));
+    return vscode.commands.registerCommand("editoroverlay.setContrast", () => quickPickContrastList(context));
 };
 
 const setOrientation = (context: D.Command.Intf.Context): vscode.Disposable => {
-    return vscode.commands.registerCommand("editorOverlay.setOrientation", () => quickPickOientationList(context));
+    return vscode.commands.registerCommand("editoroverlay.setOrientation", () => quickPickOientationList(context));
 };
 
 const resetConfiguration = (context: D.Command.Intf.Context): vscode.Disposable => {
-    return vscode.commands.registerCommand("editorOverlay.restoreToDefaultConfiguration", () => restoreToDefault().then(clearConfiguration(context)));
+    return vscode.commands.registerCommand("editoroverlay.restoreToDefaultConfiguration", () => restoreToDefault().then(clearConfiguration(context)));
 };

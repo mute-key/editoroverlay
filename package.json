@@ -58,35 +58,35 @@
             {
                 "command": "editoroverlay.applyPreset",
                 "title": "Apply Preset Configuration",
-                "category": "CursorLine Highlight",
+                "category": "Editor Overlay Highlight",
                 "shortTitle": "applyPreset",
                 "order": 1
             },
             {
                 "command": "editoroverlay.setColor",
                 "title": "Set Color Configuration",
-                "category": "CursorLine Highlight",
+                "category": "Editor Overlay Highlight",
                 "shortTitle": "setColor",
                 "order": 2
             },
             {
                 "command": "editoroverlay.setContrast",
                 "title": "Set Contrast Configuration",
-                "category": "CursorLine Highlight",
+                "category": "Editor Overlay Highlight",
                 "shortTitle": "setContrast",
                 "order": 3
             },
             {
                 "command": "editoroverlay.setOrientation",
                 "title": "Set Orientation Configuration",
-                "category": "CursorLine Highlight",
+                "category": "Editor Overlay Highlight",
                 "shortTitle": "setOrientation",
                 "order": 4
             },
             {
                 "command": "editoroverlay.restoreToDefaultConfiguration",
                 "title": "Reset User Configuration",
-                "category": "CursorLine Highlight",
+                "category": "Editor Overlay Highlight",
                 "shortTitle": "restoreToDefaultConfiguration",
                 "order": 5
             }

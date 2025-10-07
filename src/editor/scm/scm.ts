@@ -214,8 +214,8 @@ const setRepositoryAsync = async (path: string): Promise<void> => {
     branchName(bname);
     branchStatus(status.length.toString());
     additionalInfo(repositoryInfo);
-    repositoryWatcher(path, repositoryInfo);
     state.repository.set(path, repositoryInfo);
+    await repositoryWatcher(path, repositoryInfo);
     await forceRender();
 };
 
