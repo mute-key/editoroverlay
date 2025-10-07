@@ -137,8 +137,8 @@ export const DIAGNOSTIC_WORKSPACE_CONTENT_TEXT_KEYSET = {
 } as const
 
 export const BRANCH_ADDITIONAL_INFO = {
-    collision: undefined,
     active: undefined,
     inactive: undefined,
     ignored: undefined,
+    collision: undefined,
 }

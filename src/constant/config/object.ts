@@ -384,6 +384,7 @@ export const SCM_CONFIG: Record<string, any> = {
         activeText: undefined,
         inactiveText: undefined,
         ignoredText: undefined,
+        collisionText: undefined,
     },
     additionalDecoration: {
         SVGIconDecoration: undefined,

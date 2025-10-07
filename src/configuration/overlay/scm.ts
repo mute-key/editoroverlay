@@ -58,6 +58,7 @@ const buildTextFixture = (overlayTextFixture: any, configuration: any): void => 
     overlayTextFixture.active = configuration.activeText;
     overlayTextFixture.inactive = configuration.inactiveText;
     overlayTextFixture.ignored = configuration.ignoredText;
+    overlayTextFixture.collision = configuration.collisionText;
 };
 
 const buildRenderInstanceOption = (buffer: any, renderOption: any, getter: any): void => {

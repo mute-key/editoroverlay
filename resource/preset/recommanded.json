@@ -1,0 +1,84 @@
+{
+    "diagnosticText.diagnosticPlaceholderTextStyle": {
+        "colorOpacity": 0.35,
+        "backgroundColor": "#182129",
+        "backgroundOpacity": 0.4
+    },
+    "diagnosticText.errorNotationTextStyle": {
+        "colorOpacity": 0.4,
+        "backgroundOpacity": 1,
+        "workspacePrefix": " ✗:",
+        "editorPrefix": " ✗:"
+    },
+    "diagnosticText.errorTextStyle": {
+        "colorOpacity": 0.85
+    },
+    "diagnosticText.warningNotationTextStyle": {
+        "colorOpacity": 0.4,
+        "backgroundOpacity": 1,
+        "workspacePrefix": " ⚠:",
+        "editorPrefix": " ⚠:"
+    },
+    "diagnosticText.warningTextStyle": {
+        "colorOpacity": 0.85,
+        "color": "#ecb500"
+    },
+    "diagnosticText.okNotationTextStyle": {
+        "color": "#8ae71d",
+        "colorOpacity": 0.45,
+        "backgroundOpacity": 1,
+        "editorPrefix": " √:",
+        "allPrefix": " √:"
+    },
+    "diagnosticText.glyphList": {
+        "openningBracket": " (",
+        "closingBracket": ")",
+        "lineEqual": "⚙",
+        "lineUp": "⬆︎",
+        "lineDown": "⬇︎"
+    },
+    "diagnosticText.errorEditorContentText": " ${pre}${err}${post}",
+    "diagnosticText.errorWorkspaceContentText": "${pre}${src}/${err}${post} ",
+    "diagnosticText.warningWorkspaceContentText": "${pre}${src}/${wrn}${post} ",
+    "diagnosticText.warningEditorContentText": " ${pre}${wrn}${post} ",
+    "diagnosticText.okEditorContentText": "${pre}OK${post}",
+    "diagnosticText.allOkContentText": " ${pre}OK${post} ",
+    "diagnosticText.problemPlaceholderContentText": "- 🛠︎ [ EDITOR${editor} / WORKSPACE${workspace}]",
+    "diagnosticText.allOkPlaceholderContentText": "- 🛠︎ [ EDITOR / WORKSPACE ${allok}]",
+    "selectionText.multiCursorText": "< Multi Selection ... Of (${nth} of ${count}, with Total ${lc} Lc ${char} Char)",
+    "selectionText.multiLineAnchorText": "< Selection Anchor ... Of (${lc} Lc, ${charOnly} Char)",
+    "selectionText.multiLineCursorText": "< Selection Cursor ... Of (${lc} Lc, ${charOnly} Char)",
+    "selectionText.singleLineText": "< Selection ... Of (${char} Char)",
+    "selectionText.cursorOnlyText": "< Edit ... At (z.Col ${zCol})",
+    "cursorOnly.backgroundColor": "null",
+    "diagnosticText.visibility": {
+        "autoInlineDatumPoint": 60,
+        "placeTextOnPreviousOrNextLine": "nextLine",
+        "overlayCursorPosition": "last cursor"
+    },
+    "selectionText.leftMargin": "22px",
+    "diagnosticText.okTextStyle": {
+        "color": "#8ae71d",
+        "colorOpacity": 0.75
+    },
+    "selectionText.selectionCountTextStyle": {
+        "ln": "#a7b8d3",
+        "col": "#a7b8d3",
+        "zCol": "#a7b8d3",
+        "char": "#a7b8d3",
+        "lc": "#a7b8d3",
+        "nth": "#a7b8d3",
+        "count": "#a7b8d3",
+        "opacity": 0.6,
+        "fontWeight": "bold"
+    },
+    "selectionText.backgroundOpacity": 0,
+    "selectionText.backgroundColor": "null",
+    "selectionText.colorOpacity": 0.3,
+    "selectionText.color": "#d7c2ff",
+    "general.backgroundOpacity": 0.15,
+    "general.borderOpacity": 0.55,
+    "scmText.overlayLinePosition": 1,
+    "selectionText.multiCursorEdit": "< Multi Edit ... At (${nth} of ${count} on idx ${zCol}, zero-based)",
+    "diagnosticText.leftMargin": "0px"
+}

@@ -130,13 +130,13 @@ const branchStatusAsync = async (path: string, repositoryInfo: D.Scm.Intf.Reposi
     const output = await execShell(path, branchStatusCommand[state.os as string]).catch((err) => err);
     if (isString(output)) {
         repositoryInfo.isModified = true;
-        return gitStatus(output, checkLineEndings(output.trim()) as RegExp).map(index => index.split(" ").slice(1).join(" "));
+        return gitStatus(output, checkLineEndings(output.trim()) as RegExp).map(index => [path, index.split(" ").slice(1).join("")].join(envUtil.dirDivider));
     }
     return [];
 };
 
 const gitIgnoredPathArrayAsync = async (path: string): Promise<string[]> => {
-    const ignoreExist = await ifFileInDirectory(state.os === WORKSPACE_OS.WSL ? pathOverrideWsl(path) : path, '.gitignore');
+    const ignoreExist = await ifFileInDirectory(state.os === WORKSPACE_OS.WSL ? pathOverrideWsl(path) : path, '.gitignore').catch(() => false);
     if (ignoreExist) {
         const output = await execShell(path, gitIgnoreCommand[state.os as string], errorCode.gitIgnore).catch(() => errorCode.gitIgnore);
         if (isString(output) && output !== errorCode.gitIgnore) {
@@ -168,14 +168,24 @@ const branchStatus = (ccount: string): void => {
 const additionalInfo = (repositoryInfo: D.Scm.Intf.RepositoryInfo): void => {
     currentEditor.isActive = repositoryInfo.ignored?.filter(ignorePath => vscode.window.activeTextEditor?.document.uri.fsPath.indexOf(ignorePath) === 0).length === 0;
     scmReferenceObject.svgIcon = svgIcons[currentEditor.isActive ? hex.scmSVGActive : hex.scmSVGInactive];
-    !currentEditor.isActive && (currentEditor.additionalStatus = statusFixture.ignored);
+    !currentEditor.isActive && (currentEditor.additionalStatus?.length === 0) && (currentEditor.additionalStatus = statusFixture.ignored);
     !repositoryInfo.isModified && (currentEditor.additionalStatus = currentEditor.isActive ? statusFixture.active : statusFixture.inactive);
 };
 
-// const collisionCheck = (status: string[], ignored: string[]) => {
-//     console.log(status);
-//     console.log(ignored);
-// };
+const collisionCheck = (status: string[], ignored: string[]): void => {
+    let collision = 0;
+    const statusOneliner = status.join('||');
+    for (const path of ignored) {
+        /**
+         * this is over-simplified index/ignore collision check
+         * idealy, since ignored can be a glob pattern, this was meant to be
+         * much complicated but i haven't came up with right method to handle it yet 
+         * this will most certainly be refactored once i know the soluiton for this.
+         */
+        statusOneliner.indexOf(path) !== -1 && (collision += 1);
+    }
+    currentEditor.additionalStatus = collision > 0 ? statusFixture.collision : "";
+};
 
 /**
  * 
@@ -199,7 +209,7 @@ const setRepositoryAsync = async (path: string): Promise<void> => {
         branchStatusAsync(path, repositoryInfo)
     ]);
 
-    // collisionCheck(status, repositoryInfo.ignored as string[]);
+    collisionCheck(status, repositoryInfo.ignored as string[]);
 
     branchName(bname);
     branchStatus(status.length.toString());
@@ -230,6 +240,7 @@ const setRepositoryAsync = async (path: string): Promise<void> => {
  * @param repoInfo 
  */
 const repositoryWatcher = async (path: string, repoInfo: D.Scm.Intf.RepositoryInfo) => {
+
     if (state.os === WORKSPACE_OS.WSL) {
         const gitDir = [pathOverrideWsl(path), '.git'].join(envUtil.dirDivider);
         const isIndex = await ifFileInDirectory(gitDir, 'index');

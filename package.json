@@ -1489,7 +1489,8 @@
                         "default": {
                             "activeText": "%placeholder.scm.activeText.statusFixture.default%",
                             "inactiveText": "%placeholder.scm.inactiveText.statusFixture.default%",
-                            "ignoredText": "%placeholder.scm.ignoredText.statusFixture.default%"
+                            "ignoredText": "%placeholder.scm.ignoredText.statusFixture.default%",
+                            "collisionText":  "%placeholder.scm.collisionText.statusFixture.default%"
                         },
                         "properties": {
                             "activeText": {
@@ -1503,6 +1504,10 @@
                             "ignoredText": {
                                 "type": "string",
                                 "default": "%placeholder.scm.ignoredText.statusFixture.default%"
+                            },
+                            "collisionText": {
+                                "type": "string",
+                                "default": "%placeholder.scm.collisionText.statusFixture.default%"
                             }
                         },
                         "markdownDescription": "%description.scmText.textOverlayFixture%",
