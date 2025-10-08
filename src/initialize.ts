@@ -10,7 +10,7 @@ import { clearDecorationState, createEditorDecorationTypeOfQueue } from './edito
 import { prepareRenderGroup, renderGroupIs } from './editor/editor';
 import { checkActiveThemeKind } from './command/preset';
 import { updateRangeMetadata } from './editor/range';
-import { initializeScm, activeEditorScm } from './editor/scm/scm';
+import { initializeScm, scmParseOfUri } from './editor/scm/scm';
 
 export {
     initialize
@@ -53,7 +53,7 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<(v
         await createEditorDecorationTypeOfQueue();
 
         if (activeEditor) {                                 // if user is on editor
-            activeEditorScm(activeEditor.document.uri);
+            scmParseOfUri(activeEditor.document.uri);
             updateRangeMetadata(activeEditor);              // set selection range metadata for the editor
             clearDecorationState(loadConfig.decoration as D.Editor.Tp.DecorationState);    // initialize decoration state
             loadConfig.decoration.appliedHighlight[0] = renderGroupIs(activeEditor, [hex.cursorOnly]);

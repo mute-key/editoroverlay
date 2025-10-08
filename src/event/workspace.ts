@@ -3,7 +3,7 @@ import type * as D from '../type/type';
 import * as vscode from 'vscode';
 import { CONFIG_SECTION } from '../constant/config/object';
 import { configurationChanged } from '../configuration/shared/update';
-import { activeEditorScm, scmParsed } from '../editor/scm/scm';
+import { scmParseOfUri, scmParsed } from '../editor/scm/scm';
 
 export {
     configChanged,
@@ -33,7 +33,7 @@ const newEditorSaved = (): vscode.Disposable => {
     return vscode.workspace.onDidSaveTextDocument((event: vscode.TextDocument) => {
         if (!event.isDirty) {
             scmParsed(false);
-            activeEditorScm(event.uri);
+            scmParseOfUri(event.uri);
         }
     });
 };

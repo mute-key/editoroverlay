@@ -21,7 +21,7 @@ import { unwatchFile, watch, watchFile } from 'node:fs';
 export {
     initializeScm,
     renderScmOverlay,
-    activeEditorScm,
+    scmParseOfUri,
     clearScmOverlay,
     scmParsed,
     CurrentBranchDescriptor,
@@ -90,6 +90,7 @@ const pathOverrideWsl = (path: string): string => [state.crossOS?.uncPath, path]
  * @param path 
  * @param commandInfo 
  * @returns 
+ * 
  */
 const execShell = (path: string, commandInfo: D.Scm.Intf.ScmCommandObject, errorCode: string = ""): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -461,36 +462,36 @@ const bindDecorationType = (
  * this function will be the part of renderStack in editor.ts.
  * whenever the extension trying to render the overlay sets, so this function 
  * can be called too and it is how all other overlay rendering functions are 
- * controlled as well. activeEditorScm() can be called outside of this funciton, 
- * but it would means, calling renderGroupIs() will should call activeEditorScm() 
+ * controlled as well. scmParseOfUri() can be called outside of this funciton, 
+ * but it would means, calling renderGroupIs() will should call scmParseOfUri() 
  * previously, everytime. the extension codebase will have multiple places that
- * calls renderGroupIs(), and if activeEditorScm() were to be called seperately, 
- * activeEditorScm() needs to be called same times as to call renderGroupIs(). 
+ * calls renderGroupIs(), and if scmParseOfUri() were to be called seperately, 
+ * scmParseOfUri() needs to be called same times as to call renderGroupIs(). 
  * this way, the codebase do not need to be concerned scm going desync with 
  * overlay itself because they will always run in sync on single function call.
  * also check @link scmParsed()
  *
  * render parsing overlay, becuase it would take time to process the fsPath with existance
- * of repository, and check if the active editor is parsed, if not, call activeEditorScm
- * to parse to build metadata. with this method, activeEditorScm does not need to be 
+ * of repository, and check if the active editor is parsed, if not, call scmParseOfUri
+ * to parse to build metadata. with this method, scmParseOfUri does not need to be 
  * called when vscode.window.onDidChangeActiveTextEditor, since this function will 
  * and can handle all. 
  * 
  * if, to parse the active editor agian, it would only need to change the boolean 
- * to trigger activeEditorScm.
+ * to trigger scmParseOfUri.
  * 
  * the only thing that not satisfactory at the moment is that createCursorRangeLineOfDelta
  * is currying function maybe i can refactor it later.
  * 
  * check for !currentEditor.parsed could come after the render functions but 
- * to parse as soon as, it will be checked 1st and call activeEditorScm, 
+ * to parse as soon as, it will be checked 1st and call scmParseOfUri, 
  * other overlay render functions do check previousKey to reset certainl decorations 
  * and this is in same category to have consistance.
  * 
  * @param editor 
  */
 const renderScmOverlay = (editor: vscode.TextEditor): void => {
-    !currentEditor.parsed && activeEditorScm(editor.document.uri);
+    !currentEditor.parsed && scmParseOfUri(editor.document.uri);
     scmReferenceObject.range = createCursorRangeLineOfDelta(configuration.overlayLinePosition)(editor);
     scmDecorationTypes.forEach(bindDecorationType(editor.setDecorations, currentEditor.parsed ? scmRenderOptions : scmLoadingRenderOptions));
 };
@@ -640,7 +641,7 @@ const initializeScm = (context: vscode.ExtensionContext): void => {
  * this function should be called just once when active editor is changed.
  * 
  */
-const activeEditorScm = (uri: vscode.Uri): void => {
+const scmParseOfUri = (uri: vscode.Uri): void => {
     state.isSourceControlled = false;
     currentEditor.additionalStatus = '';
 
