@@ -241,12 +241,23 @@ const setRepositoryAsync = async (path: string): Promise<void> => {
  * @param repoInfo 
  */
 const repositoryWatcher = async (path: string, repoInfo: D.Scm.Intf.RepositoryInfo) => {
+
     if (state.os === WORKSPACE_OS.WSL) {
         const gitDir = [pathOverrideWsl(path), '.git'].join(envUtil.dirDivider);
         const isIndex = await ifFileInDirectory(gitDir, 'index');
         if (isIndex) {
-            const repoIndex = [pathOverrideWsl(path), '.git', 'index'].join(envUtil.dirDivider); // 
-            repoInfo.watcher = watchFile(repoIndex, wslWatchEventListner(repoInfo, repoIndex));
+            const repoIndex = [pathOverrideWsl(path), '.git', 'index'].join(envUtil.dirDivider); 
+            const wslWatchEventListner = (stat: any) => {
+                if (stat) {
+                    unwatchFile(repoIndex);
+                    repoInfo.watcher?.unref();
+                    repoInfo.watcher?.removeAllListeners();
+                    repoInfo.watcher = watchFile(repoIndex, wslWatchEventListner);
+                    forceRender(false);
+                    vscode.window.showInformationMessage('Repository have been updated. please wait for overlay to reload metadata.');
+                }
+            };
+            repoInfo.watcher = watchFile(repoIndex, wslWatchEventListner);
         } else {
             vscode.window.showInformationMessage('Repository have no index. Add files to repository when ready.');
         }
@@ -261,17 +272,6 @@ const repositoryWatcher = async (path: string, repoInfo: D.Scm.Intf.RepositoryIn
                 forceRender(false);
             }
         });
-    }
-};
-
-const wslWatchEventListner = (repoInfo: D.Scm.Intf.RepositoryInfo, repoIndex: string) => (stat: any) => {
-    if (stat) {
-        unwatchFile(repoIndex);
-        repoInfo.watcher?.unref();
-        repoInfo.watcher?.removeAllListeners();
-        repoInfo.watcher = watchFile(repoIndex, wslWatchEventListner(repoInfo, repoIndex));
-        forceRender(false);
-        vscode.window.showInformationMessage('Repository have been updated. please wait for overlay to reload metadata.');
     }
 };
 
