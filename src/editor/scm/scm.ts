@@ -9,7 +9,7 @@ import { DIRECTORY_DELIMITER, ICON_TYPE, SCM_RESOURCE_PATH } from '../../constan
 import { BRANCH_ADDITIONAL_INFO } from '../../constant/shared/object';
 import { WORKSPACE_OS } from '../../constant/shared/enum';
 import { SCM_CONFIG } from '../../constant/config/object';
-import { branchStatusCommand, currentBranchCommand, gitIgnoreCommand, checkLineEndings, spawnOptions, convertUriToSysPath, posixOnlyState, win32OnlyState, win32wslState, errorCode } from './helper';
+import { branchStatusCommand, currentBranchCommand, gitIgnoreCommand, checkLineEndings, spawnOptions, convertUriToSysPath, posixOnlyState, win32OnlyState, win32wslState, errorCode, uncPathConfigurationID } from './helper';
 import { contentIconGetter, contentTextGetter, rangeGetter } from '../selection/multiCursor/renderOption';
 import { spawn, SpawnSyncOptionsWithStringEncoding } from 'child_process';
 import { setCreateDecorationTypeQueue } from '../editor';
@@ -73,6 +73,8 @@ const contentRegexStack: Record<D.Numeric.Key.Hex, Record<string, RegExp>> = {
 //     });
 // };
 
+const autoPath = (path: string): string => state.crossOS ? pathOverrideWsl(path) : path;
+
 const pathOverrideWsl = (path: string): string => [state.crossOS?.uncPath, path].filter(Boolean).join('');
 
 /**
@@ -95,7 +97,7 @@ const pathOverrideWsl = (path: string): string => [state.crossOS?.uncPath, path]
 const execShell = (path: string, commandInfo: D.Scm.Intf.ScmCommandObject, errorCode: string = ""): Promise<string> => {
     return new Promise((resolve, reject) => {
 
-        const pathOverride = state.crossOS ? pathOverrideWsl(path) : path;
+        const pathOverride = autoPath(path);
 
         const spwan = spawn(commandInfo.cmd, commandInfo.args, spawnOptions[state.os as string](pathOverride) as SpawnSyncOptionsWithStringEncoding);
 
@@ -127,21 +129,25 @@ const execShell = (path: string, commandInfo: D.Scm.Intf.ScmCommandObject, error
 
 const gitStatus = (output: string, lineBreak: RegExp): string[] => output.trim().split(lineBreak);
 
+const gitStatusEntrySplit = (path: string) => (index: string): string => [path, index.split(" ").slice(1).join("")].join(envUtil.dirDivider);
+
 const branchStatusAsync = async (path: string, repositoryInfo: D.Scm.Intf.RepositoryInfo): Promise<string[]> => {
     const output = await execShell(path, branchStatusCommand[state.os as string]).catch((err) => err);
     if (isString(output)) {
         repositoryInfo.isModified = true;
-        return gitStatus(output, checkLineEndings(output.trim()) as RegExp).map(index => [path, index.split(" ").slice(1).join("")].join(envUtil.dirDivider));
+        return gitStatus(output, checkLineEndings(output.trim()) as RegExp).map(gitStatusEntrySplit(path));
     }
     return [];
 };
 
+const gitIgnorePathToFullpath = (path: string) => (ignorePath: string): string => [path, ignorePath].join(envUtil.dirDivider).trim();
+
 const gitIgnoredPathArrayAsync = async (path: string): Promise<string[]> => {
-    const ignoreExist = await ifFileInDirectory(state.os === WORKSPACE_OS.WSL ? pathOverrideWsl(path) : path, '.gitignore').catch(() => false);
+    const ignoreExist = await ifFileInDirectory(autoPath(path), '.gitignore').catch(() => false);
     if (ignoreExist) {
         const output = await execShell(path, gitIgnoreCommand[state.os as string], errorCode.gitIgnore).catch(() => errorCode.gitIgnore);
         if (isString(output) && output !== errorCode.gitIgnore) {
-            const res = output.trim().split(checkLineEndings(output.trim()) as RegExp).map(ignorePath => [path, ignorePath].join(envUtil.dirDivider).trim());
+            const res = output.trim().split(checkLineEndings(output.trim()) as RegExp).map(gitIgnorePathToFullpath(path));
             return res;
         }
     }
@@ -246,11 +252,11 @@ const repositoryWatcher = async (path: string, repoInfo: D.Scm.Intf.RepositoryIn
         const gitDir = [pathOverrideWsl(path), '.git'].join(envUtil.dirDivider);
         const isIndex = await ifFileInDirectory(gitDir, 'index');
         if (isIndex) {
-            const repoIndex = [pathOverrideWsl(path), '.git', 'index'].join(envUtil.dirDivider); 
+            const repoIndex = [pathOverrideWsl(path), '.git', 'index'].join(envUtil.dirDivider);
             const wslWatchEventListner = (stat: any) => {
                 if (stat) {
                     unwatchFile(repoIndex);
-                    repoInfo.watcher?.unref();
+                    // repoInfo.watcher?.unref();
                     repoInfo.watcher?.removeAllListeners();
                     repoInfo.watcher = watchFile(repoIndex, wslWatchEventListner);
                     forceRender(false);
@@ -535,12 +541,12 @@ const uncPathEnabled = (wslHost: string): boolean => {
 
     let configurationName = [] as string[];
 
-    if (!isAllowedUncHost) {
-        configurationName.push('@id:security.restrictUNCAccess');
+    if (!isUNCallowed) {
+        configurationName.push(uncPathConfigurationID.enabled);
     }
 
-    if (!isUNCallowed) {
-        configurationName.push('@id:security.allowedUNCHosts');
+    if (!isAllowedUncHost) {
+        configurationName.push(uncPathConfigurationID.allowedHost);
     }
 
     if (configurationName.length > 0) {

@@ -10,7 +10,6 @@ import { cursorOnlyHighlightRange, singelLineHighlightRange, multiLineHighlightR
 import { cursorOnlySelection, singleLineSelection, multilineSelection, multiCursorSelection, bindStatusContentTextState, clearSelectionTextBuffer } from './selection/selection';
 import { blankRange, updateRangeMetadata } from './range';
 import { clearScmOverlay, renderScmOverlay } from './scm/scm';
-import { DECORATION_OPTION_CONFIG } from '../constant/config/object';
 
 export {
     updateIndentOption,
@@ -69,7 +68,6 @@ const createEditorDecorationTypeOfQueue = () => {
         if (queue.followUpFunc) {
             queue.followUpFunc();
         }
-
     }
 };
 

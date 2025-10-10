@@ -26,7 +26,7 @@ export {
     win32OnlyState,
     win32wslState,
     posixOnlyState,
-
+    uncPathConfigurationID
 };
 
 const localUri = async (path: string): Promise<vscode.Uri> => {
@@ -45,7 +45,7 @@ const win32OnlyState: D.Scm.Intf.StateDescription = {
     iconRoot: SCM_RESOURCE_PATH.WIN_ICON_ROOT,
     pathSplit: fsWinSplit,
     lineBreak: crlfRegex,
-    crossOS: undefined,
+    // crossOS: undefined,
     directoryToUri: localUri
 };
 
@@ -69,7 +69,7 @@ const posixOnlyState: D.Scm.Intf.StateDescription = {
     iconRoot: SCM_RESOURCE_PATH.POSIX_ICON_ROOT,
     pathSplit: fsLinuxSplit,
     lineBreak: lfRegex,
-    crossOS: undefined,
+    // crossOS: undefined,
     directoryToUri: localUri
 };
 
@@ -191,6 +191,11 @@ const setGetterOfRenederOption = (target: any, getterName: string, propertyDescr
 
 const errorCode = {
     gitIgnore: "NOT_FOUND"
+};
+
+const uncPathConfigurationID: Record<string, string> = {
+    enabled: '@id:security.restrictUNCAccess',
+    allowedHost: '@id:security.allowedUNCHosts'
 };
 
 /**

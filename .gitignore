@@ -5,3 +5,4 @@ out
 ..note
 *.vsix
 setting.json
+src/test
