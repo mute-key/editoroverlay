@@ -256,9 +256,6 @@ const repositoryWatcher = async (path: string, repoInfo: D.Scm.Intf.RepositoryIn
             const wslWatchEventListner = (stat: any) => {
                 if (stat) {
                     unwatchFile(repoIndex);
-                    // repoInfo.watcher?.unref();
-                    repoInfo.watcher?.removeAllListeners();
-                    repoInfo.watcher = watchFile(repoIndex, wslWatchEventListner);
                     forceRender(false);
                     vscode.window.showInformationMessage('Repository have been updated. please wait for overlay to reload metadata.');
                 }
@@ -276,6 +273,7 @@ const repositoryWatcher = async (path: string, repoInfo: D.Scm.Intf.RepositoryIn
                 repoInfo.watcher?.close();
                 repoInfo.watcher = watch(repoDir, { recursive: false });
                 forceRender(false);
+                vscode.window.showInformationMessage('Repository have been updated. please wait for overlay to reload metadata.');
             }
         });
     }
