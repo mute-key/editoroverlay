@@ -271,7 +271,6 @@ const repositoryWatcher = async (path: string, repoInfo: D.Scm.Intf.RepositoryIn
             if (eventType === 'change') {
                 // @ts-ignore
                 repoInfo.watcher?.close();
-                repoInfo.watcher = watch(repoDir, { recursive: false });
                 forceRender(false);
                 vscode.window.showInformationMessage('Repository have been updated. please wait for overlay to reload metadata.');
             }
