@@ -46,7 +46,8 @@ const win32OnlyState: D.Scm.Intf.StateDescription = {
     pathSplit: fsWinSplit,
     lineBreak: crlfRegex,
     // crossOS: undefined,
-    directoryToUri: localUri
+    directoryToUri: localUri,
+    repoWatcher: () => null
 };
 
 /** win32 -> wsl */
@@ -59,6 +60,7 @@ const win32wslState: D.Scm.Intf.StateDescription = {
     lineBreak: lfRegex,
     crossOS: undefined,
     directoryToUri: crossOsWslUri,
+    repoWatcher: () => null
 };
 
 /** posix, linux, mac */
@@ -70,7 +72,8 @@ const posixOnlyState: D.Scm.Intf.StateDescription = {
     pathSplit: fsLinuxSplit,
     lineBreak: lfRegex,
     // crossOS: undefined,
-    directoryToUri: localUri
+    directoryToUri: localUri,
+    repoWatcher: () => null
 };
 
 const convertUriToSysPath = (os: string, uri: vscode.Uri): string => {

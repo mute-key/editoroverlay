@@ -56,7 +56,7 @@ declare namespace Intf {
         currentBranch?: string,
         ignored?: string[]
         parsed?: string[]
-        watcher?: FSWatcher | StatWatcher 
+        watcher?: FSWatcher | StatWatcher
     }
 
     interface CommandSet {
@@ -110,6 +110,10 @@ declare namespace Intf {
         crossOS?: CrossOsWorkspaceInfo
         directoryToUri: any
         remote?: string
-
+        repoWatcher?: any
     }
+}
+
+declare namespace Tp {
+    type WatcherFuncSignature =  (path: string, repoInfo: Intf.RepositoryInfo) => Promise<void>
 }

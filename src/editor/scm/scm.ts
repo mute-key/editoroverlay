@@ -16,7 +16,7 @@ import { setCreateDecorationTypeQueue } from '../editor';
 import { createCursorRangeLineOfDelta } from '../range';
 import { getUserSettingValue } from '../../configuration/shared/configuration';
 import { ifFileInDirectory, isString } from '../../util/util';
-import { unwatchFile, watch, watchFile } from 'node:fs';
+import { FSWatcher, unwatchFile, watch, watchFile } from 'node:fs';
 
 export {
     initializeScm,
@@ -221,8 +221,8 @@ const setRepositoryAsync = async (path: string): Promise<void> => {
     branchName(bname);
     branchStatus(status.length.toString());
     additionalInfo(repositoryInfo);
-    state.repository.set(path, repositoryInfo);
     await repositoryWatcher(path, repositoryInfo);
+    state.repository.set(path, repositoryInfo);
     await forceRender();
 };
 
@@ -247,7 +247,6 @@ const setRepositoryAsync = async (path: string): Promise<void> => {
  * @param repoInfo 
  */
 const repositoryWatcher = async (path: string, repoInfo: D.Scm.Intf.RepositoryInfo) => {
-
     if (state.os === WORKSPACE_OS.WSL) {
         const gitDir = [pathOverrideWsl(path), '.git'].join(envUtil.dirDivider);
         const isIndex = await ifFileInDirectory(gitDir, 'index');
@@ -265,6 +264,8 @@ const repositoryWatcher = async (path: string, repoInfo: D.Scm.Intf.RepositoryIn
             vscode.window.showInformationMessage('Repository have no index. Add files to repository when ready.');
         }
     } else {
+        const previousWatcher = state.repository.get(path)?.watcher as FSWatcher | undefined;
+        previousWatcher?.close();
         const repoDir = [path, '.git'].join(envUtil.dirDivider);
         repoInfo.watcher = watch(repoDir, { recursive: false });
         repoInfo.watcher.on('change', (eventType, filename) => {
@@ -598,9 +599,7 @@ const getWorkspaceObject = (): undefined | D.Scm.Intf.StateDescription => {
                 uncPath: workspaceUcPath
             };
             return win32wslState;
-        } else {
-            // vscode.window.showErrorMessage('UNC path is not enabled.'); // add settings UI link
-        }
+        } 
     }
 
     if (process.platform === WORKSPACE_OS.LINUX || process.platform === WORKSPACE_OS.MAC) {
@@ -755,6 +754,8 @@ const bindScmState = (): any => {
     return {
         renderOptionBuffer: renderOptionBuffer,
         renderOption: decorationRenderOption,
+        overlayTextFixture: statusFixture,
+        referenceObject: scmReferenceObject,
         getterDescription: {
             rangeAndContentText: {
                 descriptor: rangeDescriptor,
@@ -769,8 +770,7 @@ const bindScmState = (): any => {
                 name: contentTextGetter
             }
         },
-        overlayTextFixture: statusFixture,
-        referenceObject: scmReferenceObject
+        
     };
 };
 
