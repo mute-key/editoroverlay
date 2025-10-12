@@ -256,12 +256,10 @@ const repositoryWatcher = async (path: string, repoInfo: D.Scm.Intf.RepositoryIn
                 if (stat) {
                     unwatchFile(repoIndex);
                     forceRender(false);
-                    vscode.window.showInformationMessage('Repository have been updated. please wait for overlay to reload metadata.');
                 }
             };
             repoInfo.watcher = watchFile(repoIndex, wslWatchEventListner);
         } else {
-            vscode.window.showInformationMessage('Repository have no index. Add files to repository when ready.');
         }
     } else {
         const previousWatcher = state.repository.get(path)?.watcher as FSWatcher | undefined;
@@ -273,7 +271,6 @@ const repositoryWatcher = async (path: string, repoInfo: D.Scm.Intf.RepositoryIn
                 // @ts-ignore
                 repoInfo.watcher?.close();
                 forceRender(false);
-                vscode.window.showInformationMessage('Repository have been updated. please wait for overlay to reload metadata.');
             }
         });
     }
