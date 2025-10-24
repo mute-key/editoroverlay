@@ -37,18 +37,23 @@ this is a temporary note & backlog
 
 | version log ===============================================================================================
 
-| 1.6.4 - planned |
+| 1.6.5 - planned |
 
-- [+] git add/ignore collision indiciator 
-- [+] font-family configurations for all text overlays
-- [+] font-decoration configurations for all text overlays
-- [+] queue strategies for textEditorDecorationTypes across all overlays so that every overlay 
-      can have ascending sequence.
-- [+] an ability to change the overlay positions in sequence.
+- [~] font-family configurations for all text overlays
+- [~] font-decoration configurations for all text overlays
+- [~] an ability to change the overlay positions in sequence.
 
 ************************************************************************************************************
 
-| 1.6.3 - current |
+| 1.6.4 - current |
+
+- [+] git add/ignore collision indiciator 
+- [+] queue strategies for textEditorDecorationTypes across all overlays so that every overlay 
+      can have ascending sequence.
+
+************************************************************************************************************
+
+| 1.6.3 |
 
 - [+] unc path handling added for cross-os-workspace for git overlay, no arbitary string will be put in
       spawn, and all spawn execution path will be directed by cwd option for all 

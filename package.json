@@ -3,7 +3,7 @@
     "publisher": "mutekey",
     "displayName": "Editor Overlay",
     "description": "Highly configurable overlay tool on editor line and workspace status in real-time.",
-    "version": "1.6.3",
+    "version": "1.6.4",
     "icon": "resource/icon.png",
     "license": "cc by-nc 4.0",
     "engines": {
@@ -57,36 +57,36 @@
         "commands": [
             {
                 "command": "editoroverlay.applyPreset",
-                "title": "Apply Preset Configuration",
-                "category": "Editor Overlay Highlight",
+                "title": "Apply Complete Preset",
+                "category": "Editor Overlay",
                 "shortTitle": "applyPreset",
                 "order": 1
             },
             {
                 "command": "editoroverlay.setColor",
-                "title": "Set Color Configuration",
-                "category": "Editor Overlay Highlight",
+                "title": "Set Color Preset",
+                "category": "Editor Overlay",
                 "shortTitle": "setColor",
                 "order": 2
             },
             {
                 "command": "editoroverlay.setContrast",
-                "title": "Set Contrast Configuration",
-                "category": "Editor Overlay Highlight",
+                "title": "Set Contrast Preset",
+                "category": "Editor Overlay",
                 "shortTitle": "setContrast",
                 "order": 3
             },
             {
                 "command": "editoroverlay.setOrientation",
-                "title": "Set Orientation Configuration",
-                "category": "Editor Overlay Highlight",
+                "title": "Set Orientation Preset",
+                "category": "Editor Overlay",
                 "shortTitle": "setOrientation",
                 "order": 4
             },
             {
                 "command": "editoroverlay.restoreToDefaultConfiguration",
-                "title": "Reset User Configuration",
-                "category": "Editor Overlay Highlight",
+                "title": "Reset User Preset/Configuration",
+                "category": "Editor Overlay",
                 "shortTitle": "restoreToDefaultConfiguration",
                 "order": 5
             }
@@ -1240,8 +1240,7 @@
                         "order": 4,
                         "type": "string",
                         "enum": [
-                            "svg",
-                            "glyph"
+                            "svg"
                         ],
                         "default": "svg",
                         "markdownDescription": "%description.scmText.iconType%"

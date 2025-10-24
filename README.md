@@ -1,52 +1,44 @@
 # Introduction
 
 Highly customizable cursor/selection overlay extension. 
-This extension displays selection status overlay on real time as you change the cursor/selection position,  which is equivelant of `Editor Selection` in `Status Bar` as well as diagnostic count of editor/workspace in `Problem view`. You can enabled/disabled the features that you only need, if you don't need them all. Here are the examples of this extension with default confuguration as out of the box.
+This extension displays selection status overlay on real time as you change the 
+cursor/selection position,  which is equivelant of `Editor Selection` in `Status Bar` 
+as well as diagnostic count of editor/workspace in `Problem view`. You can enabled/disabled 
+the features that you only need, if you don't need them all. Here are the examples of this
+ extension with default confuguration as out of the box.
 
-If you want to build this extension from the source code, please run `vsce package --no-dependencies`.
+When you change setting, please read the 📌 pinned description thoroughly and try it.
 
-#### <ins>Preview: Cursor Only Highlight</ins>
+If you want to build this extension from the source code, run `vsce package --no-dependencies`.
 
-<img src="./resource/doc/cursorOnly.png" alt ="GIF" style=""><br>
+> [!TIP] 
+>
+> When there is a problem with overlay layout, try reload the vscode by following command<br>
+> and see if the the problem is resolved on reload<br>
+> <img src="./resource/doc/reload.png" alt ="GIF" style=""><br>
 
-> When only a cursor is on an editor. No characters in selection.
+## Quickstart 
 
-#### <ins>Preview: SingleLine Highlight</ins>
+Open command palate and search for `Editor Overlay -> Apply Complete Preset`
 
-<img src="./resource/doc/singleLine.png" alt ="GIF" style=""><br>
+<img src="./resource/doc/quickstart.png" alt ="GIF" style=""><br>
 
-> When selection is a single line.
+Then Select Recommanded
 
-#### <ins>Preview: MultiLine Highlight</ins>
+<img src="./resource/doc/preset.png" alt ="GIF" style=""><br>
 
-<img src="./resource/doc/multiLine.png" alt ="GIF" style=""><br>
+This is how the recommanded overlay preset
 
-> when selection is only 1, and the selection is Multi-Line.
+<img src="./resource/doc/recommanded.png" alt ="GIF" style=""><br>
 
-#### <ins>Preview: MultiCursor Highlight</ins>
-
-<img src="./resource/doc/multiCursor.png" alt ="GIF" style=""><br>
-
-> When selection is more than 1; and multi-Cursor editing.
-
-#### <ins>Preview: Diagnostic</ins>
-
-<img src="./resource/doc/diagnostic.png" alt ="GIF" style=""><br>
-
-> Extension will display the diagnostic status of current editor/workspace. You can change visibily, fixtures, position, format or even Text to Glyph/Emoji.
-
-<img src="./resource/doc/linePosition.png" alt ="GIF" style=""><br>
-
-> Editor diagonotic will point (equal, up or down) where the problem lines are based on current cursor position. <br>
-
-So far, everything in the examples are on default configuration.<br><br>
-
-<img src="./resource/doc/light-theme.png" alt ="GIF" style=""><br>
+If you are using light theme, there is a color preset for the light themes
 
 > [!TIP] 
 >
 > Default color scheme for Light themes<br><br>
-> This is what default colors will look like If active color theme is Light theme.<br>
+> 
+> <img src="./resource/doc/light-theme.png" alt ="GIF" style=""><br>
+> 
 > To achieve the same style as in the example, run these following commands in vscode command palette as following.
 >
 > 1. `CursorLine Highlight: Apply Color Configuration` > `Light`
@@ -57,6 +49,43 @@ So far, everything in the examples are on default configuration.<br><br>
 >
 > Left margin will be adjusted by the preset, which you can change them in the `Settings UI` or `settings.json`.
 
+#### <ins>Preview: Cursor Only Highlight</ins>
+
+<img src="./resource/doc/cursorOnly.png" alt ="GIF" style=""><br>
+
+When only a cursor is on an editor. No characters in selection.
+
+#### <ins>Preview: SingleLine Highlight</ins>
+
+<img src="./resource/doc/singleLine.png" alt ="GIF" style=""><br>
+
+When selection is a single line.
+
+#### <ins>Preview: MultiLine Highlight</ins>
+
+<img src="./resource/doc/multiLine.png" alt ="GIF" style=""><br>
+
+when selection is only 1, and the selection is Multi-Line.
+
+#### <ins>Preview: MultiCursor Highlight</ins>
+
+<img src="./resource/doc/multiCursor.png" alt ="GIF" style=""><br>
+
+When selection is more than 1; and multi-Cursor editing.
+
+#### <ins>Preview: Diagnostic</ins>
+
+<img src="./resource/doc/diagnostic.png" alt ="GIF" style=""><br>
+
+Extension will display the diagnostic status of current editor/workspace. You can change visibily, fixtures, position, format or even Text to Glyph/Emoji.
+
+<img src="./resource/doc/linePosition.png" alt ="GIF" style=""><br>
+
+Editor diagonotic will point (equal, up or down) where the problem lines are based on current cursor position. <br>
+
+So far, everything in the examples are on default configuration.<br><br>
+
+
 ## Configruation Guide
 
 
@@ -66,7 +95,8 @@ So far, everything in the examples are on default configuration.<br><br>
 
 <img src="./resource/doc/commands.png" alt ="GIF" style=""><br>
 
-- __Command >__ _`CursorLine Highlight: Apply Preset Configuration`_
+- __Command__ _`> Editor Overlay: Apply Complete Preset`_
+  - `Recommanded`
   - `Detailed`
   - `Simle`
   - `No Glpyph - Detailed`
@@ -74,23 +104,24 @@ So far, everything in the examples are on default configuration.<br><br>
   - `Emoji - Detailed`
   - `Emoji - Simple`
 
-- __Command >__ _`CursorLine Highlight: Set Color Configuration`_
-  - `Light` -  For Light Theme Users
-  - `Dark` -  For Dark Theme Users
+- __Command__ _`> Editor Overlay: Reset User Preset/Configuration`_
+  - Remove global user configurations of this extension form `settings.json`
 
-- __Command >__ _`CursorLine Highlight: Set Contrast Configuration`_
+- __Command__ _`> Editor Overlay: Set Color Preset`_
+  - `Light` - For Light Theme Users
+  - `Dark` - For Dark Theme Users
+
+- __Command__ _`> Editor Overlay: Set Contrast Preset`_
   - `Dim`
   - `Bright`
 
-- __Command >__ _`CursorLine Highlight: Set Orientation Configuration`_
+- __Command__ _`> Editor Overlay: Set Orientation Preset`_
   - `Vertical`
   - `Horizonta`
 
-- __Command >__ _`CursorLine Highlight: Reset User Configuration`_
-  - Remove global user configurations of this extension form `settings.json`
-
 > [!WARNING] 
-> (Light Theme User Only) Command: Set Contrast Configuration<br><br>
+> 
+> (Light Theme User Only) Command: Set Contrast Preset<br><br>
 > I Would advice not to use this command if you are using `Light Theme` as it overrides some colors/opacity. I recommand directly changing the values from `Setting UI` or `Setting.json`
 
 ### On setting UI
@@ -140,8 +171,8 @@ This i would like to fix and update soon.
 ### Diagnostic status
 
 > [!IMPORTANT]
-> SelectionText.enabled<br><br>
-> You can enable/disable this feature. (Default: Enabled)
+>
+> You can enable/disable this feature with SelectionText.enabled (Default: Enabled)
 
 Diagnostic status indicate the same entry in probelm view as the screenshot.
 
@@ -175,54 +206,46 @@ i will try to list the template strucutre briefly.
       - [prefix] + warning ContentText + [postfix]
       - [prefix] + error ContentText + [postfix]
 
-## Backlog
+### Git Overlay
 
-```plain
-************************************************************************************************************
+Here is the sameple screenshot of the part of the overlay where it starting with git icon.
 
-  [+]: new, added
-  [o]: completed
-  [!]: issues
-  [~]: on going, unfinished or planning
-  [,]: not decided, pause
-  [_]: drop, ideas or features
-  [?]: unknown unknown, maybe fixed
-  
-| sticky_list ===============================================================================================
+When checked-out branch has 2 changes and active editor is on git indexed path
 
-- [~] current method to creating a store object is to make a copy from const object where it is defined, 
-      maybe it is better to just change it all to some state/store object...? um.... i need to think about it
-- [~] maybe applying preset should have some sort of indicator or message popup that configurations are 
-      being updated and will reload. 
-- [~] probably document state indicator could be useful? not sure
-- [~] configuration pattern improvement.
-- [~] configuration code clean up.
-- [~] implement new status block for tasks in vscode or from terminal.
-- [~] to get back to configuration code at some point and clean up.
-- [~] better type definitions
-- [~] refactor some of unpolished configuration files
+<img src="./resource/doc/git-active.png" alt ="GIF" style=""><br>
 
-- [?] direct config update on settings.json leaves selection status text. 
-- [?] backgroundColor configuration or auto appply background color based on border colour. not sure yet.
+When checked-out branch is clean and active editor is on git indexed path
 
-- [!] continues trigger of 'select next occurrences' will not cause render lag until when it reach 
-      round 300 cursor. they will be rendered with some delay after reaching certain numbers. 
-      one way to solving this would be paging the render obejct but this will require major data
-      structure refactoring. i would like to work on this eventually.
+<img src="./resource/doc/up-to-date.png" alt ="GIF" style=""><br>
 
-| version log ===============================================================================================
+When checked-out branch has 2 changes but current active editor is on ignored path
 
-| 1.6.2 |
+<img src="./resource/doc/git-ignore.png" alt ="GIF" style=""><br>
 
-- [+] found a bug in multiCursor function in debug mode, which causing async function crashing the runtime.
-      as i understand, it is because the function uses circular referenced object with closure. it had better
-      performance but the execution cycle was somewhat loose and makes some function calls irrelevant.
+When change has an index that are in .gitignored.
 
-      perhaps mixing pointer/ref + async is harder to implement properly and not as necessary to use both.
+<img src="./resource/doc/git-collision.png" alt ="GIF" style=""><br>
+
+When active editor is on not-indexed path
+
+<img src="./resource/doc/git-new.png" alt ="GIF" style=""><br>
 
 
-************************************************************************************************************
-```
+#### Cross-os-workspace
+
+> [!IMPORTANT] 
+> 
+> if vscode is running on windows but workspace is in wsl, 
+> git overlay will not work unless you change 2 settings from default
+> 
+> * security.allowedUNCHosts => add wsl remote hostname OR 
+> * security.restrictUNCAccess => disabled from enabled
+> 
+> <img src="./resource/doc/unc-path.png" alt ="GIF" style=""><br>
+> 
+> this is due to shell to not to have to deal with arbitary string handling 
+> and only use cwd to execute commands 
+> 
 
 ## Lastly
 
@@ -232,11 +255,3 @@ I may add font family configuration in the future iteration but i can not guaran
 Thank you for reading.
 
 Feel free to open isseus if you find one, or any feedback or comment is more than welcome.
-
-
-
-
-
-
-
-
