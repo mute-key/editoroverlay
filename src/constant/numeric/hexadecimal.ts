@@ -1,6 +1,8 @@
 /* eslint-disable semi */
 
 /**
+ * @TODO module split
+ * 
  * D.Numeric.Key.Hex
  *
  * at the engine level, object keys can only be strings or symbols.
@@ -245,27 +247,40 @@ export const workspaceErrorTotal = HEX_DIAGNOSTIC_STATUS_TEXT_KIND.WORKSPACE + D
 
 export const enum SCM_RENDER_OPTION_KEY {
     SCM_ICON = 0x0401,
-    SCM_BASE = 0x0402,
+    SCM_BRANCH = 0x0402,
     SCM_PARSING = 0x0403,
     SCM_EXTERNAL = 0x0404,
+    SCM_CONFLICT = 0x0405,
+    SCM_NEW =  0x0406,
+    SCM_NO_REPOSITORY =  0x0407,
 }
 
 export const scmIcon = SCM_RENDER_OPTION_KEY.SCM_ICON as D.Numeric.Key.Hex
-export const scmBase = SCM_RENDER_OPTION_KEY.SCM_BASE as D.Numeric.Key.Hex
+export const scmBranch = SCM_RENDER_OPTION_KEY.SCM_BRANCH as D.Numeric.Key.Hex
 export const scmParsing = SCM_RENDER_OPTION_KEY.SCM_PARSING as D.Numeric.Key.Hex
 export const scmExternal = SCM_RENDER_OPTION_KEY.SCM_EXTERNAL as D.Numeric.Key.Hex
+export const scmConflict = SCM_RENDER_OPTION_KEY.SCM_CONFLICT as D.Numeric.Key.Hex
+export const scmNew = SCM_RENDER_OPTION_KEY.SCM_NEW as D.Numeric.Key.Hex
+export const scmNoRepository = SCM_RENDER_OPTION_KEY.SCM_NO_REPOSITORY as D.Numeric.Key.Hex
 
 export const enum SCM_SVG_ICON_TYPE_KEY {
     SCM_ACTIVE = 0x0405,
     SCM_INACTIVE = 0x0406,
-    SCM_NOT_REPOSITORY = 0x0407,
-    SCM_UNKOWN = 0x0407,
+    SCM_CONFLICT = 0x0407,
+    SCM_NEW = 0x0408,
+    SCM_UP_TO_DATE = 0x0409,
+    SCM_EXTERNAL = 0x040A,
+    SCM_NO_REPOSITORY = 0x040B,
 }
 
 export const scmSVGActive = SCM_SVG_ICON_TYPE_KEY.SCM_ACTIVE as D.Numeric.Key.Hex
 export const scmSVGInactive = SCM_SVG_ICON_TYPE_KEY.SCM_INACTIVE as D.Numeric.Key.Hex
-export const scmSVGNotRepository = SCM_SVG_ICON_TYPE_KEY.SCM_NOT_REPOSITORY as D.Numeric.Key.Hex
-export const scmSVGUnknown = SCM_SVG_ICON_TYPE_KEY.SCM_UNKOWN as D.Numeric.Key.Hex
+export const scmSVGConflict = SCM_SVG_ICON_TYPE_KEY.SCM_CONFLICT as D.Numeric.Key.Hex
+export const scmSVGNew = SCM_SVG_ICON_TYPE_KEY.SCM_NEW as D.Numeric.Key.Hex
+export const scmSVGUpToDate = SCM_SVG_ICON_TYPE_KEY.SCM_UP_TO_DATE as D.Numeric.Key.Hex
+
+export const scmSVGUnknown = SCM_SVG_ICON_TYPE_KEY.SCM_EXTERNAL as D.Numeric.Key.Hex
+export const scmSVGNoRepository = SCM_SVG_ICON_TYPE_KEY.SCM_NO_REPOSITORY as D.Numeric.Key.Hex
 
 //::==============================================================================
 //::[ MISC ] 0x1000, 00 is reserved.

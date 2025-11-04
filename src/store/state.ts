@@ -27,19 +27,6 @@ export const DECORATION_STATE = {
     previousLine: [0] as number[],
 };
 
-export const SELECTION_KIND_LIST = [
-    hex.cursorOnly,
-    hex.singleLine,
-    hex.multiLine,
-    hex.multiCursor,
-];
-
-export const SELECTION_KIND_LIST_EXCLUDE_MULTI_CURSOR = [
-    hex.cursorOnly,
-    hex.singleLine,
-    hex.multiLine,
-];
-
 export const HIGHLIGHT_STYLE_LIST = {
     [hex.reset]: [] as vscode.TextEditorDecorationType[],
     [hex.cursorOnly]: [] as vscode.TextEditorDecorationType[],
@@ -149,6 +136,7 @@ export const WORKSPACE_STATE = {
 };
 
 export const WORKSPACE_ENV_UTIL = {
+    EOAIdentifier: undefined,
     shell: undefined,
     extRoot: undefined,
     dirDivider: undefined,

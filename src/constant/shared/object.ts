@@ -141,4 +141,6 @@ export const BRANCH_ADDITIONAL_INFO = {
     inactive: undefined,
     ignored: undefined,
     collision: undefined,
+    new: undefined,
+    external: undefined
 }

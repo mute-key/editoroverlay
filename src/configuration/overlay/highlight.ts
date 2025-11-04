@@ -3,7 +3,7 @@ import type * as D from '../../type/type';
 import * as vscode from 'vscode';
 import * as hex from '../../constant/numeric/hexadecimal';
 import * as regex from '../../collection/regex';
-import { SELECTION_KIND_LIST } from '../../store/state';
+import { SELECTION_KIND_LIST } from '../../constant/shared/object';
 import { BORDER_WIDTH_DEFINITION_CONFIG, CONFIG_KEY_LINKER_SECTION_CONFIG, CONFIG_SECTION, DECORATION_STYLE_PREFIX_CONFIG, NO_CONFIGURATION_DEOCORATION_DEFAULT_CONFIG, NO_CONFIGURATION_GENERAL_DEFAULT_CONFIG } from '../../constant/config/object';
 import { CONFIG_KEY_LINKER } from '../../constant/config/enum';
 import { bindHighlightStyleState } from '../../editor/highlight/highlight';

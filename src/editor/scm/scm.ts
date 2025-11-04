@@ -1,36 +1,36 @@
 import type * as D from '../../type/type';
 
 import * as vscode from 'vscode';
-import * as hex from '../../constant/numeric/hexadecimal';
 import * as regex from '../../collection/regex';
+import * as hex from '../../constant/numeric/hexadecimal';
 import ErrorHandler from '../../util/error';
-import { CURRENT_EDITOR_SCM_STATE, SCM_OVERLAY_REFERENCE, WORKSPACE_ENV_UTIL, WORKSPACE_STATE } from '../../store/state';
-import { DIRECTORY_DELIMITER, ICON_TYPE, SCM_RESOURCE_PATH } from '../../constant/shared/enum';
-import { BRANCH_ADDITIONAL_INFO } from '../../constant/shared/object';
-import { WORKSPACE_OS } from '../../constant/shared/enum';
-import { SCM_CONFIG } from '../../constant/config/object';
-import { branchStatusCommand, currentBranchCommand, gitIgnoreCommand, checkLineEndings, spawnOptions, convertUriToSysPath, posixOnlyState, win32OnlyState, win32wslState, errorCode, uncPathConfigurationID } from './helper';
-import { contentIconGetter, contentTextGetter, rangeGetter } from '../selection/multiCursor/renderOption';
 import { spawn, SpawnSyncOptionsWithStringEncoding } from 'child_process';
-import { setCreateDecorationTypeQueue } from '../editor';
-import { createCursorRangeLineOfDelta } from '../range';
+import { FSWatcher, unwatchFile, watch, watchFile } from 'node:fs';
+import { SCM_CONFIG } from '../../constant/config/object';
+import { DIRECTORY_DELIMITER, ICON_TYPE, SCM_RESOURCE_PATH, WORKSPACE_OS } from '../../constant/shared/enum';
+import { BRANCH_ADDITIONAL_INFO } from '../../constant/shared/object';
+import { CURRENT_EDITOR_SCM_STATE, SCM_OVERLAY_REFERENCE, WORKSPACE_ENV_UTIL, WORKSPACE_STATE } from '../../store/state';
 import { getUserSettingValue } from '../../configuration/shared/configuration';
 import { ifFileInDirectory, isString } from '../../util/util';
-import { FSWatcher, unwatchFile, watch, watchFile } from 'node:fs';
+import { setCreateDecorationTypeQueue } from '../editor';
+import { createCursorRangeLastLine } from '../range';
+import { contentIconGetter, contentTextGetter, rangeGetter } from '../selection/multiCursor/renderOption';
+import { branchStatusCommand, checkLineEndings, convertUriToSysPath, currentBranchCommand, errorCode, gitIgnoreCommand, posixOnlyState, spawnOptions, uncPathConfigurationID, win32OnlyState, win32wslState } from './helper';
+import { config } from 'node:process';
 
 export {
-    initializeScm,
-    renderScmOverlay,
-    scmParseOfUri,
+    bindScmState,
     clearScmOverlay,
-    scmParsed,
-    CurrentBranchDescriptor,
+    clearScmTextState,
+    contentRegexStack,
     crossOsWslUri,
+    CurrentBranchDescriptor,
+    initializeScm,
     localUri,
     pathOverrideWsl,
-    bindScmState,
-    contentRegexStack,
-    clearScmTextState
+    renderScmOverlay,
+    scmParsed,
+    scmParseOfUri
 };
 
 const configuration = SCM_CONFIG;
@@ -44,7 +44,7 @@ const currentEditor = CURRENT_EDITOR_SCM_STATE as D.Scm.Intf.EditorState;
 const statusFixture = { ...BRANCH_ADDITIONAL_INFO };
 
 const contentRegexStack: Record<D.Numeric.Key.Hex, Record<string, RegExp>> = {
-    [hex.scmBase]: {
+    [hex.scmBranch]: {
         bname: regex.branchName,
         ccount: regex.changeCount,
     }
@@ -129,7 +129,11 @@ const execShell = (path: string, commandInfo: D.Scm.Intf.ScmCommandObject, error
 
 const gitStatus = (output: string, lineBreak: RegExp): string[] => output.trim().split(lineBreak);
 
-const gitStatusEntrySplit = (path: string) => (index: string): string => [path, index.split(" ").slice(1).join("")].join(envUtil.dirDivider);
+const gitStatusEntrySplit = (path: string) => {
+    return (index: string): string => {
+        return [path, index.trim().split(" ").slice(1).join("")].join(envUtil.dirDivider);
+    };
+};
 
 const branchStatusAsync = async (path: string, repositoryInfo: D.Scm.Intf.RepositoryInfo): Promise<string[]> => {
     const output = await execShell(path, branchStatusCommand[state.os as string]).catch((err) => err);
@@ -140,7 +144,11 @@ const branchStatusAsync = async (path: string, repositoryInfo: D.Scm.Intf.Reposi
     return [];
 };
 
-const gitIgnorePathToFullpath = (path: string) => (ignorePath: string): string => [path, ignorePath].join(envUtil.dirDivider).trim();
+const gitIgnorePathToFullpath = (path: string) => {
+    return (ignorePath: string): string => {
+        return [path, ignorePath].join(envUtil.dirDivider).trim();
+    };
+};
 
 const gitIgnoredPathArrayAsync = async (path: string): Promise<string[]> => {
     const ignoreExist = await ifFileInDirectory(autoPath(path), '.gitignore').catch(() => false);
@@ -172,16 +180,52 @@ const branchStatus = (ccount: string): void => {
     currentEditor.branchStatus = Number(ccount) ? text.join('') : "";
 };
 
-const additionalInfo = (repositoryInfo: D.Scm.Intf.RepositoryInfo): void => {
-    currentEditor.isActive = repositoryInfo.ignored?.filter(ignorePath => vscode.window.activeTextEditor?.document.uri.fsPath.indexOf(ignorePath) === 0).length === 0;
-    scmReferenceObject.svgIcon = svgIcons[currentEditor.isActive ? hex.scmSVGActive : hex.scmSVGInactive];
-    !currentEditor.isActive && (currentEditor.additionalStatus?.length === 0) && (currentEditor.additionalStatus = statusFixture.ignored);
-    !repositoryInfo.isModified && (currentEditor.additionalStatus = currentEditor.isActive ? statusFixture.active : statusFixture.inactive);
+const isIgnoredPath = (ignorePath: string): boolean => vscode.window.activeTextEditor?.document.uri.fsPath.indexOf(ignorePath) === 0;
+
+const svgIconSelector = (isActive: boolean, changeCount: number, collision: boolean): D.Numeric.Key.Hex => {
+
+    if (configuration.differentialIconColor) {
+        return isActive
+            ? changeCount > 0
+                ? collision 
+                    ? hex.scmSVGConflict
+                    : hex.scmSVGActive
+                : hex.scmSVGUpToDate
+            : hex.scmSVGInactive;
+    }
+
+    return isActive
+        ? hex.scmSVGActive
+        : hex.scmSVGInactive;
 };
 
-const collisionCheck = (status: string[], ignored: string[]): void => {
-    let collision = 0;
+const additionalInfo = (repositoryInfo: D.Scm.Intf.RepositoryInfo, changeCount: number, collision: boolean): void => {
+
+    currentEditor.isActive = repositoryInfo.ignored?.filter(isIgnoredPath).length === 0;
+    scmReferenceObject.svgIcon = svgIcons[
+        svgIconSelector(
+            currentEditor.isActive, 
+            changeCount, 
+            collision
+        )
+    ];
+
+    if (!currentEditor.isActive && (currentEditor.additionalStatus?.length === 0)) {
+        currentEditor.additionalStatus = statusFixture.ignored;
+    };
+
+    if (!repositoryInfo.isModified) {
+        currentEditor.additionalStatus = statusFixture.active
+            ? statusFixture.active
+            : statusFixture.inactive;
+    }
+};
+
+const collisionCheck = (status: string[], ignored: string[]): boolean => {
+
+    let collisionCount = 0;
     const statusOneliner = status.join('||');
+
     for (const path of ignored) {
         /**
          * this is over-simplified index/ignore collision check
@@ -189,9 +233,14 @@ const collisionCheck = (status: string[], ignored: string[]): void => {
          * much complicated but i haven't came up with right method to handle it yet 
          * this will most certainly be refactored once i know the soluiton for this.
          */
-        statusOneliner.indexOf(path) !== -1 && (collision += 1);
+        statusOneliner.indexOf(path) !== -1 && (collisionCount += 1);
     }
-    currentEditor.additionalStatus = collision > 0 ? statusFixture.collision : "";
+
+    const collision = collisionCount > 0;
+
+    currentEditor.additionalStatus = collision ? statusFixture.collision : "";
+
+    return collision;
 };
 
 /**
@@ -216,11 +265,12 @@ const setRepositoryAsync = async (path: string): Promise<void> => {
         branchStatusAsync(path, repositoryInfo)
     ]);
 
-    collisionCheck(status, repositoryInfo.ignored as string[]);
+    const changeCount = status.length;
+    const collision = collisionCheck(status, repositoryInfo.ignored as string[]);
 
     branchName(bname);
-    branchStatus(status.length.toString());
-    additionalInfo(repositoryInfo);
+    branchStatus(changeCount.toString());
+    additionalInfo(repositoryInfo, changeCount, collision);
     await repositoryWatcher(path, repositoryInfo);
     state.repository.set(path, repositoryInfo);
     await forceRender();
@@ -307,33 +357,37 @@ const crossOsWslUri = async (path: string): Promise<vscode.Uri> => {
 //     return undefined;
 // };
 
-/**
- * 
- */
+const noRepository = (): void => {
+    scmReferenceObject.svgIcon = svgIcons[hex.scmSVGNoRepository];
+    scmLoadingRenderOptions[1] = decorationRenderOption[hex.scmNoRepository];
+};
+
 const isDirectoryAsync = async (path: string): Promise<void> => {
-    // localUri | crossOsWslUri | remoteUri (not being used yet) 
-    const pathUri = await envUtil.directoryToUri(path);
+
+    if (path === envUtil.EOAIdentifier) {                               // if current iteration entry from HOF is end-of-array
+        if (state.repository.size === 0) {                              // if no repository found until this index
+            noRepository();                                             // set overlay for no repository
+        }
+        return;                                                         // EOF
+    }
+
+    const pathUri = await envUtil.directoryToUri(path);                 // localUri | crossOsWslUri | remoteUri (not being used yet) 
 
     if (pathUri) {
-        const stat = await vscode.workspace.fs.stat(pathUri);
-        if (stat.type !== vscode.FileType.Directory) {
-            return;
+        const stat = await vscode.workspace.fs.stat(pathUri);           // get fs stat
+        if (stat.type !== vscode.FileType.Directory) {                  // if fs is not a directory
+            return;                                                     // EOF
         }
 
-        const dir: [string, vscode.FileType][] = await vscode.workspace.fs.readDirectory(pathUri);
-        // const ignoreExist = dir.filter(([name, type]) => name === '.gitignore' && type === 1).length === 1;
-        dir.forEach(await isRepositoryAsync(path));
+        const dir = await vscode.workspace.fs.readDirectory(pathUri);   // type [string, vscode.FileType][] 
+        dir.forEach(await isRepositoryAsync(path));                     // read directory and if repository exist in current dir
     }
 };
 
-const workspacePathFilterCurr = (path: string) => (workspace: string): boolean => path.indexOf(workspace) !== -1;
-
-const workspacePathOf = (path: string): undefined | string => {
-    const workspacePathOf = state.workspacePath.filter(workspacePathFilterCurr(path));
-    if (workspacePathOf.length === 1) {
-        return workspacePathOf[0];
-    }
-    return undefined;
+const workspacePathFilterCurr = (path: string) => {
+    return (workspace: string): boolean => {
+        return path.indexOf(workspace) !== -1;
+    };
 };
 
 const isWorkspacePath = (path: string): boolean => {
@@ -349,17 +403,38 @@ const accumulateDirStack = (pathArray: string[], path: string, idx: number): str
 
 const concatinateDivider = (path: string, idx: number): string => idx === 0 ? path : envUtil.dirDivider + path;
 
+const setEndOfArrayIdentifier = (): void => {
+    envUtil.EOAIdentifier = 'end-of-array-identifier';
+};
+
 /**
- * would need to find out how to 
  * 
- * @param path 
+ * @note the reason why there's end-of-array-identifer entry in the path array
+ * is due to not to check if the index have reached it's last, and convert path 
+ * and run the if the path has repository at the same time. meaning, weather the  
+ * last index path is or has a repository or not, it will still need to process.
+ * 
+ * with this method, end-of-array-identifier in array at the last index itself 
+ * can be a  trigger for the function, almost as custom function injection into 
+ * a function chain, and be confident that the last index will always will 
+ * trigger the function that i want in intuitive way rather than checking the index.
+ * 
+ * especially in senario where if the size of array can be dynamic or be mutated  
+ * (which, this isn't but i am sure that i will re-use this method in the future
+ * so i am making a precedent of this coding style)
+ * 
  */
 const setRepositoryOfPath = (path: string): void => {
-    path.split(envUtil.pathSplit as RegExp)
+
+    setEndOfArrayIdentifier();
+
+    const pathArray = path.split(envUtil.pathSplit as RegExp)
         .map(concatinateDivider)
         .reduce(accumulateDirStack, [] as string[])
-        .filter(isWorkspacePath)
-        .forEach(isDirectoryAsync);
+        .filter(isWorkspacePath);
+
+    pathArray.push(envUtil.EOAIdentifier as string);
+    pathArray.forEach(isDirectoryAsync);
 };
 
 const scmReferenceObject = { ...SCM_OVERLAY_REFERENCE } as D.Scm.Intf.OverlayReference;
@@ -372,9 +447,11 @@ const scmDecorationTypes = [] as vscode.TextEditorDecorationType[];
 
 const renderOptionBuffer: Record<D.Numeric.Key.Hex, undefined | D.Decoration.Intf.RenderInstanceOption> = {
     [hex.scmIcon]: undefined,
-    [hex.scmBase]: undefined,
+    [hex.scmBranch]: undefined,
     [hex.scmParsing]: undefined,
     [hex.scmExternal]: undefined,
+    [hex.scmNew]: undefined,
+    [hex.scmNoRepository]: undefined
 };
 
 /**
@@ -383,7 +460,7 @@ const renderOptionBuffer: Record<D.Numeric.Key.Hex, undefined | D.Decoration.Int
  * based on contextText formation. 
  * 
  * hex.scmIcon: contentIconPath only which is Uri, no contentText.
- * hex.scmBase: would be string concatination of object references.
+ * hex.scmBranch: would be string concatination of object references.
  * hex.scmParsing: is string literal, a primitive 
  * hex.scmExternal: is string literal, a primitive
  * 
@@ -392,16 +469,20 @@ const renderOptionBuffer: Record<D.Numeric.Key.Hex, undefined | D.Decoration.Int
  */
 const decorationRenderOption: Record<D.Numeric.Key.Hex, D.Decoration.Intf.RenderOption[]> = {
     [hex.scmIcon]: [],
-    [hex.scmBase]: [],
+    [hex.scmBranch]: [],
     [hex.scmParsing]: [],
     [hex.scmExternal]: [],
+    [hex.scmNew]: [],
+    [hex.scmNoRepository]: [],
 };
 
 const svgIcons: Record<D.Numeric.Key.Hex, (undefined | vscode.Uri)> = {
     [hex.scmSVGActive]: undefined,
     [hex.scmSVGInactive]: undefined,
-    [hex.scmSVGNotRepository]: undefined,
+    [hex.scmSVGConflict]: undefined,
     [hex.scmSVGUnknown]: undefined,
+    [hex.scmSVGNew]: undefined,
+    [hex.scmSVGNoRepository]: undefined,
 };
 
 const prepareOverlayObjects = (): void => {
@@ -429,35 +510,25 @@ const prepareOverlayObjects = (): void => {
 
 const buildRenderOptionInstance = () => {
     scmRenderOptions[0] = decorationRenderOption[hex.scmIcon];
-    scmRenderOptions[1] = decorationRenderOption[hex.scmBase];
+    scmRenderOptions[1] = decorationRenderOption[hex.scmBranch];
     scmLoadingRenderOptions[0] = decorationRenderOption[hex.scmIcon];
     scmLoadingRenderOptions[1] = decorationRenderOption[hex.scmParsing];
-};
-
-const unkwownParser = () => {
-    scmParsed(true);
-    scmReferenceObject.svgIcon = svgIcons[hex.scmSVGUnknown];
-    scmRenderOptions[0] = decorationRenderOption[hex.scmIcon];
-    scmRenderOptions[1] = decorationRenderOption[hex.scmExternal];
-    renderScmOverlay(vscode.window.activeTextEditor as vscode.TextEditor);
 };
 
 const forceRender = async (prased: boolean = true): Promise<void> => {
     if (vscode.window.activeTextEditor) {
         // swap back to base references.
         scmParsed(prased);
-        scmRenderOptions[1] = decorationRenderOption[hex.scmBase];
+        scmRenderOptions[1] = decorationRenderOption[hex.scmBranch];
         renderScmOverlay(vscode.window.activeTextEditor);
     }
 };
 
-const bindDecorationType = (
-    setDecorations: vscode.TextEditor['setDecorations'],
-    renderOption: D.Decoration.Intf.RenderOption[][]
-) => (
-    decorationType: vscode.TextEditorDecorationType,
-    idx: number
-): void => setDecorations(decorationType, renderOption[idx]);
+const bindDecorationType = (setDecorations: vscode.TextEditor['setDecorations'], renderOption: D.Decoration.Intf.RenderOption[][]) => {
+    return (decorationType: vscode.TextEditorDecorationType, idx: number): void => {
+        return setDecorations(decorationType, renderOption[idx]);
+    };
+};
 
 /**
  * this function will be the part of renderStack in editor.ts.
@@ -493,7 +564,7 @@ const bindDecorationType = (
  */
 const renderScmOverlay = (editor: vscode.TextEditor): void => {
     !currentEditor.parsed && scmParseOfUri(editor.document.uri);
-    scmReferenceObject.range = createCursorRangeLineOfDelta(configuration.overlayLinePosition)(editor);
+    scmReferenceObject.range = createCursorRangeLastLine(configuration.overlayLinePosition)(editor);
     scmDecorationTypes.forEach(bindDecorationType(editor.setDecorations, currentEditor.parsed ? scmRenderOptions : scmLoadingRenderOptions));
 };
 
@@ -561,8 +632,8 @@ const uncPathEnabled = (wslHost: string): boolean => {
  * 
  * @returns e.g, \\wsl.localhost\Ubuntu-24.04
  */
-const uncPathPaser = (): string | undefined =>
-    vscode.workspace.workspaceFolders?.
+const uncPathPaser = (): string | undefined => {
+    return vscode.workspace.workspaceFolders?.
         filter(folder =>
             folder.uri.authority.indexOf('wsl+') === 0 && folder.uri.scheme === 'vscode-remote').
         map((folder) => {
@@ -576,6 +647,7 @@ const uncPathPaser = (): string | undefined =>
                 auth[1]
             ].join('');
         })[0];
+};
 
 const getWorkspaceObject = (): undefined | D.Scm.Intf.StateDescription => {
 
@@ -596,7 +668,7 @@ const getWorkspaceObject = (): undefined | D.Scm.Intf.StateDescription => {
                 uncPath: workspaceUcPath
             };
             return win32wslState;
-        } 
+        }
     }
 
     if (process.platform === WORKSPACE_OS.LINUX || process.platform === WORKSPACE_OS.MAC) {
@@ -625,15 +697,49 @@ const initializeScm = (context: vscode.ExtensionContext): void => {
     if (configuration.iconType === ICON_TYPE.SVG) {
         const svgActive = [envUtil.extRoot, envUtil.iconRoot, SCM_RESOURCE_PATH.SVG_ACTIVE].join(envUtil.dirDivider);
         const svgIactive = [envUtil.extRoot, envUtil.iconRoot, SCM_RESOURCE_PATH.SVG_INACTIVE].join(envUtil.dirDivider);
-        const notRepository = [envUtil.extRoot, envUtil.iconRoot, SCM_RESOURCE_PATH.SVG_NOT_REPOSITORY].join(envUtil.dirDivider);
-        const external = [envUtil.extRoot, envUtil.iconRoot, SCM_RESOURCE_PATH.EXTERNAL].join(envUtil.dirDivider);
+        const conflict = [envUtil.extRoot, envUtil.iconRoot, SCM_RESOURCE_PATH.SVG_CONFLICT].join(envUtil.dirDivider);
+        const newFile = [envUtil.extRoot, envUtil.iconRoot, SCM_RESOURCE_PATH.SVG_NEW].join(envUtil.dirDivider);
+        const upToDate = [envUtil.extRoot, envUtil.iconRoot, SCM_RESOURCE_PATH.SVG_UP_TO_DATE].join(envUtil.dirDivider);
+
+        const external = [envUtil.extRoot, envUtil.iconRoot, SCM_RESOURCE_PATH.SVG_EXTERNAL].join(envUtil.dirDivider);
+        const noRepository = [envUtil.extRoot, envUtil.iconRoot, SCM_RESOURCE_PATH.SVG_NO_REPOSITORY].join(envUtil.dirDivider);
+
         svgIcons[hex.scmSVGActive] = vscode.Uri.file(svgActive);
         svgIcons[hex.scmSVGInactive] = vscode.Uri.file(svgIactive);
-        svgIcons[hex.scmSVGNotRepository] = vscode.Uri.file(notRepository);
+        svgIcons[hex.scmSVGConflict] = vscode.Uri.file(conflict);
+        svgIcons[hex.scmSVGNew] = vscode.Uri.file(newFile);
+        svgIcons[hex.scmSVGUpToDate] = vscode.Uri.file(upToDate);
+
         svgIcons[hex.scmSVGUnknown] = vscode.Uri.file(external);
+        svgIcons[hex.scmSVGNoRepository] = vscode.Uri.file(noRepository);
     }
 
     prepareOverlayObjects();
+};
+
+const workspacePathOf = (path: string): undefined | string => {
+    const workspacePath = state.workspacePath.filter(workspacePathFilterCurr(path));
+    if (workspacePath.length === 1) {
+        return workspacePath[0];
+    }
+    return undefined;
+};
+
+const unknownParser = (uri: vscode.Uri) => {
+    scmParsed(true);
+
+    const split = uri.fsPath.split(envUtil.pathSplit as RegExp);
+    scmRenderOptions[0] = decorationRenderOption[hex.scmIcon];
+
+    if (split.length === 1) {
+        scmReferenceObject.svgIcon = svgIcons[hex.scmSVGNew];
+        scmRenderOptions[1] = decorationRenderOption[hex.scmNew];
+    } else {
+        scmReferenceObject.svgIcon = svgIcons[hex.scmSVGUnknown];
+        scmRenderOptions[1] = decorationRenderOption[hex.scmExternal];
+    }
+
+    renderScmOverlay(vscode.window.activeTextEditor as vscode.TextEditor);
 };
 
 /**
@@ -641,6 +747,7 @@ const initializeScm = (context: vscode.ExtensionContext): void => {
  * 
  */
 const scmParseOfUri = (uri: vscode.Uri): void => {
+
     state.isSourceControlled = false;
     currentEditor.additionalStatus = '';
 
@@ -662,7 +769,7 @@ const scmParseOfUri = (uri: vscode.Uri): void => {
     if (!state.currentWorkspaceRoot) {
         // return false and EOF, if parsed is true, 
         // currentEditor.parsed = true;
-        unkwownParser();
+        unknownParser(uri);
         return;
     }
 
@@ -675,7 +782,7 @@ const scmOverlayDeocrator = (path: string): boolean | void => {
         // if current editor path is in repo
         if (path.indexOf(repositoryPath) === 0) {
             scmParsed(true);
-            additionalInfo(repositoryInfo);
+            // additionalInfo(repositoryInfo);
             renderScmOverlay(vscode.window.activeTextEditor as vscode.TextEditor);
         }
     }
@@ -714,25 +821,22 @@ const renderSVGIcon = {
 };
 
 /**
- * object getter property descriptor for passing reference for 
- * with current range so the closure is intact when passed 
- * configuration codebase.
+ * object getter property descriptor of reference object for 
+ * the current range for the textDecoration object 
  * 
  */
 const rangeDescriptor = Object.getOwnPropertyDescriptor(renderOptionRange, rangeGetter);
 
 /**
- * object getter property descriptor for passing reference object 
- * with current range so the closure is intact when passed 
- * configuration codebase.
+ * object getter property descriptor of reference object for 
+ * the current branch textDecoration object so the closure is intact
  * 
  */
 const CurrentBranchDescriptor = Object.getOwnPropertyDescriptor(renderStatusOverlay, contentTextGetter);
 
 /**
- * object getter property descriptor for passing reference object 
- * with current range so the closure is intact when passed 
- * configuration codebase.
+ * object getter property descriptor of reference object for 
+ * the textDecoration object for the svg icon
  * 
  */
 const scmSVGIconDescriptor = Object.getOwnPropertyDescriptor(renderSVGIcon, contentIconGetter);
@@ -767,7 +871,7 @@ const bindScmState = (): any => {
                 name: contentTextGetter
             }
         },
-        
+
     };
 };
 

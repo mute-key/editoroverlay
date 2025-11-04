@@ -22,7 +22,8 @@ import * as hex from '../../constant/numeric/hexadecimal';
 import * as bin from '../../constant/numeric/binary';
 import * as dec from '../../constant/numeric/decimal';
 import * as regex from '../../collection/regex';
-import { INDENT_INFO, SELECTION_CONTENT_TEXT, SELECTION_KIND_LIST, SELECTION_KIND_LIST_EXCLUDE_MULTI_CURSOR } from '../../store/state';
+import { INDENT_INFO, SELECTION_CONTENT_TEXT } from '../../store/state';
+import { SELECTION_KIND_LIST, SELECTION_KIND_LIST_EXCLUDE_MULTI_CURSOR } from '../../constant/shared/object';
 import { SELECTION_CONTENT_TEXT_CONFIG_KEY } from '../../constant/config/enum';
 import { DECORATION_OPTION_CONFIG } from '../../constant/config/object';
 import { createLineRange, blankRange } from '../range';
@@ -344,7 +345,7 @@ const setSelectionTextbuffer = (cursorType: D.Numeric.Key.Hex, length: number, p
     const option = selectionStatusDecorationOption[cursorType];
     setDeocorationOption(cursorType, option.renderOptionHex);
     buildFunctionChain(cursorType, placeholder, option.fnObject);
-    
+
     setCreateDecorationTypeQueue({
         name: 'selection' + cursorType,
         count: lengthBuffer,

@@ -15,6 +15,9 @@ this is a temporary note & backlog
   
 | sticky_list ===============================================================================================
 
+- [~] font-family configurations for all text overlays
+- [~] font-decoration configurations for all text overlays
+- [~] an ability to change the overlay positions in sequence.
 - [~] current method to creating a store object is to make a copy from const object where it is defined, 
       maybe it is better to just change it all to some state/store object...? um.... i need to think about it
 - [~] maybe applying preset should have some sort of indicator or message popup that configurations are 
@@ -37,15 +40,13 @@ this is a temporary note & backlog
 
 | version log ===============================================================================================
 
-| 1.6.5 - planned |
+| 1.6.5 - current |
 
-- [~] font-family configurations for all text overlays
-- [~] font-decoration configurations for all text overlays
-- [~] an ability to change the overlay positions in sequence.
+
 
 ************************************************************************************************************
 
-| 1.6.4 - current |
+| 1.6.4 |
 
 - [+] git add/ignore collision indiciator 
 - [+] queue strategies for textEditorDecorationTypes across all overlays so that every overlay 

@@ -59,6 +59,8 @@ const buildTextFixture = (overlayTextFixture: any, configuration: any): void => 
     overlayTextFixture.inactive = configuration.inactiveText;
     overlayTextFixture.ignored = configuration.ignoredText;
     overlayTextFixture.collision = configuration.collisionText;
+    overlayTextFixture.new = configuration.newText;
+    overlayTextFixture.external = configuration.externalText;
 };
 
 const buildRenderInstanceOption = (buffer: any, renderOption: any, getter: any): void => {
@@ -77,9 +79,12 @@ const setGetterOfRenederOption = (target: any, getterName: string, propertyDescr
     (getterName && propertyDescriptor) && setGetterProp(target, getterName, propertyDescriptor);
 };
 
-const attachGetterOfRenderOption = async (bufferObject: L.RenderOptionBuffer, getter: any) => {
+const attachGetterOfRenderOption = async (bufferObject: L.RenderOptionBuffer, getter: any, configuration: any) => {
     setGetterOfRenederOption(bufferObject[hex.scmIcon].after, getter.svgIcon.name, getter.svgIcon.descriptor as PropertyDescriptor);
-    setGetterOfRenederOption(bufferObject[hex.scmBase].after, getter.activeOverlay.name, getter.activeOverlay.descriptor as PropertyDescriptor);
+    setGetterOfRenederOption(bufferObject[hex.scmBranch].after, getter.activeOverlay.name, getter.activeOverlay.descriptor as PropertyDescriptor);
+    
+    bufferObject[hex.scmNew].after.contentText += configuration.newText;
+    bufferObject[hex.scmExternal].after.contentText += configuration.externalText;
 };
 
 const setTextDecoration = (bufferObject: L.RenderOptionBuffer, hexKey: D.Numeric.Key.Hex, textDecoration: any) => {
@@ -128,10 +133,10 @@ const updateScmTextConfig = (extenionName: string, configuratioChange: boolean =
 
     workspaceProxyConfiguration(scmConfiguration, extenionName + '.' + CONFIG_SECTION.scmText, SCM_CONTENT_TEXT_LIST_CONFIG, bindToBuffer, regexToReferenceLinker);
     buildOverlayBuffer(bufferObject, scmConfiguration);
-    attachGetterOfRenderOption(bufferObject, bindTo.getterDescription);
-    buildRenderInstanceOption(bufferObject, bindTo.renderOption, bindTo.getterDescription);
     buildTextFixture(bindTo.overlayTextFixture, scmConfiguration.textOverlayFixture);
+    buildRenderInstanceOption(bufferObject, bindTo.renderOption, bindTo.getterDescription);
     buildPlaceholderReference(bindTo.referenceObject, bindToBuffer.textOf);
+    attachGetterOfRenderOption(bufferObject, bindTo.getterDescription, scmConfiguration.textOverlayFixture);
 
     // break all forced pointer/references; possible memory issue.
     delete bindToBuffer.functionOf;

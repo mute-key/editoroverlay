@@ -9,7 +9,7 @@ the features that you only need, if you don't need them all. Here are the exampl
 
 When you change setting, please read the 📌 pinned description thoroughly and try it.
 
-If you want to build this extension from the source code, run `vsce package --no-dependencies`.
+If you want to build this extension from the source code, run `vsce package --no-dependencies --allow-star-activation`.
 
 > [!TIP] 
 >

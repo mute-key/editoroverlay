@@ -151,7 +151,6 @@ export const SELECTION_DEFAULT_CONFIG = {
     [DECORATION_SELECTION_STYLE_CONFIG_KEY.SELECTION_TEXT_FONT_WEIGHT]: 'bold',
 } as const;
 
-
 export const SELECTION_CONTENT_TEXT_LIST_CONFIG: D.Common.Tp.TextList = [
     "cursorOnlyText",
     "singleLineText",
@@ -191,6 +190,19 @@ export const DECORATION_OPTION_AFTER_CONFIG = {
     textDecoration: undefined,
     margin: undefined,
 } as const;
+
+export const SELECTION_KIND_LIST = [
+    hex.cursorOnly,
+    hex.singleLine,
+    hex.multiLine,
+    hex.multiCursor,
+];
+
+export const SELECTION_KIND_LIST_EXCLUDE_MULTI_CURSOR = [
+    hex.cursorOnly,
+    hex.singleLine,
+    hex.multiLine,
+];
 
 export const SELECTION_KIND_CONFIG: D.Decoration.Tp.DecorationInfo = {
     [hex.reset]: {
@@ -365,6 +377,7 @@ export const SCM_CONFIG: Record<string, any> = {
     enabledWin32ToWsl: undefined,
     WSLRemoteDirectoryAccessMethod: undefined,
     iconType: undefined,
+    differentialIconColor: undefined,
     overlayLinePosition: 0,
     branchNameContentText: undefined,
     branchStatusWorkingContentText: undefined,
@@ -376,7 +389,15 @@ export const SCM_CONFIG: Record<string, any> = {
         ...SCM_TEXT_STYLE_CONFIG,
         defaultText: undefined,
     },
-    notRepositoryTextStyle: {
+    noRepositoryTextStyle: {
+        ...SCM_TEXT_STYLE_CONFIG,
+        defaultText: undefined,
+    },
+    externalTextStyle: {
+        ...SCM_TEXT_STYLE_CONFIG,
+        defaultText: undefined,
+    },
+    newTextStyle: {
         ...SCM_TEXT_STYLE_CONFIG,
         defaultText: undefined,
     },
@@ -385,6 +406,8 @@ export const SCM_CONFIG: Record<string, any> = {
         inactiveText: undefined,
         ignoredText: undefined,
         collisionText: undefined,
+        externalText: undefined,
+        newText: undefined,
     },
     additionalDecoration: {
         SVGIconDecoration: undefined,
@@ -394,9 +417,12 @@ export const SCM_CONFIG: Record<string, any> = {
 
 export const SCM_OVERLAY_DECORATION_LIST_CONFIG: [D.Numeric.Key.Hex, string][] = [
     [hex.scmIcon, "activeTextStyle"],
-    [hex.scmBase, "activeTextStyle"],
+    [hex.scmBranch, "activeTextStyle"],
     [hex.scmParsing, "inactiveTextStyle"],
-    [hex.scmExternal, "notRepositoryTextStyle"],
+    [hex.scmExternal, "externalTextStyle"],
+    [hex.scmNew, "newTextStyle"],
+    [hex.scmNoRepository, "noRepositoryTextStyle"],
+    
 ];
 
 export const SCM_CONTENT_TEXT_LIST_CONFIG: D.Common.Tp.TextList = [

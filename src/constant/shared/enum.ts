@@ -20,8 +20,11 @@ export const enum SCM_RESOURCE_PATH {
     POSIX_ICON_ROOT = "resource/scm/icon",
     SVG_INACTIVE = "Git-Icon-inactive.svg",
     SVG_ACTIVE = "Git-Icon-active.svg",
-    SVG_NOT_REPOSITORY = "Git-Icon-not-repository.svg",
-    EXTERNAL = "workspace-external.svg",
+    SVG_CONFLICT = "Git-Icon-conflict.svg",
+    SVG_NEW = "Git-Icon-new.svg",
+    SVG_UP_TO_DATE = "Git-Icon-up-to-date.svg",
+    SVG_EXTERNAL = "workspace-external.svg",
+    SVG_NO_REPOSITORY = "workspace-no-repository.svg",
 }
 
 export const enum WORKSPACE_OS {

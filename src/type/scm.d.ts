@@ -31,6 +31,7 @@ declare namespace Intf {
     }
 
     interface WorkspaceEnvUtil {
+        EOAIdentifier?: string,
         shell: any
         extRoot?: string
         uriPathProp?: string
