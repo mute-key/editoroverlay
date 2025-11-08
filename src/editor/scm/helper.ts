@@ -6,22 +6,24 @@
 import type * as D from '../../type/type';
 
 import * as vscode from 'vscode';
+import * as hex from '../../constant/numeric/hexadecimal';
 import { DIRECTORY_DELIMITER, LINE_END, SCM_RESOURCE_PATH, URI_PATH_TYPE, WORKSPACE_OS } from "../../constant/shared/enum";
 import { lfRegex, crlfRegex, fsWinSplit, fsLinuxSplit } from '../../collection/regex';
 import { pathOverrideWsl } from './scm';
 
+
 export {
-    /** */
-    currentBranchCommand,
-    branchStatusCommand,
-    gitIgnoreCommand,
-    errorCode,
     /** */
     checkLineEndings,
     spawnOptions,
     convertUriToSysPath,
     setTextDecoration,
     setGetterOfRenederOption,
+    /** */
+    currentBranchCommand,
+    branchStatusCommand,
+    gitIgnoreCommand,
+    errorCode,
     /** */
     win32OnlyState,
     win32wslState,
@@ -37,11 +39,38 @@ const crossOsWslUri = async (path: string): Promise<vscode.Uri> => {
     return await vscode.Uri.file(pathOverrideWsl(path));
 };
 
+/**
+ * need to refactor the return null/undefined
+ * 
+ * perhaps need generic error handling module/class 
+ * 
+ * @param output 
+ * @returns 
+ */
+const checkLineEndings = (output: string): null | undefined | RegExp | string => {
+    // check for crlf
+    if (output.includes(LINE_END.CRLF)) {
+        // check if both crlf and lf are present. this indicates mixed line endings.
+        if (output.includes(LINE_END.LF) && !output.includes(LINE_END.CRLF)) {
+            return undefined;
+        }
+        return crlfRegex;
+    }
+
+    // check for lf
+    if (output.includes(LINE_END.LF)) {
+        return lfRegex;
+    }
+
+    return null;
+};
+
 /** win32 */
 const win32OnlyState: D.Scm.Intf.StateDescription = {
     os: WORKSPACE_OS.WIN32,
     dirDivider: DIRECTORY_DELIMITER.WIN,
     uriPathProp: URI_PATH_TYPE.WINDOW,
+    iconBase: SCM_RESOURCE_PATH.WIN_ICON_BASE,
     iconRoot: SCM_RESOURCE_PATH.WIN_ICON_ROOT,
     pathSplit: fsWinSplit,
     lineBreak: crlfRegex,
@@ -55,6 +84,7 @@ const win32wslState: D.Scm.Intf.StateDescription = {
     os: WORKSPACE_OS.WSL,
     dirDivider: DIRECTORY_DELIMITER.WIN,
     uriPathProp: URI_PATH_TYPE.WSL,
+    iconBase: SCM_RESOURCE_PATH.WSL_ICON_BASE,
     iconRoot: SCM_RESOURCE_PATH.WSL_ICON_ROOT,
     pathSplit: fsWinSplit,
     lineBreak: lfRegex,
@@ -68,6 +98,7 @@ const posixOnlyState: D.Scm.Intf.StateDescription = {
     os: WORKSPACE_OS.POSIX,
     dirDivider: DIRECTORY_DELIMITER.POSIX,
     uriPathProp: URI_PATH_TYPE.POSIX,
+    iconBase: SCM_RESOURCE_PATH.POSIX_ICON_BASE,
     iconRoot: SCM_RESOURCE_PATH.POSIX_ICON_ROOT,
     pathSplit: fsLinuxSplit,
     lineBreak: lfRegex,
@@ -199,30 +230,4 @@ const errorCode = {
 const uncPathConfigurationID: Record<string, string> = {
     enabled: '@id:security.restrictUNCAccess',
     allowedHost: '@id:security.allowedUNCHosts'
-};
-
-/**
- * need to refactor the return null/undefined
- * 
- * perhaps need generic error handling module/class 
- * 
- * @param output 
- * @returns 
- */
-const checkLineEndings = (output: string): null | undefined | RegExp | string => {
-    // check for crlf
-    if (output.includes(LINE_END.CRLF)) {
-        // check if both crlf and lf are present. this indicates mixed line endings.
-        if (output.includes(LINE_END.LF) && !output.includes(LINE_END.CRLF)) {
-            return undefined;
-        }
-        return crlfRegex;
-    }
-
-    // check for lf
-    if (output.includes(LINE_END.LF)) {
-        return lfRegex;
-    }
-
-    return null;
 };

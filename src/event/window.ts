@@ -87,7 +87,6 @@ const activeEditorChanged: D.Event.Tp.DecorationEventFunc = ({ configInfo, decor
 const editorOptionChanged: D.Event.Tp.DecorationEventFunc = (context: D.Event.Intf.Context): vscode.Disposable => {
     return vscode.window.onDidChangeTextEditorOptions((event: vscode.TextEditorOptionsChangeEvent): void => {
         if (event.textEditor) {
-            console.log('editorOptionChanged');
             updateIndentOption(event.textEditor);
         }
     });

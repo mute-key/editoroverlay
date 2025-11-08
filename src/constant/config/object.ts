@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 import * as hex from '../numeric/hexadecimal';
 import * as bin from '../numeric/binary';
 import { BORDER_POSITION_MASK, BORDER_POSITION_VARIATION, CONFIG_SECTION_KEY, DECORATION_GENERAL_STYLE_CONFIG_KEY, DECORATION_SELECTION_STYLE_CONFIG_KEY, DECORATION_STYLE_CONFIG_KEY, DECORATION_TYPE_MASK, DIAGNOSTIC_SEVERITY_KEY, DIAGNOSTIC_TEXT_STYLE_KEY, SELECTION_CONTENT_TEXT_CONFIG_KEY } from './enum';
+import { SCM_SVG_ICON_PATH } from '../shared/enum';
 
 export const CONFIG_SECTION = {
     [CONFIG_SECTION_KEY.GENERAL]: CONFIG_SECTION_KEY.GENERAL,
@@ -377,7 +378,15 @@ export const SCM_CONFIG: Record<string, any> = {
     enabledWin32ToWsl: undefined,
     WSLRemoteDirectoryAccessMethod: undefined,
     iconType: undefined,
-    differentialIconColor: undefined,
+    differentialIconColor: {
+        activeColor: undefined,
+        ignoredColor: undefined,
+        upToDateColor: undefined,
+        collisionColor: undefined,
+        noRepositoryColor: undefined,
+        newColor: undefined,
+        externalColor: undefined,
+    },
     overlayLinePosition: 0,
     branchNameContentText: undefined,
     branchStatusWorkingContentText: undefined,
@@ -385,7 +394,7 @@ export const SCM_CONFIG: Record<string, any> = {
     activeTextStyle: {
         ...SCM_TEXT_STYLE_CONFIG,
     },
-    inactiveTextStyle: {
+    upToDateTextStyle: {
         ...SCM_TEXT_STYLE_CONFIG,
         defaultText: undefined,
     },
@@ -403,7 +412,7 @@ export const SCM_CONFIG: Record<string, any> = {
     },
     textOverlayFixture: {
         activeText: undefined,
-        inactiveText: undefined,
+        upToDateText: undefined,
         ignoredText: undefined,
         collisionText: undefined,
         externalText: undefined,
@@ -418,14 +427,33 @@ export const SCM_CONFIG: Record<string, any> = {
 export const SCM_OVERLAY_DECORATION_LIST_CONFIG: [D.Numeric.Key.Hex, string][] = [
     [hex.scmIcon, "activeTextStyle"],
     [hex.scmBranch, "activeTextStyle"],
-    [hex.scmParsing, "inactiveTextStyle"],
+    [hex.scmParsing, "upToDateTextStyle"],
     [hex.scmExternal, "externalTextStyle"],
     [hex.scmNew, "newTextStyle"],
     [hex.scmNoRepository, "noRepositoryTextStyle"],
-    
 ];
 
 export const SCM_CONTENT_TEXT_LIST_CONFIG: D.Common.Tp.TextList = [
     "branchNameContentText",
     "branchStatusWorkingContentText",
 ] as const;
+
+export const SVG_ICON_MAP: Record<D.Numeric.Key.Hex, string> = {
+    [hex.scmSVGActive]: SCM_SVG_ICON_PATH.SVG_ACTIVE,
+    [hex.scmSVGInactive]: SCM_SVG_ICON_PATH.SVG_INACTIVE,
+    [hex.scmSVGConflict]: SCM_SVG_ICON_PATH.SVG_CONFLICT,
+    [hex.scmSVGNew]: SCM_SVG_ICON_PATH.SVG_NEW,
+    [hex.scmSVGUpToDate]: SCM_SVG_ICON_PATH.SVG_UP_TO_DATE,
+    [hex.scmSVGUnknown]: SCM_SVG_ICON_PATH.SVG_EXTERNAL,
+    [hex.scmSVGNoRepository]: SCM_SVG_ICON_PATH.SVG_NO_REPOSITORY,
+};
+
+export const ICON_COLOR_CONFIGURATION_KEY: Record<D.Numeric.Key.Hex, string> = {
+    [hex.scmSVGActive]: 'activeColor',
+    [hex.scmSVGInactive]: 'ignoredColor',
+    [hex.scmSVGUpToDate]: 'upToDateColor',
+    [hex.scmSVGConflict]: 'collisionColor',
+    [hex.scmSVGNew]: 'newColor',
+    [hex.scmSVGUnknown]: 'externalColor',
+    [hex.scmSVGNoRepository]: 'noRepositoryColor',
+};

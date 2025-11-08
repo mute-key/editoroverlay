@@ -11,6 +11,7 @@ import { updateSelectionTextConfig } from '../configuration/overlay/selection';
 import { updateDiagnosticTextConfig } from '../configuration/overlay/diagnostic';
 import { readFile } from 'node:fs/promises';
 import { updateGeneralConfig, updateHighlightStyleConfiguration } from '../configuration/overlay/highlight';
+import { updateScmTextConfig } from "../configuration/overlay/scm";
 
 export {
     readPreset,
@@ -92,6 +93,7 @@ const writeSelectedPreset = async (configInfo: any, packageName: string, json: a
     updateHighlightStyleConfiguration(configInfo, hex.multiCursor);
     updateSelectionTextConfig(packageName, true);
     updateDiagnosticTextConfig(packageName, true);
+    updateScmTextConfig(packageName, true);
     prepareRenderGroup(configInfo as any);
 
     configInfo.updateCaller = undefined;

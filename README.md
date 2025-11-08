@@ -209,6 +209,9 @@ i will try to list the template strucutre briefly.
 ### Git Overlay
 
 Here is the sameple screenshot of the part of the overlay where it starting with git icon.
+These svg icons can change colors in configuration `editoroverlay.scmText.differentialIconColor`
+
+
 
 When checked-out branch has 2 changes and active editor is on git indexed path
 
@@ -224,11 +227,15 @@ When checked-out branch has 2 changes but current active editor is on ignored pa
 
 When change has an index that are in .gitignored.
 
-<img src="./resource/doc/git-collision.png" alt ="GIF" style=""><br>
+<img src="./resource/doc/collision.png" alt ="GIF" style=""><br>
 
 When active editor is on not-indexed path
 
-<img src="./resource/doc/git-new.png" alt ="GIF" style=""><br>
+<img src="./resource/doc/new-not-indexed.png" alt ="GIF" style=""><br>
+
+When there are no repository in workspace
+
+<img src="./resource/doc/no-repo.png" alt ="GIF" style=""><br>
 
 
 #### Cross-os-workspace

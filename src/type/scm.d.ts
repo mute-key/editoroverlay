@@ -105,6 +105,7 @@ declare namespace Intf {
         os: string
         pathSplit: RegExp
         lineBreak: RegExp
+        iconBase: string
         iconRoot: string
         dirDivider: string
         uriPathProp: string

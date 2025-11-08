@@ -3,10 +3,11 @@ import type * as D from '../../type/type';
 import * as vscode from 'vscode';
 import * as hex from '../../constant/numeric/hexadecimal';
 import * as regex from '../../collection/regex';
-import { CONFIG_SECTION, DECORATION_OPTION_AFTER_CONFIG, DECORATION_OPTION_CONFIG, SCM_CONFIG, SCM_CONTENT_TEXT_LIST_CONFIG, SCM_OVERLAY_DECORATION_LIST_CONFIG } from "../../constant/config/object";
+import { CONFIG_SECTION, DECORATION_OPTION_AFTER_CONFIG, DECORATION_OPTION_CONFIG, ICON_COLOR_CONFIGURATION_KEY, SCM_CONFIG, SCM_CONTENT_TEXT_LIST_CONFIG, SCM_OVERLAY_DECORATION_LIST_CONFIG, SVG_ICON_MAP } from "../../constant/config/object";
 import { workspaceProxyConfiguration } from "../shared/configuration";
-import { hexToRgbaStringLiteral, objectSwapKeyValue } from '../../util/util';
+import { getExtensionUri, hexToRgbaStringLiteral, objectSwapKeyValue } from '../../util/util';
 import { bindScmState, clearScmTextState } from '../../editor/scm/scm';
+import { readFile, writeFile } from 'node:fs/promises';
 
 export {
     updateScmTextConfig
@@ -39,6 +40,52 @@ const referenceKeyLink: string[][] = [
     ['branchStatus', 'branchStatusWorkingContentText']
 ];
 
+
+const loadXml = async (path: string) => {
+    try {
+        // const jsonPath = context.asAbsolutePath(path.join(PRESET_PATH.PRESET_ROOT, presetFilename));
+        return await readFile(path, { encoding: 'utf-8' });
+    } catch (error) {
+        console.error('Failed to load preset JSON:', error);
+    }
+};
+
+const writeXML = async (file: string, xml: string) => {
+    try {
+        return await writeFile(file, xml);
+    } catch (error) {
+        console.error('Failed to load preset JSON:', error);
+    }
+
+};
+
+const buildColorSet = (colorConfiguration: any) => {
+    const colorSet = { ...ICON_COLOR_CONFIGURATION_KEY };
+    Object.entries(ICON_COLOR_CONFIGURATION_KEY).forEach(([key, propertyName]) => {
+        colorSet[key as unknown as D.Numeric.Key.Hex] = colorConfiguration[propertyName];
+    });
+    return colorSet;
+};
+
+const svgIconColored = (xmlStr: string, color: any): string => {
+    return xmlStr.replaceAll('fill:#000', `fill:${color}`);
+};
+
+const setGitIconColor = async (workspace: any, differentialIconColor: any) => {
+
+    const colorSet = buildColorSet(differentialIconColor);
+    const extRoot = getExtensionUri();
+
+    if (extRoot) {
+        Object.entries(SVG_ICON_MAP).map(async ([key, path]) => {
+            const svg = await loadXml([extRoot.fsPath, workspace.iconBase, path].join(workspace.dirDivider));
+            const iconPath = [extRoot.fsPath, workspace.iconRoot, path].join(workspace.dirDivider);
+            const svgColored = svgIconColored(svg as string, colorSet[key as unknown as D.Numeric.Key.Hex]);
+            await writeXML(iconPath, svgColored);
+        });
+    }
+};
+
 const buildPlaceholderReference = (reference: any, buffer: any) => {
     referenceKeyLink.forEach(([ref, section]) => {
         reference[ref] = {
@@ -56,7 +103,7 @@ const renderOptionWrapper = (contentText: D.Decoration.Intf.RenderInstanceOption
 
 const buildTextFixture = (overlayTextFixture: any, configuration: any): void => {
     overlayTextFixture.active = configuration.activeText;
-    overlayTextFixture.inactive = configuration.inactiveText;
+    overlayTextFixture.inactive = configuration.upToDateText;
     overlayTextFixture.ignored = configuration.ignoredText;
     overlayTextFixture.collision = configuration.collisionText;
     overlayTextFixture.new = configuration.newText;
@@ -82,7 +129,7 @@ const setGetterOfRenederOption = (target: any, getterName: string, propertyDescr
 const attachGetterOfRenderOption = async (bufferObject: L.RenderOptionBuffer, getter: any, configuration: any) => {
     setGetterOfRenederOption(bufferObject[hex.scmIcon].after, getter.svgIcon.name, getter.svgIcon.descriptor as PropertyDescriptor);
     setGetterOfRenederOption(bufferObject[hex.scmBranch].after, getter.activeOverlay.name, getter.activeOverlay.descriptor as PropertyDescriptor);
-    
+
     bufferObject[hex.scmNew].after.contentText += configuration.newText;
     bufferObject[hex.scmExternal].after.contentText += configuration.externalText;
 };
@@ -137,6 +184,7 @@ const updateScmTextConfig = (extenionName: string, configuratioChange: boolean =
     buildRenderInstanceOption(bufferObject, bindTo.renderOption, bindTo.getterDescription);
     buildPlaceholderReference(bindTo.referenceObject, bindToBuffer.textOf);
     attachGetterOfRenderOption(bufferObject, bindTo.getterDescription, scmConfiguration.textOverlayFixture);
+    setGitIconColor(bindTo.workspace, scmConfiguration.differentialIconColor);
 
     // break all forced pointer/references; possible memory issue.
     delete bindToBuffer.functionOf;

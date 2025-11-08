@@ -17,7 +17,8 @@ export {
     trimString,
     isString,
     objectSwapKeyValue,
-    ifFileInDirectory
+    ifFileInDirectory,
+    getExtensionUri
     // stringSearchOnStart,
     // stringSearch
 };
@@ -31,6 +32,13 @@ const ifFileInDirectory = async (gitDir: string, file: string) => {
     const uri = await vscode.Uri.file(gitDir);
     const fs = await vscode.workspace.fs.readDirectory(uri);
     return fs.filter(([name, type]) => name === file).length === 1; // to check if the index exist, meaning not empty repo.
+};
+
+const getExtensionUri = (): vscode.Uri | undefined => {
+    const ext = vscode.extensions.getExtension('mutekey.editoroverlay');
+    if (ext) {
+        return ext.extensionUri;
+    }
 };
 
 // const stringSearchOnStart = (target: string, source:string): boolean => target.indexOf(source) === 0;

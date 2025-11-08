@@ -3,5 +3,6 @@
     "diagnosticText.leftMargin": "18px",
     "diagnosticText.visibility": {
         "placeTextOnPreviousOrNextLine": "currentLine"
-    }
+    },
+    "scmText.overlayLinePosition": 0
 }

@@ -7,16 +7,15 @@ import ErrorHandler from '../../util/error';
 import { spawn, SpawnSyncOptionsWithStringEncoding } from 'child_process';
 import { FSWatcher, unwatchFile, watch, watchFile } from 'node:fs';
 import { SCM_CONFIG } from '../../constant/config/object';
-import { DIRECTORY_DELIMITER, ICON_TYPE, SCM_RESOURCE_PATH, WORKSPACE_OS } from '../../constant/shared/enum';
+import { DIRECTORY_DELIMITER, ICON_TYPE, SCM_RESOURCE_PATH, SCM_SVG_ICON_PATH, WORKSPACE_OS } from '../../constant/shared/enum';
 import { BRANCH_ADDITIONAL_INFO } from '../../constant/shared/object';
 import { CURRENT_EDITOR_SCM_STATE, SCM_OVERLAY_REFERENCE, WORKSPACE_ENV_UTIL, WORKSPACE_STATE } from '../../store/state';
 import { getUserSettingValue } from '../../configuration/shared/configuration';
-import { ifFileInDirectory, isString } from '../../util/util';
+import { getExtensionUri, ifFileInDirectory, isString } from '../../util/util';
 import { setCreateDecorationTypeQueue } from '../editor';
 import { createCursorRangeLastLine } from '../range';
 import { contentIconGetter, contentTextGetter, rangeGetter } from '../selection/multiCursor/renderOption';
 import { branchStatusCommand, checkLineEndings, convertUriToSysPath, currentBranchCommand, errorCode, gitIgnoreCommand, posixOnlyState, spawnOptions, uncPathConfigurationID, win32OnlyState, win32wslState } from './helper';
-import { config } from 'node:process';
 
 export {
     bindScmState,
@@ -187,7 +186,7 @@ const svgIconSelector = (isActive: boolean, changeCount: number, collision: bool
     if (configuration.differentialIconColor) {
         return isActive
             ? changeCount > 0
-                ? collision 
+                ? collision
                     ? hex.scmSVGConflict
                     : hex.scmSVGActive
                 : hex.scmSVGUpToDate
@@ -204,8 +203,8 @@ const additionalInfo = (repositoryInfo: D.Scm.Intf.RepositoryInfo, changeCount: 
     currentEditor.isActive = repositoryInfo.ignored?.filter(isIgnoredPath).length === 0;
     scmReferenceObject.svgIcon = svgIcons[
         svgIconSelector(
-            currentEditor.isActive, 
-            changeCount, 
+            currentEditor.isActive,
+            changeCount,
             collision
         )
     ];
@@ -569,6 +568,11 @@ const renderScmOverlay = (editor: vscode.TextEditor): void => {
 };
 
 const setStateObject = (description: D.Scm.Intf.StateDescription): void => {
+    const extRoot = getExtensionUri();
+    if (extRoot) {
+        envUtil.extRoot = convertUriToSysPath(state.os as string, extRoot);
+    }
+
     state.os = description.os;
     state.crossOS = description.crossOS;
     envUtil.pathSplit = description.pathSplit;
@@ -651,6 +655,8 @@ const uncPathPaser = (): string | undefined => {
 
 const getWorkspaceObject = (): undefined | D.Scm.Intf.StateDescription => {
 
+
+
     // default, non-repository scm overlay. this should be the main control
     if (!vscode.workspace.workspaceFolders) {
         return;
@@ -695,14 +701,15 @@ const initializeScm = (context: vscode.ExtensionContext): void => {
     envUtil.extRoot = convertUriToSysPath(state.os as string, context.extensionUri);
 
     if (configuration.iconType === ICON_TYPE.SVG) {
-        const svgActive = [envUtil.extRoot, envUtil.iconRoot, SCM_RESOURCE_PATH.SVG_ACTIVE].join(envUtil.dirDivider);
-        const svgIactive = [envUtil.extRoot, envUtil.iconRoot, SCM_RESOURCE_PATH.SVG_INACTIVE].join(envUtil.dirDivider);
-        const conflict = [envUtil.extRoot, envUtil.iconRoot, SCM_RESOURCE_PATH.SVG_CONFLICT].join(envUtil.dirDivider);
-        const newFile = [envUtil.extRoot, envUtil.iconRoot, SCM_RESOURCE_PATH.SVG_NEW].join(envUtil.dirDivider);
-        const upToDate = [envUtil.extRoot, envUtil.iconRoot, SCM_RESOURCE_PATH.SVG_UP_TO_DATE].join(envUtil.dirDivider);
 
-        const external = [envUtil.extRoot, envUtil.iconRoot, SCM_RESOURCE_PATH.SVG_EXTERNAL].join(envUtil.dirDivider);
-        const noRepository = [envUtil.extRoot, envUtil.iconRoot, SCM_RESOURCE_PATH.SVG_NO_REPOSITORY].join(envUtil.dirDivider);
+        const svgActive = [envUtil.extRoot, envUtil.iconRoot, SCM_SVG_ICON_PATH.SVG_ACTIVE].join(envUtil.dirDivider);
+        const svgIactive = [envUtil.extRoot, envUtil.iconRoot, SCM_SVG_ICON_PATH.SVG_INACTIVE].join(envUtil.dirDivider);
+        const conflict = [envUtil.extRoot, envUtil.iconRoot, SCM_SVG_ICON_PATH.SVG_CONFLICT].join(envUtil.dirDivider);
+        const newFile = [envUtil.extRoot, envUtil.iconRoot, SCM_SVG_ICON_PATH.SVG_NEW].join(envUtil.dirDivider);
+        const upToDate = [envUtil.extRoot, envUtil.iconRoot, SCM_SVG_ICON_PATH.SVG_UP_TO_DATE].join(envUtil.dirDivider);
+
+        const external = [envUtil.extRoot, envUtil.iconRoot, SCM_SVG_ICON_PATH.SVG_EXTERNAL].join(envUtil.dirDivider);
+        const noRepository = [envUtil.extRoot, envUtil.iconRoot, SCM_SVG_ICON_PATH.SVG_NO_REPOSITORY].join(envUtil.dirDivider);
 
         svgIcons[hex.scmSVGActive] = vscode.Uri.file(svgActive);
         svgIcons[hex.scmSVGInactive] = vscode.Uri.file(svgIactive);
@@ -853,6 +860,7 @@ const clearScmTextState = (): void => {
 
 const bindScmState = (): any => {
     return {
+        workspace: getWorkspaceObject(),
         renderOptionBuffer: renderOptionBuffer,
         renderOption: decorationRenderOption,
         overlayTextFixture: statusFixture,

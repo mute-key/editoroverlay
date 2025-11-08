@@ -15,14 +15,21 @@ export const enum SCM_IS_DERECTORY {
 }
 
 export const enum SCM_RESOURCE_PATH {
-    WIN_ICON_ROOT = "resource\\scm\\icon",
-    WSL_ICON_ROOT = "resource\\scm\\icon",
-    POSIX_ICON_ROOT = "resource/scm/icon",
-    SVG_INACTIVE = "Git-Icon-inactive.svg",
-    SVG_ACTIVE = "Git-Icon-active.svg",
-    SVG_CONFLICT = "Git-Icon-conflict.svg",
-    SVG_NEW = "Git-Icon-new.svg",
-    SVG_UP_TO_DATE = "Git-Icon-up-to-date.svg",
+    WIN_ICON_BASE = "resource\\icon\\base",
+    WIN_ICON_ROOT = "resource\\icon\\colored",
+    WSL_ICON_BASE = "resource\\icon\\base",
+    WSL_ICON_ROOT = "resource\\icon\\colored",
+    POSIX_ICON_BASE = "resource/icon/base",
+    POSIX_ICON_ROOT = "resource/icon/colored"
+}
+
+export const enum SCM_SVG_ICON_PATH {
+    SVG_BASE = "git-icon-base.svg",
+    SVG_ACTIVE = "git-icon-active.svg",
+    SVG_INACTIVE = "git-icon-inactive.svg",
+    SVG_CONFLICT = "git-icon-conflict.svg",
+    SVG_NEW = "git-icon-new.svg",
+    SVG_UP_TO_DATE = "git-icon-up-to-date.svg",
     SVG_EXTERNAL = "workspace-external.svg",
     SVG_NO_REPOSITORY = "workspace-no-repository.svg",
 }
