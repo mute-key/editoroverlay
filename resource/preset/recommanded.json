@@ -80,5 +80,8 @@
     "diagnosticText.allOkContentText": " ${pre}OK${post} ",
     "diagnosticText.problemPlaceholderContentText": "- 🛠︎ [ EDITOR${editor} / WORKSPACE${workspace}]",
     "diagnosticText.allOkPlaceholderContentText": "- 🛠︎ [ EDITOR / WORKSPACE ${allok}]",
-    "scmText.overlayLinePosition": 1
+    "scmText.overlayLinePosition": 1,
+    "scmText.differentialIconColor": {
+        "upToDateColor": "#f03c2e"
+    }
 }
