@@ -63,7 +63,7 @@ const autoArrayPropertyObject = (newProp: any) => {
 };
 
 /**
- * create new array based on 4 bit number which will parse a bit into true or false arguement supplied.
+ * create new array based on 4 bit number which will parse a bit into true or false argument supplied.
  * 
  * @param value 
  * @param trueValue 

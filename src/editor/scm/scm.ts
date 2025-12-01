@@ -542,7 +542,7 @@ const bindDecorationType = (setDecorations: vscode.TextEditor['setDecorations'],
  * overlay itself because they will always run in sync on single function call.
  * also check @link scmParsed()
  *
- * render parsing overlay, becuase it would take time to process the fsPath with existance
+ * render parsing overlay, because it would take time to process the fsPath with existence
  * of repository, and check if the active editor is parsed, if not, call scmParseOfUri
  * to parse to build metadata. with this method, scmParseOfUri does not need to be 
  * called when vscode.window.onDidChangeActiveTextEditor, since this function will 

@@ -1,8 +1,10 @@
 node_modules
 .vscode-test
+editoroverlay.code-workspace
 dist
 out
 ..note
 *.vsix
 setting.json
 src/test
+.doc

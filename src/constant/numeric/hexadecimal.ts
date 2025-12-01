@@ -306,7 +306,7 @@ export const enum CONFIGURATION_CHANGE_CALLER {
     SETTING_JSON = 0x1104,      // 4356
 }
 
-export const configruationCallerPreset = CONFIGURATION_CHANGE_CALLER.PRESET as D.Numeric.Key.Hex
-export const configruationCallerPresetComplete = CONFIGURATION_CHANGE_CALLER.PRESET_COMPLETE as D.Numeric.Key.Hex
-export const configruationCallerSettingTab = CONFIGURATION_CHANGE_CALLER.SETTING_TAB as D.Numeric.Key.Hex
-export const configruationCallerSettingJSon = CONFIGURATION_CHANGE_CALLER.SETTING_JSON as D.Numeric.Key.Hex
+export const configurationCallerPreset = CONFIGURATION_CHANGE_CALLER.PRESET as D.Numeric.Key.Hex
+export const configurationCallerPresetComplete = CONFIGURATION_CHANGE_CALLER.PRESET_COMPLETE as D.Numeric.Key.Hex
+export const configurationCallerSettingTab = CONFIGURATION_CHANGE_CALLER.SETTING_TAB as D.Numeric.Key.Hex
+export const configurationCallerSettingJson = CONFIGURATION_CHANGE_CALLER.SETTING_JSON as D.Numeric.Key.Hex

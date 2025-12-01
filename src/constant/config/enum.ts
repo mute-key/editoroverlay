@@ -3,7 +3,7 @@
 //::==============================================================================
 
 export const enum PRESET {
-    RECOMMANDED = "Recommanded",
+    RECOMMENDED = "Recommended",
     DETAILED = "Detailed",
     SIMPLE = "Simple",
     NO_GLYPH_D = "No Glpyph - Detailed",
@@ -53,7 +53,7 @@ export const enum PRESET_PATH {
     THEME_DARK = "color-dark-theme.json",
     PRESET_ORIENTATION_HORIZONTAL = "orientation-horizontal.json",
     PRESET_ORIENTATION_VERTICAL = "orientation-vertical.json",
-    PRESET_RECOMMANDED = "recommanded.json"
+    PRESET_RECOMMENDED = "recommended.json"
 }
 
 export const enum SELECTION_TYPE {

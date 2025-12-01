@@ -63,7 +63,7 @@ this is a temporary note & backlog
       if the current file on editor is ignored, the overlay will display greyed out icon with tag message
       if the current file is indexed by git, the overlay will display active svg, with total numbers of
       changes in current branch include mod, add, del and etc.
-- [+] added git overlay configruations in setting. 
+- [+] added git overlay configurations in setting. 
 
 - [0] bug fix on warning source not displaying on overlay.
 
@@ -125,7 +125,7 @@ this is a temporary note & backlog
 
 | 1.5.2 |
 
-- [0] there was a type D.Editor.Tp.RenderGroupFuncSign<T>, which i wish did auto arguement type overlading, 
+- [0] there was a type D.Editor.Tp.RenderGroupFuncSign<T>, which i wish did auto argument type overlading, 
       which works really well on debug but it fails on build. had to remove the type completely. 
       i assume it somewhat useful during the runtime but not on the build time. 
 

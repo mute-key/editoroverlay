@@ -73,7 +73,7 @@ export const isSttOrCtxFnSign = 0b10 as D.Numeric.Key.Bin;
  * 
  * [ NOT_FOUND ]               as named
  * [ TO_SHIFT_INDEX ]          if nth index need to be incrased by 1
- * [ INDEX_SHIFTED ]           if duplicate occured previously and nth index need to be appended on most recent overlay.
+ * [ INDEX_SHIFTED ]           if duplicate occurred previously and nth index need to be appended on most recent overlay.
  * [ ON_BASELINE ]             if new selection is on same line as base selection. 
  * [ AS_LAST_SELECTION ]       if new selection is on same line of previous selection
  * [ NOT_AS_LAST_SELECTION ]   if new selection is not on same line as previous selection

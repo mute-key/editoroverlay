@@ -70,7 +70,7 @@ const checkDuplciateOverride = (packageName: string, json: any): boolean => {
 };
 
 const writeSelectedPreset = async (configInfo: any, packageName: string, json: any): Promise<void> => {
-    configInfo.updateCaller = hex.configruationCallerPreset; // block all configuration change event trigger
+    configInfo.updateCaller = hex.configurationCallerPreset; // block all configuration change event trigger
     vscode.commands.executeCommand("workbench.view.explorer");
     const config = getWorkspaceConfiguration(packageName);
     const section = Object.keys(json);
@@ -126,9 +126,9 @@ const quickPickWrapper = async (context: D.Command.Intf.Context, { presetList, f
 };
 
 const presetList: PresetSet = {
-    presetList: [PRESET.RECOMMANDED, PRESET.DETAILED, PRESET.SIMPLE, PRESET.NO_GLYPH_D, PRESET.NO_GLYPH_S, PRESET.EMOJI_D, PRESET.EMOJI_S],
+    presetList: [PRESET.RECOMMENDED, PRESET.DETAILED, PRESET.SIMPLE, PRESET.NO_GLYPH_D, PRESET.NO_GLYPH_S, PRESET.EMOJI_D, PRESET.EMOJI_S],
     fileList: {
-        [PRESET.RECOMMANDED]: PRESET_PATH.PRESET_RECOMMANDED,
+        [PRESET.RECOMMENDED]: PRESET_PATH.PRESET_RECOMMENDED,
         [PRESET.DETAILED]: PRESET_PATH.PRESET_DETAILED,
         [PRESET.SIMPLE]: PRESET_PATH.PRESET_SIMPLE,
         [PRESET.NO_GLYPH_D]: PRESET_PATH.PRESET_NO_GLYPH_D,

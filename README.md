@@ -2,10 +2,10 @@
 
 Highly customizable cursor/selection overlay extension. 
 This extension displays selection status overlay on real time as you change the 
-cursor/selection position,  which is equivelant of `Editor Selection` in `Status Bar` 
+cursor/selection position,  which is equivalent of `Editor Selection` in `Status Bar` 
 as well as diagnostic count of editor/workspace in `Problem view`. You can enabled/disabled 
 the features that you only need, if you don't need them all. Here are the examples of this
- extension with default confuguration as out of the box.
+ extension with default configuration as out of the box.
 
 When you change setting, please read the 📌 pinned description thoroughly and try it.
 
@@ -23,13 +23,13 @@ Open command palate and search for `Editor Overlay -> Apply Complete Preset`
 
 <img src="./resource/doc/quickstart.png" alt ="GIF" style=""><br>
 
-Then Select Recommanded
+Then Select Recommended
 
 <img src="./resource/doc/preset.png" alt ="GIF" style=""><br>
 
-This is how the recommanded overlay preset
+This is how the recommended overlay preset
 
-<img src="./resource/doc/recommanded.png" alt ="GIF" style=""><br>
+<img src="./resource/doc/recommended.png" alt ="GIF" style=""><br>
 
 If you are using light theme, there is a color preset for the light themes
 
@@ -86,7 +86,7 @@ Editor diagonotic will point (equal, up or down) where the problem lines are bas
 So far, everything in the examples are on default configuration.<br><br>
 
 
-## Configruation Guide
+## Configuration Guide
 
 
 ### Commands
@@ -96,7 +96,7 @@ So far, everything in the examples are on default configuration.<br><br>
 <img src="./resource/doc/commands.png" alt ="GIF" style=""><br>
 
 - __Command__ _`> Editor Overlay: Apply Complete Preset`_
-  - `Recommanded`
+  - `Recommended`
   - `Detailed`
   - `Simle`
   - `No Glpyph - Detailed`
@@ -160,7 +160,7 @@ Most of configurations are quite straight foword and they are well explained in 
 <img src="./resource/doc/pinned.png" alt ="GIF" style=""><br>
 
 You will see cpu usage spike when you repeatly/rapidly drag up and down while you are on multi-line selection.
-This is becuase the selection change event can be triggered at average rate at 1000 per second even with some overhead.
+This is because the selection change event can be triggered at average rate at 1000 per second even with some overhead.
 The event even could reach 0.3ms between the event call. I would like to implement throttling features to reduce the cpu usage only for multi-line selection.
 I tried optimise the performace of multi-line selection, and performance has been improved greatly but it still can spike some if the one repeat the active.
 
