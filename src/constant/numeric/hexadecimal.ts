@@ -253,6 +253,7 @@ export const enum SCM_RENDER_OPTION_KEY {
     SCM_CONFLICT = 0x0405,
     SCM_NEW =  0x0406,
     SCM_NO_REPOSITORY =  0x0407,
+    SCM_NO_WORKSPACE =  0x0408,
 }
 
 export const scmIcon = SCM_RENDER_OPTION_KEY.SCM_ICON as D.Numeric.Key.Hex
@@ -262,6 +263,7 @@ export const scmExternal = SCM_RENDER_OPTION_KEY.SCM_EXTERNAL as D.Numeric.Key.H
 export const scmConflict = SCM_RENDER_OPTION_KEY.SCM_CONFLICT as D.Numeric.Key.Hex
 export const scmNew = SCM_RENDER_OPTION_KEY.SCM_NEW as D.Numeric.Key.Hex
 export const scmNoRepository = SCM_RENDER_OPTION_KEY.SCM_NO_REPOSITORY as D.Numeric.Key.Hex
+export const scmNoWorkspace = SCM_RENDER_OPTION_KEY.SCM_NO_WORKSPACE as D.Numeric.Key.Hex
 
 export const enum SCM_SVG_ICON_TYPE_KEY {
     SCM_ACTIVE = 0x0405,

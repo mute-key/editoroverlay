@@ -7,4 +7,5 @@ out
 *.vsix
 setting.json
 src/test
-.doc
+.doc-gemini
+resource/icon/colored

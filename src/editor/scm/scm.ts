@@ -450,7 +450,9 @@ const renderOptionBuffer: Record<D.Numeric.Key.Hex, undefined | D.Decoration.Int
     [hex.scmParsing]: undefined,
     [hex.scmExternal]: undefined,
     [hex.scmNew]: undefined,
-    [hex.scmNoRepository]: undefined
+    [hex.scmNoRepository]: undefined,
+    [hex.scmNoWorkspace]: undefined
+    
 };
 
 /**
@@ -473,6 +475,7 @@ const decorationRenderOption: Record<D.Numeric.Key.Hex, D.Decoration.Intf.Render
     [hex.scmExternal]: [],
     [hex.scmNew]: [],
     [hex.scmNoRepository]: [],
+    [hex.scmNoWorkspace]: [],
 };
 
 const svgIcons: Record<D.Numeric.Key.Hex, (undefined | vscode.Uri)> = {
@@ -655,13 +658,6 @@ const uncPathPaser = (): string | undefined => {
 
 const getWorkspaceObject = (): undefined | D.Scm.Intf.StateDescription => {
 
-
-
-    // default, non-repository scm overlay. this should be the main control
-    if (!vscode.workspace.workspaceFolders) {
-        return;
-    }
-
     if (process.platform === WORKSPACE_OS.WIN32 && vscode.env.remoteName === undefined) {
         return win32OnlyState;
     }
@@ -690,13 +686,11 @@ const initializeScm = (context: vscode.ExtensionContext): void => {
 
     const osDescription: undefined | D.Scm.Intf.StateDescription = getWorkspaceObject();
 
-    if (!osDescription) { return; }
+    if (!osDescription) { 
+        return; 
+    }
 
     setStateObject(osDescription);
-
-    if (!vscode.workspace.workspaceFolders) { return; }
-
-    state.workspacePath = vscode.workspace.workspaceFolders.map(convertFolderToSysPath);
 
     envUtil.extRoot = convertUriToSysPath(state.os as string, context.extensionUri);
 
@@ -720,6 +714,12 @@ const initializeScm = (context: vscode.ExtensionContext): void => {
         svgIcons[hex.scmSVGUnknown] = vscode.Uri.file(external);
         svgIcons[hex.scmSVGNoRepository] = vscode.Uri.file(noRepository);
     }
+
+    if (!vscode.workspace.workspaceFolders) { 
+        return; 
+    }
+
+    state.workspacePath = vscode.workspace.workspaceFolders.map(convertFolderToSysPath);
 
     prepareOverlayObjects();
 };
@@ -882,4 +882,3 @@ const bindScmState = (): any => {
 
     };
 };
-
