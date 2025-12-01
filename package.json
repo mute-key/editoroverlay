@@ -3,7 +3,7 @@
     "publisher": "mutekey",
     "displayName": "Editor Overlay",
     "description": "Highly configurable overlay tool on editor line and workspace status in real-time.",
-    "version": "1.6.4",
+    "version": "1.6.5",
     "icon": "resource/icon.png",
     "license": "cc by-nc 4.0",
     "engines": {

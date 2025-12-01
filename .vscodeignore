@@ -18,3 +18,4 @@ BACKLOG.md
 bench.js
 .markdownlint.json
 editoroverlay.code-workspace
+.doc-gemini/
