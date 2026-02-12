@@ -1,11 +1,10 @@
+import * as vscode from 'vscode';
+import * as hex from '../constant/numeric/hexadecimal';
+import { SELECTION_CONTENT_TEXT_CONFIG_KEY } from 'src/constant/string/enum.configuration';
+
 import type * as Decoration from './decoration';
 import type * as Regex from './regex';
 import type * as Numeric from './numeric';
-
-import * as vscode from 'vscode';
-import * as hex from '../constant/numeric/hexadecimal';
-import { SELECTION_CONTENT_TEXT_CONFIG_KEY } from 'src/constant/config/enum';
-import { UnderlyingByteSource } from 'stream/web';
 
 export type {
     Intf,

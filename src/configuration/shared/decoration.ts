@@ -1,11 +1,11 @@
-import type * as D from '../../type/type';
-
 import * as vscode from 'vscode';
 import * as regex from '../../collection/regex';
 import ErrorHandler from '../../util/error';
-import { DECORATION_OPTION_AFTER_CONFIG, DECORATION_OPTION_CONFIG } from '../../constant/config/object';
+import { DECORATION_OPTION_AFTER_CONFIG, DECORATION_OPTION_CONFIG } from '../../constant/shared/configuration';
 import { sanitizeContentText } from './validation';
 import { hexToRgbaStringLiteral, splitAndPosition } from '../../util/util';
+
+import type * as D from '../../type/type';
 
 export {
     leftMarginToMarginString,

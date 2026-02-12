@@ -1,14 +1,13 @@
 /**
  * 
  */
-
-import type * as D from '../type/type';
-
 import * as vscode from 'vscode';
 import * as hex from '../constant/numeric/hexadecimal';
 import * as bin from '../constant/numeric/binary';
 
-import { DIAGNOSTIC_PROBLEM_LIST_CONFIG } from '../constant/config/object';
+import type * as D from '../type/type';
+
+import { DIAGNOSTIC_PROBLEM_LIST_CONFIG } from '../constant/shared/configuration';
 
 // ==============================================================================
 // [ RUNTIME STORE/STATE OBJECT DEFINITIONS ]

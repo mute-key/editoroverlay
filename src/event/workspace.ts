@@ -1,7 +1,7 @@
 import type * as D from '../type/type';
 
 import * as vscode from 'vscode';
-import { CONFIG_SECTION } from '../constant/config/object';
+import { CONFIG_SECTION } from '../constant/shared/configuration';
 import { configurationChanged } from '../configuration/shared/update';
 import { scmParseOfUri, scmParsed } from '../editor/scm/scm';
 

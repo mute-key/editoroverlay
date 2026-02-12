@@ -1,10 +1,10 @@
-import type * as D from '../../type/type';
-
 import * as vscode from 'vscode';
 import ErrorHandler from '../../util/error';
 import { convertNullStringToNull } from './validation';
 import { hexToRgbaStringLiteral, } from '../../util/util';
 import { parseContentText } from './decoration';
+
+import type * as D from '../../type/type';
 
 export {
     getConfigValue,

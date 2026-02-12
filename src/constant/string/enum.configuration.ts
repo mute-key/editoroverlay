@@ -1,6 +1,10 @@
 //::==============================================================================
-//::  [ COMPILE-TIME CONSTANT ENUM ]
+//::  [ CONFIGURATUIN CONSTANT ENUM ]
 //::==============================================================================
+
+export const enum EXT {
+    ID = "editoroverlay"
+}
 
 export const enum PRESET {
     RECOMMENDED = "Recommended",

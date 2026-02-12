@@ -5,7 +5,7 @@ import * as hex from '../constant/numeric/hexadecimal';
 import * as bin from '../constant/numeric/binary';
 import * as regex from '../collection/regex';
 import { DECORATION_STATE } from '../store/state';
-import { SELECTION_KIND_LIST } from '../constant/shared/object';
+import { SELECTION_KIND_LIST } from '../constant/shared/runtime';
 import { clearDiagnosticText, diagnosticInfo } from '../editor/status/diagnostic';
 import { cursorOnlyHighlightRange, singelLineHighlightRange, multiLineHighlightRange, multiCursorHighlightRange, clearEveryHighlight } from './highlight/highlight';
 import { cursorOnlySelection, singleLineSelection, multilineSelection, multiCursorSelection, bindStatusContentTextState, clearSelectionTextBuffer } from './selection/selection';
@@ -56,7 +56,7 @@ const CreateDecorationTypeQueue = [] as (decorationTypeQueue)[];
 
 const setCreateDecorationTypeQueue = (queue: decorationTypeQueue) => CreateDecorationTypeQueue.push(queue);;
 
-const createEditorDecorationTypeOfQueue = () => {
+const createEditorDecorationTypeOfQueue = (): void => {
     for (const queue of CreateDecorationTypeQueue) {
         const decorationType: vscode.TextEditorDecorationType[] = [];
         let l = queue.count;
@@ -145,7 +145,7 @@ const setFunctionList = (config: D.Config.Intf.ConfigReady, fnStack: typeof rend
 
     // this method will also refresh whole rendering function stack 
     // if configuration is changed and whole features needs to be
-    //  reloaded just in case. 
+    // reloaded just in case. 
     fnStack[numKey] = [...renderFuncBuffer];
 };
 

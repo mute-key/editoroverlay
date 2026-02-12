@@ -1,13 +1,10 @@
 // @ts-nocheck
-
-import type * as D from '../../type/type';
-
 import * as hex from '../../constant/numeric/hexadecimal';
 import * as bin from '../../constant/numeric/binary';
 import * as regex from '../../collection/regex';
-import { CONFIG_SECTION, DECORATION_OPTION_LINKER_CONFIG, DIAGNOSTIC_ALL_PLACEHOLDER_LINKER_CONFIG, DIAGNOSTIC_CONFIG, DIAGNOSTIC_CONTENT_TEXT_LIST_CONFIG, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM_CONFIG, DIAGNOSTIC_DECORATION_STYLE_CONFIG, DIAGNOSTIC_DECORATION_TEXT_KIND_CONFIG, DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER_CONFIG, DIAGNOSTIC_STYLE_LIST_CONFIG, DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER_CONFIG } from '../../constant/config/object';
-import { DIAGNOSTIC_BIOME, DIAGNOSTIC_KIND, DIAGNOSTIC_TEXT_STYLE_KEY, LINE_POSITION } from '../../constant/config/enum';
-import { DIAGNOSTIC_PROBLEM_LIST_CONFIG } from '../../constant/config/object';
+import { CONFIG_SECTION, DECORATION_OPTION_LINKER_CONFIG, DIAGNOSTIC_ALL_PLACEHOLDER_LINKER_CONFIG, DIAGNOSTIC_CONFIG, DIAGNOSTIC_CONTENT_TEXT_LIST_CONFIG, DIAGNOSTIC_CONTENT_TEXT_NAME_TO_NUM_CONFIG, DIAGNOSTIC_DECORATION_STYLE_CONFIG, DIAGNOSTIC_DECORATION_TEXT_KIND_CONFIG, DIAGNOSTIC_EDITOR_PLACEHOLDER_LINKER_CONFIG, DIAGNOSTIC_STYLE_LIST_CONFIG, DIAGNOSTIC_WORKSPACE_PLACEHOLDER_LINKER_CONFIG } from '../../constant/shared/configuration';
+import { DIAGNOSTIC_BIOME, DIAGNOSTIC_KIND, DIAGNOSTIC_TEXT_STYLE_KEY, LINE_POSITION } from '../../constant/string/enum.configuration';
+import { DIAGNOSTIC_PROBLEM_LIST_CONFIG } from '../../constant/shared/configuration';
 import { convertToDecorationRenderOption, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { sanitizeConfigValue } from '../shared/validation';
@@ -15,6 +12,8 @@ import { createCursorRange, createCursorRangeLastLine, createCursorRangeLine, cr
 import { bindDiagnosticContentTextState, clearDiagnosticTextState, composeRenderOption, diagnosticTextRegex, initializeStateBuffer, setDiagonosticTextbuffer } from '../../editor/status/diagnostic';
 import { setOverrideDigit } from '../../diagnostic/diagnostic';
 import { hexToRgbaStringLiteral, readBits } from '../../util/util';
+
+import type * as D from '../../type/type';
 
 export {
     updateDiagnosticTextConfig
@@ -380,7 +379,7 @@ const updateDiagnosticTextConfig = async (extenionName: string, configuratioChan
         textOf: {}
     };
 
-    workspaceProxyConfiguration(diagnosticConfig, extenionName + '.' + CONFIG_SECTION.diagnosticText, DIAGNOSTIC_CONTENT_TEXT_LIST_CONFIG, bindToBuffer, diagnosticTextRegex);
+    workspaceProxyConfiguration(diagnosticConfig, CONFIG_SECTION.diagnosticText, DIAGNOSTIC_CONTENT_TEXT_LIST_CONFIG, bindToBuffer, diagnosticTextRegex);
     const placeholderDigit = diagnosticConfig.visibility.overrideAllOk ? bin.allOkOverride : bin.allOkNoOverride;
     const diagnosticBiome = diagnosticVisibilityBiome(diagnosticConfig.visibility);
     const decorationStyleList = decorationStyleFromBiome(diagnosticBiome.workspace | diagnosticBiome.editor);

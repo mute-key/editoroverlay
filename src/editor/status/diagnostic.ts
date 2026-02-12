@@ -5,9 +5,9 @@ import * as hex from '../../constant/numeric/hexadecimal';
 import * as __$ from '../../constant/shared/symbol';
 import * as regex from '../../collection/regex';
 import { createCursorRange } from '../range';
-import { DIAGNOSTIC_CONTENT_TEXT, DIAGNOSTIC_ENTRY_LIST, DIAGNOSTIC_GLYPH } from '../../constant/shared/object';
-import { DECORATION_OPTION_CONFIG, DIAGNOSTIC_VISIBILITY_CONFIG } from '../../constant/config/object';
-import { DIAGNOSTIC_CONTENT_TEXT_KEY } from '../../constant/config/enum';
+import { DIAGNOSTIC_CONTENT_TEXT, DIAGNOSTIC_ENTRY_LIST, DIAGNOSTIC_GLYPH } from '../../constant/shared/runtime';
+import { DECORATION_OPTION_CONFIG, DIAGNOSTIC_VISIBILITY_CONFIG } from '../../constant/shared/configuration';
+import { DIAGNOSTIC_CONTENT_TEXT_KEY } from '../../constant/string/enum.configuration';
 import { updateDiagnostic } from '../../diagnostic/diagnostic';
 import { resetDecoration, setCreateDecorationTypeQueue } from '../editor';
 

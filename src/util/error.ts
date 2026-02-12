@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { SYSTEM_MESSAGE } from '../constant/config/enum';
+import { SYSTEM_MESSAGE } from '../constant/string/enum.configuration';
 
 /**
  * ERROR related classes.

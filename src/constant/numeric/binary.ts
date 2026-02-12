@@ -119,7 +119,7 @@ export const enum MULTI_CURSOR_SELECTION_FLAG {
  * 
  * isFirstEmpty                 1 << 0
  * isCurrentEmpty               1 << 1
- * normalizeSelectios           1 << 4
+ * normalizeSelection           1 << 4
  * initalizeState               1 << 5
  * lastCountzero                1 << 8
  * countIsEqaul                 1 << 9

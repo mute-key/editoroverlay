@@ -1,10 +1,8 @@
-import type * as D from "../type/type";
-
-import path from 'path';
 import * as vscode from 'vscode';
 import * as hex from '../constant/numeric/hexadecimal';
-import { CONFIG_SECTION } from '../constant/config/object';
-import { CONTRAST, CONFIRM, PRESET, PRESET_ORIENTATION, SYSTEM_MESSAGE, PRESET_PATH, THEME_KIND } from '../constant/config/enum';
+import path from 'path';
+import { CONFIG_SECTION } from '../constant/shared/configuration';
+import { CONTRAST, CONFIRM, PRESET, PRESET_ORIENTATION, SYSTEM_MESSAGE, PRESET_PATH, THEME_KIND } from '../constant/string/enum.configuration';
 import { getWorkspaceConfiguration } from '../configuration/shared/configuration';
 import { prepareRenderGroup, resetAllDecoration } from '../editor/editor';
 import { updateSelectionTextConfig } from '../configuration/overlay/selection';
@@ -12,6 +10,8 @@ import { updateDiagnosticTextConfig } from '../configuration/overlay/diagnostic'
 import { readFile } from 'node:fs/promises';
 import { updateGeneralConfig, updateHighlightStyleConfiguration } from '../configuration/overlay/highlight';
 import { updateScmTextConfig } from "../configuration/overlay/scm";
+
+import type * as D from "../type/type";
 
 export {
     readPreset,

@@ -1,24 +1,22 @@
-import type * as D from '../type/type';
-
 import * as vscode from 'vscode';
-import { CONFIG_INFO } from '../constant/config/object';
+import { CONFIG_INFO } from '../constant/shared/configuration';
 import { generateHighlightDecoration } from './overlay/highlight';
-import { updateLegacyConfig } from './collection/patch';
+import { updateUserConfig } from './collection/patch';
 import { updateSelectionTextConfig } from './overlay/selection';
 import { updateDiagnosticTextConfig } from './overlay/diagnostic';
 import { writeEditorConfiguration } from './shared/editor';
 import { bindEditorDecoration } from '../editor/editor';
 import { updateScmTextConfig } from './overlay/scm';
 
+import type * as D from '../type/type';
+
 export {
     loadConfiguration
 };
 
-const configInfo = {
-    ...CONFIG_INFO
-} as unknown as D.Config.Intf.ConfigReady;
+const configInfo = { ...CONFIG_INFO } as unknown as D.Config.Intf.ConfigReady;
 
-const loadConfiguration = (context?: vscode.ExtensionContext): D.Config.Intf.InitialisedConfig | undefined => {
+const loadConfiguration = async (context?: vscode.ExtensionContext): Promise<D.Config.Intf.InitialisedConfig | undefined> => {
 
     const name = context?.extension.packageJSON.name;
 
@@ -35,9 +33,8 @@ const loadConfiguration = (context?: vscode.ExtensionContext): D.Config.Intf.Ini
     const configReady = configInfo as D.Config.Intf.ConfigReady;
     const decorationState = bindEditorDecoration().stateOf;
 
-    if (!configReady.configError) {
-        configReady.configError = [];
-        updateLegacyConfig(configReady);
+    if (await updateUserConfig()) {
+        // vscode.commands.executeCommand('workbench.action.reloadWindow');
     }
 
     writeEditorConfiguration();
@@ -55,6 +52,8 @@ const loadConfiguration = (context?: vscode.ExtensionContext): D.Config.Intf.Ini
         if (configReady.generalConfigInfo.scmTextEnabled) {
             updateScmTextConfig(configReady.name);
         }
+
+
 
         return {
             config: configReady,

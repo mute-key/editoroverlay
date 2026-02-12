@@ -1,7 +1,6 @@
+import * as vscode from 'vscode';
 
 import type * as D from '../type/type';
-
-import * as vscode from 'vscode';
 
 export {
     fnv1aHash,

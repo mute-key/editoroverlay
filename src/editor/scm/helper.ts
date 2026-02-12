@@ -7,7 +7,7 @@ import type * as D from '../../type/type';
 
 import * as vscode from 'vscode';
 import * as hex from '../../constant/numeric/hexadecimal';
-import { DIRECTORY_DELIMITER, LINE_END, SCM_RESOURCE_PATH, URI_PATH_TYPE, WORKSPACE_OS } from "../../constant/shared/enum";
+import { DIRECTORY_DELIMITER, LINE_END, SCM_RESOURCE_PATH, URI_PATH_TYPE, WORKSPACE_OS } from "../../constant/string/enum.runtime";
 import { lfRegex, crlfRegex, fsWinSplit, fsLinuxSplit } from '../../collection/regex';
 import { pathOverrideWsl } from './scm';
 

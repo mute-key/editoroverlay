@@ -1,13 +1,13 @@
-import type * as D from '../../type/type';
-
 import * as vscode from 'vscode';
 import * as hex from '../../constant/numeric/hexadecimal';
 import * as regex from '../../collection/regex';
-import { CONFIG_SECTION, DECORATION_OPTION_AFTER_CONFIG, DECORATION_OPTION_CONFIG, ICON_COLOR_CONFIGURATION_KEY, SCM_CONFIG, SCM_CONTENT_TEXT_LIST_CONFIG, SCM_OVERLAY_DECORATION_LIST_CONFIG, SVG_ICON_MAP } from "../../constant/config/object";
+import { CONFIG_SECTION, DECORATION_OPTION_AFTER_CONFIG, DECORATION_OPTION_CONFIG, ICON_COLOR_CONFIGURATION_KEY, SCM_CONFIG, SCM_CONTENT_TEXT_LIST_CONFIG, SCM_OVERLAY_DECORATION_LIST_CONFIG, SVG_ICON_MAP } from "../../constant/shared/configuration";
 import { workspaceProxyConfiguration } from "../shared/configuration";
 import { getExtensionUri, hexToRgbaStringLiteral, objectSwapKeyValue } from '../../util/util';
 import { bindScmState, clearScmTextState } from '../../editor/scm/scm';
 import { readFile, writeFile } from 'node:fs/promises';
+
+import type * as D from '../../type/type';
 
 export {
     updateScmTextConfig
@@ -178,7 +178,7 @@ const updateScmTextConfig = (extenionName: string, configuratioChange: boolean =
         clearScmTextState();
     }
 
-    workspaceProxyConfiguration(scmConfiguration, extenionName + '.' + CONFIG_SECTION.scmText, SCM_CONTENT_TEXT_LIST_CONFIG, bindToBuffer, regexToReferenceLinker);
+    workspaceProxyConfiguration(scmConfiguration, CONFIG_SECTION.scmText, SCM_CONTENT_TEXT_LIST_CONFIG, bindToBuffer, regexToReferenceLinker);
     buildOverlayBuffer(bufferObject, scmConfiguration);
     buildTextFixture(bindTo.overlayTextFixture, scmConfiguration.textOverlayFixture);
     buildRenderInstanceOption(bufferObject, bindTo.renderOption, bindTo.getterDescription);

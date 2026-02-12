@@ -1,11 +1,9 @@
-import type * as Status from './status';
-import type * as Editor from './editor';
-import type * as Decoration from './decoration';
-import type * as Diagnostic from './diagnostic';
-
 import * as vscode from 'vscode';
-import { BORDER_POSITION_VARIATION, DECORATION_GENERAL_STYLE_CONFIG_KEY, DECORATION_SELECTION_STYLE_CONFIG_KEY, DECORATION_STYLE_CONFIG_KEY } from 'src/constant/config/enum';
-import { DECORATION_STYLE_PREFIX_CONFIG } from 'src/constant/config/object';
+import { BORDER_POSITION_VARIATION, DECORATION_GENERAL_STYLE_CONFIG_KEY, DECORATION_SELECTION_STYLE_CONFIG_KEY, DECORATION_STYLE_CONFIG_KEY } from 'src/constant/string/enum.configuration';
+import { DECORATION_STYLE_PREFIX_CONFIG } from 'src/constant/shared/configuration';
+
+import type * as Status from './status';
+import type * as Decoration from './decoration';
 
 export type {
     Intf, Tp

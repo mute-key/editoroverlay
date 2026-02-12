@@ -1,44 +1,21 @@
+import * as vscode from 'vscode';
+
 import type * as D from '../../type/type';
 
-import * as vscode from 'vscode';
-import { getWorkspaceConfiguration } from '../shared/configuration';
-
 export {
-    updateLegacyConfig
+    updateUserConfig
 };
 
-const legacyConfig = {
-    borderOpacity: 'general.borderOpacity',
-    backgroundOpacity: 'general.backgroundOpacity',
-    statusTextEnabled: 'selectionText.enabled',
-    statusTextIconEnabled: 'selectionText.iconEnabled',
-    statusTextColor: 'selectionText.color',
-    statusTextBackgroundColor: 'selectionText.backgroundColor',
-    statusTextOpacity: 'selectionText.opacity',
-    statusTextFontStyle: 'selectionText.fontStyle',
-    statusTextFontWeight: 'selectionText.fontWeight',
-    cursorOnlyBorderColor: 'cursorOnly.borderColor',
-    cursorOnlyBackgroundColor: 'cursorOnly.backgroundColor',
-    cursorOnlyBorderPosition: 'cursorOnly.borderPosition',
-    cursorOnlyBorderWidth: 'cursorOnly.borderWidth',
-    cursorOnlyBorderStyle: 'cursorOnly.borderStyle',
-    cursorOnlyBorderStyleWithafterCursor: 'cursorOnly.borderStyleWithafterCursor',
-    singleLineBorderColor: 'singleLine.borderColor',
-    singleLineBackgroundColor: 'singleLine.backgroundColor',
-    singleLine: 'singleLine.borderPosition',
-    singleLineBorderWidth: 'singleLine.borderWidth',
-    singleLineBorderStyle: 'singleLine.borderStyle',
-    multiLineBorderColor: 'multiLine.borderColor',
-    multiLineBackgroundColor: 'multiLine.backgroundColor',
-    multiLineBorderPosition: 'multiLine.borderPosition',
-    multiLineBorderWidth: 'multiLine.borderWidth',
-    multiLineBorderStyle: 'multiLine.borderStyle',
-    multiCursorBorderColor: 'multiCursor.borderColor',
-    multiCursorBackgroundColor: 'multiCursor.backgroundColor',
-    multiCursorBorderPosition: 'multiCursor.borderPosition',
-    multiCursorBorderWidth: 'multiCursor.borderWidth',
-    multiCursorBorderStyle: 'multiCursor.borderStyle',
-};
+const configSectionList: string[] = [
+    'general',
+    'cursorOnly',
+    'singleLine',
+    'multiLine',
+    'multiCursor',
+    'selectionText',
+    'diagnosticText',
+    'scmText'
+];
 
 const updateUserSetting = (extensionConfig: vscode.WorkspaceConfiguration, newKey: string, value: string | number | boolean): Thenable<void> => {
     return extensionConfig.update(newKey, value, vscode.ConfigurationTarget.Global);
@@ -48,15 +25,18 @@ const removeUserSetting = (extensionConfig: vscode.WorkspaceConfiguration, key: 
     return extensionConfig.update(key, undefined, vscode.ConfigurationTarget.Global);
 };
 
-const updateLegacyConfig = async (configReady: D.Config.Intf.ConfigReady) => {
-    const extensionConfig = getWorkspaceConfiguration(configReady.name);
-    Object.entries(extensionConfig).forEach(async ([key, value]) => {
-        if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
-            if (Object.hasOwn(legacyConfig, key)) {
-                const newKey = legacyConfig[key];
-                await updateUserSetting(extensionConfig, newKey, value);
-                await removeUserSetting(extensionConfig, key);
+const updateUserConfig = async (): Promise<boolean> => {
+    const conf = vscode.workspace.getConfiguration('editoroverlay');
+    if (Object.keys(conf).length > 4) {
+        configSectionList.forEach(async (section) => { 
+            if (Object.hasOwn(conf, section)) {
+                for (const [key, value] of Object.entries(conf[section])) {
+                    await updateUserSetting(vscode.workspace.getConfiguration(section), key, value as string | number | boolean);
+                    await removeUserSetting(vscode.workspace.getConfiguration('editoroverlay'), section + '.' + key);
+                }
             }
-        }
-    });
+        });
+        return true;
+    }
+    return false;
 };

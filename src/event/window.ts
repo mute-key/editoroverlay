@@ -1,13 +1,12 @@
-import type * as D from '../type/type';
-
 import * as vscode from 'vscode';
 import * as hex from '../constant/numeric/hexadecimal';
-
 import { resetEditorDiagnosticStatistics, resetWorkspaceDiagnosticStatistics } from '../diagnostic/diagnostic';
 import { updateRangeMetadata } from '../editor/range';
 import { forceDispatchEditorChange } from '../editor/selection/selection';
 import { renderGroupIs, resetAllDecoration, updateIndentOption } from '../editor/editor';
 import { scmParsed } from '../editor/scm/scm';
+
+import type * as D from '../type/type';
 
 export {
     windowStateChanged,

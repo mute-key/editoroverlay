@@ -1,7 +1,7 @@
-import type * as D from '../../type/type';
-
 import * as regex from '../../collection/regex';
 import { updateEditorConfiguration } from './editor';
+
+import type * as D from '../../type/type';
 
 export {
     sanitizeConfigValue,

@@ -1,5 +1,3 @@
-import type * as D from './type/type';
-
 import * as vscode from 'vscode';
 import * as config from './configuration/load';
 import * as commands from './command/register';
@@ -11,6 +9,8 @@ import { prepareRenderGroup, renderGroupIs } from './editor/editor';
 import { checkActiveThemeKind } from './command/preset';
 import { updateRangeMetadata } from './editor/range';
 import { initializeScm, scmParseOfUri } from './editor/scm/scm';
+
+import type * as D from './type/type';
 
 export {
     initialize
@@ -30,8 +30,6 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<(v
         // as i am not sure even if it needs to wait to be activated.
         // maybe need to revise the method..? 
 
-        // extensionContext.
-        // extensionContext.asAbsolutePath
         ErrorHandler.setPackageName(extensionContext.extension.packageJSON.name);
 
         const loadConfig = await config.loadConfiguration(extensionContext);
@@ -49,7 +47,6 @@ const initialize = async (extensionContext: vscode.ExtensionContext): Promise<(v
         const activeEditor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
 
         await prepareRenderGroup(configInfo as D.Config.Intf.ConfigReady);
-        
         await createEditorDecorationTypeOfQueue();
 
         if (activeEditor) {                                 // if user is on editor

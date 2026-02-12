@@ -1,9 +1,9 @@
+import * as vscode from 'vscode';
+
 import type * as Decoration from './decoration';
 import type * as Selection from './selection';
 import type * as Status from './status';
 import type * as Numeric from './numeric';
-
-import * as vscode from 'vscode';
 
 export type {
     Intf,

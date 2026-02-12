@@ -1,10 +1,10 @@
-import type * as D from '../../type/type';
-
 import * as vscode from 'vscode';
 import * as hex from '../../constant/numeric/hexadecimal';
 import { HIGHLIGHT_BORDER_POSITION_INFO, HIGHLIGHT_STYLE_LIST } from '../../store/state';
 import { createLineRange, createRangeSPEP, blankRange } from '../range';
 import { applyDecoration } from '../editor';
+
+import type * as D from '../../type/type';
 
 export {
     hightlightCoordinator,

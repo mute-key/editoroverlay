@@ -1,6 +1,6 @@
-import type * as D from '../../../type/type';
-
 import * as bin from '../../../constant/numeric/binary';
+
+import type * as D from '../../../type/type';
 
 export {
     stepFuncSignature,

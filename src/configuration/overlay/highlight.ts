@@ -1,15 +1,15 @@
-import type * as D from '../../type/type';
-
 import * as vscode from 'vscode';
 import * as hex from '../../constant/numeric/hexadecimal';
 import * as regex from '../../collection/regex';
-import { SELECTION_KIND_LIST } from '../../constant/shared/object';
-import { BORDER_WIDTH_DEFINITION_CONFIG, CONFIG_KEY_LINKER_SECTION_CONFIG, CONFIG_SECTION, DECORATION_STYLE_PREFIX_CONFIG, NO_CONFIGURATION_DEOCORATION_DEFAULT_CONFIG, NO_CONFIGURATION_GENERAL_DEFAULT_CONFIG } from '../../constant/config/object';
-import { CONFIG_KEY_LINKER } from '../../constant/config/enum';
+import { SELECTION_KIND_LIST } from '../../constant/shared/runtime';
+import { BORDER_WIDTH_DEFINITION_CONFIG, CONFIG_KEY_LINKER_SECTION_CONFIG, CONFIG_SECTION, DECORATION_STYLE_PREFIX_CONFIG, NO_CONFIGURATION_DEOCORATION_DEFAULT_CONFIG, NO_CONFIGURATION_GENERAL_DEFAULT_CONFIG } from '../../constant/shared/configuration';
+import { CONFIG_KEY_LINKER } from '../../constant/string/enum.configuration';
 import { bindHighlightStyleState } from '../../editor/highlight/highlight';
 import { colorConfigTransform, getConfigValue, getWorkspaceConfiguration } from '../shared/configuration';
 import { createEditorDecorationType } from '../../editor/editor';
 import { readBits } from '../../util/util';
+
+import type * as D from '../../type/type';
 
 export {
     updateGeneralConfig,
@@ -24,7 +24,7 @@ const checkConfigKeyAndCast = <T extends D.Config.Tp.DecorationStyleConfigName |
 const getConfigSet = (configReady: D.Config.Intf.ConfigReady, decorationKey: number): D.Decoration.Tp.DecorationStyleConfig => {
     const configSectionName = DECORATION_STYLE_PREFIX_CONFIG[decorationKey];
     const defaultConfigDefinition = NO_CONFIGURATION_DEOCORATION_DEFAULT_CONFIG;
-    const configSection = getWorkspaceConfiguration(configReady.name + '.' + configSectionName);
+    const configSection = getWorkspaceConfiguration(configSectionName);
     return Object.entries(defaultConfigDefinition).reduce((config, [configName, defaultValue]) => {
         const configValue: string | boolean | number | null = getConfigValue(configSection, checkConfigKeyAndCast(configName), defaultValue as D.Config.Tp.DecorationStyleConfigValue, configReady.name + '.' + configSectionName);
         // configValue can be boolean.
@@ -125,11 +125,11 @@ const updateGeneralConfig = (configReady: D.Config.Intf.ConfigReady) => {
     for (const key in configReady.generalConfigInfo) {
         if (key === CONFIG_KEY_LINKER.DIAGNOSTIC_TEXT_ENABLED || key === CONFIG_KEY_LINKER.SELECTION_TEXT_ENABLED || key === CONFIG_KEY_LINKER.SCM_TEXT_ENABLED) {
             const sectionLinker = CONFIG_KEY_LINKER_SECTION_CONFIG[key];
-            const configSection = getWorkspaceConfiguration(configReady.name + '.' + sectionLinker[0]);
+            const configSection = getWorkspaceConfiguration(sectionLinker[0]);
             const configValue = getConfigValue(configSection, sectionLinker[1], NO_CONFIGURATION_GENERAL_DEFAULT_CONFIG[key], configReady.name + '.' + sectionLinker[0]) as any;
             configReady.generalConfigInfo[key] = configValue;
         } else {
-            const configSection = getWorkspaceConfiguration(configReady.name + '.' + CONFIG_SECTION.general);
+            const configSection = getWorkspaceConfiguration(CONFIG_SECTION.general);
             configReady.generalConfigInfo[key] = getConfigValue(configSection, key, NO_CONFIGURATION_GENERAL_DEFAULT_CONFIG[key], configReady.name + '.' + CONFIG_SECTION.general) as any;
         }
     }

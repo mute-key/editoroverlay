@@ -1,11 +1,11 @@
-import type * as D from '../../type/type';
-
 import * as hex from '../../constant/numeric/hexadecimal';
-import { CONFIG_SECTION, SELECTION_CONTENT_TEXT_LIST_CONFIG, SELECTION_CONTENT_TEXT_NUMLINK_CONFIG, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE_CONFIG } from '../../constant/config/object';
+import { CONFIG_SECTION, SELECTION_CONTENT_TEXT_LIST_CONFIG, SELECTION_CONTENT_TEXT_NUMLINK_CONFIG, SELECTION_DECORAITON_CONFIG, SELECTION_DECORATION_STYLE_CONFIG } from '../../constant/shared/configuration';
 import { workspaceProxyConfiguration } from '../shared/configuration';
 import { bindStatusContentTextState, setMultiCursorTextPosition, setMultiCursorEditPosition, SelectionTextRegex, setSelectionTextbuffer, syncRefernceTable, setMultiCursorContentRef, setMultiCursorContext, setContextAccmulator } from '../../editor/selection/selection';
 import { convertToDecorationRenderOption, leftMarginToMarginString, setContentTextOnDecorationRenderOption } from '../shared/decoration';
 import { isEntriesEqual } from '../../util/util';
+
+import type * as D from '../../type/type';
 
 export {
     updateSelectionTextConfig
@@ -130,7 +130,7 @@ const updateSelectionTextConfig = (extenionName: string, configuratioChange: boo
     };
 
     // hm ...
-    workspaceProxyConfiguration(SelectionDecorationConfig, extenionName + '.' + CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST_CONFIG, bindToBuffer, SelectionTextRegex);
+    workspaceProxyConfiguration(SelectionDecorationConfig, CONFIG_SECTION.selectionText, SELECTION_CONTENT_TEXT_LIST_CONFIG, bindToBuffer, SelectionTextRegex);
     buildSelectionTextDecorationRenderOption(SelectionDecorationConfig, SelectionDecorationStyle);
     buildStatusTextState(bindTo.textOf, bindToBuffer.textOf, SelectionDecorationStyle, SelectionDecorationConfig.leftMargin as string);
 

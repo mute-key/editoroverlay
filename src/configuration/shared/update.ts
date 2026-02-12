@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as hex from '../../constant/numeric/hexadecimal';
 import ErrorHandler from '../../util/error';
-import { CONFIG_SECTION_KEY } from '../../constant/config/enum';
+import { CONFIG_SECTION_KEY } from '../../constant/string/enum.configuration';
 import { resetAllDecoration, prepareRenderGroup } from '../../editor/editor';
 import { updateGeneralConfig, updateHighlightStyleConfiguration } from '../overlay/highlight';
 import { updateDiagnosticTextConfig } from '../overlay/diagnostic';

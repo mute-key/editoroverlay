@@ -1,5 +1,5 @@
 /* eslint-disable semi */
-import type * as D from '../../type/type.d';
+import type * as D from '../../type/type';
 
 import * as vscode from 'vscode';
 import * as hex from '../numeric/hexadecimal'

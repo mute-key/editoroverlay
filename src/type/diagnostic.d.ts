@@ -4,7 +4,7 @@ import type * as Regex from './regex';
 import type * as Numeric from './numeric';
 
 import * as vscode from 'vscode';
-import { DIAGNOSTIC_CONTENT_TEXT_KEY } from 'src/constant/config/enum';
+import { DIAGNOSTIC_CONTENT_TEXT_KEY } from 'src/constant/string/enum.configuration';
 
 export type {
     Intf,

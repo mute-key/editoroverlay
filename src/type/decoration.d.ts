@@ -3,8 +3,8 @@ import type * as Numeric from './numeric';
 import * as vscode from 'vscode';
 
 
-import { DECORATION_STYLE_PREFIX_CONFIG } from '../constant/config/object';
-import { DECORATION_STYLE_CONFIG_KEY, DECORATION_TYPE_MASK, SELECTION_TYPE } from 'src/constant/config/enum';
+import { DECORATION_STYLE_PREFIX_CONFIG } from '../constant/shared/configuration';
+import { DECORATION_STYLE_CONFIG_KEY, DECORATION_TYPE_MASK, SELECTION_TYPE } from 'src/constant/string/enum.configuration';
 
 export type {
     Intf,
