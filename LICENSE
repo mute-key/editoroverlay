@@ -1,33 +1,12 @@
-Creative Commons Attribution-NonCommercial 4.0 International Public License 
+All copyrights, titles, and intellectual property rights in 
+and to this software (including source code and documentation) 
+are owned exclusively by the Author ("mutekey, sihyun.seong@gmail.com").
 
-(cc by-nc 4.0)
+No part of this source code may be reproduced, transmitted, 
+distributed, sublicensed, modified, or used to create derivative
+works for any purpose, whether commercial or non-commercial, 
+without the express prior written consent of the Copyright Holder.
 
-Copyright (C) 2025 mutekey <https://github.com/mute-key>
-
-This is a human-readable summary of (and not a substitute for) the license.
-
-You are free to:
-- Share — copy and redistribute the material in any medium or format.
-- Adapt — remix, transform, and build upon the material.
-
-The licensor cannot revoke these freedoms as long as you follow the license terms.
-
-Under the following terms:
-- Attribution — You must give appropriate credit, provide a link to the license, 
-  and indicate if changes were made. You may do so in any reasonable manner, 
-  but not in any way that suggests the licensor endorses you or your use.
-- NonCommercial — You may not use the material for commercial purposes.
-- No additional restrictions — You may not apply legal terms or technological 
-  measures that legally restrict others from doing anything the license permits.
-
-For more information, visit:
-https://creativecommons.org/licenses/by-nc/4.0/
-
-
-Please let me explain why the restrictions are in the license as is.
-
-I personally do not believe that this code has any commercial opportunities, 
-or that I do not want it for now. it is still incomplete in its current state 
-and i don't think anyone would or should pay to use this extension. I start 
-this to learn and to make features that I think will be useful. It is a rather 
-simple overlay tool and I hope this extenion as an upgrade of QOL of vscode.
+This license does not grant any rights or access to any third party. 
+Any unauthorized use or access shall be strictly prohibited and may 
+be subject to legal action under applicable laws.

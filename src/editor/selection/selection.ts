@@ -633,7 +633,6 @@ const multiCursorEditKeyPosition: Record<string, null | number> = {
     col: null,
     zCol: null,
 };
-
 const multiCursorState: D.Selection.Intf.MultiCursorState = {
     strategyKey: 0,
     // ... SELECTION_STATE ...

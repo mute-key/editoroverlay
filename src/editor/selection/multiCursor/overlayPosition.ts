@@ -141,17 +141,17 @@ const allocateIndexList: L.OverlayFunc = {
 };
 
 const duplicateOeverlayFunc = {
-    [/* 05 */ bin.firstToLast]: [appendNthIndex],
-    [/* 01 */ bin.firstToLastWithExistingDup]: [pushCursorIndex, pushCursorGroup, appendNthIndex],
-    [/* 12 */ bin.baseAndLast]: [pushCursorGroup, appendNthIndex],
-    [/* 08 */ bin.lastOnly]: [appendNthIndex],
-    [/* 10 */ bin.asLastWithExistingDup]: [pushCursorIndex, appendNthIndex],
-    [/* 14 */ bin.asLastOnBaseWithWithExistingDup]: [pushCursorIndex, appendNthIndex],
-    [/* 18 */ bin.notAsLastWithoutExistingDup]: [allocateIndexList, prependNthIndex, pushCursorIndex], // #FIX
-    [/* 02 */ bin.withExistingDup]: [],
-    [/* 20 */ bin.baseAndNotLast]: [increaseCalibration, pushCursorIndex, createBaseIndex, pushCursorGroup, resetCurrentIndex, equalizeLineState, allocateIndexList, prependNthIndex]
-    // [/* 04 */ bin.recurringLine3]: [pushCursorGroup, pushCursorIndex, (indexList: number[]) => prependNthLastIndex.body(-1, indexList)],
-    // [/* 06 */ bin.recurringLine5]: [(indexList: number[]) => prependNthLastIndex.body(1, indexList), pushCursorIndex,],
+    /* 05 */ [ bin.firstToLast]: [appendNthIndex],
+    /* 01 */ [ bin.firstToLastWithExistingDup]: [pushCursorIndex, pushCursorGroup, appendNthIndex],
+    /* 12 */ [ bin.baseAndLast]: [pushCursorGroup, appendNthIndex],
+    /* 08 */ [ bin.lastOnly]: [appendNthIndex],
+    /* 10 */ [ bin.asLastWithExistingDup]: [pushCursorIndex, appendNthIndex],
+    /* 14 */ [ bin.asLastOnBaseWithWithExistingDup]: [pushCursorIndex, appendNthIndex],
+    /* 18 */ [ bin.notAsLastWithoutExistingDup]: [allocateIndexList, prependNthIndex, pushCursorIndex], // #FIX
+    /* 02 */ [ bin.withExistingDup]: [],
+    /* 20 */ [ bin.baseAndNotLast]: [increaseCalibration, pushCursorIndex, createBaseIndex, pushCursorGroup, resetCurrentIndex, equalizeLineState, allocateIndexList, prependNthIndex]
+    // /* 04 */ [ bin.recurringLine3]: [pushCursorGroup, pushCursorIndex, (indexList: number[]) => prependNthLastIndex.body(-1, indexList)],
+    // /* 06 */ [ bin.recurringLine5]: [(indexList: number[]) => prependNthLastIndex.body(1, indexList), pushCursorIndex,],
 };
 
 const initBaseIndex: L.OverlayFunc = {
@@ -162,12 +162,12 @@ const initBaseIndex: L.OverlayFunc = {
 };
 
 const overlayFunc: Record<D.Numeric.Key.Bin, any[]> = {
-    [/* _0 */ bin.noIndexControl]: [],
-    [/* _1 */ bin.increaseIndex]: [increaseCalibration, pushCursorIndex, createBaseIndex, pushCursorGroup, resetCurrentIndex, equalizeLineState],
-    [/* _2 */ bin.withDup]: [pushCursorIndex],
-    [/* _3 */ bin.newBeforeBaseWithDup]: [createBaseIndex, pushCursorIndex, resetCurrentIndex, equalizeLineState],
-    [/* 32 */ bin.init]: [initBaseIndex, pushCursorGroup],
-    [/* 32 */ bin.initButNewBeforeInit]: [initBaseIndex, pushCursorGroup],
+    /* _0 */ [bin.noIndexControl]: [],
+    /* _1 */ [bin.increaseIndex]: [increaseCalibration, pushCursorIndex, createBaseIndex, pushCursorGroup, resetCurrentIndex, equalizeLineState],
+    /* _2 */ [bin.withDup]: [pushCursorIndex],
+    /* _3 */ [bin.newBeforeBaseWithDup]: [createBaseIndex, pushCursorIndex, resetCurrentIndex, equalizeLineState],
+    /* 32 */ [bin.init]: [initBaseIndex, pushCursorGroup],
+    /* 32 */ [bin.initButNewBeforeInit]: [initBaseIndex, pushCursorGroup],
 };
 
 const stateControlFunc = (fn: (state: D.Selection.Intf.MultiCursorState) => void, state: D.Selection.Intf.MultiCursorState) => fn(state);
@@ -179,12 +179,12 @@ const baseIndexControlFunc = (fn: (arg0: D.Selection.Intf.MultiCursorOverlay, ar
 
 const stepFuncSignature = {
     // state only 
-    [/* 578 */ bin.stateOnlyControl]: stateControlFunc,
+    /* 578 */ [ bin.stateOnlyControl]: stateControlFunc,
     // context only 
-    [/* 580 */ bin.contextOnlyControl]: contextControlFunc,
+    /* 580 */ [ bin.contextOnlyControl]: contextControlFunc,
     // both state and context
-    [/* 577 */ bin.stateContextControl]: stateContextControlFunc,
-    [/* 579 */ bin.overlayControl]: overlayControlFunc,
-    [/* 581 */ bin.indexListControl]: indexListControlFunc,
-    [/* 583 */ bin.baseIndexControl]: baseIndexControlFunc,
+    /* 577 */ [ bin.stateContextControl]: stateContextControlFunc,
+    /* 579 */ [ bin.overlayControl]: overlayControlFunc,
+    /* 581 */ [ bin.indexListControl]: indexListControlFunc,
+    /* 583 */ [ bin.baseIndexControl]: baseIndexControlFunc,
 };
